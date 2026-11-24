@@ -1,0 +1,271 @@
+{
+  "issue_number": 1770,
+  "request_id": "gonggong-ai-workbench-plan1-v05",
+  "status": "passed",
+  "summary": "两个独立 Windows 编辑器进程重新打开同一项目。PNG 在原像素尺度按 B/A/B 显示蓝、红、蓝；GLB 在同一相机和 53° 视场角下显示 2、1、2 倍网格。退出或关闭对照后原资产引用和已选版本均保留。同一编辑器通过 E09、I02 和 Q02 四账户回归。",
+  "source_tree": "edcd1f732bcc699eb78b7223921081142776d085",
+  "source_base": "57c1f4a45383071e2c78fa1ba9ec39490706a8fa",
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+    "godot.windows.editor.x86_64.console.exe": "d6a8f83c29d1f7df75f854be0cd278ab43848966d9be70e618142c75b36eb607",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "observed": "2026-11-22T15:58:55.550488+00:00",
+  "native": {
+    "editor_sha256": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+    "launcher_sha256": "d6a8f83c29d1f7df75f854be0cd278ab43848966d9be70e618142c75b36eb607",
+    "producer": {
+      "mode": "deterministic fixture subprocess",
+      "launcher_pid": 123636,
+      "pid": 125208,
+      "parent_pid": 123636,
+      "outputs": [
+        "hero.png",
+        "hero.glb"
+      ],
+      "exit_code": 0
+    },
+    "changed_during_download": [
+      {
+        "before": "1d94f5747c6df5f6b0ccb70ce912bf4b6ff917729cd13942084bc9c83ddad351",
+        "saved": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+      }
+    ],
+    "http": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ]
+    ],
+    "comparisons": [
+      {
+        "candidate_filename": "candidate-14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d.png",
+        "candidate_sha256": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+        "name": "hero.png",
+        "original_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+        "previews_and_choices": [
+          {
+            "pixel": "ff0000",
+            "selection": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "pixel": "0000ff",
+            "selection": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d"
+          }
+        ],
+        "reopened_choice": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+        "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+        "stale_rejection_exercised": true
+      },
+      {
+        "candidate_filename": "fc64337c2cd3e460-candidate-ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef.glb",
+        "candidate_sha256": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "name": "hero.glb",
+        "original_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "previews_and_choices": [
+          {
+            "mesh_scale": 1.0,
+            "selection": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          {
+            "mesh_scale": 2.0,
+            "selection": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef"
+          }
+        ],
+        "reopened_choice": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+        "stale_rejection_exercised": false
+      }
+    ],
+    "project_reopens": [
+      {
+        "comparisons": [
+          {
+            "candidate": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "name": "hero.glb",
+            "original": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "restored_original_object": true,
+            "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "sequence": [
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 1.0,
+                "side": "A"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              }
+            ]
+          },
+          {
+            "candidate": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "name": "hero.png",
+            "original": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "restored_original_object": true,
+            "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "sequence": [
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              },
+              {
+                "pixel": "ff0000",
+                "side": "A"
+              },
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              }
+            ]
+          }
+        ],
+        "display_server": "headless",
+        "pid": 124548
+      },
+      {
+        "comparisons": [
+          {
+            "candidate": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "name": "hero.glb",
+            "original": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "restored_original_object": true,
+            "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "sequence": [
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 1.0,
+                "side": "A"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              }
+            ]
+          },
+          {
+            "candidate": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "name": "hero.png",
+            "original": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "restored_original_object": true,
+            "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "sequence": [
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              },
+              {
+                "pixel": "ff0000",
+                "side": "A"
+              },
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              }
+            ]
+          }
+        ],
+        "display_server": "headless",
+        "pid": 136044
+      }
+    ],
+    "selection_persisted": true,
+    "occupied_candidate_preserved": true,
+    "malformed_model_preview_rejected": true,
+    "temporary_downloads_remaining": 0
+  },
+  "related": {
+    "e09": "1d270051c70e788d52aa740920c07a1de8834114cce34a3242124bc5ea5748ee",
+    "i02": "f1af49bb855e8bf4b36561efab0b2743756fb650c7e8b3e75915f70afabe3d33",
+    "q02": "877111a2c81854d1b04dca6d1b82facb16aef6f445e93a891e3ba18d336ee56d"
+  },
+  "cross_functional": {
+    "accounts": 4,
+    "requests": 28,
+    "history": 4
+  }
+}

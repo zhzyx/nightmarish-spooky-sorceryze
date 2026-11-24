@@ -7,6 +7,8 @@ Markdown 为唯一权威，AI 阅读效率优先；人类视图与导出是第�
 - `server/tianxuan_core.py`：文档创建/更新、版本快照、乐观并发、自动归类、`ai_view` 机器视图。
 - 需求文档：frontmatter（`request_id`、`kind`、`lang`）+ 目标/范围/验收正文。
 
+从 Godot 工作台保存已有文档后，当前业务模块的草稿可引用本次保存。下一轮发送时，服务按账号读权回读指定版本及其前一版，以编辑器相同的非空行分段规则交付作者、修改前后的段号及原文。删除草稿内的保存引用即可取消带入。已发送消息保留当时版本。[E02 验收](../../../../design-docs/gonggong-ai-workbench-e02.md)
+
 ## 规划
 
 - 实时协同（Yjs/Hocuspocus）与评论/建议模式。

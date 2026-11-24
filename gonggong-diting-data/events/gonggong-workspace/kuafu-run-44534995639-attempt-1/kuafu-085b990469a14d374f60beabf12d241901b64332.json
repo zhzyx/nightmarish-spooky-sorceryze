@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-085b990469a14d374f60beabf12d241901b64332",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-44534995639-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1598",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "de949be2e87b830b4fb7f315f4c7efb726d0ca45e5119110f7827eefbb631927",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1598",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1598",
+    "action": "delivery",
+    "detection_head": "2785ba5edf771083c0e61bb6f95d4a3990d02174",
+    "context_sha256": "78d43a815aff41d3919a170f8f78bce9f6fae2ad12a3d4723a72ec98787e39f4",
+    "operator": "Sail-Li",
+    "worker": "codex-1577-editor",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue:1598",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44534995639/job/135597943965",
+    "diagnosis": "CI graph passed; obsolete tab ordering assertion hangs the next headless tab-order check. Local fix passed six phases, negative returned in 4.31s. Initial submission fetch also returned exit 128; verified authenticated fetch now succeeds.",
+    "next_action": "Submit reviewed change under exact gate, verify CI, then recover the original Windows installation flow.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T14:52:59.755345+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T14:56:22.573323+00:00",
+  "sha256": "285f349f92c748128835b46c9fc05d213ac7e8bbd9380070b9905e1187add8f1"
+}

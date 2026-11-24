@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round13-edit-h05-integration",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T14:31:04.309862+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue": 1765,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-e10-h05-integration.json",
+    "sha256": "3a8f0ba53ba24635cc4538def95df0a0fc7907e309d2c05f932211f1d09c3e55",
+    "editor_sha256": "5be8575f1d030065514a48d7c98070161a2b9e6c7d9705a69aff67ae760403ee",
+    "verification": "在已合入 H05 的主线基础上重新编译，复验 H02–H05 原生选版签认、E10 窗口编辑返回、16 项领域测试和 5 文件类型检查。"
+  },
+  "evidence_refs": [],
+  "sha256": "2eb1e3cdd3e93bfd6873880707a0c6196621b6bbd26dcdfbfb4b2c48afb41d88"
+}

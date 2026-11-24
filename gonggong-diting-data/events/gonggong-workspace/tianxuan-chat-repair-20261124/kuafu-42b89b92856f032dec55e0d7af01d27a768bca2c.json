@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-42b89b92856f032dec55e0d7af01d27a768bca2c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "adff6fe2afebf710341c926b26ec6375c3bfc47f7ffda911a1ae297a0088e12b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "user-report",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "ba53fc1188ea989e40707cfad051a362c4ea2f5237ed3d56ff9f6bb026c6b0c2",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-resume-layout",
+    "authority_ref": "issue:2180; user authorized repair of historical request and conversation layout",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45294843125",
+    "diagnosis": "Candidate functional checks passed. Static CI rejected one British-spelling assertion label in the host progress test and its copied evidence text. Both descriptions are corrected; product code is unchanged. Targeted host progress rerun passed 16 checks and repository codespell passed across changed paths.",
+    "next_action": "Preserve installed product and user session, submit the corrected exact candidate, await required CI, and verify main plus authenticated live-window recovery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:51:38.150994+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T00:20:31.180571+00:00",
+  "sha256": "cb9eec8e24048e48678a9882722043fe15ee9e709443421725d72d9e839dfd2c"
+}

@@ -5,7 +5,7 @@ owns version 2/3/4 image nodes, the unified generate_image node, and version 2
 image_to_mesh input expansion. Image outputs have independent durable children;
 image_to_mesh keeps its single Mesh result and ordered primary/reference mapping.
 Single-reference backends receive one deterministic labeled board; native
-multi-reference backends receive every ordered source.
+multi-reference backends receive ordered sources within their input contracts.
 """
 
 import base64
@@ -39,6 +39,12 @@ REFERENCE_INTERPRETATION_PROMPT = (
     "distinct subjects into one. When the relationship is ambiguous, prefer a conservative same-subject interpretation rather "
     "than inventing extra characters. Perform this interpretation before generating the image."
 )
+T_POSE_CONSTRAINT = (
+    "Strict, symmetrical T-pose: both arms fully extended straight out to opposite sides, perfectly horizontal at shoulder "
+    "height, with straight elbows and wrists at the same height as the shoulders. The upper arms and forearms must form two "
+    "unbroken horizontal lines, mirroring each other, so the whole silhouette resembles a capital T. Do not angle the arms downward."
+)
+_T_POSE_PATTERN = re.compile(r"(?<![a-z0-9])t[\s_-]*pose(?![a-z0-9])", re.IGNORECASE)
 MAX_IMAGES = 8
 MESSAGES = {
     "invalid_image_batch": "图像输入或输出列表无效。每次支持 1～8 张输入和 1～8 张独立输出，标签不能为空或重复。",
@@ -223,6 +229,38 @@ _VIEW_INSTRUCTIONS = {
         "toward the RIGHT edge of the image"
     ),
 }
+_GARMENT_VIEW_INSTRUCTIONS = {
+    "正面": (
+        "strict FRONT view of the ISOLATED garment itself; place the camera directly before its designed front and show "
+        "the exterior front surface, with the front neckline and any front opening or fastenings facing the camera. "
+        "Show the garment alone, upright, centered and fully visible, without a person, body, face, mannequin or hanger. "
+        "Use the wearer's left/right convention; do not mirror or swap sides"
+    ),
+    "背面": (
+        "strict BACK view of the SAME ISOLATED garment; rotate it exactly 180 degrees around its vertical axis from the "
+        "front view, place the camera directly behind it, and show the exterior back surface and back neckline. Any front "
+        "opening, buttons or chest details must face away and must not be visible. Do not return a mirrored front, an "
+        "inside view or a different garment design. Show the garment alone, without a person, body, face, mannequin or "
+        "hanger. Use the wearer's left/right convention; do not mirror or swap sides between views"
+    ),
+}
+_STANDALONE_GARMENT_PATTERN = re.compile(
+    r"(?:单独|独立|仅|只)(?:生成|绘制|展示|输出|保留|要)?[^，。；;\n]{0,12}"
+    r"(?:衣服|服装|衣物|法袍|长袍|上衣|裙子|外套|铠甲|盔甲)"
+    r"|(?:衣服|服装|衣物|法袍|长袍|上衣|裙子|外套|铠甲|盔甲)[^，。；;\n]{0,12}"
+    r"(?:单独|独立|仅|无人|无人体|无模特)"
+    r"|(?:isolated|standalone|only|no\s+(?:person|human|body|model|mannequin))[\s\w-]{0,40}"
+    r"(?:garment|clothing|robe|shirt|dress|coat|jacket|armor)"
+    r"|(?:garment|clothing|robe|shirt|dress|coat|jacket|armor)[\s\w-]{0,40}"
+    r"(?:isolated|standalone|only|without\s+(?:a\s+)?(?:person|human|body|model|mannequin))",
+    re.IGNORECASE,
+)
+
+
+def _view_instruction(label, source_text):
+    if label in _GARMENT_VIEW_INSTRUCTIONS and _STANDALONE_GARMENT_PATTERN.search(source_text):
+        return _GARMENT_VIEW_INSTRUCTIONS[label]
+    return _VIEW_INSTRUCTIONS.get(label, label)
 
 
 def automatic_output_specifications(prompt):
@@ -329,6 +367,14 @@ def primary_prompt(prompt):
     return cleaned if cleaned else "Create one primary image of the originally requested subject."
 
 
+def _constrain_t_pose(prompt, source_text=None):
+    """Expand the ambiguous pose label into visual geometry on every generated view."""
+    source = prompt if source_text is None else source_text
+    if not _T_POSE_PATTERN.search(source) or T_POSE_CONSTRAINT in prompt:
+        return prompt
+    return (prompt.rstrip() + "\n" if prompt.strip() else "") + T_POSE_CONSTRAINT
+
+
 def make_reference_board(sources, directory, config):
     """Use the trusted Godot decoder for PNG and JPEG; no new Python imaging dependency."""
     godot, builder = config.get("board_godot_path", ""), config.get("board_builder_path", "")
@@ -431,6 +477,22 @@ class MultiImageProvider(CodexProvider):
             capabilities.add(GENERATE_IMAGE)
         result["capabilities"] = sorted(capabilities)
         return result
+
+    def public_failure_message(self, snapshot):
+        record = self._local(snapshot.get("job_id"))
+        if record is not None:
+            if hasattr(self.inner, "public_failure_message"):
+                for child in record.get("children", []):
+                    receipt = child.get("receipt")
+                    if receipt is not None and receipt.get("state") == "failed":
+                        message = self.inner.public_failure_message(receipt)
+                        if message:
+                            return message
+            message = snapshot.get("error")
+            return message if message in set(MESSAGES.values()) else MESSAGES["image_batch_failed"]
+        if hasattr(self.inner, "public_failure_message"):
+            return self.inner.public_failure_message(snapshot)
+        return None
 
     def _prepare(self, request, manifest, key):
         require(_is_batch_request(request), "invalid_image_batch")
@@ -582,8 +644,13 @@ class MultiImageProvider(CodexProvider):
 
     def _request(self, plan, index):
         request = copy.deepcopy(plan["child_request"])
+        source = plan["request"]
+        source_text = "\n".join(
+            [str(source["parameters"].get("prompt", ""))]
+            + [str(context.get("text", "")) for context in source["context"]]
+        )
         specification = plan["specifications"][index]
-        if not _automatic_request(plan["request"]):
+        if not _automatic_request(source):
             if len(plan["specifications"]) > 1:
                 prompt = str(request["parameters"].get("prompt", ""))
                 request["parameters"]["prompt"] = (
@@ -592,6 +659,7 @@ class MultiImageProvider(CodexProvider):
                     + specification["label"]
                     + ". Do not return a contact sheet, collage or multiple panels."
                 )
+            request["parameters"]["prompt"] = _constrain_t_pose(request["parameters"]["prompt"], source_text)
             return request
         prompt = str(request["parameters"].get("prompt", ""))
         if index == 0:
@@ -601,6 +669,13 @@ class MultiImageProvider(CodexProvider):
                     + primary_prompt(prompt)
                     + "\nOnly one instance of the subject is allowed. Do not return multiple views, duplicates, a contact sheet, collage or multiple panels."
                 )
+                if specification["label"] in _GARMENT_VIEW_INSTRUCTIONS and _STANDALONE_GARMENT_PATTERN.search(
+                    source_text
+                ):
+                    request["parameters"]["prompt"] += (
+                        "\n" + _view_instruction(specification["label"], source_text) + "."
+                    )
+            request["parameters"]["prompt"] = _constrain_t_pose(request["parameters"]["prompt"], source_text)
             return request
         primary = self._primary_ref(plan)
         request["node"] = "image_to_image"
@@ -611,14 +686,15 @@ class MultiImageProvider(CodexProvider):
             if specification.get("mode") == "detail"
             else "Show the exact same subject from this camera/view direction: "
         )
-        request["parameters"]["prompt"] = (
+        request["parameters"]["prompt"] = _constrain_t_pose(
             "The attached primary image is the authoritative depiction of the same generated subject. "
             + action
-            + _VIEW_INSTRUCTIONS.get(specification["label"], specification["label"])
+            + _view_instruction(specification["label"], source_text)
             + ". Preserve its identity, geometry, materials, colors, style and background. "
             + "Change only the camera/view or framing needed for this derived image; do not design a new subject. "
             + "The result must contain exactly one instance of the subject. "
-            + "Do not return multiple views, duplicates, a contact sheet, collage or multiple panels."
+            + "Do not return multiple views, duplicates, a contact sheet, collage or multiple panels.",
+            source_text,
         )
         return request
 
@@ -634,6 +710,8 @@ class MultiImageProvider(CodexProvider):
 
     def submit(self, request, manifest, idempotency_key):
         if request["node"] == "image_to_mesh" and request.get("version") == MESH_VERSION:
+            if hasattr(self.inner, "submit_reviewed"):
+                return self.inner.submit_reviewed(request, manifest, idempotency_key)
             return self.inner.submit(_mesh_request(request, manifest), manifest, idempotency_key)
         if not _is_batch_request(request):
             return self.inner.submit(request, manifest, idempotency_key)

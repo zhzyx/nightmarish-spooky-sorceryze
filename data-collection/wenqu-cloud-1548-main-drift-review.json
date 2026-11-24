@@ -1,0 +1,249 @@
+{
+  "issue_number": 1548,
+  "request_id": "wenqu-cloud-20261119",
+  "reviewer": "codex-native-editor_flow",
+  "state": "merged_source_review_passed_formal_ci_pending",
+  "prior_candidate": "98c78ad04795f5eb2f792b1226a25fa0e50ac459",
+  "new_main": "0fe6462b4cf18f34807164ee06b56ea198081e1e",
+  "merge_base": "3e4f05e5ed3b8f3526ffc0ef2434c8c8911e5d34",
+  "changed_paths": [
+    {
+      "path": "apps/tianxuan/app/issues/[id]/page.tsx",
+      "sha256": "b52dcda07830a4acc6dab31542717c5303a1fc62080e287fbfc2a3f202c3a8ff",
+      "matches_upstream": true
+    },
+    {
+      "path": "apps/tianxuan/app/issues/page.tsx",
+      "sha256": "4ffaf9ae21577360c26145cf3c372e0bf2b3540b56e3b8f7b4fd3a47fe407f2f",
+      "matches_upstream": true
+    },
+    {
+      "path": "apps/tianxuan/app/issues/roadmap/page.tsx",
+      "sha256": "216b89fc6830f7aaedd0a61e5ccb684234c15b4aee489cfeb9c258b1cf76e2cf",
+      "matches_upstream": true
+    },
+    {
+      "path": "apps/tianxuan/components/IssueWork.module.css",
+      "sha256": "ec174022ec86284719567ef571bf98b0de5ad34d5fe1acc47e3c68adc5ef1be1",
+      "matches_upstream": true
+    },
+    {
+      "path": "apps/tianxuan/components/IssueWork.tsx",
+      "sha256": "da2d66477a4fece659f593aa749408c6118d5d04f4dc2a1495728e520c1724dd",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/README.md",
+      "sha256": "96021ddaad0224360307a37f40e793e12209b3d349338ae9970ccc5e316ddf81",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/attachments.py",
+      "sha256": "2ab7fdd1f1e299ed22e17f0717a7bf2267fdf6d9fcc2ef17f340d4460099e298",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/git_archive.py",
+      "sha256": "f807152f9cff2aacfc07e21171ada307e0f23d0c2e5239ab1c72c54845799b59",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/importer.py",
+      "sha256": "bd54c6c4c4322b55314255b470d6ddd7fc4a6b9cece13b2a3535f5ca7145be52",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/index.html",
+      "sha256": "43eb8c381dc55a3b7ec2c80aeda40a702b8f2882d1b8615705eec954ca473bda",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/inventory-report.json",
+      "sha256": "7ec876d05c0cf912e41b89016ffd95dad40b88ae66d0936647eb6ee84d5bdcea",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/inventory.py",
+      "sha256": "99a2a9b1d828024cec2222f5173d9d5b15a506355b085d8ac881abbadb6406eb",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/migration_archive.py",
+      "sha256": "751e8eb252a7648f828c0364aa77df5a73c1a594fa48712b6efe3a35c3895801",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/rehearsal-report.json",
+      "sha256": "98fb492be19ab151723425be55b61b68443ecd6daf5ee60344730601a643e967",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/relations.py",
+      "sha256": "63d45bd5cc751d97c8ae327bf9ee82a76658abf7bece37c49be3a7ae2110d8c0",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/routing.py",
+      "sha256": "20adbc523fb7b60ca4dcd187bb7ae4f73bfcab422524baacb7df686f2c38d60f",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/supplemental.py",
+      "sha256": "7c3f62254b0be74e354a1acbb99ebbd91ec302f69b60776a0fe016929043136d",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/test_archive.py",
+      "sha256": "52051a69cdd732d12de9307c727a05c046b2793bcd1bbcca2f791b7e77cf3c9f",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/test_attachments.py",
+      "sha256": "7212fb496761ab38661ebf5047ab1d612835a139ab5598a477312199bc3e3827",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/test_importer.py",
+      "sha256": "7e8ead6af9547fc366f782c43dee71f7c78b1064663d74d0ef8f336d0ece6330",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/test_relations.py",
+      "sha256": "e4c2ad57fecb9536b424f874d18d36a41ee941937695673d92727c312447e745",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "9d6cbc41b60853e1604cc31f3efa119f2086e8fee6cfe9a071df4dad65927dde",
+      "matches_upstream": false
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_work_management.py",
+      "sha256": "868ae6e931256a363e7d674872dadbe8d0329a1d71ea7d5a9700dcd499e12c8d",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "651b9bb15f745c1e29fabe3ee4d4206112afc02b6343754a862120f8aec2b42e",
+      "matches_upstream": false
+    },
+    {
+      "path": "customizations/components/tianxuan/server/work_management.py",
+      "sha256": "50aedf5989bc2ad285c742834bd2e6a66c94bfe3779d4a60888aeddc9eebec6e",
+      "matches_upstream": true
+    },
+    {
+      "path": "customizations/components/tianxuan/server/work_management_api.py",
+      "sha256": "547b735a553f4a4d68b022ece5015305dcc057947ae6d9b0e10a47b43e794fec",
+      "matches_upstream": true
+    },
+    {
+      "path": "data-collection/requests/tianxuan-unified-workflows-20261119/d1178e40-7790-4eb5-b688-7c00128a7828.json",
+      "sha256": "4aeba8b08f8c627a0de2bc0f3f778f9e58a5eb8ff8cd92cb706b8a85223e2101",
+      "matches_upstream": true
+    },
+    {
+      "path": "data-collection/tianxuan-history-migration-1553.json",
+      "sha256": "65345e3cb7950a1e39245b2ad00c173d71315f33f09bbcf85e339f62c24e1d80",
+      "matches_upstream": true
+    },
+    {
+      "path": "design-docs/tianxuan-unified-workflows-20261119.md",
+      "sha256": "e0b0427def9abab09d9287abbb9c9859da192b62b9a76f04741bdf3dfadc0b14",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-migration-20261119/kuafu-16865d9f80ccbdaf5c16ec3bd24989e73ad40403.json",
+      "sha256": "6febe73f9ef739713e4ae40111daf8e77abcd7af160f63abbc1c8d7cc94e7e29",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-migration-20261119/kuafu-2c726d7c2e6cbf285bee0bcca8b30300ba6ac6fc.json",
+      "sha256": "b0f2cd23c76ab3f6dd08543b0ca0356eb3d9709997d2a7d76134c2c15bf0f2dc",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-migration-20261119/kuafu-e5547e5401ccc9143299168ff3e7d7391b3b802f.json",
+      "sha256": "3ab511842c13ad58d0cb9f3b6a1622c039caa9b5bffcd50b29cbd07968f3058d",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-migration-20261119/migration-1553-request.json",
+      "sha256": "1ecb8c2f9dd2d2368af196f34048cd772a9540088f5cf9f70112f10873293186",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-workflows-20261119/kuafu-7424a63f374125adc33bd429f7e2aee61f591ff7.json",
+      "sha256": "33e82e24981a66eaa9d2603cd5b5c068a2c699ca9cdcac7b8bea92e46eb59123",
+      "matches_upstream": true
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-workflows-20261119/request-work-management-1552.json",
+      "sha256": "5d020df340156a03926b6b372124e99e52fa40fd080c4935040e749bf9398f49",
+      "matches_upstream": true
+    }
+  ],
+  "unchanged_prior_task_index_paths": [
+    "apps/tianxuan/app/docs/page.tsx",
+    "apps/tianxuan/app/login/page.tsx",
+    "apps/tianxuan/components/CreateDoc.tsx",
+    "apps/tianxuan/components/DocEditor.tsx",
+    "apps/tianxuan/lib/api.ts",
+    "apps/tianxuan/lib/server-api.ts",
+    "customizations/components/tianxuan/server/access_control.py",
+    "customizations/components/tianxuan/server/schemas.py",
+    "customizations/components/tianxuan/server/test_account_registration.py",
+    "customizations/components/tianxuan/server/test_ai_document_tools.py",
+    "data-collection/issue-events/b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948/envelope.json",
+    "data-collection/issue-events/b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948/receipt.json",
+    "data-collection/requests/wenqu-cloud-20261119/14435f31-012f-4dce-b7af-442671282517.json",
+    "data-collection/requests/wenqu-cloud-20261119/17a32443-f88f-46e8-983f-d9b3d6bad602.json",
+    "data-collection/requests/wenqu-cloud-20261119/372d3f29-359f-48be-ada6-7ec72e6eaee8.json",
+    "data-collection/requests/wenqu-cloud-20261119/3fcf2fee-0ec3-476e-8fac-9be7c69262c4.json",
+    "data-collection/requests/wenqu-cloud-20261119/6450c0c5-147f-4fa1-92c7-cfad1222fab8.json",
+    "data-collection/wenqu-cloud-1548-editor-review.json",
+    "data-collection/wenqu-cloud-1548-integration-review.json",
+    "data-collection/wenqu-cloud-1548-integration-validation.json",
+    "data-collection/wenqu-cloud-1548-memory-review.json",
+    "data-collection/wenqu-cloud-1548-memory-validation.json",
+    "data-collection/wenqu-cloud-1548-review-static-fix.json",
+    "data-collection/wenqu-cloud-1548-review.json",
+    "data-collection/wenqu-cloud-1548-validation.json",
+    "design-docs/wenqu-cloud-20261119.md",
+    "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-40782a42fb5586eaca604a1e6b7464fd3d0ccb1f2f8a4e33317a9da967daf9c7.json",
+    "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-641ba49089de31ee78a5522edec8259e69fa47725cf2802f3d7631845509ebc7.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/github-b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-5da524240bf18aa05b5294b700ac6d25dfadf60c.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-6811d7e1a9cbf19f90752272cfd6f0447388086a.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-727aaceeb7e4f991c4a17bb84fb3df2cce9c35f7.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-897f8c7637b428f2d0a46b4cbf6838a5e0007da7.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-dfe5f9de2e69d52490b5f2aadf554b124731eb16.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-fc980f0472166c6b5c795e6987ba337dae5fc37f.json",
+    "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/wenqu-cloud-1548-request.json"
+  ],
+  "overlap_review": [
+    "api.py adds work router with existing _require_actor dependency after app.state configuration; production middleware remains in force.",
+    "Core adds issue_work_events and work-prefixed authorization/dispatch branches; document patch field checks, ACL and replay logic coexist unchanged.",
+    "AST inspection confirms DOCX/PDF imports remain nested in export branches."
+  ],
+  "validation": [
+    {
+      "command": "python -m pytest customizations/components/tianxuan/server/test_account_registration.py customizations/components/tianxuan/server/test_access_control.py customizations/components/tianxuan/server/test_ai_document_tools.py customizations/components/tianxuan/server/test_tool_receipts.py -q",
+      "runtime": ".venv-wenqu/Scripts/python.exe",
+      "result": "80 passed, 1 warning in 19.94s",
+      "exit_code": 0
+    },
+    {
+      "method": "Independent inline TestClient probe with accounts mode",
+      "result": "Work roadmap/read: anonymous401, new public tenant403, admitted tenant200. Public tenant doc list200 and generic work.read rejected.",
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "Root owns separate work/export regression; not duplicated by reviewer.",
+    "Formal signed candidate CI pending; prior Docker success is historical only.",
+    "Integration review excludes exhaustive migration feature acceptance.",
+    "Preservation checks target index; root is separately updating design and validation evidence before signing."
+  ],
+  "conclusion": "No actionable findings in reviewed integration; account-mode tenant restrictions and document permission/idempotency regressions hold."
+}

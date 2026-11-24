@@ -1,0 +1,361 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g03",
+  "issue_number": 1849,
+  "observed_at": "2026-11-21T05:22:16.791647+00:00",
+  "source_baseline": "9fad766d58eab7b8ea49f35b07412aea8053286b",
+  "python": "3.14.3",
+  "git": "git version 2.53.0.windows.3",
+  "source_capture": {
+    "source": "https://github.com/sample/repo.git",
+    "head": "5f0105304646dcc890518e819a2e97fce1b322c6",
+    "refs": {
+      "refs/heads/main": "5f0105304646dcc890518e819a2e97fce1b322c6",
+      "refs/heads/topic": "c3edc8f4c9db777121a2e8077e9e0bc92192cf15"
+    },
+    "commit_count": 5,
+    "bundle": "history.bundle",
+    "bundle_sha256": "865898b16897b2b59adfbf242bbbff0011d923c8dbc18c30b41966bee43d09da",
+    "bytes": 927,
+    "lfs_objects": [],
+    "submodule_repositories": "not verified"
+  },
+  "runs": [
+    {
+      "receipt": {
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "counts": {
+          "commit": 5
+        },
+        "binary_count": 2,
+        "publication": {
+          "source": "sample/repo",
+          "source_revision": "5f0105304646dcc890518e819a2e97fce1b322c6",
+          "records_sha256": "75ce873ba1aa5ce7dab49aa17995959c7b99a7b3bcca5450762f5e76ffc67b2c",
+          "counts": {
+            "commit": 5
+          },
+          "binary_count": 2,
+          "catalog_sha256": "cb6eb2eb2ea3248ef82f516b0f0337c7edc28f39e541821993a30fba118781d6",
+          "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+          "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+          "historical_policy": "record_only",
+          "tenant": "owners",
+          "project": "isolated",
+          "published_by": "operator",
+          "published_at": "2026-11-21T05:22:17.388654+00:00",
+          "imported_at": "2026-11-21T05:22:17.375616+00:00"
+        }
+      },
+      "row_counts": {
+        "native_blobs": 8,
+        "native_heads": 4,
+        "native_revisions": 4,
+        "native_receipts": 4,
+        "migration_publications": 1
+      }
+    },
+    {
+      "receipt": {
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "counts": {
+          "commit": 5
+        },
+        "binary_count": 2,
+        "publication": {
+          "source": "sample/repo",
+          "source_revision": "5f0105304646dcc890518e819a2e97fce1b322c6",
+          "records_sha256": "75ce873ba1aa5ce7dab49aa17995959c7b99a7b3bcca5450762f5e76ffc67b2c",
+          "counts": {
+            "commit": 5
+          },
+          "binary_count": 2,
+          "catalog_sha256": "cb6eb2eb2ea3248ef82f516b0f0337c7edc28f39e541821993a30fba118781d6",
+          "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+          "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+          "historical_policy": "record_only",
+          "tenant": "owners",
+          "project": "isolated",
+          "published_by": "operator",
+          "published_at": "2026-11-21T05:22:17.388654+00:00",
+          "imported_at": "2026-11-21T05:22:17.375616+00:00"
+        }
+      },
+      "row_counts": {
+        "native_blobs": 8,
+        "native_heads": 4,
+        "native_revisions": 4,
+        "native_receipts": 4,
+        "migration_publications": 1
+      }
+    }
+  ],
+  "current_publication": {
+    "source": "sample/repo",
+    "source_revision": "5f0105304646dcc890518e819a2e97fce1b322c6",
+    "records_sha256": "75ce873ba1aa5ce7dab49aa17995959c7b99a7b3bcca5450762f5e76ffc67b2c",
+    "counts": {
+      "commit": 5
+    },
+    "binary_count": 2,
+    "catalog_sha256": "cb6eb2eb2ea3248ef82f516b0f0337c7edc28f39e541821993a30fba118781d6",
+    "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+    "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+    "historical_policy": "record_only",
+    "tenant": "owners",
+    "project": "isolated",
+    "published_by": "operator",
+    "published_at": "2026-11-21T05:22:17.388654+00:00",
+    "imported_at": "2026-11-21T05:22:17.375616+00:00"
+  },
+  "published_list_oids": [
+    "5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+    "5f0105304646dcc890518e819a2e97fce1b322c6",
+    "c3edc8f4c9db777121a2e8077e9e0bc92192cf15",
+    "d0af18c0cf551580a270470b60064079b203d07d",
+    "e166ebf083970fd979b984d36e57f3b713edba99"
+  ],
+  "source_and_receiving_records": [
+    {
+      "source_raw_headers": [
+        "tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+        "author Author <author@example.invalid> 1794960000 +0800",
+        "committer Committer <committer@example.invalid> 1794960060 +0800"
+      ],
+      "mapping": {
+        "source_id": "github:sample/repo/commit/5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+        "tenant": "owners",
+        "project": "isolated",
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "oid": "5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+        "tree": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+        "parents": [],
+        "author": {
+          "name": "Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T08:00:00+08:00"
+        },
+        "committer": {
+          "name": "Committer",
+          "email": "committer@example.invalid",
+          "time": "2026-11-18T08:01:00+08:00"
+        }
+      },
+      "inventory_record": {
+        "content": {
+          "oid": "5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+          "parents": []
+        },
+        "kind": "commit",
+        "mode": "record_only",
+        "relations": [],
+        "sha256": "8cca28a9c74e34b6644ce780a3188e5969697579586d2478a904aa1892722a04",
+        "source_id": "github:sample/repo/commit/5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+      }
+    },
+    {
+      "source_raw_headers": [
+        "tree 1615d4c0aa11ed41741cce517b0f48aabca3c391",
+        "parent d0af18c0cf551580a270470b60064079b203d07d",
+        "parent e166ebf083970fd979b984d36e57f3b713edba99",
+        "author Author <author@example.invalid> 1794960000 +0800",
+        "committer Committer <committer@example.invalid> 1794960060 +0800"
+      ],
+      "mapping": {
+        "source_id": "github:sample/repo/commit/5f0105304646dcc890518e819a2e97fce1b322c6",
+        "tenant": "owners",
+        "project": "isolated",
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "oid": "5f0105304646dcc890518e819a2e97fce1b322c6",
+        "tree": "1615d4c0aa11ed41741cce517b0f48aabca3c391",
+        "parents": [
+          "d0af18c0cf551580a270470b60064079b203d07d",
+          "e166ebf083970fd979b984d36e57f3b713edba99"
+        ],
+        "author": {
+          "name": "Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T08:00:00+08:00"
+        },
+        "committer": {
+          "name": "Committer",
+          "email": "committer@example.invalid",
+          "time": "2026-11-18T08:01:00+08:00"
+        }
+      },
+      "inventory_record": {
+        "content": {
+          "oid": "5f0105304646dcc890518e819a2e97fce1b322c6",
+          "parents": [
+            "d0af18c0cf551580a270470b60064079b203d07d",
+            "e166ebf083970fd979b984d36e57f3b713edba99"
+          ]
+        },
+        "kind": "commit",
+        "mode": "record_only",
+        "relations": [
+          "github:sample/repo/commit/d0af18c0cf551580a270470b60064079b203d07d",
+          "github:sample/repo/commit/e166ebf083970fd979b984d36e57f3b713edba99"
+        ],
+        "sha256": "78f04f0bff276b799252d6b8aead9b253604ed13969fefaec43b331d9ce98d2d",
+        "source_id": "github:sample/repo/commit/5f0105304646dcc890518e819a2e97fce1b322c6"
+      }
+    },
+    {
+      "source_raw_headers": [
+        "tree 9b1076d77cf45f1b85caec4d8b94a5066cd8ce16",
+        "parent e166ebf083970fd979b984d36e57f3b713edba99",
+        "author Author <author@example.invalid> 1794960000 +0800",
+        "committer Committer <committer@example.invalid> 1794960060 +0800"
+      ],
+      "mapping": {
+        "source_id": "github:sample/repo/commit/c3edc8f4c9db777121a2e8077e9e0bc92192cf15",
+        "tenant": "owners",
+        "project": "isolated",
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "oid": "c3edc8f4c9db777121a2e8077e9e0bc92192cf15",
+        "tree": "9b1076d77cf45f1b85caec4d8b94a5066cd8ce16",
+        "parents": [
+          "e166ebf083970fd979b984d36e57f3b713edba99"
+        ],
+        "author": {
+          "name": "Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T08:00:00+08:00"
+        },
+        "committer": {
+          "name": "Committer",
+          "email": "committer@example.invalid",
+          "time": "2026-11-18T08:01:00+08:00"
+        }
+      },
+      "inventory_record": {
+        "content": {
+          "oid": "c3edc8f4c9db777121a2e8077e9e0bc92192cf15",
+          "parents": [
+            "e166ebf083970fd979b984d36e57f3b713edba99"
+          ]
+        },
+        "kind": "commit",
+        "mode": "record_only",
+        "relations": [
+          "github:sample/repo/commit/e166ebf083970fd979b984d36e57f3b713edba99"
+        ],
+        "sha256": "280496a17bf0eb20f55dbd70ed7bd2db4a93a70aa5a8d46cfd35c1cd65aad8a4",
+        "source_id": "github:sample/repo/commit/c3edc8f4c9db777121a2e8077e9e0bc92192cf15"
+      }
+    },
+    {
+      "source_raw_headers": [
+        "tree 9821c57ad09c0e2d708b8b28525fd705573dc83e",
+        "parent 5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+        "author Author <author@example.invalid> 1794960000 +0800",
+        "committer Committer <committer@example.invalid> 1794960060 +0800"
+      ],
+      "mapping": {
+        "source_id": "github:sample/repo/commit/d0af18c0cf551580a270470b60064079b203d07d",
+        "tenant": "owners",
+        "project": "isolated",
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "oid": "d0af18c0cf551580a270470b60064079b203d07d",
+        "tree": "9821c57ad09c0e2d708b8b28525fd705573dc83e",
+        "parents": [
+          "5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+        ],
+        "author": {
+          "name": "Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T08:00:00+08:00"
+        },
+        "committer": {
+          "name": "Committer",
+          "email": "committer@example.invalid",
+          "time": "2026-11-18T08:01:00+08:00"
+        }
+      },
+      "inventory_record": {
+        "content": {
+          "oid": "d0af18c0cf551580a270470b60064079b203d07d",
+          "parents": [
+            "5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+          ]
+        },
+        "kind": "commit",
+        "mode": "record_only",
+        "relations": [
+          "github:sample/repo/commit/5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+        ],
+        "sha256": "8c18cb26c42997ad223fcfd665df4d668cbea5d5f2a095c56b0f533c0cb492f2",
+        "source_id": "github:sample/repo/commit/d0af18c0cf551580a270470b60064079b203d07d"
+      }
+    },
+    {
+      "source_raw_headers": [
+        "tree 9b1076d77cf45f1b85caec4d8b94a5066cd8ce16",
+        "parent 5eb4919ebc2a4c5616ce844b1991316d46e23eec",
+        "author Author <author@example.invalid> 1794960000 +0800",
+        "committer Committer <committer@example.invalid> 1794960060 +0800"
+      ],
+      "mapping": {
+        "source_id": "github:sample/repo/commit/e166ebf083970fd979b984d36e57f3b713edba99",
+        "tenant": "owners",
+        "project": "isolated",
+        "module": "migration-899dd1d6e938d10bd2fb26c637ea62e8af63c266a5d1e27910250baef6c7949c",
+        "revision": "a11bc39b4f6842ad2be9a0fea60752df129e00fa31f0c0df9b0ef12920dc3c85",
+        "oid": "e166ebf083970fd979b984d36e57f3b713edba99",
+        "tree": "9b1076d77cf45f1b85caec4d8b94a5066cd8ce16",
+        "parents": [
+          "5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+        ],
+        "author": {
+          "name": "Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T08:00:00+08:00"
+        },
+        "committer": {
+          "name": "Committer",
+          "email": "committer@example.invalid",
+          "time": "2026-11-18T08:01:00+08:00"
+        }
+      },
+      "inventory_record": {
+        "content": {
+          "oid": "e166ebf083970fd979b984d36e57f3b713edba99",
+          "parents": [
+            "5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+          ]
+        },
+        "kind": "commit",
+        "mode": "record_only",
+        "relations": [
+          "github:sample/repo/commit/5eb4919ebc2a4c5616ce844b1991316d46e23eec"
+        ],
+        "sha256": "f76d182177d5c052cbfc92c07c1b47e2408d0a32f3d4873c362f050f4a7d7a38",
+        "source_id": "github:sample/repo/commit/e166ebf083970fd979b984d36e57f3b713edba99"
+      }
+    }
+  ],
+  "test_runs": [
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/migration/test_import_git_history.py customizations/components/tianxuan/migration/test_archive.py customizations/components/tianxuan/migration/test_importer.py customizations/components/tianxuan/migration/test_history_git.py customizations/components/tianxuan/server/test_migration_history_api.py",
+      "observed": "13 passed, 1 warning, 14 subtests passed in 10.41s",
+      "warning": "StarletteDeprecationWarning in installed FastAPI TestClient for httpx"
+    }
+  ],
+  "input_git_blobs": {
+    "customizations/components/tianxuan/migration/import_git_history.py": "19b207c7f477847fde4bc228a9b0d57e3bbef884",
+    "customizations/components/tianxuan/migration/inventory.py": "a8a6022eb32f9102958a962190823cf618173539",
+    "customizations/components/tianxuan/migration/migration_archive.py": "09ce7c04d9e7cfdc3154e6d1489e8e46540f45ef",
+    "customizations/components/tianxuan/migration/test_import_git_history.py": "35b2177eb164845f341523d72c723dbb0f1114b7",
+    "customizations/components/tianxuan/migration/git_archive.py": "6bd8dbe179f7a62b8335003c861902a6b0d0d40f",
+    "customizations/components/tianxuan/migration/importer.py": "c953dea99dd1c8378c661c03413ec7e1fa51080f",
+    "customizations/components/tianxuan/migration/migration_status.py": "5433fa51b9ce6d9e30d19af62c62b840a1f0b751",
+    "customizations/components/tianxuan/migration/history_git.py": "0763f31727dd86cfb41b92e54b01991c6abd13a2",
+    "customizations/components/tianxuan/migration/history_records.py": "7aab7c0ceeb73124a89a9d55cf60c04f3fb54583"
+  }
+}

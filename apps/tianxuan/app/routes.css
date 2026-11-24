@@ -1,0 +1,151 @@
+.route-state,
+.sign-in-form,
+.account-card,
+.example-board,
+.settings-preferences {
+  padding: clamp(1rem, 2.6vw, 1.75rem);
+}
+
+.route-state {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+}
+
+.sign-in-page {
+  max-width: 32rem;
+  margin: clamp(1rem, 7vh, 5rem) auto;
+}
+
+.sign-in-form,
+.sign-in-form label,
+.account-fields label {
+  display: grid;
+  gap: .5rem;
+}
+
+.sign-in-form { gap: 1rem; }
+
+.sign-in-form input,
+.account-card :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: .55rem .8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: .65rem;
+  color: var(--paper);
+  background: var(--ink-3);
+}
+
+.sign-in-form [role="alert"],
+.account-page [role="alert"] { color: var(--error-text); }
+
+.account-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  align-items: end;
+  gap: 1rem;
+}
+
+.account-card { display: grid; gap: 1rem; min-width: 0; }
+.account-card h2, .settings-preferences h2 { font-size: 1.15rem; }
+.account-table { width: 100%; overflow-x: auto; }
+.account-table table { border-collapse: collapse; width: 100%; }
+.account-table :is(td, th) {
+  text-align: start; padding: .7rem; border-bottom: 1px solid var(--line);
+}
+.account-table td { overflow-wrap: anywhere; }
+.account-card button { min-height: 2.5rem; }
+
+.settings-preferences > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-block: .65rem;
+}
+.settings-preferences > div + div { border-top: 1px solid var(--line); }
+.work-order-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: start;
+  gap: 1rem;
+  padding: 0 clamp(1rem, 2.6vw, 1.75rem) 1.5rem;
+}
+.example-board summary { cursor: pointer; font-weight: 600; }
+.example-board > p { color: var(--paper-72); margin: .75rem 0; }
+.search-page .route-results { min-width: 0; }
+.route-results .search-main > h2 { margin: 1.5rem 0 .7rem; font-size: 1rem; }
+
+/* Use paired system foregrounds and surfaces in both appearances. */
+.search-page .search-hero::after { content: none; }
+.search-page .search-hero { padding: 0; }
+.search-page .search-hero h1 {
+  margin-top: 0;
+  font: 680 clamp(2rem, 3.5vw, 3.25rem)/1.13 var(--font-sans);
+  letter-spacing: -.04em;
+}
+.search-page .global-search-form {
+  background: var(--ink-2);
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+.search-page .global-search-form:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.search-page .global-search-form input { color: var(--paper); font: inherit; }
+.search-page .global-search-form input::placeholder { color: var(--paper-56); }
+.search-page .search-lede, .search-page .search-result-excerpt {
+  color: var(--paper-72);
+  font-size: .9375rem;
+}
+.search-page :is(.global-search-icon, .search-result-arrow) { color: var(--accent); }
+.search-page :is(.search-quick-row, .search-quick-row a, .search-index-tag, .live-search-empty,
+  .search-result-kind, .search-result-meta, .search-result-tags .micro-tag, .search-summary-row p > span) {
+  color: var(--paper-56);
+  font-size: .8125rem;
+}
+.search-page .search-quick-row a { padding: .45rem .8rem; }
+.search-page .search-scope-tabs { background: var(--ink-3); }
+.search-page .search-scope-tabs a {
+  color: var(--paper-72);
+  font-size: .875rem;
+  height: 2.5rem;
+}
+.search-page .search-scope-tabs a.is-active { color: var(--accent); background: var(--ink-2); }
+.search-page .search-scope-tabs a:focus-visible,
+.search-results-list a:focus-visible { outline-offset: -3px; }
+.search-page :is(.search-summary-row p strong, .search-result-head strong) {
+  color: var(--paper);
+  font: 600 1rem/1.4 var(--font-sans);
+  white-space: normal;
+}
+.search-page .search-result { border-color: var(--line); }
+.search-page .search-result:hover { background: var(--ink-3); }
+.search-page .search-result mark {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.search-page .search-result-tags { flex-wrap: wrap; }
+.search-page .search-result-tags .micro-tag { height: auto; background: var(--ink-3); border-color: var(--line); }
+.issues-page .kanban-column { background: var(--ink-3); border-color: var(--line); }
+.issues-page .kanban-head,
+.issues-page .kanban-head h2,
+.issues-page .issue-card-title { color: var(--paper); font-size: .9375rem; }
+.issues-page .issue-card {
+  background: var(--ink-2);
+  border-color: var(--line);
+  box-shadow: none;
+}
+.issues-page .issue-card:focus-within { border-color: var(--accent); }
+.issues-page :is(.mono-key, .priority, .kind-tag, .column-hint, .column-count, .issue-card .micro-tag) {
+  color: var(--paper-72);
+  font-size: .8125rem;
+}
+.issues-page .issue-blocked { color: var(--error-text); border-color: currentColor; }
+.requirements-page .reading-item { grid-template-columns: minmax(0, 1fr) auto; }
+.settings-page .reading-item { grid-template-columns: max-content minmax(0, 1fr); }
+.repos-page .reading-item { grid-template-columns: max-content minmax(0, 1fr) auto; }

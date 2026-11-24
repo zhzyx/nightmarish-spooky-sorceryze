@@ -1,0 +1,25 @@
+{
+  "issue_number": 1548,
+  "request_id": "wenqu-cloud-20261119",
+  "prior_candidate": "2feaa971e018db17f57fea18ab2255925ba7cc43",
+  "upstream_main": "0fe6462b4cf18f34807164ee06b56ea198081e1e",
+  "intersections": [
+    "customizations/components/tianxuan/server/api.py",
+    "customizations/components/tianxuan/server/tianxuan_core.py"
+  ],
+  "merge": "clean text merge; independently review shared auth/domain behavior before signing",
+  "validation": {
+    "command": "python -m pytest customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_api_export.py -q",
+    "passed": 16,
+    "warnings": 1,
+    "seconds": 5.01
+  },
+  "prior_docker": {
+    "run": "44491409832",
+    "passed": 87,
+    "deselected": 2,
+    "state": "SUCCESS",
+    "scope": "Prior candidate only; not acceptance for new merged candidate"
+  },
+  "remaining": "New exact signed candidate CI, main readback and production acceptance"
+}

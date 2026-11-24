@@ -98,6 +98,38 @@ def reconcile_factory():
     return registry, {"local-copy": Unknown()}
 
 
+def iteration_mesh_factory():
+    """Synthetic reviewed Mesh rounds for the real Executor/preview transport."""
+    from editor_demo import Demo, factory
+
+    registry, _ = factory()
+
+    class Iterations(Demo):
+        def submit(self, request, manifest, idempotency_key):
+            source = manifest["artifacts"][0]
+            iterations = []
+            for number, passed in ((1, False), (2, True)):
+                artifact = copy.deepcopy(source)
+                artifact["id"] = f"mesh-round-{number:03d}"
+                artifact["payload"]["provenance"] = {
+                    "iteration_of": "mesh-final",
+                    "generation_iteration": number,
+                    "generation_iteration_count": 2,
+                    "visual_review_passed": passed,
+                    "task_id": f"synthetic-round-{number}",
+                }
+                iterations.append(artifact)
+            final = copy.deepcopy(source)
+            final["id"] = "mesh-final"
+            final["payload"]["provenance"] = {"task_id": "synthetic-final"}
+            self.manifest = dict(schema_version=1, artifacts=iterations + [final])
+            reference = {key: final[key] for key in ("id", "revision")}
+            self.job = dict(job_id=idempotency_key, state="succeeded", outputs={"result": reference}, error=None)
+            return self.job
+
+    return registry, {"local-copy": Iterations()}
+
+
 def integer_transport_factory():
     """Production node schemas, without constructing or calling a model backend."""
     from comfy_provider import KINDS
@@ -150,6 +182,44 @@ class BridgeTests(unittest.TestCase):
             root_run = dispatch(args, {"model": graph, "target": "first"})["run_id"]
             args.command = "status"
             self.assertEqual(set(dispatch(args, {"run": root_run})["nodes"]), {"first"})
+
+    def test_cached_upstream_output_is_a_direct_immutable_input(self):
+        import base64
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.png").read_bytes()
+            reference = {"id": "cached-upstream", "revision": hashlib.sha256(data).hexdigest()}
+            asset = {
+                **reference,
+                "type": "image",
+                "payload": {
+                    "content_base64": base64.b64encode(data).decode(),
+                    "content_sha256": reference["revision"],
+                    "extension": ".png",
+                    "provenance": {},
+                },
+            }
+            graph = model(root / "missing-source.png")
+            graph["nodes"] = [dict(graph["nodes"][0], id="target", source="", source_paths=[], ignore_cache=True)]
+            graph["edges"] = [
+                {
+                    "from": "upstream",
+                    "to": "target",
+                    "cached_input": {"reference": reference, "artifacts": [asset]},
+                }
+            ]
+            args = argparse.Namespace(db=str(root / "db"), factory="editor_demo:factory", command="create")
+            run = dispatch(args, {"model": graph, "target": "target"})["run_id"]
+            args.command = "step"
+            state = dispatch(args, {"run": run})
+            self.assertEqual(state["state"], "succeeded")
+            self.assertEqual(set(state["nodes"]), {"target"})
+            self.assertEqual(state["nodes"]["target"]["job"]["outputs"]["result"], reference)
+            args.command = "preview"
+            preview = dispatch(args, {"run": run, "node": "target"})
+            self.assertEqual(Path(preview["path"]).read_bytes(), data)
 
     def test_target_invalid_identity_missing_dependency_and_cycle_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -284,6 +354,55 @@ class BridgeTests(unittest.TestCase):
             self.assertIs(type(params["denoise"]), float)
             self.assertIs(type(request["model"]["nodes"][0]["parameters"]["seed"]), float)
 
+    def test_human_shape_height_cm_run_records_and_legacy_migration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            base = dict(
+                head_ratio=7.5,
+                arm_length_scale=1.0,
+                leg_length_scale=1.0,
+                build=0.0,
+            )
+            nodes = [
+                dict(
+                    id=node_id,
+                    type="human_shape_adjust",
+                    provider="comfy",
+                    source=str(root / "sample.glb"),
+                    image_context="",
+                    text="",
+                    parameters=dict(base, height_cm=height_cm),
+                )
+                for node_id, height_cm in (("short", 170.0), ("tall", 190.0))
+            ]
+            args = argparse.Namespace(
+                db=str(root / "db"), factory="test_editor_host:integer_transport_factory", command="create"
+            )
+            run = dispatch(args, {"model": {"nodes": nodes, "edges": []}})["run_id"]
+            status_args = argparse.Namespace(db=args.db, command="status")
+            recorded = dispatch(status_args, {"run": run})["nodes"]
+            for node_id, expected in (("short", 170), ("tall", 190)):
+                parameters = recorded[node_id]["request"]["parameters"]
+                self.assertEqual(parameters["height_cm"], expected)
+                self.assertIs(type(parameters["height_cm"]), int)
+                self.assertNotIn("height_m", parameters)
+
+            legacy = dict(nodes[0], id="legacy", parameters=dict(base, height_m=1.9))
+            legacy_args = argparse.Namespace(
+                db=str(root / "legacy-db"), factory="test_editor_host:integer_transport_factory", command="create"
+            )
+            legacy_run = dispatch(legacy_args, {"model": {"nodes": [legacy], "edges": []}})["run_id"]
+            legacy_status_args = argparse.Namespace(db=legacy_args.db, command="status")
+            parameters = dispatch(legacy_status_args, {"run": legacy_run})["nodes"]["legacy"]["request"]["parameters"]
+            self.assertEqual(parameters["height_cm"], 190)
+            self.assertIs(type(parameters["height_cm"]), int)
+            self.assertNotIn("height_m", parameters)
+
+            invalid = dict(nodes[0], id="invalid", parameters=dict(base, height_m=1.805))
+            with self.assertRaisesRegex(ValueError, "editor integer"):
+                dispatch(args, {"model": {"nodes": [invalid], "edges": []}})
+
     def test_editor_integer_rejects_fraction_bool_nonfinite_and_unsafe(self):
         with tempfile.TemporaryDirectory() as tmp:
             args = argparse.Namespace(
@@ -382,6 +501,132 @@ class BridgeTests(unittest.TestCase):
             args.command = "cancel"
             self.assertEqual(dispatch(args, {"run": failed})["state"], "cancelled")
             self.assertEqual(source.read_bytes(), before)
+
+    def test_preview_materializes_every_mesh_iteration_and_accepts_round_selection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.glb").read_bytes()
+            args = argparse.Namespace(
+                db=str(root / "db"), factory="test_editor_host:iteration_mesh_factory", command="create"
+            )
+            run = dispatch(args, {"model": model(root / "sample.glb"), "target": "first"})["run_id"]
+            args.command = "step"
+            self.assertEqual(dispatch(args, {"run": run})["state"], "succeeded")
+            args.command = "preview"
+            preview = dispatch(args, {"run": run, "node": "first"})
+            self.assertEqual(preview["artifact"]["id"], "mesh-final")
+            self.assertEqual([item["attempt"] for item in preview["iterations"]], [1, 2])
+            self.assertEqual([item["review_passed"] for item in preview["iterations"]], [False, True])
+            self.assertTrue(all(Path(item["path"]).read_bytes() == data for item in preview["iterations"]))
+            selected = dispatch(args, {"run": run, "node": "first", "artifact": preview["iterations"][0]["artifact"]})
+            self.assertEqual(selected["artifact"]["id"], "mesh-round-001")
+            self.assertEqual(selected["token"], preview["iterations"][0]["token"])
+
+    def test_selected_mesh_iteration_is_immutable_input_without_regenerating_upstream(self):
+        import base64
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.glb").read_bytes()
+            revision = hashlib.sha256(data).hexdigest()
+            reference = {"id": "generated-round-001", "revision": revision}
+            snapshot = {
+                "content_base64": base64.b64encode(data).decode(),
+                "content_sha256": revision,
+                "extension": ".glb",
+                "provenance": {"task_id": "round-one-task"},
+            }
+            workflow = {
+                "format": 1,
+                "nodes": [
+                    dict(id="generator", type="text_to_mesh", provider="unused", parameters={"prompt": "regenerate"}),
+                    dict(id="consumer", type="copy", provider="local-copy", source="", parameters={"delay": 0}),
+                ],
+                "edges": [
+                    {
+                        "from": "generator",
+                        "to": "consumer",
+                        "input": "source",
+                        "output": "result",
+                        "artifact": reference,
+                        "artifact_snapshot": snapshot,
+                    }
+                ],
+            }
+            args = argparse.Namespace(db=str(root / "db"), factory="editor_demo:factory", command="create")
+            run = dispatch(args, {"model": workflow, "target": "consumer"})["run_id"]
+            args.command = "status"
+            self.assertEqual(set(dispatch(args, {"run": run})["nodes"]), {"consumer"})
+            args.command = "step"
+            state = dispatch(args, {"run": run})
+            self.assertEqual(state["state"], "succeeded")
+            self.assertEqual(state["nodes"]["consumer"]["job"]["outputs"]["result"], reference)
+            self.assertEqual(
+                state["nodes"]["consumer"]["result"]["artifacts"][0]["payload"]["provenance"], snapshot["provenance"]
+            )
+            args.command = "preview"
+            preview = dispatch(args, {"run": run, "node": "consumer"})
+            self.assertEqual(Path(preview["path"]).read_bytes(), data)
+
+    def test_cached_mesh_snapshot_hydrates_original_immutable_record(self):
+        import base64
+        import sqlite3
+
+        from extensions import canonical
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.glb").read_bytes()
+            revision = hashlib.sha256(data).hexdigest()
+            snapshot = {
+                "content_base64": base64.b64encode(data).decode(),
+                "content_sha256": revision,
+                "extension": ".glb",
+                "provenance": {"task_id": "round-one-task"},
+            }
+            reference = {"id": "generated-round-001", "revision": revision}
+            source_reference = {"id": "generator-source", "revision": revision}
+            original_source = dict(source_reference, type="mesh", payload=copy.deepcopy(snapshot))
+            original = dict(
+                reference,
+                type="mesh",
+                payload=dict(snapshot, provenance={"task_id": "round-one-task", "visual_review_passed": False}),
+                dependencies=[source_reference],
+            )
+            database = root / "db"
+            with sqlite3.connect(database) as db:
+                db.execute("CREATE TABLE assets(id TEXT, revision TEXT, body TEXT NOT NULL, PRIMARY KEY(id,revision))")
+                for asset in (original_source, original):
+                    db.execute("INSERT INTO assets VALUES(?,?,?)", (asset["id"], asset["revision"], canonical(asset)))
+            workflow = {
+                "format": 1,
+                "nodes": [
+                    dict(id="generator", type="text_to_mesh", provider="unused", parameters={"prompt": "regenerate"}),
+                    dict(id="consumer", type="copy", provider="local-copy", source="", parameters={"delay": 0}),
+                ],
+                "edges": [
+                    {
+                        "from": "generator",
+                        "to": "consumer",
+                        "input": "source",
+                        "output": "result",
+                        "artifact": reference,
+                        "artifact_snapshot": snapshot,
+                    }
+                ],
+            }
+            args = argparse.Namespace(db=str(database), factory="editor_demo:factory", command="create")
+            run = dispatch(args, {"model": workflow, "target": "consumer"})["run_id"]
+            args.command = "step"
+            state = dispatch(args, {"run": run})
+            self.assertEqual(state["state"], "succeeded")
+            artifacts = {asset["id"]: asset for asset in state["manifest"]["artifacts"]}
+            self.assertEqual(set(artifacts), {reference["id"], source_reference["id"]})
+            self.assertEqual(artifacts[reference["id"]], original)
+            self.assertEqual(state["nodes"]["consumer"]["job"]["outputs"]["result"], reference)
 
     def test_config_and_external_gltf_rejected(self):
         with self.assertRaises(ValueError):

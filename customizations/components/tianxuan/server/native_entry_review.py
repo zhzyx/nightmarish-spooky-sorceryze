@@ -12,7 +12,8 @@ from native_store import _digest, _json
 
 
 class IndependentReview:
-    def __init__(self, domain, native, installation, authorize):
+    def __init__(self, domain, native, installation, authorize, observe=None):
+        self.observe = observe
         self.domain, self.native = domain, native
         self.installation, self.authorize = installation, authorize
         with domain._connection_lock, domain.db:
@@ -80,7 +81,7 @@ class IndependentReview:
             if old:
                 require(old[0] == encoded, "Review binding changed")
                 require(
-                    old[1] is not None or spec.get("mode") == "production",
+                    old[1] is not None or spec.get("mode") in {"production", "local-signed-validation"},
                     "Review outcome unknown; no automatic replay",
                 )
                 receipt = json.loads(old[1]) if old[1] else None
@@ -89,7 +90,7 @@ class IndependentReview:
                 self.domain.db.execute("INSERT INTO native_entry_reviews VALUES (?,?,NULL)", (key, encoded))
                 receipt = None
         if receipt is None:
-            runtime = InstalledPlannerRuntime(self.installation, authority, role="reviewer")
+            runtime = InstalledPlannerRuntime(self.installation, authority, role="reviewer", observe=self.observe)
             receipt = runtime.run(request, recover=old is not None)
             self.validate(receipt, request)
             with self.domain._connection_lock, self.domain.db:

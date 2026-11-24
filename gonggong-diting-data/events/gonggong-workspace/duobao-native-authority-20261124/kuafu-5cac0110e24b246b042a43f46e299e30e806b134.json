@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5cac0110e24b246b042a43f46e299e30e806b134",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bedeba2bd08ff4a5ee42e6c68d58c36a98b3bbe45ae9619846ff8c75355544da",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2181",
+    "action": "dispatch",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "206ba46e7105585e7b042cd68dbf2d3b85f4a39813a32cf28f355aaad90810e2",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "collaboration:list_agents:completed:20261124",
+    "diagnosis": "宿主传入worker.completed但协议仅接受execution.finished/execution.failed；更正为真实execution.finished并经原生状态核对后reconcile成功。",
+    "next_action": "已恢复。继续独立审查与双线迁移验收；无生产代码修改。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T22:35:28.809988+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T22:38:04.285901+00:00",
+  "sha256": "469622d96def35956de3eef7c080a18ca01f6a576997d1f37919a1f71723b6f7"
+}

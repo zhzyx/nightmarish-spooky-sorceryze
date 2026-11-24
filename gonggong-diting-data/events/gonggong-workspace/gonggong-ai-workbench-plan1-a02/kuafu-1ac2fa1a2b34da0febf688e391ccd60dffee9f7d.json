@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1ac2fa1a2b34da0febf688e391ccd60dffee9f7d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-a02",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "987edcf310c97934d29671bd477a5ab569348da77684ab86f9369ed8c246e46c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2018",
+    "action": "validation",
+    "detection_head": "33be78ebde5ef46aa92ae279511be76f98ddb3a2",
+    "context_sha256": "e56a900548ebf73b990602075277dca91742e1269cb02abde9d64e9875543153",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1847",
+    "evidence": "The isolated editor 25e7092f5fc912333223f806e12dc9398786b2379709868d81c6505d35cdcf6b failed to select the first visible checkbox with the original GDScript b69a1fbf617bfe592d66d42e1710483d935b5245. The corrected input probe 05e7845a49aee5f4d62a764c6d1ac2f981be8dfe selected both rows in the same binary, confirmed only the first, then reopened the persistent records and revoked the first. The other stayed pending throughout.",
+    "diagnosis": "The acceptance probe sent root-window pointer events in embedded-dialog coordinates. The corrected probe converts each actual control center to the root screen coordinates and notifies mouse entry before dispatch. The original probe still fails on the same verified binary.",
+    "next_action": "Revalidate native confirmation and its subsequent local process on the combined candidate and verify the exact main merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T03:12:11.494076+00:00",
+    "attempted": null,
+    "repair_owner": "A02 native worker /root/sinan_47034d18721e62b1",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T03:16:37.880917+00:00",
+  "sha256": "2b8f1422aebeab0d39326a8a56fddb764f990581f7e68c6ae4cdb354650a549f"
+}

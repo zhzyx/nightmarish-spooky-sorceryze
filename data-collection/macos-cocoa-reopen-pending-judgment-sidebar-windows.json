@@ -1,0 +1,914 @@
+{
+  "request_id": "macos-cocoa-reopen-pending-judgment-sidebar",
+  "issue_number": 2125,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2125",
+  "worker": "resume1709_macsidebar",
+  "observed_at": "2026-11-22T18:39:06.030501+00:00",
+  "base_commit": "91a78e9b17738cf187538e012f75f5e8302f085d",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "scons": "4.11.1",
+  "runtime": "Windows x86_64 MSVC 14.5, Windows SDK 10.0.26100.0, headless, isolated GUI editor tree",
+  "candidate_files_sha256": {
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "33ae54ee11d40a89e2b3d3d85fe946fbfcfb3ad18b5ac12498a0c2ee80368774",
+    "tests/editor/workbench_startup_judgments.gd": "239c2b8c7d1ceea6088ea8fe54458d331b0b9fbfed73258ea9a0de1933866185",
+    "tests/editor/run_workbench_startup_judgments.py": "8f0d175237d08e22d19939e441ec2be250e6c19a840fc2f9bb55b12c90772649",
+    "tests/editor/run_workbench_project_reopen.py": "3f6b40c9c6e469bb4d4bea4e2510acfff0429622dd07a6d13ec791a8d3912eb5"
+  },
+  "candidate_editor_sha256": "66e24c19b5013f58a339665f2c7d0f434581b7bf7cdaa3694c9a9b18c56b2158",
+  "frozen_control": {
+    "editor_sha256": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+    "normal_schedule_passed": true,
+    "judgments_before_layout_exit": 1,
+    "diagnostics": [
+      "Sidebar visible=false, rows=1, scroll=[P: (4.0, 39.0), S: (364.0, 830.0)], focus=ChatInput:<TextEdit#618542435588>",
+      "First row b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c at [P: (4.0, 77.0), S: (350.0, 44.0)], focused=false",
+      "Worker started=true, queue marker=false, recovery finished=false, editor=[P: (0.0, 0.0), S: (1440.0, 960.0)]"
+    ],
+    "log_sha256": "bbb2602122fd1a4ce81ab9f3967c913e5be9ba49697cfedcaa895f30ea7a8df6",
+    "scope": "Windows reproduced a hidden dock after restoring the saved layout. The final focus was ChatInput in this controlled reproduction."
+  },
+  "cold_reopen": {
+    "normal": {
+      "passed": true,
+      "editor_sha256": "66e24c19b5013f58a339665f2c7d0f434581b7bf7cdaa3694c9a9b18c56b2158",
+      "layout_source": "normal AI Chat window close",
+      "reopen_navigation": "none",
+      "editors": {
+        "owner": {
+          "pid": 94992,
+          "exit": 0,
+          "result": {
+            "bound_before_layout": false,
+            "display_driver": "headless",
+            "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+            "elapsed_ms": 4710,
+            "focus": "/root/@EditorNode@21765/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10351/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23228",
+            "pid": 94992,
+            "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+            "row": "#2 Animate · sketch.svg\nvisible",
+            "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+            "row_visible": true,
+            "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+            "selected": "3D",
+            "sidebar_visible": true,
+            "still_focused_after_recovery": true,
+            "visible_focused_with_worker_ms": 4261,
+            "worker_started_while_focused": true
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 23808,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3603,
+              "pid": 23808,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        },
+        "peer": {
+          "pid": 25088,
+          "exit": 0,
+          "result": {
+            "display_driver": "headless",
+            "elapsed_ms": 3983,
+            "pid": 25088,
+            "rows": 0,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 93280,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3625,
+              "pid": 93280,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        }
+      },
+      "still_pending": {
+        "issue_id": "iss_4ba7299fba9d4a08a72e137fc9faa9b3",
+        "number": 2,
+        "title": "Animate",
+        "question": "visible",
+        "submission_version": 1,
+        "module": "b",
+        "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+        "path": "sketch.svg",
+        "kind": "concept"
+      },
+      "before": {
+        "task": "44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79",
+        "issue": "iss_5c0e4616838c4f3fbd984ab581df7efb",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_a36b51ec36d84fb68f483177e847393e",
+          "mandate": "installed-test-plan",
+          "source_revision": "b4e9ab22a676b0ffa71194ffd9eaf1c99111274e88ac18e766ff2d3de5f49c60",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a36b51ec36d84fb68f483177e847393e",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_db55207db9ef4fa1a1dae239834295c2",
+            "issue_id": "iss_5c0e4616838c4f3fbd984ab581df7efb",
+            "issue_revision": "1e140cd7e07e56fc05bf7573ec2da5278ba58205513bc754c57a95ab0e8791c9",
+            "responsible_user": "usr_a36b51ec36d84fb68f483177e847393e",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "ready",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "after": {
+        "task": "44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79",
+        "issue": "iss_5c0e4616838c4f3fbd984ab581df7efb",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_a36b51ec36d84fb68f483177e847393e",
+          "mandate": "installed-test-plan",
+          "source_revision": "b4e9ab22a676b0ffa71194ffd9eaf1c99111274e88ac18e766ff2d3de5f49c60",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a36b51ec36d84fb68f483177e847393e",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_db55207db9ef4fa1a1dae239834295c2",
+            "issue_id": "iss_5c0e4616838c4f3fbd984ab581df7efb",
+            "issue_revision": "1e140cd7e07e56fc05bf7573ec2da5278ba58205513bc754c57a95ab0e8791c9",
+            "responsible_user": "usr_a36b51ec36d84fb68f483177e847393e",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a36b51ec36d84fb68f483177e847393e",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_db55207db9ef4fa1a1dae239834295c2",
+            "issue_id": "iss_5c0e4616838c4f3fbd984ab581df7efb",
+            "issue_revision": "1e140cd7e07e56fc05bf7573ec2da5278ba58205513bc754c57a95ab0e8791c9",
+            "responsible_user": "usr_a36b51ec36d84fb68f483177e847393e",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "e389d54331681f1d26f35061c42a8a25fa88789a5ff2cd60da58fca431ae8518",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "44ba2700ad530bb5da046ad603a1cf2eb8a3195fa0135989023ea5f210177e79"
+        }
+      },
+      "processes": {
+        "workers": [
+          33100
+        ],
+        "checkers": [
+          79244
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "ordered": {
+      "passed": true,
+      "editor_sha256": "66e24c19b5013f58a339665f2c7d0f434581b7bf7cdaa3694c9a9b18c56b2158",
+      "layout_source": "normal AI Chat window close",
+      "reopen_navigation": "none",
+      "editors": {
+        "owner": {
+          "pid": 68644,
+          "exit": 0,
+          "result": {
+            "bound_before_layout": true,
+            "display_driver": "headless",
+            "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+            "elapsed_ms": 4758,
+            "focus": "/root/@EditorNode@21765/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10351/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23228",
+            "pid": 68644,
+            "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+            "row": "#2 Animate · sketch.svg\nvisible",
+            "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+            "row_visible": true,
+            "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+            "selected": "3D",
+            "sidebar_visible": true,
+            "still_focused_after_recovery": true,
+            "visible_focused_with_worker_ms": 4272,
+            "worker_started_while_focused": true
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 48900,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3592,
+              "pid": 48900,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        },
+        "peer": {
+          "pid": 87088,
+          "exit": 0,
+          "result": {
+            "display_driver": "headless",
+            "elapsed_ms": 3987,
+            "pid": 87088,
+            "rows": 0,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 54096,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3569,
+              "pid": 54096,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        }
+      },
+      "still_pending": {
+        "issue_id": "iss_0dd6b0b9cc464cb5b8c439b858c3d70d",
+        "number": 2,
+        "title": "Animate",
+        "question": "visible",
+        "submission_version": 1,
+        "module": "b",
+        "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+        "path": "sketch.svg",
+        "kind": "concept"
+      },
+      "before": {
+        "task": "1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169",
+        "issue": "iss_8add31f5db0048b7a2a893a24084c7ea",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_9055147795444029b7df944428521b45",
+          "mandate": "installed-test-plan",
+          "source_revision": "6f7b667fa0a281e08e8b35601e1f2b20e1befd66ae928f4deca08fd91c73b4a5",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_9055147795444029b7df944428521b45",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_40bb1ca4b8c14f9ebc0c4497ecb10e25",
+            "issue_id": "iss_8add31f5db0048b7a2a893a24084c7ea",
+            "issue_revision": "bc4e1b1a304c92fc6c991b2f8e6b9e83f29b6287b08b44c7aeeab857ff396b7f",
+            "responsible_user": "usr_9055147795444029b7df944428521b45",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "ready",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "after": {
+        "task": "1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169",
+        "issue": "iss_8add31f5db0048b7a2a893a24084c7ea",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_9055147795444029b7df944428521b45",
+          "mandate": "installed-test-plan",
+          "source_revision": "6f7b667fa0a281e08e8b35601e1f2b20e1befd66ae928f4deca08fd91c73b4a5",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_9055147795444029b7df944428521b45",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_40bb1ca4b8c14f9ebc0c4497ecb10e25",
+            "issue_id": "iss_8add31f5db0048b7a2a893a24084c7ea",
+            "issue_revision": "bc4e1b1a304c92fc6c991b2f8e6b9e83f29b6287b08b44c7aeeab857ff396b7f",
+            "responsible_user": "usr_9055147795444029b7df944428521b45",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_9055147795444029b7df944428521b45",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_40bb1ca4b8c14f9ebc0c4497ecb10e25",
+            "issue_id": "iss_8add31f5db0048b7a2a893a24084c7ea",
+            "issue_revision": "bc4e1b1a304c92fc6c991b2f8e6b9e83f29b6287b08b44c7aeeab857ff396b7f",
+            "responsible_user": "usr_9055147795444029b7df944428521b45",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "8097133ffb49e8b4376834ba53c659426bce4594e38842b53883e7f4ddf46b3c",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "1018fce6a4894fcdff8a161ac2255a1357a2ea001969cefc209d6da1c75ca169"
+        }
+      },
+      "processes": {
+        "workers": [
+          95560
+        ],
+        "checkers": [
+          85908
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "supplied": {
+      "passed": true,
+      "editor_sha256": "66e24c19b5013f58a339665f2c7d0f434581b7bf7cdaa3694c9a9b18c56b2158",
+      "layout_source": "supplied",
+      "reopen_navigation": "none",
+      "editors": {
+        "owner": {
+          "pid": 128520,
+          "exit": 0,
+          "result": {
+            "bound_before_layout": true,
+            "display_driver": "headless",
+            "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+            "elapsed_ms": 4656,
+            "focus": "/root/@EditorNode@21765/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10351/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23228",
+            "pid": 128520,
+            "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+            "row": "#2 Animate · sketch.svg\nvisible",
+            "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+            "row_visible": true,
+            "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+            "selected": "3D",
+            "sidebar_visible": true,
+            "still_focused_after_recovery": true,
+            "visible_focused_with_worker_ms": 4250,
+            "worker_started_while_focused": true
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 86420,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3858,
+              "pid": 86420,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        },
+        "peer": {
+          "pid": 18216,
+          "exit": 0,
+          "result": {
+            "display_driver": "headless",
+            "elapsed_ms": 3957,
+            "pid": 18216,
+            "rows": 0,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ],
+          "initial_close": {
+            "pid": 71772,
+            "exit": 0,
+            "result": {
+              "display_driver": "headless",
+              "elapsed_ms": 3887,
+              "pid": 71772,
+              "selected": "AI Chat",
+              "sidebar_visible": false
+            }
+          },
+          "closed_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+          "reopened_layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea"
+        }
+      },
+      "still_pending": {
+        "issue_id": "iss_43ee8a689c854145bf768b5a0c0e96c8",
+        "number": 2,
+        "title": "Animate",
+        "question": "visible",
+        "submission_version": 1,
+        "module": "b",
+        "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+        "path": "sketch.svg",
+        "kind": "concept"
+      },
+      "before": {
+        "task": "30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb",
+        "issue": "iss_cc3944764e5c4291994fa47e89f78c11",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+          "mandate": "installed-test-plan",
+          "source_revision": "f2735cef11c58e9b43700e63be6dcd4f15e1ff694d475a413e287f604237e9ef",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_ef02e1499e004fa3ba977902c425d8b1",
+            "issue_id": "iss_cc3944764e5c4291994fa47e89f78c11",
+            "issue_revision": "b05d4fe1a7fe3eef78116d0f972da55aec4be2952f4e21af2e429dda0f80c5e9",
+            "responsible_user": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "ready",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "after": {
+        "task": "30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb",
+        "issue": "iss_cc3944764e5c4291994fa47e89f78c11",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+          "mandate": "installed-test-plan",
+          "source_revision": "f2735cef11c58e9b43700e63be6dcd4f15e1ff694d475a413e287f604237e9ef",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_ef02e1499e004fa3ba977902c425d8b1",
+            "issue_id": "iss_cc3944764e5c4291994fa47e89f78c11",
+            "issue_revision": "b05d4fe1a7fe3eef78116d0f972da55aec4be2952f4e21af2e429dda0f80c5e9",
+            "responsible_user": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_ef02e1499e004fa3ba977902c425d8b1",
+            "issue_id": "iss_cc3944764e5c4291994fa47e89f78c11",
+            "issue_revision": "b05d4fe1a7fe3eef78116d0f972da55aec4be2952f4e21af2e429dda0f80c5e9",
+            "responsible_user": "usr_a06f45e27ec54f22a8e28c748cf5d115",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "86a7c12cb92a6b605e24aeaa412306ec5bad70dbf6a06a17f7b9ed7b0d999574",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "30f0d14f49173f1ca6ea33b948423d5f51daacb9ead5fa059472a233b16d87eb"
+        }
+      },
+      "processes": {
+        "workers": [
+          91952
+        ],
+        "checkers": [
+          52356
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    }
+  },
+  "fresh_project_prior_R08": {
+    "observer_and_harness": "git show HEAD:tests/editor/{workbench_startup_judgments.gd,run_workbench_startup_judgments.py} at base_commit",
+    "passed": true,
+    "editors": {
+      "owner": {
+        "pid": 47560,
+        "exit": 0,
+        "result": {
+          "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+          "pid": 47560,
+          "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+          "row": "#2 Animate · sketch.svg\nvisible",
+          "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+          "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+          "still_focused_after_recovery": true,
+          "worker_started_while_focused": true
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      },
+      "peer": {
+        "pid": 122180,
+        "exit": 0,
+        "result": {
+          "pid": 122180,
+          "rows": 0,
+          "sidebar_visible": false
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      }
+    },
+    "processes": {
+      "workers": [
+        87336
+      ],
+      "checkers": [
+        81568
+      ]
+    }
+  },
+  "supplied_layout_scope": "The supplied-layout exercise replayed an actual normally closed isolated Windows AI Chat layout. The original macOS Q05 layout was unavailable on this host.",
+  "pending": "Cocoa arm64 native window with original Q05 fingerprint; later manual user navigation was outside the first-screen measurement."
+}

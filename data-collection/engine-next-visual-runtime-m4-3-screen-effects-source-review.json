@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T15:55:31.464092+00:00",
+  "candidate": "screen-effects-paged-integration-r5",
+  "native_key": "8f580f30dfc5a071026260c265a3e50fec7ab1078cd0e497bbc4ff0ca388cba5",
+  "source_commit": "97e93f60451b83f3421565debe801e42f51f312b",
+  "base_commit": "cb051bcc29801abae4c7e13cfd04ccc062a13083",
+  "status": "no_confirmed_findings_in_reviewed_scopes",
+  "implementer": "codex/root",
+  "reviewers": [
+    "codex/m4_ue_reference",
+    "codex/m42_cook_review"
+  ],
+  "source_files": [
+    {
+      "path": "design-docs/engine-next-visual-runtime-m4-3-postprocess-20261117.md",
+      "sha256": "9dc1771ae0973e397f774ce12d40b03c39e4401886c54fcea5ca05c60cff6723",
+      "size_bytes": 6091
+    },
+    {
+      "path": "engine_next/Rendering/ColorLut.cpp",
+      "sha256": "0df5a1f447720e7a943b622f6f8812e1c11edb85224a3fb612fd37fa098c03d5",
+      "size_bytes": 3738
+    },
+    {
+      "path": "engine_next/Rendering/PostProcessSettings.cpp",
+      "sha256": "89d4d9e398040d7907958fc6554c7d7362a32b04dbd6410605b2f09977a57e8c",
+      "size_bytes": 11076
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "sha256": "8023994504c44b44e854d2d6267c92e48f8e0e788d1aa23bafc0e055807ffa2f",
+      "size_bytes": 38340
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "63daccd5b1d31f249739b0aa77f8c3c1e8a22c2a27c3af5502566b0561eed640",
+      "size_bytes": 42540
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "134aa0a62f7461985e752006267ffbb0a01f803037d5977258fe202f10e48bac",
+      "size_bytes": 9557
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "4e54ef2adb06e5047094249c55e593b96c8507cbf955d9f10c76b153cfd972e1",
+      "size_bytes": 17611
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ScreenEffects.hlsli",
+      "sha256": "51469e150611c9a13fa0375e536a43c2a3e27d30e0473519d6ba99e26114b782",
+      "size_bytes": 1826
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "1a84963452091e3959a5918829e5c6a3dff7dbb31b02b31035ab7437dc41065a",
+      "size_bytes": 336790
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "sha256": "74e30a7742c77fd8de8a1de63ce69df90ca0b1d980d789aeccf503af42421900",
+      "size_bytes": 29465
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestColorLut.cpp",
+      "sha256": "e379a1f98eb9bcd23bd8428c2ab9250509fa8652c946b6da7f0a6e58a5173c68",
+      "size_bytes": 5988
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "sha256": "6a794841d4f4827350ed205f159c4d17819d670c4929aa721150d778d866776d",
+      "size_bytes": 69810
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "sha256": "05e9e0582af8d25e854edb40d768478514eaf10b32c42d442abae739273ba983",
+      "size_bytes": 61417
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "48e02b5185f144271b4cb597a2e22d36c8eb5bdf16cae042bd20daea68a9f2e8",
+      "size_bytes": 39807
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "f090cc428e38e03bb1310acf1fc87e2620feb5c893b6d8a6e439d8bb3b8cf0db",
+      "size_bytes": 8056
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ColorLut.h",
+      "sha256": "6c7dd9958d7cf9da1d0ebffdb5650236a05526332362fa80a988a3394b2b79a3",
+      "size_bytes": 3021
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/PostProcessSettings.h",
+      "sha256": "2e2071127d4f0ef3c95d549530d21ac078851f337297d89f0991af33323ae18a",
+      "size_bytes": 6330
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "sha256": "a692c0423018631f312527b66d333f7e114a10414c22cb4170de740e51d816dd",
+      "size_bytes": 8683
+    }
+  ],
+  "cpu_review": {
+    "path": "build/engine_next/screen-effects-final-evidence-r5/External/0dd310122061/Review.json",
+    "sha256": "0dd3101220613db6d222caffe99c00dad4f57d9ab505d184fa06ad1011ef121f",
+    "size_bytes": 1836
+  },
+  "gpu_resource_review": {
+    "path": "build/engine_next/screen-effects-final-evidence-r5/External/7ecfc0607b12/Review.json",
+    "sha256": "7ecfc0607b12398e374c66a612a843ec108f10cf891c47ab136deb790d2fbe0f",
+    "size_bytes": 2692
+  },
+  "current_integration_review": {
+    "path": "build/engine_next/ScreenPagesIntegrationReview.json",
+    "sha256": "d20c8a086d42c06fd15388c7e06af7d2c358634ed2770925dfe71a57dd87a257",
+    "size_bytes": 4229
+  },
+  "scope": "LUT validation and layout, display-linear grading, HDR sharpening, vignette, immutable 3D texture upload, root bindings, frame-graph reads and integration with paged geometry.",
+  "review_relationship": "The original independent CPU and GPU reviews retain their R3 identities. The separate current integration review binds the merged source file bytes, including the paged geometry call path and joint graph test."
+}

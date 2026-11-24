@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "supplements": "data-collection/modular-ci-selection-1668-editor-repair.json",
+  "full_regression_run": 44684968573,
+  "candidate": "4de954f1e45935e18ae5082813aa7f410d68229d",
+  "observed_successes": [
+    "explicit full selection and static checks",
+    "Module / ci",
+    "Module / editor",
+    "Module / maliang",
+    "gameplay / Gameplay standalone tests (windows-latest)",
+    "blender-geometry / Original Windows CLI and real Blender geometry",
+    "native-cache / Native cache boundaries (ubuntu-latest)",
+    "build-scope / Build scope routing (windows)",
+    "integration / Integration planner (windows-latest)"
+  ],
+  "observed_failures": {
+    "Module / gonggong": "Pytest collection of godot-host/daqian could not import board; preserve those tests with a separate unittest discovery command",
+    "Module / engine-core": "Existing editor C++ tests failed GCC range-loop-construct warnings as errors; use the repository-supported Clang build without disabling warnings or changing business code",
+    "maliang-offline / package-and-run": "The relocated Workbench settings report created the packaging work directory too early; move settings evidence to Maliang settings and preserve it in the artifact"
+  },
+  "local_recheck": {
+    "daqian": "6 tests passed with dedicated discovery",
+    "gonggong_main_suite": "383 tests and 326 subtests passed; 2 existing Git tree-integration tests failed on local Apple Git 2.39.5 and remain for current CI Git validation",
+    "gonggong_tool_entries": "24 runtime-config and verification tests passed; test_gonggong_standalone.py was identified as a candidate-argument acceptance program, not a unittest suite, and was not registered as one",
+    "engine_core": "Clang configuration selected; actual rebuild pending explicit full regression"
+  },
+  "real_ci": "first full run completed with exactly the three recorded failures; both Web templates, Tianxuan tests and all other selected module checks succeeded; repaired candidate pending"
+}

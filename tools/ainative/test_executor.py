@@ -169,6 +169,19 @@ class ExecutorTests(unittest.TestCase):
         self.finish(self.create())
         self.assertEqual(self.provider.submits, 1)
 
+    def test_forced_node_bypasses_and_refreshes_invocation_cache(self):
+        first = self.create()
+        original = self.finish(first)["outputs"]["first"]
+        forced_graph = copy.deepcopy(self.graph)
+        forced_graph[0]["ignore_cache"] = True
+        forced = self.executor.create(forced_graph, self.manifest)
+        replacement = self.finish(forced)["outputs"]["first"]
+        self.assertEqual(self.provider.submits, 2)
+        self.assertNotEqual(replacement["result"], original["result"])
+        cached = self.create()
+        self.assertEqual(self.finish(cached)["outputs"]["first"], replacement)
+        self.assertEqual(self.provider.submits, 2)
+
     def test_node_preview_is_immutable_and_cache_survives_target_run(self):
         second = copy.deepcopy(self.graph[0])
         second["id"] = "second"
@@ -218,6 +231,22 @@ class ExecutorTests(unittest.TestCase):
         self.provider.fail = False
         self.finish(run)
         self.assertEqual(self.provider.submits, 2)
+
+    def test_public_failure_summary_is_whitelisted_and_cleared_on_retry(self):
+        run = self.create()
+        self.provider.fail = True
+        self.provider.public_failure_message = lambda snapshot: (
+            "安全的中文失败原因" if snapshot.get("error") == "secret-error" else None
+        )
+        self.executor.step(run)
+        status = self.executor.step(run)
+        node = status["nodes"]["first"]
+        self.assertIsNone(node["error"])
+        self.assertEqual(node["job"]["error"], "provider_failed")
+        self.assertEqual(node["public_error"], "安全的中文失败原因")
+        self.assertNotIn("secret-error", json.dumps(status, ensure_ascii=False))
+        self.executor.retry(run, "first")
+        self.assertIsNone(self.executor.status(run)["nodes"]["first"]["public_error"])
 
     def test_dag_merge_and_cycle(self):
         second = copy.deepcopy(self.graph[0])
@@ -338,6 +367,42 @@ class ExecutorTests(unittest.TestCase):
         self.assertEqual(self.executor.step(run)["state"], "succeeded")
         self.assertEqual(len(calls), 2)
         self.assertEqual(self.provider.submits, 1)
+
+    def test_large_success_result_is_stored_once_and_restored(self):
+        data = b"x" * 240_000
+        payload = {
+            "content_base64": base64.b64encode(data).decode("ascii"),
+            "content_sha256": hashlib.sha256(data).hexdigest(),
+            "extension": ".png",
+        }
+
+        def result(job_id):
+            return {
+                "schema_version": 1,
+                "artifacts": [{"id": "out-" + job_id, "revision": "1", "type": "image", "payload": payload}],
+            }
+
+        self.provider.result_manifest = result
+        run = self.create()
+        # The cache row and each asset fit individually. Duplicating the same
+        # result in both the run manifest and node result exceeds this limit.
+        self.executor.db.setlimit(__import__("sqlite3").SQLITE_LIMIT_LENGTH, 500_000)
+        self.executor.step(run)
+        status = self.executor.step(run)
+        self.assertEqual(status["state"], "succeeded", status)
+        self.assertEqual(status["nodes"]["first"]["result"], result(status["nodes"]["first"]["job"]["job_id"]))
+        stored = json.loads(self.executor.db.execute("SELECT body FROM runs WHERE id=?", (run,)).fetchone()[0])
+        stored_result = stored["nodes"]["first"]["result"]
+        self.assertEqual(stored_result["storage"], "run_manifest")
+        self.assertNotIn("content_base64", json.dumps(stored_result))
+        self.executor.close()
+        self.executor = self.open()
+        restored = self.executor.status(run)
+        self.assertEqual(restored["nodes"]["first"]["result"], result(restored["nodes"]["first"]["job"]["job_id"]))
+        self.assertEqual(
+            self.executor.export(run)["outputs"]["first"]["result"]["id"],
+            restored["nodes"]["first"]["job"]["outputs"]["result"]["id"],
+        )
 
     def test_digest_metadata_can_be_published_and_cached(self):
         original = self.provider.result_manifest

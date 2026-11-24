@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f880fe852cfde017778ddf3ee2920b92d7ed8966",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ee32db11345635a09d6bb20b5ad5bc42e307ea3347328cb4f34e7c50b77c937",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "1f7244b05db215e075f47ebde2142dc596f40d9b",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "diagnosis": "The formal integration gate stopped at GitHub network readback before commit. No commit or publish was performed by that gate. A fresh read of issue2150 now succeeds and confirms the open in-progress scope. Preserve the failed gate and repeat only the same gate after staging this recovery record.",
+    "next_action": "Rerun the formal gate for the integrated d8a1c06c baseline, then commit and sign. Keep the successful 13 API and 125 source-controller checks; no source changed after those checks.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T19:50:56.690279+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T20:01:27.409095+00:00",
+  "sha256": "208d683ac8ef4456cce3056a1ca2818bb1c1a6ad173722204325831d0cbafa99"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-641ba49089de31ee78a5522edec8259e69fa47725cf2802f3d7631845509ebc7",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+  "occurred_at": "2026-11-19T08:32:45.007971+00:00",
+  "evidence_refs": [
+    "kuafu-6811d7e1a9cbf19f90752272cfd6f0447388086a"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "separate-install-output-from-dependency-change",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before attributing container failure to new dependencies, compare exact candidate manifests, resolved package versions, base image digests and test order. Preserve State.OOMKilled separately from exit137. Change one factor under unchanged budget for diagnostic comparison.",
+      "when": "CI Docker failures differ across nearby candidates and logs show package installation or exit137.",
+      "counterexample": "Equal manifests do not imply equal resolved packages or images; same packages do not imply same product code or test order; one passing run does not establish production capacity.",
+      "trial_plan": "On a future controlled failure, hold candidate and budget fixed, preserve Docker termination state, then vary a single suspected import or resource consumer. Compare exact dependency/image receipts and tests before accepting the causal claim."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/wenqu-cloud-1548-memory-validation.json",
+        "sha256": "2c9f17e32a8f7a64e547f3c650c896cac2fa92cbba148874f9388f34dc515fd3"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-6811d7e1a9cbf19f90752272cfd6f0447388086a.json",
+      "sha256": "fff4ae0a688cf95697390f7c522811630fd3c5a7e6d9305849b25d91bb9e0663"
+    }
+  },
+  "sha256": "96fc29e4431dbf63f54b7c58c0099480420d419cb058239f2825153fdb838fd0"
+}

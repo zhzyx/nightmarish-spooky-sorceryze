@@ -1,0 +1,18 @@
+{
+  "issue_number": 1629,
+  "request_id": "tianxuan-a4-workflow",
+  "baseline": "7358ee22fa3df88f60f848f0fb1e83c19f275eb3",
+  "acceptance": [
+    "A4-dependencies",
+    "A4-process"
+  ],
+  "pytest": "110 passed across issue_flow, approved_asset, work_management, issue_ancestor_acl, api_board, tool_receipts, native_api; focused 7 passed after human-stage outgoing-edge validation",
+  "browser": "Edge, Next production, Uvicorn; isolated ordinary issues",
+  "observed": [
+    "default stages saved; art-gate at 65 percent and three edges configured",
+    "stale tab 409; same-key retry after dropped dependency write response retained version 3",
+    "unfinished dependency rejected advancement; upstream done released",
+    "board and roadmap showed art-gate 65%; explicit human return, re-entry and completion at 100 percent"
+  ],
+  "production": "owned by parent; no production writes in verification"
+}

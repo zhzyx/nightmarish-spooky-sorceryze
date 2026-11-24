@@ -42,7 +42,7 @@ func run() -> void:
 	await panel._open_issue(rows[0])
 	await wait_for_details(panel)
 	var details = panel.issue_inspector
-	check(details.visible and details.field.text == "original" and details.issue_link.uri == rows[0].url, "Missing default Issue document or link")
+	check(details.visible and details.field.text == "original" and details.issue_link.tooltip_text == rows[0].url, "Missing default Issue document or link")
 	check("Related" in details.relations.get_parsed_text() and "父工单" in details.relations.get_parsed_text(), "Missing linked issue")
 	details.field.insert_text_at_caret("draft ")
 	details.field.text_changed.emit()

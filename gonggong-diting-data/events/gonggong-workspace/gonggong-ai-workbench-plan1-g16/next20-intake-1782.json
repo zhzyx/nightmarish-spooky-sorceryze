@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g16",
+  "event_id": "next20-intake-1782",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1782",
+  "occurred_at": "2026-11-21T12:08:58.320082+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1782,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:08:55Z",
+    "accepted_dependencies": {
+      "1837": "3529bafbd35d3afe806c7d994f0a85b98dccc217",
+      "1790": "1cca7579fd007e8625ce8d275abd874fe4be0d33"
+    },
+    "title": "[方案一 G16] 制定存量 PR 的收尾清单"
+  },
+  "evidence_refs": [],
+  "sha256": "65f8312224c2d57d09631b612743cb9e9cfdd564ff5be927c07b21ea5f6f874c"
+}

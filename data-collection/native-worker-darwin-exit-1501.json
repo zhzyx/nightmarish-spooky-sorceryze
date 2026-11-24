@@ -1,0 +1,15 @@
+{
+  "issue_number": 1501,
+  "request_id": "native-context-consumption-20261118",
+  "source_revision": "17938f86828ba4b3e1e7b27400c5b0b4f0e474e0",
+  "observed": "On Darwin a group signal may report EPERM before waitid(WNOWAIT) reports exit. Earlier recheck failed before confirming group state.",
+  "candidate": "Observe exit for up to 0.5s without reaping the leader; require positive quiescence evidence, retain the unclosed group for retry on denial.",
+  "tests": {
+    "full_native_context_and_http": 30,
+    "owned_process": 15,
+    "owned_process_subtests": 35,
+    "independent_focused": 7,
+    "old_regressions_failed": 2
+  },
+  "scope": "macOS on arm64 and synthetic offline Node roles. Native Linux and Windows process handling is outside this Mac check."
+}

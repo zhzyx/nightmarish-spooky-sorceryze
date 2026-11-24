@@ -10,6 +10,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from kimi_provider import _MODEL3D_WORKERS, KimiNativeDirectProvider, check_model3d_tool
 from test_kimi_provider import png_bytes, triangle_glb
@@ -169,6 +170,39 @@ class Direct3DTests(unittest.TestCase):
         arguments = json.loads((self.root / "state" / KEY / "runtime" / "job" / "args.json").read_text())
         self.assertIn("--description", arguments)
         self.assertNotIn("--multiview", arguments)
+
+    def test_reviewed_mesh_missing_vision_key_is_explicit_and_does_not_start_worker(self):
+        config = dict(
+            self.config,
+            planner=dict(endpoint="https://api.kimi.com/coding/v1", model="k3.1-pro", key_env="KIMI_API_KEY"),
+            review_godot_path=str(self.tool),
+            review_script_path=str(self.launcher),
+        )
+        provider = KimiNativeDirectProvider(config)
+        source = self.artifact(png_bytes(), "ordinary")
+        request = dict(
+            node="image_to_mesh",
+            version="2",
+            inputs={"source": {"id": "ordinary", "revision": source["revision"]}},
+            parameters={"prompt": ""},
+            context=[],
+        )
+        with patch.dict(os.environ, {"KIMI_API_KEY": ""}):
+            terminal = provider.submit_reviewed(request, dict(schema_version=1, artifacts=[source]), KEY)
+        self.assertEqual(terminal["state"], "failed")
+        self.assertEqual(terminal["error"], provider.MESSAGES["api_key_missing"])
+        self.assertIn("KIMI_API_KEY", terminal["error"])
+        self.assertNotEqual(terminal["error"], provider.MESSAGES["worker_failed"])
+        self.assertEqual(provider.public_failure_message(terminal), terminal["error"])
+        self.assertEqual(
+            provider.public_failure_message({"error": "raw external response must not escape"}),
+            provider.MESSAGES["model3d_result_unknown"],
+        )
+        from multi_image_provider import MultiImageProvider
+
+        adapter = MultiImageProvider(provider, self.root / "adapter")
+        self.assertEqual(adapter.public_failure_message(terminal), terminal["error"])
+        self.assertFalse((self.root / "state" / KEY).exists())
 
     def test_three_view_sheet_is_cropped_and_uploaded_in_front_right_back_order(self):
         from PIL import Image
@@ -345,6 +379,72 @@ class Direct3DTests(unittest.TestCase):
             with self.subTest(error=error, images=len(request["context"])):
                 with self.assertRaisesRegex(ValueError, error):
                     self.provider.plan(request, dict(schema_version=1, artifacts=artifacts))
+        self.assertFalse((self.root / "state" / KEY / "runtime" / "job" / "args.json").exists())
+
+    def test_align_neck_plan_binds_previous_model_without_remote_launch(self):
+        source = self.model_artifact()
+        request = self.adjust_request(source)
+        request["parameters"] = dict(
+            prompt="",
+            operation="align_neck",
+            repair=dict(
+                head_mesh="ReferenceHead",
+                body_mesh="PriestBody",
+                neck_y=0.34,
+                band_height=0.01,
+                max_translation=0.1,
+                axes=["z"],
+            ),
+        )
+        plan = self.provider.plan(request, dict(schema_version=1, artifacts=[source]))
+        self.assertEqual(plan["operation"], "align_neck")
+        self.assertEqual(plan["source_model"]["revision"], source["revision"])
+        self.assertEqual(plan["repair"]["axes"], ["z"])
+        self.assertFalse((self.root / "state" / KEY / "runtime" / "job" / "args.json").exists())
+
+    def test_local_geometry_uses_configured_runtime_not_host_python(self):
+        from unittest.mock import patch
+
+        from test_geometry_repair import fixture
+
+        source_path = self.root / "integrated.glb"
+        fixture(source_path, integrated=True, normals=True)
+        data = source_path.read_bytes()
+        sha = hashlib.sha256(data).hexdigest()
+        source = dict(
+            id="integrated",
+            revision=sha,
+            type="mesh",
+            payload=dict(
+                content_base64=base64.b64encode(data).decode(),
+                content_sha256=sha,
+                extension=".glb",
+                bytes=len(data),
+            ),
+        )
+        request = self.adjust_request(source)
+        request["version"] = "2"
+        request["parameters"] = dict(
+            prompt="",
+            operation="reshape_crown",
+            repair=dict(
+                mesh="IntegratedCharacter",
+                confirmed=True,
+                hairline_y=0.9,
+                blend_height=0.05,
+                crown_scale=0.8,
+                front_pivot_x=0.0,
+                front_scale=0.5,
+                expected_head_top_y=1.1,
+                review_yaw_degrees=-90.0,
+            ),
+        )
+        with patch("kimi_provider.sys.executable", str(self.root / "missing-host-python")):
+            artifact = self.run_job(request, dict(schema_version=1, artifacts=[source]))
+        provenance = artifact["payload"]["provenance"]
+        self.assertEqual(provenance["operation"], "reshape_crown")
+        self.assertEqual(provenance["source_model_sha256"], sha)
+        self.assertEqual(provenance["service"], "deterministic_glb_operator")
         self.assertFalse((self.root / "state" / KEY / "runtime" / "job" / "args.json").exists())
 
     def test_executor_links_generated_mesh_into_adjustment_and_returns_new_artifact(self):

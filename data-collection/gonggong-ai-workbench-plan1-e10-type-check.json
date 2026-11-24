@@ -1,0 +1,44 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "issue_number": 1765,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "previous_evidence": "data-collection/gonggong-ai-workbench-plan1-e10.json",
+  "superseded_source_sha256": {
+    "customizations/components/tianxuan/server/work_management.py": "6e72ff3906545cec1b27781c02f5e637926b5fd515bc79312d98be26a951df89"
+  },
+  "change": "为判断版本到判断记录的索引补全静态类型，以通过 mypy。",
+  "mypy": "Success: no issues found in 5 source files",
+  "domain": "16 passed, 1 FastAPI TestClient deprecation warning",
+  "correction_for": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45031248799/job/137235120717",
+  "native_graphical_observation": {
+    "after": {
+      "issue_id": "iss_ddf5d2331e164e60a564f50af0ad2980",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+      "submission_version": 2.0,
+      "title": "确认徽章颜色"
+    },
+    "before": {
+      "issue_id": "iss_ddf5d2331e164e60a564f50af0ad2980",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "301c05c1aaed07b830c29bd59c0015f9cae34c0f7b1823aa156e70eb460d9729",
+      "submission_version": 1.0,
+      "title": "确认徽章颜色"
+    },
+    "description": "确认徽章颜色\nbadge.svg\nstudio-art @ 8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+    "display_server": "macOS",
+    "editor": "CodeEdit",
+    "saved_source": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\" fill=\"#0000ff\"/></svg>\n",
+    "original_sha256": "d25a5ffd658d948f2ab287c13330ce0dcb88a71a31f5ec1c6d9f60484b0f3751",
+    "edited_sha256": "4467418831d396623435d55a93deb2c45a1b9415477397c0d96f3026cdb874d0",
+    "engine_sha256": "1d00ecff331c8f08a18db53b0e7c65cca1ff954cc627505ee175ecb9500772c6"
+  }
+}

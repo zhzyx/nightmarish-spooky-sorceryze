@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2180-tianxuan-chat-repair-20261124",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "request",
+  "occurred_at": "2026-11-23T22:58:54.154391+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "codex-tianxuan-chat-repair-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "b8d6774a2657c550a8a43c02596fb5691e55ae7527dcfe158e440f1ddc1f7849"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 2180,
+    "host_snapshot": "data-collection/tianxuan-chat-repair-20261124-host-snapshot.json",
+    "design_path": "design-docs/tianxuan-chat-repair-20261124.md",
+    "scope": "Native Tianxuan replies and design suggestions must use existing editor CLI/API; preserve local replies, storage-only business sync and Web behavior",
+    "execution_state": "in-progress",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "da6bb209eeb0fac8723d52a9d51c09746f08f102f20a661d8c681799598d5270"
+}

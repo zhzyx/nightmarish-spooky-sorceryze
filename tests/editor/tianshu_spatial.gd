@@ -89,6 +89,30 @@ func run() -> void:
 	var spatial = workspace.spatial_workbench
 	check(is_instance_valid(spatial), "native spatial entry installed")
 	if not is_instance_valid(spatial): quit(1); return
+	if not OS.get_environment("TIANSHU_REFERENCE_RESTORE").is_empty():
+		EditorInterface.set_main_screen_editor("AI Chat")
+		await settle()
+		var restored_label: Button = workspace.chat.find_child("WorkbenchReference", true, false)
+		var restored_input: TextEdit = workspace.chat.find_child("ChatInput", true, false)
+		var restored_send: Button = workspace.chat.find_child("Send", true, false)
+		var ready_by := Time.get_ticks_msec() + 5000
+		while Time.get_ticks_msec() < ready_by and (not restored_label.is_visible_in_tree() or not restored_label.text.contains("引用已失效")):
+			await process_frame
+		var expected := "legacy question" if OS.get_environment("TIANSHU_REFERENCE_RESTORE") == "legacy" else "must stay in draft: same-named node in newly opened scene"
+		check(restored_input.text == expected, "reopened the original user draft")
+		check(restored_label.is_visible_in_tree() and restored_label.text.contains("引用已失效"), "disk history never reuses another process's node identity")
+		restored_send.pressed.emit()
+		check(restored_input.text == expected and workspace.chat.get_meta("queued_message_count", 0) == 0, "restored reference blocks send")
+		print(JSON.stringify({"restore":OS.get_environment("TIANSHU_REFERENCE_RESTORE"),"reference":restored_label.text,"failures":failures}))
+		if failures.is_empty(): print("TIANSHU_SPATIAL_OK restored references")
+		quit(0 if failures.is_empty() else 1)
+		return
+	if OS.get_environment("TIANSHU_REFERENCE_ENDPOINT") != "":
+		await check_editor_references(workspace, spatial)
+		print(JSON.stringify({"reference_failures":failures}))
+		if failures.is_empty(): print("TIANSHU_SPATIAL_OK references")
+		quit(0 if failures.is_empty() else 1)
+		return
 	if OS.get_environment("TIANSHU_RESTART") == "1":
 		var stored: Dictionary = spatial.links.get("fixture/project", {})
 		check(stored.get("res://production.tscn::Hero", {}).get("https://github.com/fixture/project/issues/1", {}).get("contents", []) == ["res://textures/hero.png"], "model content persists across editor restart")
@@ -202,11 +226,12 @@ func run() -> void:
 	var fixture_root := ProjectSettings.globalize_path("res://").trim_suffix("/")
 	settings.set_setting("gonggong/workspace", fixture_root)
 	settings.set_project_metadata("daqian_access", fixture_root.sha256_text(), {"actor":workspace.actor})
+	await create_timer(0.3).timeout
 	var error: String = chat.open_daqian_chat("spatial_fixture", 0, "", "", false, {}, true)
 	check(error.is_empty(), "open native draft: " + error)
 	check(chat.mount_daqian_chat(spatial.chat_host), "mount native chat in 3D")
 	spatial.owns_chat = true
-	spatial.chat_host.show()
+	spatial.chat_scroll.show()
 	spatial.rows.hide()
 	spatial.details.hide()
 	spatial.actions.hide()
@@ -224,7 +249,10 @@ func run() -> void:
 		root.size = Vector2i(width, 900)
 		await settle()
 		check(spatial.panel.size.x < EditorInterface.get_base_control().size.x - 160, "mounted chat retains viewport at %d" % width)
-		check(input.get_global_rect().end.y <= root.size.y, "chat input within window at %d" % width)
+		var field := input.get_global_rect()
+		var viewport_rect: Rect2 = spatial.chat_scroll.get_global_rect()
+		check(input.is_visible_in_tree() and field.position.y >= viewport_rect.position.y and field.end.y <= minf(viewport_rect.end.y, root.size.y), "mounted input is visible within the preview at %d: %s / %s" % [width, field, viewport_rect])
+		print("TIANSHU_COMPOSER_GEOMETRY=", JSON.stringify({"window_width":width, "window_height":root.size.y, "input_top":field.position.y, "input_bottom":field.end.y, "visible":input.is_visible_in_tree(), "scroll_top":viewport_rect.position.y, "scroll_bottom":viewport_rect.end.y}))
 	spatial.close_chat()
 	check(chat.open_daqian_chat("spatial_fixture", 0, "", "", false, {}, true).is_empty(), "restore same draft session")
 	check(chat.mount_daqian_chat(spatial.chat_host), "remount same draft")
@@ -290,7 +318,7 @@ func run() -> void:
 	await settle()
 	check(spatial.owns_chat, "panel opens real native chat")
 	input = spatial.chat_host.find_child("ChatInput", true, false)
-	check(is_instance_valid(input) and input.text.contains("res://production.tscn::Prop"), "panel stages selected model context")
+	check(is_instance_valid(input) and spatial.chat_host.find_child("WorkbenchReference", true, false).text.contains("res://production.tscn#Prop"), "panel stages selected model context")
 	var task_source := "spatial_" + ("fixture/project" + "res://production.tscn::Prop").sha256_text()
 	chat.daqian_issue_bound.emit(task_source, 2, "new-task-request")
 	check(spatial.model_links().has("https://github.com/fixture/project/issues/2"), "bound task automatically links original model")
@@ -449,3 +477,160 @@ func run() -> void:
 	print(JSON.stringify({"failures":failures,"passed":failures.is_empty()}))
 	if failures.is_empty(): print("TIANSHU_SPATIAL_OK")
 	quit(0 if failures.is_empty() else 1)
+
+func stage_again(chat, host: Control, node: Node, label: Button, input: TextEdit) -> void:
+	if label.visible: label.pressed.emit()
+	input.text = ""
+	check(chat.stage_workbench_reference(host, node).is_empty(), "explicitly attach the chosen instance")
+	check(label.visible and not label.text.contains("失效"), "fresh reference is visible")
+
+func refused(label: Button, input: TextEdit, send: Button, reason: String) -> void:
+	input.text = "must stay in draft: " + reason
+	var before := label.text
+	send.pressed.emit()
+	print("REFERENCE_REFUSAL ", JSON.stringify({"reason":reason, "before":before, "after":label.text, "visible":label.is_visible_in_tree(), "draft":input.text}))
+	check(label.is_visible_in_tree() and label.text.contains("失效") and input.text.ends_with(reason), reason)
+
+func check_editor_references(workspace, spatial) -> void:
+	var chat: Control = workspace.chat
+	var access := AccessFixture.new()
+	access.chat = chat
+	access.graph_script = workspace.graph_script
+	root.add_child(access)
+	spatial.workspace = access
+	spatial.scope = JSON.stringify([access._repo(), access.actor])
+	var settings := EditorInterface.get_editor_settings()
+	settings.set_setting("gonggong/workspace", access._repo())
+	settings.set_project_metadata("daqian_access", access._repo().sha256_text(), {"actor":access.actor})
+	var mesh_file := "res://hero-mesh.tres"
+	var scene_file := "res://reference-a.tscn"
+	check(ResourceSaver.save(BoxMesh.new(), mesh_file) == OK, "save external mesh")
+	var origin := Node3D.new()
+	origin.name = "Root"
+	for node_name in ["Hero", "Other"]:
+		var model := MeshInstance3D.new()
+		model.name = node_name
+		model.mesh = load(mesh_file)
+		origin.add_child(model)
+		model.owner = origin
+	var packed := PackedScene.new()
+	check(packed.pack(origin) == OK and ResourceSaver.save(packed, scene_file) == OK, "save first scene")
+	check(ResourceSaver.save(packed, "res://reference-b.tscn") == OK, "save same-name second scene")
+	origin.free()
+	EditorInterface.open_scene_from_path(scene_file)
+	EditorInterface.set_main_screen_editor("3D")
+	await settle()
+	origin = EditorInterface.get_edited_scene_root()
+	var original: MeshInstance3D = origin.get_node("Hero")
+	var selection := EditorInterface.get_selection()
+	selection.clear()
+	selection.add_node(original)
+	spatial.selection_changed()
+	spatial.toggle.button_pressed = true
+	var issue := {"url":"https://github.com/fixture/project/issues/8", "number":8, "request":"reference-fixture", "title":"Check model", "status":"planned", "closed":false, "workers":[]}
+	access.board.issues = [issue]
+	spatial.update_view(true)
+	spatial.picker.select(0)
+	spatial.bind_issue()
+	check(spatial.selected_issue().get("url") == issue.url, "explicit model association selects the exact issue")
+	# Inline workflow replies still use the original mounted composer and its send boundary.
+	# The migrated consultation buttons are exercised in workbench_compact_model_route.gd.
+	await spatial.open_chat(false)
+	await settle()
+	check(spatial.owns_chat, "inline spatial reply mounted the existing composer")
+	if not spatial.owns_chat: return
+	var host: Control = spatial.chat_host
+	var input: TextEdit = host.find_child("ChatInput", true, false)
+	var label: Button = host.find_child("WorkbenchReference", true, false)
+	var send: Button = host.find_child("Send", true, false)
+	check(label.is_visible_in_tree() and label.text.contains(scene_file + "#Hero"), "selected model is bound in composer")
+	var config: Control = chat.get_ai_settings_control()
+	config.find_child("APIEndpoint", true, false).text = OS.get_environment("TIANSHU_REFERENCE_ENDPOINT")
+	var backend: OptionButton = root.find_child("AIBackend", true, false)
+	backend.select(0)
+	backend.item_selected.emit(0)
+	config.find_child("APIEndpoint", true, false).text = OS.get_environment("TIANSHU_REFERENCE_ENDPOINT")
+	var key: LineEdit = config.find_child("APIKey", true, false)
+	key.text = "spatial-fixture-key"
+	key.text_changed.emit(key.text)
+	root.find_child("APIModel", true, false).text = "fixture"
+	host.find_child("ConsultationOnly", true, false).button_pressed = true
+	await create_timer(1.2).timeout
+	var deadline := Time.get_ticks_msec() + 12000
+	while send.disabled and Time.get_ticks_msec() < deadline: await process_frame
+	check(not send.disabled, "fixture model accepts native Send")
+	selection.clear()
+	selection.add_node(origin.get_node("Other"))
+	spatial.selection_changed()
+	input.text = "inspect original"
+	var expected := [
+		{"kind":"editor", "object_id":scene_file + "#Hero", "revision":FileAccess.get_sha256(scene_file)},
+		{"kind":"editor", "object_id":mesh_file, "revision":FileAccess.get_sha256(mesh_file)}
+	]
+	send.pressed.emit()
+	var history_path := "res://.godot/editor/ai_chat_history.json"
+	var frozen := {}
+	deadline = Time.get_ticks_msec() + 15000
+	while frozen.is_empty() and Time.get_ticks_msec() < deadline:
+		await create_timer(0.1).timeout
+		if not FileAccess.file_exists(history_path): continue
+		var history = JSON.parse_string(FileAccess.get_file_as_string(history_path))
+		if not history is Dictionary: continue
+		for agent in history.get("agents", []):
+			for record in agent.transcript:
+				if record.get("editor_references") == expected: frozen = record
+	check(not frozen.is_empty() and not label.visible and input.text.is_empty(), "persisted user message contains both exact revisions")
+	if frozen.is_empty():
+		print("REFERENCE_SEND_DIAGNOSTIC ", chat.get_ai_workflow_snapshot(), " ", host.find_child("ProgressStatus", true, false), " ", input.text)
+		return
+	stage_again(chat, host, original, label, input)
+	var replacement := MeshInstance3D.new()
+	replacement.mesh = original.mesh
+	# Replace before the next frame. A path-only resolver would accept this target.
+	origin.remove_child(original)
+	original.free()
+	replacement.name = "Hero"
+	origin.add_child(replacement)
+	replacement.owner = origin
+	refused(label, input, send, "same name and path with a new instance")
+	stage_again(chat, host, replacement, label, input)
+	replacement.name = "Renamed"
+	await create_timer(0.4).timeout
+	check(label.text.contains("失效"), "renamed node becomes visibly invalid before send")
+	refused(label, input, send, "stale node path")
+	stage_again(chat, host, replacement, label, input)
+	var bytes := FileAccess.get_file_as_bytes(mesh_file)
+	var changed := FileAccess.open(mesh_file, FileAccess.READ_WRITE)
+	changed.seek_end()
+	changed.store_string("\n")
+	changed.close()
+	refused(label, input, send, "same file path with different bytes")
+	var restored := FileAccess.open(mesh_file, FileAccess.WRITE)
+	restored.store_buffer(bytes)
+	restored.close()
+	stage_again(chat, host, replacement, label, input)
+	check(DirAccess.remove_absolute(mesh_file) == OK, "delete captured resource")
+	await create_timer(0.4).timeout
+	check(label.text.contains("失效"), "deleted file becomes visibly invalid before send")
+	refused(label, input, send, "deleted external resource")
+	restored = FileAccess.open(mesh_file, FileAccess.WRITE)
+	restored.store_buffer(bytes)
+	restored.close()
+	replacement.name = "Hero"
+	stage_again(chat, host, replacement, label, input)
+	EditorInterface.open_scene_from_path("res://reference-b.tscn")
+	await settle()
+	check(EditorInterface.get_edited_scene_root().get_node("Hero") != replacement and label.text.contains("失效"), "scene switch invalidates identical path")
+	refused(label, input, send, "same-named node in newly opened scene")
+	await create_timer(1.5).timeout
+	var stored = JSON.parse_string(FileAccess.get_file_as_string(history_path))
+	var retained := false
+	for agent in stored.agents:
+		for record in agent.transcript:
+			if record == frozen: retained = true
+	check(retained, "historical message still points to original object and revisions")
+	print("FROZEN_EDITOR_REFERENCES ", JSON.stringify(expected))
+	spatial.close_chat()
+	spatial.workspace = workspace
+	access.notice.free()
+	access.queue_free()

@@ -1,0 +1,21 @@
+{
+  "id": "codex-tianxuan-chat-repair-host",
+  "version": "20261124",
+  "origin": "external-authorized-host",
+  "authority": "Current user screenshot repair request and explicit correction to use the editor local CLI/API in the existing native Tianxuan goal",
+  "worker": "/root",
+  "scope": "Issue 2180 local CLI/API routing repair, isolated verification, source delivery and local editor installation",
+  "delegated_workers": {
+    "/root/local_model_path": "local provider adapter and optional isolated real CLI probe",
+    "/root/conversation_sync_path": "storage-only service endpoint and native regression fixtures",
+    "/root/local_chat_review": "independent read-only review; no implementation participation"
+  },
+  "constraints": [
+    "Preserve Web endpoints and account permissions",
+    "No real project or asset mutation during provider validation",
+    "No credentials in business API or public evidence",
+    "Legacy service sync remains explicitly pending"
+  ],
+  "model": null,
+  "usage": null
+}

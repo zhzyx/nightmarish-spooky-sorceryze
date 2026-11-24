@@ -103,3 +103,15 @@ def test_merge_unknown_document() -> None:
         json={"base_md": BASE, "local_md": LOCAL, "expected_version": 1},
     )
     assert response.status_code == 404
+
+
+def test_merge_requires_matching_saved_base_and_version() -> None:
+    client, headers, document = _setup()
+    url = f"/api/v1/docs/{document['id']}"
+    assert client.patch(url, headers=headers, json={"body_md": REMOTE, "expected_version": 1}).status_code == 200
+    for version, base in [(1, REMOTE), (2, BASE), (3, REMOTE)]:
+        response = client.post(
+            url + "/merge", headers=headers, json={"base_md": base, "local_md": LOCAL, "expected_version": version}
+        )
+        assert response.status_code == 409
+    assert client.get(url, headers=headers).json()["version"] == 2

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-15249f7996394ca7e52c3e42c78d04cf64eb7b24",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "q05-macos-registered-business-worker-close",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3b0a78ce10b07ae490ef7dcdcc315cefc575d26d8fda733398b70e1900e6c107",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+    "action": "delivery",
+    "detection_head": "6d9d2df532fb51cb24ee62344501155c75ae1488",
+    "context_sha256": "db4e7b7b4e184654ce632bc7f33ac3837c7cfc89820d2fca70cb77ce43a97a81",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45056104427",
+    "diagnosis": "工作者报告有 issue 与采集回执，缺少能同时绑定稳定 request_id 与工单的提交接收记录。",
+    "next_action": "增加与原失效场景关联的独立 Windows 服务复跑记录，保留原报告，重新检查完整候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T18:36:58.199169+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T18:42:10.069439+00:00",
+  "sha256": "a7e855089a3f43f97eb6ab1f56a719c4e7e37bb6faea3498c8ece05efccfeef7"
+}

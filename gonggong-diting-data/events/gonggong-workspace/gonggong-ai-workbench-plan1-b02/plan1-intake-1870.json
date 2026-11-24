@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b02",
+  "event_id": "plan1-intake-1870",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870",
+  "occurred_at": "2026-11-20T23:30:44.738428+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 1870,
+    "title": "[方案一 B02] 核对天璇与偃师已有接口",
+    "operator": "Sail-Li",
+    "updated_at": "2026-11-20T23:24:31Z",
+    "action": "Proceed with this explicitly requested baseline work order and verify its own acceptance criteria."
+  },
+  "sha256": "5dc3b8d7f7fe14ca5d457af7d4d6a56e7a6bb34ade498cdf5fa192703fbabd7a"
+}

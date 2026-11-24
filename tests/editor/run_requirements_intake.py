@@ -67,9 +67,9 @@ else: raise SystemExit('unsupported fixture command')
 """
 
 
-def run_editor(command, root, env):
+def run_editor(command, root, env, timeout=240):
     if os.name != "nt":
-        return subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=240)
+        return subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=timeout)
     # Reuse the existing suspended-before-assignment Job boundary. Cleanup is
     # restricted to this invocation, including children left after editor exit.
     spec = importlib.util.spec_from_file_location(
@@ -80,7 +80,7 @@ def run_editor(command, root, env):
     with processes.WindowsJob(uuid.uuid4().hex) as job:
         child = job.spawn(command, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
-            stdout, stderr = child.communicate(timeout=240)
+            stdout, stderr = child.communicate(timeout=timeout)
         finally:
             job.quiesce()
             child.wait(timeout=5)
@@ -91,6 +91,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--bridge-fault", choices=("missing", "parse_failed", "process_failed"))
     parser.add_argument(
         "--portable-chat", action="store_true", help="Pair an unregistered editor with the workspace launcher"
     )
@@ -186,6 +187,29 @@ def main():
                 encoding="utf-8",
             )
         copy_runtime_policy(ROOT, installation)
+        if args.bridge_fault:
+            # Replace only the private fixture's issue-agent producer. The editor
+            # still launches and consumes it through the normal Send path.
+            bridge = (
+                root / "tools/gonggong_bridge.py"
+                if args.portable_chat
+                else installation / "customizations/components/godot-host/bridge.py"
+            )
+            fault_producer = """import os, sys
+from pathlib import Path
+if sys.argv[1] == "issue-agent":
+    sys.stdin.buffer.readline(8192)
+    mode = os.environ["GONGGONG_TEST_BRIDGE_FAULT"]
+    with Path(os.environ["GONGGONG_TEST_WORKSPACE"], "bridge_started").open("ab") as starts:
+        starts.write(b"1")
+    target = Path(sys.argv[sys.argv.index("--out") + 1])
+    if mode == "parse_failed":
+        target.write_bytes(b'{"value":"PRIVATE_FIXTURE"')
+    elif mode == "process_failed":
+        target.write_bytes(b'{"ok":true,"phase":"clarification_required","questions":["UNEXPECTED_REPLY"]}')
+    raise SystemExit(0 if mode == "parse_failed" else 7)
+"""
+            bridge.write_text(fault_producer + bridge.read_text(encoding="utf-8"), encoding="utf-8")
         project = root / "project"
         project.mkdir()
         # The editor changes cwd to the opened project before invoking Python.
@@ -236,7 +260,10 @@ def main():
                         time.sleep(2)
                     if "Cancel pending" in text:
                         (root / "model_waiting").touch()
-                        time.sleep(1.5)
+                        deadline = time.monotonic() + 15
+                        while not (root / "intake_cancelled").exists():
+                            assert time.monotonic() < deadline, "Fixture cancellation never arrived"
+                            time.sleep(0.02)
                     if "API failure" in text and not (root / "api_fixed").exists():
                         self.send_response(503)
                         self.end_headers()
@@ -301,6 +328,9 @@ def main():
                     self.wfile.write(result)
                 except (BrokenPipeError, ConnectionResetError):
                     pass
+                finally:
+                    if requirements and "Cancel pending" in text:
+                        (root / "late_response_attempted").touch()
 
             def log_message(self, *unused):
                 pass
@@ -311,6 +341,7 @@ def main():
             os.environ,
             GONGGONG_WORKSPACE=str(root),
             GONGGONG_TEST_WORKSPACE=str(root),
+            GONGGONG_TEST_BRIDGE_FAULT=args.bridge_fault or "",
             GONGGONG_TEST_PYTHON=sys.executable,
             GONGGONG_GH=sys.executable,
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
@@ -417,6 +448,24 @@ def main():
                     server.server_close()
         args.out.with_suffix(".stdout.log").write_bytes(result.stdout)
         args.out.with_suffix(".stderr.log").write_bytes(result.stderr)
+        if args.bridge_fault:
+            assert (root / "bridge_started").is_file(), "Fixture child never started"
+            assert (root / "bridge_started").read_bytes() == b"1", "Bridge action replayed"
+            assert not (root / "fake-issues.json").exists(), "Unexpected publication"
+            assert not requests, "Unexpected model invocation"
+            cache = installation / "editor_data"
+            assert not any(cache.rglob("gonggong-issue-guide-*.request.json"))
+            assert not any(cache.rglob("gonggong-issue-guide-*.result.json"))
+            metadata = json.loads(args.out.with_suffix(".receipts.json").read_text(encoding="utf-8"))
+            records = metadata.get("issue_guide", [])
+            assert len(records) == 1, f"Expected one issue-guide transport diagnostic, found {len(records)}"
+            expected_status = "valid" if args.bridge_fault == "process_failed" else args.bridge_fault
+            assert records[0]["native_status"] == expected_status
+            assert records[0]["exit_code"] == (0 if args.bridge_fault == "parse_failed" else 7)
+            assert result.returncode == 0 and b"INTAKE_TRANSPORT_REJECTED" in result.stdout
+            assert b"PRIVATE_FIXTURE" not in result.stdout + result.stderr
+            args.out.write_text(json.dumps({"child_started": True, "rejected": True, "diagnostic": records[0]}))
+            return
         args.out.with_suffix(".debug.json").write_text(
             json.dumps(
                 {

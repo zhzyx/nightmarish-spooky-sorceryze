@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-5bf10e8cbd8155b987f3c49a22474281abeb686b6a9c6f2dace7d2355a01cba2",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827",
+  "occurred_at": "2026-11-21T05:04:56.248421+00:00",
+  "evidence_refs": [
+    "dispatch-6b218f665d874da7a58ce35b8882b050",
+    "learn-0d36296b559ea26bc824f10278adff681aee34fb26f4a4a5dc9da72e758ccdd8"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "validate-new-sample-codeowners",
+    "revision": 2,
+    "previous": "6374ecd15524cb9a846af9b89145aa16cee91d21cebdac4ee0f6ad42b702042d",
+    "action": "verify",
+    "details": {
+      "test": "在隔离目录对失败基线和纠正后的 CODEOWNERS 分别运行同一校验器并读取退出码。",
+      "expected": "原始责任人缺少 buildsystem，退出 1；精确修复后匹配两个团队，退出 0。",
+      "observed": "原始责任人缺少 buildsystem，退出 1；精确修复后匹配两个团队，退出 0。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-b05-codeowners-trial.json",
+        "sha256": "04018a830eb6cd1f4babf4fdcb56546f4c8ce70be84505d1fc6b03cf8bec0cb4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-b05/dispatch-6b218f665d874da7a58ce35b8882b050.json",
+      "sha256": "cbcf4ad5adca18c851f85a0a83fb093e8ee00e83382ab2e7e9df4f72385e531a"
+    }
+  },
+  "sha256": "d7eed84a47291184560a80631c730c59a594ff9cebec0c0af064f706852aa9a3"
+}

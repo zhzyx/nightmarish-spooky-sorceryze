@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import json
+import subprocess
 import urllib.error
 from email.message import Message
 from typing import Literal
@@ -11,6 +12,265 @@ from urllib.request import Request
 
 import pytest
 import tianshu_bridge
+
+
+@pytest.fixture
+def gonggong_project(tmp_path, monkeypatch):
+    monkeypatch.delenv("TIANXUAN_API", raising=False)
+    monkeypatch.delenv("TIANXUAN_GIT_REPO", raising=False)
+    monkeypatch.delenv("TIANXUAN_IDENTITY_PROVIDER", raising=False)
+    root = tmp_path / "source"
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), "remote", "add", "origin", "git@github.com:zhzyx/nightmarish-spooky-sorceryze.git"],
+        check=True,
+    )
+    project = root / "nested"
+    project.mkdir()
+    return project
+
+
+def test_project_route_is_local_readback(gonggong_project, monkeypatch, capsys):
+    monkeypatch.setattr(tianshu_bridge, "urlopen", lambda *_a, **_kw: pytest.fail("unexpected network access"))
+    monkeypatch.setenv("TIANXUAN_IDENTITY_PROVIDER", "fixture")
+
+    def read_route():
+        assert tianshu_bridge.main(["--workspace", str(gonggong_project), "duobao-route"]) == 0
+        return json.loads(capsys.readouterr().out)["data"]
+
+    assert read_route() == {"api": tianshu_bridge.GONGGONG_API, "repository": "gonggong.git"}
+    monkeypatch.setenv("TIANXUAN_API", "http://127.0.0.1:8128")
+    assert read_route() == {"api": "configured", "repository": ""}
+    monkeypatch.setenv("TIANXUAN_GIT_REPO", "local.git")
+    assert read_route() == {"api": "configured", "repository": "local.git"}
+    monkeypatch.delenv("TIANXUAN_API")
+    assert read_route() == {"api": tianshu_bridge.LOCAL_API, "repository": "local.git"}
+    monkeypatch.delenv("TIANXUAN_GIT_REPO")
+    # A materialized project inside the checkout owns its own source identity.
+    marker = gonggong_project / ".duobao-source.json"
+    marker.write_text("{}", encoding="utf-8")
+    assert read_route() == {"api": tianshu_bridge.LOCAL_API, "repository": ""}
+    marker.unlink()
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(gonggong_project),
+            "remote",
+            "set-url",
+            "origin",
+            "https://elsewhere.invalid/zhzyx/nightmarish-spooky-sorceryze.git",
+        ],
+        check=True,
+    )
+    (gonggong_project / "work-items.json").write_text('{"repository":"zhzyx/nightmarish-spooky-sorceryze"}')
+    assert read_route() == {"api": tianshu_bridge.LOCAL_API, "repository": ""}
+
+
+def test_release_snapshot_requires_a_real_checkout(gonggong_project, monkeypatch, capsys):
+    def git(*arguments):
+        return subprocess.check_output(["git", "-C", str(gonggong_project), *arguments], text=True).strip()
+
+    git("remote", "remove", "origin")
+    git(
+        "-c",
+        "user.name=Release fixture",
+        "-c",
+        "user.email=release@example.invalid",
+        "commit",
+        "-q",
+        "--allow-empty",
+        "-m",
+        "Import verified GongGong release snapshot",
+    )
+    git("config", "--local", "gonggong.releaseSnapshot", git("rev-parse", "HEAD"))
+    monkeypatch.setattr(tianshu_bridge, "urlopen", lambda *_a, **_kw: pytest.fail("unexpected network access"))
+    for command in (
+        ["duobao-route"],
+        ["branch-tip", "--branch", "main"],
+        ["workcopy-diff", "--project", str(gonggong_project)],
+    ):
+        assert tianshu_bridge.main(["--workspace", str(gonggong_project), *command]) == 1
+        assert "真实共工 Git 工作副本" in json.loads(capsys.readouterr().out)["error"]
+    monkeypatch.setenv("TIANXUAN_API", tianshu_bridge.GONGGONG_API)
+    monkeypatch.setenv("TIANXUAN_GIT_REPO", "gonggong.git")
+    assert tianshu_bridge.main(["--workspace", str(gonggong_project), "duobao-route"]) == 1
+    assert "真实共工 Git 工作副本" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_project_branch_readback_uses_the_bound_repository(gonggong_project, monkeypatch, capsys):
+    calls = []
+
+    def read_tip(request, timeout):
+        calls.append(request.full_url)
+        return _Response({"branch": "main", "sha": "a" * 40})
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", read_tip)
+    command = ["--workspace", str(gonggong_project), "branch-tip", "--branch", "main"]
+    assert tianshu_bridge.main(command) == 0
+    assert calls == [tianshu_bridge.GONGGONG_API + "/api/v1/git/repos/gonggong.git/branch-tip?branch=main"]
+    capsys.readouterr()
+    assert tianshu_bridge.main(command + ["--repo-name", "other.git"]) == 1
+    assert len(calls) == 1 and "gonggong.git" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_editor_login_checks_subject_before_using_current_identity(gonggong_project, monkeypatch, capsys):
+    for name in ("TIANXUAN_ACTOR", "TIANXUAN_TOKEN", "TIANXUAN_IDENTITY_SECRET", "TIANXUAN_IDENTITY_SUBJECT"):
+        monkeypatch.delenv(name, raising=False)
+    stored = {"token": "fixture-device", "user_id": "first"}
+    seen = []
+
+    def response(api, method, path, **params):
+        assert api == tianshu_bridge.GONGGONG_API and params["token"] == stored["token"]
+        seen.append(path)
+        if path == "/api/v1/auth/me":
+            return {"id": "first", "role": "editor"}
+        return {"branch": "main", "sha": "a" * 40}
+
+    monkeypatch.setattr(tianshu_bridge, "_load_editor_identity", lambda origin: stored)
+    monkeypatch.setattr(tianshu_bridge, "_request", response)
+    command = ["--editor-login", "--workspace", str(gonggong_project), "branch-tip", "--branch", "main"]
+    assert tianshu_bridge.main(command) == 0
+    assert seen == ["/api/v1/auth/me", "/api/v1/git/repos/gonggong.git/branch-tip"]
+    stored.update(user_id="other", token="fixture-new-device")
+    assert tianshu_bridge.main(command) == 1
+    assert len(seen) == 3 and seen[-1] == "/api/v1/auth/me"
+    assert "fixture-" not in capsys.readouterr().out
+
+
+def test_authenticated_redirect_cannot_forward_editor_credentials():
+    req = Request("https://example.invalid/api/v1/auth/me", headers={"Authorization": "Bearer fixture"})
+    assert tianshu_bridge._ApiRedirect().redirect_request(req, None, 302, "", {}, "https://other.invalid/") is None
+
+
+def test_automatic_public_route_uses_only_origin_bound_identity(gonggong_project, monkeypatch, tmp_path, capsys):
+    calls = []
+
+    def read_tip(api, method, path, *, actor, token, **kwargs):
+        calls.append((api, method, bool(actor), token))
+        return {"branch": "main", "sha": "a" * 40}
+
+    monkeypatch.setattr(tianshu_bridge, "_request", read_tip)
+    monkeypatch.setenv("TIANXUAN_TOKEN_CACHE", str(tmp_path / "private-cache"))
+    monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-loopback")
+    command = ["--workspace", str(gonggong_project), "branch-tip", "--branch", "main"]
+    assert tianshu_bridge.main(command) == 1 and not calls
+    assert "未绑定" in json.loads(capsys.readouterr().out)["error"]
+    monkeypatch.delenv("TIANXUAN_TOKEN")
+    monkeypatch.setenv("TIANXUAN_IDENTITY_PROVIDER", "fixture")
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SUBJECT", "fixture-user")
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "fixture-local-only")
+    tianshu_bridge._write_cached_token(tianshu_bridge.LOCAL_API, "fixture", "fixture-user", "fixture-old-cache")
+    assert tianshu_bridge.main(command) == 1 and not calls
+    assert "未绑定" in json.loads(capsys.readouterr().out)["error"]
+    assert tianshu_bridge.main(["--token", "fixture-explicit", *command]) == 0
+    assert calls[-1] == (tianshu_bridge.GONGGONG_API, "GET", False, "fixture-explicit")
+    tianshu_bridge._write_cached_token(tianshu_bridge.GONGGONG_API, "fixture", "fixture-user", "fixture-public-cache")
+    assert tianshu_bridge.main(command) == 0
+    assert calls[-1] == (tianshu_bridge.GONGGONG_API, "GET", False, "fixture-public-cache")
+    monkeypatch.setenv("TIANXUAN_API", tianshu_bridge.GONGGONG_API)
+    monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-bound-launcher")
+    assert tianshu_bridge.main(command) == 0
+    assert calls[-1] == (tianshu_bridge.GONGGONG_API, "GET", False, "fixture-bound-launcher")
+    for name in ("TIANXUAN_API", "TIANXUAN_TOKEN", "TIANXUAN_IDENTITY_PROVIDER", "TIANXUAN_IDENTITY_SECRET"):
+        monkeypatch.delenv(name)
+    monkeypatch.setenv("TIANXUAN_ACTOR", "fixture-local-actor")
+    assert tianshu_bridge.main(command) == 0
+    assert calls[-1] == (tianshu_bridge.GONGGONG_API, "GET", False, "")
+
+
+def test_commit_review_and_delivery_share_project_route(gonggong_project, monkeypatch):
+    import selected_commit
+
+    request_id = "mr_" + "a" * 64
+    paths = []
+
+    def service(api, method, path, **kwargs):
+        assert api == tianshu_bridge.GONGGONG_API and method == "POST"
+        paths.append(path)
+        return {"id": request_id}
+
+    def submit(project, target, body, publish, lookup):
+        assert project == gonggong_project and target[:2] == [tianshu_bridge.GONGGONG_API, "gonggong.git"]
+        return publish(body)
+
+    monkeypatch.setattr(tianshu_bridge, "_request", service)
+    monkeypatch.setattr(selected_commit, "submit", submit)
+    request = gonggong_project / "selection.json"
+    request.write_text('{"repo":""}', encoding="utf-8")
+    assert tianshu_bridge.main(["workcopy-submit", "--project", str(gonggong_project), "--request", str(request)]) == 0
+    for action, extra in (("merge-review", ["--decision", "APPROVED"]), ("merge-deliver", [])):
+        assert (
+            tianshu_bridge.main(["--workspace", str(gonggong_project), action, "--request-id", request_id, *extra]) == 0
+        )
+    root = "/api/v1/git/repos/gonggong.git/"
+    assert paths == [
+        root + "selected-commits",
+        root + f"merge-requests/{request_id}/review",
+        root + f"merge-requests/{request_id}/deliver",
+    ]
+    request.write_text('{"repo":"elsewhere.git"}', encoding="utf-8")
+    assert tianshu_bridge.main(["workcopy-submit", "--project", str(gonggong_project), "--request", str(request)]) == 1
+    assert len(paths) == 3
+
+
+@pytest.mark.parametrize("credential", ["token", "identity"])
+def test_project_local_diff_needs_no_remote_identity(gonggong_project, monkeypatch, tmp_path, capsys, credential):
+    def git(*arguments):
+        return subprocess.check_output(["git", "-C", str(gonggong_project), *arguments], text=True).strip()
+
+    (gonggong_project / "project.godot").write_text("config_version=5\n")
+    source = gonggong_project / "sample.gd"
+    source.write_text("extends Node\n# before\n")
+    git("add", ".")
+    git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")
+    source.write_text("extends Node\n# after\n")
+    monkeypatch.delenv("TIANXUAN_TOKEN", raising=False)
+    monkeypatch.setenv("TIANXUAN_TOKEN_CACHE", str(tmp_path / "private-cache"))
+    if credential == "token":
+        monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-old-loopback")
+    else:
+        monkeypatch.setenv("TIANXUAN_IDENTITY_PROVIDER", "fixture")
+        monkeypatch.setenv("TIANXUAN_IDENTITY_SUBJECT", "fixture-user")
+        monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "fixture-local-only")
+    monkeypatch.setattr(tianshu_bridge, "urlopen", lambda *_a, **_kw: pytest.fail("unexpected network access"))
+    assert tianshu_bridge.main(["workcopy-diff", "--project", str(gonggong_project)]) == 0
+    data = json.loads(capsys.readouterr().out)["data"]
+    assert data["files"] == [{"status": "M", "path": "nested/sample.gd"}]
+    request = tmp_path / "preview.json"
+    request.write_text(json.dumps({**data, "path": "nested/sample.gd"}))
+    command = ["--project", str(gonggong_project), "--request", str(request)]
+    assert tianshu_bridge.main(["workcopy-preview", *command]) == 0
+    preview = json.loads(capsys.readouterr().out)["data"]["diff"]
+    assert "-# before" in preview and "+# after" in preview
+    assert tianshu_bridge.main(["workcopy-submit", *command]) == 1
+    assert "未绑定" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_materialized_diff_keeps_remote_identity(gonggong_project, monkeypatch, capsys):
+    (gonggong_project / ".duobao-source.json").write_text("{}")
+    monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-local-service")
+    calls = []
+
+    def project(directory, marker, api, request, read):
+        assert directory == gonggong_project and marker == directory / ".duobao-source.json"
+        assert api == tianshu_bridge.LOCAL_API
+
+        class Materialized:
+            def diff(self):
+                return request("GET", "modules/fixture")
+
+        return Materialized()
+
+    def request(api, method, path, **kwargs):
+        calls.append((api, method, path, kwargs["token"]))
+        return {"mode": "native"}
+
+    monkeypatch.setattr("native_workcopy_commit.NativeProject", project)
+    monkeypatch.setattr(tianshu_bridge, "_request", request)
+    assert tianshu_bridge.main(["workcopy-diff", "--project", str(gonggong_project)]) == 0
+    assert json.loads(capsys.readouterr().out)["data"] == {"mode": "native"}
+    assert calls == [(tianshu_bridge.LOCAL_API, "GET", "/api/v1/native/modules/fixture", "fixture-local-service")]
 
 
 class _Response:
@@ -265,3 +525,61 @@ def test_identity_token_is_cached(monkeypatch, tmp_path, capsys) -> None:
     assert tianshu_bridge.main(args) == 0
     assert resolve_calls == 1
     capsys.readouterr()
+
+
+def test_historical_issue_reads_exact_source_and_pins_body_pages(monkeypatch, capsys):
+    from urllib.parse import parse_qs, urlsplit
+
+    requests = []
+    revision = "e" * 64
+    sid = "github:team/repo/issue/89"
+
+    def fake(request: Request, timeout: int) -> _Response:
+        address = urlsplit(request.full_url)
+        query = parse_qs(address.query, strict_parsing=True)
+        assert query["source_id"] == [sid] and query["project"] == ["example"]
+        assert request.get_method() == "GET" and request.headers["Authorization"] == "Bearer bearer"
+        requests.append(address.path)
+        if address.path.endswith("/detail"):
+            return _Response({
+                "revision": revision,
+                "record": {
+                    "source_id": sid,
+                    "kind": "issue",
+                    "truncated": True,
+                    "content": {"state": "closed", "title": "Old"},
+                },
+            })
+        assert query["revision"] == [revision]
+        offset = int(query["offset"][0])
+        return _Response({"text": "完整" if offset == 0 else "正文", "next_offset": 2 if offset == 0 else None})
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    assert (
+        tianshu_bridge.main([
+            "--token",
+            "bearer",
+            "historical-issue",
+            "--project",
+            "example",
+            "--source-id",
+            "https://github.com/team/repo/issues/89",
+        ])
+        == 0
+    )
+    data = json.loads(capsys.readouterr().out)["data"]
+    assert data == {"source_id": sid, "title": "Old", "state": "closed", "body": "完整正文", "revision": revision}
+    assert requests == ["/api/v1/migration/history/" + name for name in ("detail", "body", "body")]
+
+
+def test_historical_issue_rejects_non_issue(monkeypatch, capsys):
+    sid = "github:team/repo/comment/89"
+    monkeypatch.setattr(
+        tianshu_bridge,
+        "urlopen",
+        lambda request, timeout: _Response({
+            "record": {"source_id": sid, "kind": "comment", "content": {"body": "comment"}},
+        }),
+    )
+    assert tianshu_bridge.main(["historical-issue", "--project", "example", "--source-id", sid]) == 1
+    assert "未指向历史工单" in json.loads(capsys.readouterr().out)["error"]

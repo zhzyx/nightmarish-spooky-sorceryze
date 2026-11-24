@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-r09",
+  "event_id": "mac-round12-recovery-intake-1778",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1778",
+  "occurred_at": "2026-11-22T13:09:20.697575+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1778,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T12:33:56Z",
+    "scope": "用 Mac 独立进程制造拥有者崩溃和存活两种状态，双实例同时重开，核对运行号与唯一续领。"
+  },
+  "evidence_refs": [],
+  "sha256": "45cb08dbe9137c4cc1c8ce42c703a5ae07172be59386403226f39e619c7aaa97"
+}

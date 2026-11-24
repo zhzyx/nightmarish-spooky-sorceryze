@@ -204,11 +204,17 @@ func _request(request: Dictionary) -> Dictionary:
 	if python.is_empty():
 		busy = false
 		return {"status":"unavailable"}
-	process = OS.execute_with_pipe(python, ["-c", source], false)
-	if process.is_empty():
-		busy = false
+	var result := await exchange(self, process, python, source, request)
+	busy = false
+	return result
+
+
+# Only embedded helper code enters argv. The owner kills its pending child on exit.
+static func exchange(owner_node: Node, pending: Dictionary, python: String, source: String, request: Dictionary) -> Dictionary:
+	var current := OS.execute_with_pipe(python, ["-I", "-c", source], false)
+	if current.is_empty():
 		return {"status":"unavailable"}
-	var current := process
+	pending.merge(current)
 	current.stdio.store_line(JSON.stringify(request))
 	current.stdio.flush()
 	request.clear()
@@ -224,7 +230,7 @@ func _request(request: Dictionary) -> Dictionary:
 			OS.kill(current.pid)
 			failed = true
 			break
-		await get_tree().create_timer(0.03).timeout
+		await owner_node.get_tree().create_timer(0.03).timeout
 	var remaining: int = current.stdio.get_length()
 	if remaining + output.size() <= 16384:
 		output.append_array(current.stdio.get_buffer(remaining))
@@ -232,8 +238,7 @@ func _request(request: Dictionary) -> Dictionary:
 		failed = true
 	current.stdio.close()
 	current.stderr.close()
-	process = {}
-	busy = false
+	pending.clear()
 	var parser := JSON.new()
 	if not failed and parser.parse(output.get_string_from_utf8()) == OK and parser.data is Dictionary:
 		return parser.data

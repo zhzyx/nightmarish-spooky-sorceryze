@@ -6,6 +6,9 @@
 
 from __future__ import annotations
 
+from typing import Any, Literal
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -71,6 +74,20 @@ class RepoLinkRequest(BaseModel):
     name: str
 
 
+class SelectedGitFile(BaseModel):
+    path: str = Field(min_length=1, max_length=4096)
+    mode: str
+    content: str | None = Field(max_length=22369624)
+
+
+class SelectedGitCommitRequest(BaseModel):
+    branch: str = Field(min_length=1, max_length=1024)
+    base: str
+    sha: str
+    commit: str = Field(min_length=1, max_length=32768)
+    files: list[SelectedGitFile] = Field(min_length=1, max_length=1024)
+
+
 class GitBranchCreateRequest(BaseModel):
     """在本地裸仓库中基于已有提交创建分支。"""
 
@@ -103,6 +120,15 @@ class ReleaseCreateRequest(BaseModel):
     prerelease: bool = False
 
 
+class ReleaseBaseline(BaseModel):
+    id: int
+    tag_name: str
+    name: str
+    body: str
+    draft: bool
+    prerelease: bool
+
+
 class ReleaseUpdateRequest(BaseModel):
     """更新 Gitea 发布的可编辑字段。"""
 
@@ -110,6 +136,7 @@ class ReleaseUpdateRequest(BaseModel):
     body: str | None = None
     draft: bool | None = None
     prerelease: bool | None = None
+    expected_release: ReleaseBaseline | None = None
 
 
 class PullRequestCreateRequest(BaseModel):
@@ -125,6 +152,8 @@ class PullRequestMergeRequest(BaseModel):
     """合并 Pull Request 的方式。"""
 
     method: str = "merge"
+    expected_head_sha: str | None = Field(default=None, pattern=r"^[0-9a-f]{40,64}$")
+    expected_base: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class PullRequestReviewRequest(BaseModel):
@@ -132,6 +161,8 @@ class PullRequestReviewRequest(BaseModel):
 
     event: str
     body: str = ""
+    expected_head_sha: str | None = Field(default=None, pattern=r"^[0-9a-f]{40,64}$")
+    expected_base: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class CommitStatusRequest(BaseModel):
@@ -141,6 +172,26 @@ class CommitStatusRequest(BaseModel):
     context: str = "duobao"
     description: str = ""
     target_url: str = ""
+
+
+class ConflictChoice(BaseModel):
+    choice: Literal["source", "target", "text"]
+    text: str = Field(default="", max_length=100_000)
+
+
+class ConflictResolution(BaseModel):
+    files: dict[str, ConflictChoice] = Field(min_length=1, max_length=100)
+
+
+class ExactReview(BaseModel):
+    decision: Literal["APPROVED", "REQUEST_CHANGES"]
+
+
+class ExactMergeRequest(BaseModel):
+    issue_id: str = Field(default="", max_length=200)
+    source: str
+    target: str
+    candidate: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 
 
 class MergeQueueCreateRequest(BaseModel):
@@ -197,11 +248,63 @@ class DocPatchOperation(BaseModel):
     replace: str
 
 
+class ToolCallRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    payload: dict[str, Any]
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
+
+
+class DesignSignoffRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    acceptance: str = Field(min_length=1, max_length=8000)
+
+
+class DesignTaskItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    paragraph: int = Field(ge=1, strict=True)
+    module_id: str = Field(min_length=1, max_length=256)
+    title: str = Field(min_length=1, max_length=256)
+    acceptance: str = Field(min_length=1, max_length=8000)
+
+
+class DesignSplitRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    call_id: str = Field(min_length=1, max_length=256)
+    items: list[DesignTaskItem] = Field(min_length=1, max_length=50)
+
+
+class TaskTargetRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    document_id: str = Field(min_length=1, max_length=256)
+    version: int = Field(ge=1, le=2**63 - 1, strict=True)
+    expected_revision: int = Field(ge=0, le=2**63 - 1, strict=True)
+    stage: str = Field(min_length=1, max_length=128)
+    criteria: str | None = Field(default=None, max_length=8000)
+
+
+class TaskConfirmationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    document_id: str = Field(min_length=1, max_length=256)
+    version: int = Field(ge=1, le=2**63 - 1, strict=True)
+    issue_revision: str = Field(pattern=r"^[0-9a-f]{64}$")
+    target_revision: int = Field(ge=1, le=2**63 - 1, strict=True)
+    expected_revision: int = Field(ge=0, le=2**63 - 1, strict=True)
+    status: Literal["confirmed", "revoked"]
+
+
+class DocRestoreRequest(BaseModel):
+    expected_version: int = Field(ge=1, strict=True)
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
+
+
 class DocPatchRequest(BaseModel):
     """按版本号对文档做结构化补丁，供 AI 以最小 token 编辑。"""
 
     expected_version: int
     patches: list[DocPatchOperation]
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class DocVisibilityRequest(BaseModel):
@@ -332,6 +435,53 @@ class IdentityRebindRequest(BaseModel):
     user_id: str
 
 
+class BusinessModuleName(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=200)
+
+
+class BusinessModuleCreate(BusinessModuleName):
+    call_id: str = Field(min_length=1, max_length=256)
+
+
+class IssueModuleRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    module_id: str = Field(min_length=1)
+
+
+class IssueAssigneeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    assignee_id: str | None = Field(min_length=1, max_length=256)
+    expected_assignee_id: str | None = Field(min_length=1, max_length=256)
+
+
+class ModuleLocationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    issue_id: str | None = Field(default=None, min_length=1, max_length=256)
+    conversation_id: UUID | None = None
+    position: str = Field(min_length=1, max_length=2048)
+
+
+class IssueClassificationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    type: str
+    labels: list[str] = Field(max_length=100)
+    expected_type: str
+    expected_labels: list[str] = Field(max_length=100)
+
+
+class IssueParentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    parent_number: int | None = Field(ge=1, le=2**63 - 1)
+    expected_parent_id: str | None
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 
@@ -346,6 +496,8 @@ class IssueCommentCreateRequest(BaseModel):
     """司南工单评论；正文非空由领域层校验。"""
 
     body: str
+    parent_id: str | None = None
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class CommentCreateRequest(BaseModel):

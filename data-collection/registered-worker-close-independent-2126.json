@@ -1,0 +1,26 @@
+{
+  "task": "0c65eef46a03e935fffea7083a56a8856f62b4e781526dd3adb9aae0b82df169",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "mode": "service socket",
+  "closed_pids": [
+    89188,
+    119580
+  ],
+  "control_pid": 12692,
+  "control_alive": true,
+  "answered_after_close": false,
+  "physical_exit_readback_ms": 31,
+  "preview_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+  "request_id": "q05-macos-registered-business-worker-close",
+  "issue_number": 2126,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+  "independent_run_sha256": "be21bc372491ca81f9aac754be1e101046f2b83ae57699d60cd2592af5c4f584",
+  "workflow_state": "stage-reached",
+  "pending": {
+    "kind": "stage-confirmation",
+    "task": "0c65eef46a03e935fffea7083a56a8856f62b4e781526dd3adb9aae0b82df169"
+  },
+  "original_frozen_control": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731#issuecomment-7083710413",
+  "native_macos": "pending",
+  "command": "python tests/editor/run_macos_registered_worker_close.py --report report.json"
+}

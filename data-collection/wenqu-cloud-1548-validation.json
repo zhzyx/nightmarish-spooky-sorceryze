@@ -1,0 +1,67 @@
+{
+  "request_id": "wenqu-cloud-20261119",
+  "issue_number": 1548,
+  "recorded_at": "2026-11-19T07:27:57.789077+00:00",
+  "web_build": {
+    "command": "pnpm build",
+    "result": "passed",
+    "node": "existing Codex Node runtime",
+    "package_manager": "pnpm 11.25.0"
+  },
+  "browser": {
+    "environment": "isolated local SQLite with explicit legacy actor configuration",
+    "tool": "cua_repl",
+    "checks": [
+      "Create document through docs page",
+      "Edit title and body, save version3",
+      "Reload and observe saved title and body",
+      "Second body edit, save version4",
+      "Reload and observe version4 and second body paragraph"
+    ],
+    "result": "passed",
+    "registration_browser": "not exercised; HTTPS cookie registration covered by TestClient tests"
+  },
+  "merge_tenant_tests": {
+    "command": ".venv-wenqu/Scripts/python.exe -m pytest customizations/components/tianxuan/server/test_api_merge.py customizations/components/tianxuan/server/test_api_tenant_mutations.py -q",
+    "result": "54 passed",
+    "warnings": "Starlette httpx deprecation"
+  },
+  "files": [
+    {
+      "path": "apps/tianxuan/app/docs/page.tsx",
+      "sha256": "64e3a60870884bcfd44e700bdeaf1db32752c28ac81da0265831fbdfcda067fb"
+    },
+    {
+      "path": "apps/tianxuan/components/CreateDoc.tsx",
+      "sha256": "194c3c1804c751b951a2841fa28dc013f4c424532c233a63a794b8e0f3048f2e"
+    },
+    {
+      "path": "apps/tianxuan/components/DocEditor.tsx",
+      "sha256": "1c15386ed51a66602d868aff3f94bd5086a647d89bf95e57c7f39e43039bb7bc"
+    },
+    {
+      "path": "apps/tianxuan/app/login/page.tsx",
+      "sha256": "281904b5555b8f6957e50b59292efcbb1c52fa64513a608472ba9b570e5a5c0b"
+    },
+    {
+      "path": "apps/tianxuan/lib/api.ts",
+      "sha256": "5372e2599a5c9283c8d79719cb47bc9ec4c13943d45df692f67b3342e0552bef"
+    },
+    {
+      "path": "apps/tianxuan/lib/server-api.ts",
+      "sha256": "05427bd83fe92b961e000215f5affe23a318da900bf39390ac2d9834b9672cc1"
+    }
+  ],
+  "production": {
+    "inspection": "SSH connectivity and existing API/Web/proxy containers verified read-only",
+    "changed": false,
+    "deployment_owner": "integration issue1550",
+    "remaining": "Production authentication choice and deployment acceptance coordinated by integration owner"
+  },
+  "limitations": [
+    "Search uses existing full scan; no large-corpus latency claim",
+    "Body read budget excludes directory metadata",
+    "Title and body save through separate version-checked writes"
+  ],
+  "line_endings": "UTF-8 LF normalized to match Git index; no semantic changes"
+}

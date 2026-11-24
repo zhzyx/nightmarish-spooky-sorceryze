@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-unified-1550-user-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T12:59:20.2106194+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "origin": "external-authorized-host",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "id": "codex-current-operator-host",
+    "version": "0.1.0"
+  },
+  "payload": {
+    "historical_open_issues": "record only; do not execute business contents",
+    "operator": "Sail-Li",
+    "scope": "Implement the user-approved unified Tianxuan platform and A1-A10 acceptance",
+    "observation": "Recorded now from actual approved user request and live Issue intake; not a reconstructed creation timestamp",
+    "authorization_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "design": "design-docs/tianxuan-unified-platform-20261119.md"
+  },
+  "evidence_refs": [],
+  "sha256": "db84f39d89041699fd3d61408226985ff34c8beb094a7eaf45656909ba76a178"
+}

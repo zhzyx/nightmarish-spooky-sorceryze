@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a639c5da7b1aebc86146d7ea567d6185c01b4ac1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-migration-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "974ec769d9799df4a2333bcb3a09226581ef2c06a34668d104da3deb433283a7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1710",
+    "action": "delivery",
+    "detection_head": "02266a9fa7594d91ec3e8f635d8e28ba9f620057",
+    "context_sha256": "8bcdbef67c7e5c5727a99aba76abed6386ba751ed7c6addf8a57ee78107368b6",
+    "operator": "Sail-Li",
+    "worker": "round6-migration-delivery",
+    "authority_ref": "codex:mac-round6",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+    "diagnosis": "审查终态回执在首次暂存后才落盘，git-check 明确点名未跟踪的 dispatch-cc8734c5c33f44fc8f2780eaa17a8fc7.json。",
+    "next_action": "将本轮审查回执一并暂存，重新检查、签发并回读主线。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T14:16:05.252702+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T14:18:20.638495+00:00",
+  "sha256": "5737b15d81394cde697adfacf496b1e73af0b4bac4554a0b12bd847865cd8e4c"
+}

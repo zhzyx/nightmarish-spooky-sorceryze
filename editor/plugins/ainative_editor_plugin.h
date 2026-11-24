@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
 #include "editor/plugins/editor_plugin.h"
 
 class EditorDock;
@@ -45,6 +47,8 @@ class AINativeEditorPlugin : public EditorPlugin {
 
 	void _open_workbench();
 	void _prepare_workbench();
+	Dictionary PrepareSpecHandoff(const Dictionary &mapSnapshot, const Callable &callableValidate);
+	void ClearSpecHandoff();
 
 public:
 	virtual String get_plugin_name() const override { return U"马良"; }

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-161e834c368763a3ad6c6974dafd4f5f9cb7c0d4aedc7c1b71bf6d5384fbf2a3",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+  "occurred_at": "2026-11-22T10:44:30.626170+00:00",
+  "evidence_refs": [
+    "wave22-windows-outcome-1814",
+    "learn-6c59f5df64281c09c377aae8a6dbcf3b2b574f43a30d7b72e301aba756f156a4"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 13,
+    "previous": "8f4885c8598f7d4e3ef59a7b181012620a74cd52882badda7f57a7e8a3ddf20e",
+    "action": "applied",
+    "details": {
+      "task": "S10 #1814",
+      "observed": "将真实暂停、恢复和取消的按钮操作与持久回执、工作者启动次数核对。又以不同身份读取同一历史运行，验证回执一致，只有当前运行负责人能在工单详情执行相应操作。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s10.json",
+        "sha256": "103cda928b0bbc6c131ac56c9a4eb82506eff57bee72a0584415a0bc6c2316d5"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-outcome-combined.json",
+        "sha256": "94a113e34c771a4d43fdbac024516c683a51b4b5b7bbeaf8ef9f50abbb418a36"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s10/wave22-windows-outcome-1814.json",
+      "sha256": "eeb12a384ddfe08b7211dc4bad74a75e8b7453f5036c4bac6a025af8a96a6f42"
+    }
+  },
+  "sha256": "bb2aed90646b86a39dec8d5627794406ec75f26b147f232d2045334c1c0ea155"
+}

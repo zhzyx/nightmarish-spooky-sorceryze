@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-368763c533fc4f5cd1d207e1f34078b1f4b995d6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q06",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1739",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e3962b3bbb3f1485f613fae980597cb7526946c3e6e87e22506c24a25ff473ae",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1739",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2069",
+    "action": "validation",
+    "detection_head": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+    "context_sha256": "6dac41ff1cd2153c0cf1b525ecd23a5a0aeed01a4e4466e4839a827f894e9733",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/9793b67af36f371e151a69cf7fe4a9d98fbbfdca/tests/editor/gonggong_install_probe.gd",
+    "diagnosis": "The installation probe selects direct LineEdit children by position. The workspace and interpreter controls have moved to the common environment settings panel. The direct issue-number field is mistaken for the workspace. On Windows an editor helper can also hold the temporary project while it is being removed.",
+    "next_action": "Read the named product controls, run the original installation entry from an unrelated project, validate a deliberately mismatched workspace, and verify all Windows helpers of the probe have stopped.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T12:43:36.244551+00:00",
+    "attempted": null,
+    "repair_owner": "Windows installation verification worker",
+    "continuable": "K03 Windows restart and process-lifecycle baseline verification"
+  },
+  "occurred_at": "2026-11-22T12:46:14.182373+00:00",
+  "sha256": "e7fcf9a094806a9d032df05449962f784be27f01cc9ec8eeaa0f5d1d25632ac1"
+}

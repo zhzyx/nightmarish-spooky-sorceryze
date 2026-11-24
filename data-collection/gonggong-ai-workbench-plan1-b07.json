@@ -1,0 +1,56 @@
+{
+  "issue_number": 1719,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1719",
+  "request_id": "gonggong-ai-workbench-plan1-b07",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "artifacts": {
+    "design-docs/gonggong-ai-workbench-b07.md": "9544ae0c1b92ced197d3efe1b40d135e30ef423d"
+  },
+  "review": "从四个已验收的主线修订追溯关停、入口、工单权威及在途 PR 处置。独立审查者复核了候选文档 9544ae0c1b92ced197d3efe1b40d135e30ef423d 的链接、修订和接收卡。",
+  "verification": {
+    "checked": {
+      "dependency_merge_commits": {
+        "1873": "f1a4fe98b5568820786d2f87b943d1003ce31b7a",
+        "1870": "5750a0f0826da805bbe9a462826b030605e1ce59",
+        "1874": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+        "1853": "f90a589d1be50326e58c097ab528bcae13e5fac7"
+      },
+      "registered_tasks": 164,
+      "source_index_blob": "39bd5aaeb0d8a24e56203cea59cb0f6eb0287a32",
+      "open_pulls_at_review": [
+        {
+          "pr": 1661,
+          "author": "Sail-Li",
+          "head": "86fe0140398fa4a51fb37ae13432054979750889",
+          "destination": "Original GitHub review; G16/G23/G24 on disposition."
+        },
+        {
+          "pr": 1245,
+          "author": "Sail-Li",
+          "head": "30ae3066535e5b0edbdcb3d8ded87591b6526317",
+          "destination": "Original GitHub review; G16/G23/G24 on disposition."
+        },
+        {
+          "pr": 1234,
+          "author": "Sail-Li",
+          "head": "40bfbdc81916125a293cfb2e2ec01dc998fdb7d6",
+          "destination": "Original GitHub review; G16/G23/G24 on disposition."
+        },
+        {
+          "pr": 1216,
+          "author": "Sail-Li",
+          "head": "148c99da417903b7b9d9599057cc3818c1adfb26",
+          "destination": "Original GitHub review; G16/G23/G24 on disposition."
+        },
+        {
+          "pr": 645,
+          "author": "kaiyunxue",
+          "head": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+          "destination": "Original GitHub review; G16/G23/G24 on disposition."
+        }
+      ]
+    },
+    "source_links_verified": 10
+  },
+  "observed_at": "2026-11-21T04:47:24.723495+00:00"
+}

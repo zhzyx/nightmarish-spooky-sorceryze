@@ -1,11 +1,65 @@
 from __future__ import annotations
 
+import copy
+import json
 import unittest
+from pathlib import Path
 
 import submission_audit as audit
 
 
 class SubmissionAuditTests(unittest.TestCase):
+    def modular_profile(self, files):
+        registry = json.loads((Path(__file__).resolve().parents[3] / "tools/ci/modules.json").read_text())
+        return audit.classify_submission_diff(files, module_registry=registry)
+
+    def test_maliang_uses_existing_module_ci_including_embedded_runtime(self):
+        profile = self.modular_profile([
+            ("samples/ainative-workbench/addons/ainative/workbench.gd", True),
+            ("samples/ainative-workbench/artifact_node_acceptance.gd", False),
+            ("tools/ainative/test_prompt_refresh_factory.py", False),
+            ("design-docs/maliang.md", False),
+        ])
+        self.assertEqual(profile["ci_policy"], "module-registry")
+        self.assertEqual(set(profile["module_selection"]["modules"]), {"maliang", "docs"})
+        required = profile["yanluo_requirements"]["mandatory_ci_checks"]
+        self.assertIn("maliang-offline / editor / Editor (target=editor)", required)
+        self.assertIn("maliang-offline / package-and-run", required)
+        self.assertIn("CI / Modular tests", required)
+        self.assertNotIn("🏁 Windows / Editor (target=editor)", required)
+        self.assertTrue(profile["yanluo_requirements"]["independent_review_required"])
+
+    def test_module_ci_does_not_expand_new_host_files_into_engine_builds(self):
+        for modified in (False, True):
+            profile = self.modular_profile([("apps/tianxuan/app/new.tsx", modified)])
+            self.assertEqual(profile["module_selection"]["modules"], ["tianxuan"])
+            required = profile["yanluo_requirements"]["mandatory_ci_checks"]
+            self.assertIn("tianxuan-tests / Module and web tests", required)
+            self.assertIn("tianxuan-deploy / Docker images", required)
+            self.assertNotIn("🏁 Windows / Editor (target=editor)", required)
+        mixed = self.modular_profile(["apps/tianxuan/app/new.tsx", "core/new.cpp", "framework/AGENT.md"])
+        self.assertIn("Module / engine-core", mixed["yanluo_requirements"]["mandatory_ci_checks"])
+        self.assertTrue(mixed["yanluo_requirements"]["governance_admission_required"])
+        with self.assertRaisesRegex(ValueError, "Unregistered changed path"):
+            self.modular_profile(["unregistered_module/new.py"])
+
+    def test_required_modular_checks_cannot_be_missing_skipped_or_failed(self):
+        profile = self.modular_profile(["tools/ainative/test_prompt_refresh_factory.py"])
+        checks = [
+            {"name": name, "status": "COMPLETED", "conclusion": "SUCCESS"}
+            for name in profile["yanluo_requirements"]["mandatory_ci_checks"]
+        ]
+        audit.verify_ci_rollup(checks, audit_profile=profile)
+        for index in range(len(checks)):
+            with self.subTest(check=checks[index]["name"]):
+                with self.assertRaisesRegex(ValueError, "Mandatory CI check is missing"):
+                    audit.verify_ci_rollup(checks[:index] + checks[index + 1 :], audit_profile=profile)
+                for state in ("SKIPPED", "FAILURE", "CANCELLED"):
+                    changed = copy.deepcopy(checks)
+                    changed[index]["conclusion"] = state
+                    with self.assertRaises(ValueError):
+                        audit.verify_ci_rollup(changed, audit_profile=profile)
+
     def test_five_tier_diff_classification_and_mandatory_ci(self) -> None:
         reviewed = {"apps/tianxuan/app/page.tsx", "customizations/components/tianxuan/server/api.py"}
 

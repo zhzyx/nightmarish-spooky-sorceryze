@@ -1,0 +1,676 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "c38ec442392f230ec9e697730d21ab039026f9e0",
+  "editor_sha256": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "18c5a8ae34d7ac32fce8404c35bf00f5fdabf296",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "6e045004e59db38e451a06756c38a0123c6495a8",
+    "customizations/components/tianxuan/server/native_execution_host.py": "c6f5c333e175788dd8e880444c6d3d409d2ebbc4",
+    "customizations/components/tianxuan/server/test_workspace_conversations.py": "448bbb109c1bb2351ef08c97d8150ac98bc7af22",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5982a30df4f50d80af94d1b1d34a04275471da59",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "eaca80c794521a5c711495c1c0569ca0ffe471e6",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "5342849bec4e356c81dd0e01cf17daa269b64221",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "9c46da868a83a38f3a51af72e82e80338720c7c9",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "f90e542b4b4a4223d6c99c129d2193f5488eacdc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_capability_stage.py": "46e08b75293613cf2006bbf245ebcc1addd23f3c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py": "1202c3730b328224e27c456aabf73e2936a284b4",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": "3705cad95826f40ec9797f68eee30bd1b77e9197",
+    "editor/docks/workbench/issue_actions/issue_comments.gd": "08bf100dfbd95bd0ed1793ea3c5319ecac3121a1",
+    "editor/docks/workbench/module_selector.gd": "5265dd5f6eceeea4645b86b3a8f8ef5325c35a99",
+    "tests/editor/run_workbench_issue_chat_comment.py": "5da4755ff6f531c268d2ab6ee445a494076d93c9",
+    "tests/editor/run_workbench_issue_consultation.py": "78f638d7f0817c5332c6529d412452c43e4499b6",
+    "tests/editor/workbench_issue_chat_comment.gd": "e83e7c7b6c9f2e594ff93fd881024b10f01a27d2"
+  },
+  "checks": {
+    "s01": "3bf13366fca991234f4ea72b79c674bbbb6ba49dafa56028b3f69b171361e079",
+    "a04": "d77b0e4afdc990cd6e713897a34699e40070cbbf965e4584414f1569096f61df",
+    "i16": "50a3f4d735bff2e0cd69209fd2e3951c8ad310b7cda25357da36376d65ec5df1",
+    "i05": "83622c170157471eb772ac2e4d3546745c865e3a8eddf0c38c289a9962a1b1e9",
+    "u11": "4750fb2e963ada5d32a859832a2d0a3eb7123dcfa75701c42c5c399ed8d6b078",
+    "a02": "dc299464debc03ea9e9eb073fdd50af2987d5620fb0d92c6d47c3e08dbb4aaa6"
+  },
+  "issues": {
+    "s01": 1851,
+    "a04": 1841,
+    "i16": 1757
+  },
+  "observed": "2026-11-22T04:30:04.299360+00:00",
+  "verified_windows_build": {
+    "source_tree": "bdb9a7602a7c6d84ea8f0ef3afdcde5d9244c1b8",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+      "godot.windows.editor.x86_64.console.exe": "1a8d2a59268e9d4a8c16e113b2e418a43ffd0c20adfb8a1ea0ea67366b65c617",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": []
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "customizations/components/tianxuan/server/test_issue_comments.py",
+      "customizations/components/tianxuan/server/test_issue_classification.py",
+      "customizations/components/tianxuan/server/test_task_confirmations.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py"
+    ],
+    "passed": 89,
+    "summary": "89 passed, 1 warning in 87.16s (0:01:27)",
+    "source_tree": "1b005c852c6eb720815d163882e13ffd0a85b24f"
+  },
+  "shared_operation": {
+    "passed": true,
+    "source_tree": "1b005c852c6eb720815d163882e13ffd0a85b24f",
+    "editor_sha256": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+    "native_comment_report": "50a3f4d735bff2e0cd69209fd2e3951c8ad310b7cda25357da36376d65ec5df1",
+    "capability_stage": {
+      "ticket": "e715f035f8c857f68603a10c6a7a306cf10d5d08cd9da8472903af179292f272",
+      "missing": [
+        "animation"
+      ],
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "stage": "stage-reached",
+      "process_count": 1,
+      "delivery_calls": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "service_test": "customizations/components/tianxuan/sinan-workorders/test_native_capability_stage.py"
+  },
+  "normalized_sources": [
+    {
+      "path": "design-docs/gonggong-ai-workbench-s01.md",
+      "worker_git_blob": "1a38d9e59d76794be7e12a59641af99025b7d926",
+      "integrated_git_blob": "27d2edd5369f2ba1abc28a9f82f01b041dfc340d",
+      "reason": "file-format removed one extra newline at EOF"
+    },
+    {
+      "path": "tests/editor/run_workbench_issue_chat_comment.py",
+      "worker_git_blob": "4a5caa91235e991342b8136bd807500fc27a76ad",
+      "integrated_git_blob": "5da4755ff6f531c268d2ab6ee445a494076d93c9",
+      "reason": "typed the request trace as HTTP method, path, status for repository mypy"
+    }
+  ],
+  "validation_scripts": {
+    "i16": [
+      "run_workbench_issue_chat_comment.py"
+    ],
+    "i05": [
+      "run_workbench_issue_comments.py"
+    ],
+    "u11": [
+      "run_workbench_issue_consultation.py"
+    ],
+    "a02": [
+      "run_workbench_task_confirmations.py"
+    ]
+  },
+  "card_service_tests": {
+    "s01": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py"
+    ],
+    "a04": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py"
+    ]
+  },
+  "worker_sources": {
+    "s01": "c55433521d6dd05d7e420525c7940391f8409fad",
+    "a04": "435c79b4d259a60d398c4533282954c5921f64ae",
+    "i16": "9d7223f1470fba65a7365c8d5f458ccd2734b460"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2019",
+  "results": {
+    "s01": {
+      "state": "passed",
+      "issue": 1851,
+      "request_id": "gonggong-ai-workbench-plan1-s01",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py"
+        ],
+        "passed": 2,
+        "summary": "2 passed, 1 warning in 2.58s",
+        "source_tree": "1b005c852c6eb720815d163882e13ffd0a85b24f"
+      }
+    },
+    "a04": {
+      "state": "passed",
+      "issue": 1841,
+      "request_id": "gonggong-ai-workbench-plan1-a04",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py"
+        ],
+        "passed": 6,
+        "summary": "6 passed, 1 warning in 7.60s",
+        "source_tree": "1b005c852c6eb720815d163882e13ffd0a85b24f"
+      }
+    },
+    "i16": {
+      "editor_sha256": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+      "routes": {
+        "unchanged_sibling": {
+          "issue_id": "iss_c9cedb2469d249839526b38a5b849341",
+          "document_id": "doc_631828f8f01b408e9e13baa0ada6f63e",
+          "version": 1,
+          "stage": "工单评论",
+          "target_revision": 1,
+          "issue_revision": "89c2d5c5f4f1acacdf3cf70bd4512088e3b6ba0dd417c427eee14b9de3de5372",
+          "revision": 0,
+          "status": "pending",
+          "responsible_user": "usr_9ac19b8585554f3caa61333ae72fa530",
+          "confirmed_by": null
+        },
+        "title": "审核桥梁",
+        "consultation_counts": [
+          0,
+          0
+        ],
+        "drafts": [
+          {
+            "expected_version": 2,
+            "issue": {
+              "kind": "issue",
+              "object_id": "iss_886ac28f932048868a112db9c90e892b",
+              "revision": "b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca"
+            },
+            "body": "建议复核第 1 项的验收记录。",
+            "turn_id": "006184b4-ae74-4516-a19c-ad1bcd90e10a",
+            "target_revision": 3,
+            "confirmation_revision": 4
+          },
+          {
+            "expected_version": 2,
+            "issue": {
+              "kind": "issue",
+              "object_id": "iss_c9cedb2469d249839526b38a5b849341",
+              "revision": "89c2d5c5f4f1acacdf3cf70bd4512088e3b6ba0dd417c427eee14b9de3de5372"
+            },
+            "body": "建议复核第 2 项的验收记录。",
+            "turn_id": "2330652a-e67f-4196-aaef-cc055ef086b5",
+            "target_revision": 1,
+            "confirmation_revision": 1
+          }
+        ],
+        "denied": {
+          "other_issue": 409,
+          "different_body": 409,
+          "stale_view": 409,
+          "old_confirmation": 409,
+          "pending_sibling": 409,
+          "other_chat": 409,
+          "other_actor": 404,
+          "revoked": 409,
+          "wrong_stage": 403,
+          "reconfirmed_since_preview": 409
+        },
+        "confirmed_stage": {
+          "issue_id": "iss_886ac28f932048868a112db9c90e892b",
+          "document_id": "doc_631828f8f01b408e9e13baa0ada6f63e",
+          "version": 1,
+          "stage": "工单评论",
+          "target_revision": 3,
+          "issue_revision": "b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca",
+          "revision": 4,
+          "status": "confirmed",
+          "responsible_user": "usr_9ac19b8585554f3caa61333ae72fa530",
+          "confirmed_by": "usr_9ac19b8585554f3caa61333ae72fa530"
+        },
+        "native": {
+          "manual_draft_preserved": true,
+          "preview": "建议复核第 1 项的验收记录。",
+          "reopened": true,
+          "selected_comment": {
+            "author": "usr_9ac19b8585554f3caa61333ae72fa530",
+            "author_name": "owner",
+            "body": "建议复核第 1 项的验收记录。",
+            "created_at": "2026-11-22T04:29:25.337273+00:00",
+            "id": "icmt_1720eb288b7b438f83bf5e6fca695548",
+            "issue_id": "iss_886ac28f932048868a112db9c90e892b",
+            "parent_id": null,
+            "tenant_id": "ten_29ca72a8e4ce4a2a833a0058b742423e"
+          },
+          "sibling_rows": 0
+        },
+        "native_publications": [
+          [
+            "POST",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/issue-comment",
+            200
+          ]
+        ],
+        "http_threads": [
+          [
+            {
+              "id": "icmt_1720eb288b7b438f83bf5e6fca695548",
+              "tenant_id": "ten_29ca72a8e4ce4a2a833a0058b742423e",
+              "issue_id": "iss_886ac28f932048868a112db9c90e892b",
+              "author": "usr_9ac19b8585554f3caa61333ae72fa530",
+              "body": "建议复核第 1 项的验收记录。",
+              "created_at": "2026-11-22T04:29:25.337273+00:00",
+              "author_name": "owner",
+              "parent_id": null
+            }
+          ],
+          []
+        ],
+        "independent_sqlite": [
+          [
+            [
+              "icmt_1720eb288b7b438f83bf5e6fca695548",
+              "usr_9ac19b8585554f3caa61333ae72fa530",
+              "建议复核第 1 项的验收记录。"
+            ]
+          ],
+          []
+        ],
+        "retry_comment": "icmt_1720eb288b7b438f83bf5e6fca695548",
+        "http": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/1/artifacts",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/1/detail",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/2/artifacts",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/2/detail",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/hierarchy",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/lifecycle",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/flow",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/plan",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/hierarchy",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/lifecycle",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/work/flow",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/work/plan",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/native/issues/iss_886ac28f932048868a112db9c90e892b/revisions",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/native/issues/iss_c9cedb2469d249839526b38a5b849341/revisions",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/d21bbf20-444a-5d72-998e-bac634217ec4",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/issue-comment",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/issue-comment",
+            403
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/issue-comment",
+            404
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/issue-comment",
+            409
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/d21bbf20-444a-5d72-998e-bac634217ec4/issue-comment",
+            409
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/for-issue/iss_886ac28f932048868a112db9c90e892b",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/for-issue/iss_c9cedb2469d249839526b38a5b849341",
+            200
+          ]
+        ]
+      },
+      "native": {
+        "identity": {
+          "id": "usr_9ac19b8585554f3caa61333ae72fa530",
+          "name": "owner",
+          "project": "u11/studio",
+          "role": "admin"
+        },
+        "logout_cleared": true,
+        "records": [
+          {
+            "chat": "2bf13dcd-a355-5474-b1e6-651a6a0399b9",
+            "issue": "iss_886ac28f932048868a112db9c90e892b",
+            "mode_label": "仅咨询 · #1 · b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca",
+            "revision": "b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca",
+            "turn": "006184b4-ae74-4516-a19c-ad1bcd90e10a"
+          },
+          {
+            "chat": "d21bbf20-444a-5d72-998e-bac634217ec4",
+            "issue": "iss_c9cedb2469d249839526b38a5b849341",
+            "mode_label": "仅咨询 · #2 · 89c2d5c5f4f1acacdf3cf70bd4512088e3b6ba0dd417c427eee14b9de3de5372",
+            "revision": "89c2d5c5f4f1acacdf3cf70bd4512088e3b6ba0dd417c427eee14b9de3de5372",
+            "turn": "2330652a-e67f-4196-aaef-cc055ef086b5"
+          }
+        ],
+        "reopened_first": true
+      },
+      "http": [
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/issues/iss_886ac28f932048868a112db9c90e892b/revisions",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/lifecycle",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/artifacts",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/flow",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/for-issue/iss_886ac28f932048868a112db9c90e892b",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/2bf13dcd-a355-5474-b1e6-651a6a0399b9/turns",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/2/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/lifecycle",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/2/artifacts",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/issues/iss_c9cedb2469d249839526b38a5b849341/revisions",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c9cedb2469d249839526b38a5b849341/work/flow",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/for-issue/iss_c9cedb2469d249839526b38a5b849341",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/d21bbf20-444a-5d72-998e-bac634217ec4/turns",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/lifecycle",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/artifacts",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/issues/iss_886ac28f932048868a112db9c90e892b/revisions",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_886ac28f932048868a112db9c90e892b/work/flow",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/for-issue/iss_886ac28f932048868a112db9c90e892b",
+          200
+        ]
+      ],
+      "turns": [
+        {
+          "conversation": "2bf13dcd-a355-5474-b1e6-651a6a0399b9",
+          "turn": {
+            "id": "006184b4-ae74-4516-a19c-ad1bcd90e10a",
+            "content": "咨询 0\n\n[工单详情 · 仅作为引用]\n#1 审核桥梁\n\n验收：桥面\n负责人：未分配\n状态：backlog",
+            "state": "answered",
+            "answer": "建议复核第 1 项的验收记录。",
+            "model": "fixture",
+            "error": null,
+            "context_snapshot": {
+              "project": "u11/studio",
+              "module_id": "default",
+              "issue_id": "iss_886ac28f932048868a112db9c90e892b",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_886ac28f932048868a112db9c90e892b",
+                  "revision": "b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca"
+                }
+              ]
+            },
+            "issue_comment": {
+              "id": "icmt_1720eb288b7b438f83bf5e6fca695548",
+              "actor": "usr_9ac19b8585554f3caa61333ae72fa530",
+              "authorization": {
+                "expected_version": 2,
+                "turn_id": "006184b4-ae74-4516-a19c-ad1bcd90e10a",
+                "issue": {
+                  "kind": "issue",
+                  "object_id": "iss_886ac28f932048868a112db9c90e892b",
+                  "revision": "b481552c12151c0e9a1b7dc53eff3a90e47a762f1b7847793c995cb53d9f85ca"
+                },
+                "target_revision": 3,
+                "confirmation_revision": 4
+              }
+            }
+          }
+        },
+        {
+          "conversation": "d21bbf20-444a-5d72-998e-bac634217ec4",
+          "turn": {
+            "id": "2330652a-e67f-4196-aaef-cc055ef086b5",
+            "content": "咨询 1\n\n[工单详情 · 仅作为引用]\n#2 审核桥梁\n\n验收：栏杆\n负责人：未分配\n状态：backlog",
+            "state": "answered",
+            "answer": "建议复核第 2 项的验收记录。",
+            "model": "fixture",
+            "error": null,
+            "context_snapshot": {
+              "project": "u11/studio",
+              "module_id": "default",
+              "issue_id": "iss_c9cedb2469d249839526b38a5b849341",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_c9cedb2469d249839526b38a5b849341",
+                  "revision": "89c2d5c5f4f1acacdf3cf70bd4512088e3b6ba0dd417c427eee14b9de3de5372"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "changed_revision": "bf5a5e087ccc0294d5d64f0bbcdb033c7f4cc147a1af6ab5b27d98c95744e3fd",
+      "stale_status": 409,
+      "stored_executions": 0,
+      "other_account_chat_read": 404,
+      "model_transport": "isolated fixture"
+    }
+  }
+}

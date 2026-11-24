@@ -1,0 +1,129 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g05",
+  "issue_number": 1823,
+  "observed_at": "2026-11-21T06:10:20.291643+00:00",
+  "source_baseline": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb",
+  "git": "git version 2.53.0.windows.3",
+  "python": "3.12.14",
+  "input_git_blobs": {
+    "customizations/components/tianxuan/migration/history_git.py": "982fe1b2f2b620c4bfd3257af40e1e01bcc39db4",
+    "customizations/components/tianxuan/server/migration_history_api.py": "17638c0c10424a030b8ace952ad6574e77e4f2ef",
+    "customizations/components/tianxuan/server/test_migration_tags.py": "72732593b48e20f19f96986836c67189c617de35",
+    "customizations/components/tianxuan/migration/import_git_history.py": "19b207c7f477847fde4bc228a9b0d57e3bbef884",
+    "design-docs/gonggong-ai-workbench-g05.md": "81c7bb649ae846129753718a10f79d2de2f5db4f"
+  },
+  "target_readback": {
+    "publication": {
+      "source": "sample/repo",
+      "source_revision": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+      "records_sha256": "02f8a6f43f9a8c38bde3b69793b4f301c16160a5f52ae3db313aeae25a8e9ac5",
+      "counts": {
+        "commit": 1
+      },
+      "binary_count": 2,
+      "catalog_sha256": "554b7fc20cd27fec2b40b2b5ef78a605fea94aa625669cc3c23a7e5fccaa4e6d",
+      "module": "migration-8a8097e6a315eb6bbe8c7dece86a45b8eb3f6d51b72b9a691d299fa61840e052",
+      "revision": "2d8a7e7d5f82f9d53808d06c6c0b104f05ad0eda7e9a7655a15f115a23250a45",
+      "historical_policy": "record_only",
+      "tenant": "ten_fe2dce201aaa48f9af0c8bb7c9aabdbd",
+      "project": "isolated",
+      "published_by": "usr_a5c205c485b24e08b818e1bf6f348165",
+      "published_at": "2026-11-21T06:08:15.641975+00:00",
+      "imported_at": "2026-11-21T06:08:15.629739+00:00"
+    },
+    "capture": {
+      "source": "https://github.com/sample/repo.git",
+      "head": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+      "refs": {
+        "refs/heads/main": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+        "refs/tags/light": "16c757695c4d1d00dcf51816097ac13c07b3e225",
+        "refs/tags/release/outer": "ce2773d30aa7abc521f701b86161f919a3cb25ae",
+        "refs/tags/signed": "7cd671ad0082d361976ae00f3299addbbcbd0061"
+      },
+      "commit_count": 1,
+      "bundle": "history.bundle",
+      "bundle_sha256": "ba60320e125ad4c7e89de7043bc6cf26486099715a55e590a634023da0801f52",
+      "bytes": 1118,
+      "lfs_objects": [],
+      "submodule_repositories": "not verified"
+    },
+    "tags": [
+      {
+        "ref": "refs/tags/light",
+        "oid": "16c757695c4d1d00dcf51816097ac13c07b3e225",
+        "kind": "lightweight",
+        "target_oid": "16c757695c4d1d00dcf51816097ac13c07b3e225",
+        "target_type": "blob",
+        "peeled_oid": "16c757695c4d1d00dcf51816097ac13c07b3e225",
+        "peeled_type": "blob"
+      },
+      {
+        "ref": "refs/tags/release/outer",
+        "oid": "ce2773d30aa7abc521f701b86161f919a3cb25ae",
+        "kind": "annotated",
+        "target_oid": "7cd671ad0082d361976ae00f3299addbbcbd0061",
+        "target_type": "tag",
+        "peeled_oid": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+        "peeled_type": "commit"
+      },
+      {
+        "ref": "refs/tags/signed",
+        "oid": "7cd671ad0082d361976ae00f3299addbbcbd0061",
+        "kind": "annotated",
+        "target_oid": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+        "target_type": "commit",
+        "peeled_oid": "bb3fd7b1ecccaf5a672bc0ab7d924f10d9665030",
+        "peeled_type": "commit"
+      }
+    ],
+    "verified_signed_oid": "7cd671ad0082d361976ae00f3299addbbcbd0061",
+    "source_tag_sha256": "64f983c72fca13b6c8e66fc30645ae226ef7bf94600b05f6be3401595fcf3aad",
+    "received_tag_sha256": "64f983c72fca13b6c8e66fc30645ae226ef7bf94600b05f6be3401595fcf3aad",
+    "signed_size": 57824,
+    "page_bytes": [
+      49152,
+      8672
+    ],
+    "allowed_signer": "release@example.invalid ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIjvnBkH1oKu6IBXpEYTt7hm4Q1u8OcOik9nbXGa+/I6 release@example.invalid",
+    "source_bundle_base64": "IyB2MiBnaXQgYnVuZGxlCmJiM2ZkN2IxZWNjY2FmNWE2NzJiYzBhYjdkOTI0ZjEwZDk2NjUwMzAgcmVmcy9oZWFkcy9tYWluCjE2Yzc1NzY5NWM0ZDFkMDBkY2Y1MTgxNjA5N2FjMTNjMDdiM2UyMjUgcmVmcy90YWdzL2xpZ2h0CmNlMjc3M2QzMGFhN2FiYzUyMWY3MDFiODYxNjFmOTE5YTNjYjI1YWUgcmVmcy90YWdzL3JlbGVhc2Uvb3V0ZXIKN2NkNjcxYWQwMDgyZDM2MTk3NmFlMDBmMzI5OWFkZGJiY2JkMDA2MSByZWZzL3RhZ3Mvc2lnbmVkCmJiM2ZkN2IxZWNjY2FmNWE2NzJiYzBhYjdkOTI0ZjEwZDk2NjUwMzAgSEVBRAoKUEFDSwAAAAIAAAAFngp4nJ3LQQrCMBBG4X1Okb0gY5jGBEQ8Q28wSf7iQNJKjNLjK3gD3+rbvNEByym4qWTPLiePFIU8YeK0hOKjC2FJAEdiI69x37qdUSFP2Ev/4YZd2qPiqOtbqparPZ0jR0/f7IECkclbazoG/pqNrjpUqvkAsWc2LDt4nCtJTE9PTVFIyslPAgAZbwQsxwl4nC2M3QoCIRBG732KuQ9q3A1dIZaeoTcYnWkxTBezqLfPfj44N+fAV/xFQgMb2FhNjDgNPBrtrCFBPI+Dc8TsffC9Ga3aaxVotKgOVElCN9mVe5P6MYtUOP0kHP71KE+6rkm2MT8oRZ5BW7d3BvtggxOiUt8DoJxLoxZLVm9CGjB0wJ4ceJzt0E1PGkEcB+A7n2LvpnUBgZK0TVUo4gsKLGK4LcuCvCNgUT99QZueeu7p+SWT/J5/ZiaTWfYnabIN+v38cFDqZ9MkSeJhIS6Wcv0kjPulQTl3MsyGg3KxWAjzYWb7ukqDZDmfj7eZbTwKNuPRIh0c6ihdB610lsabNPi6/ig/0pd4vpqln8eLX/FsPPgeZEvlk3Ix3Cc4Cr+EYSbzZ2uwWG7TDRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERER0X/Wp0POqrV6I2i3L4J2vdY4jTqt6vs808k26p1wdnF6SHO/KjeHdp3kG8vr7v30ZtLJ3kTTw2w0vj1Kas1hd/RUWo5+ptPW423+udZ/rHQzpV1hV7yKcoNt0luXvkyWhwOVXm4Wnv5N7y2uVfeX1ff9LDpMzvONt/g8O+tV6tlGVC1k3h9xV0ubrfK6vOpOCuvF83F/z5dN5fjhbt5sP+/K4cvVsjjILcJaZdFrXfYW59FDYba4G0aPrWnhfvCWyafzytPmNUpn06gVrraXrftd+O3jJ6qNyr/+4TfLA9osIHicAwAAAAAB/awy4j56jKSeFnZR+851GeZvxgU=",
+    "restored_signature_verification": {
+      "exit_code": 0,
+      "oid": "7cd671ad0082d361976ae00f3299addbbcbd0061",
+      "message": ""
+    }
+  },
+  "test_runs": [
+    {
+      "command": "python -m pytest -q -o junit_family=legacy --junitxml=.g05-junit.xml --basetemp=.g05-runs customizations/components/tianxuan/server/test_migration_tags.py customizations/components/tianxuan/server/test_migration_history_api.py customizations/components/tianxuan/migration/test_import_git_history.py customizations/components/tianxuan/migration/test_history_git.py customizations/components/tianxuan/migration/test_archive.py",
+      "observed": "12 passed, 1 warning, 14 subtests passed in 12.48s",
+      "warning": "Installed FastAPI TestClient emitted StarletteDeprecationWarning about httpx."
+    }
+  ],
+  "main_integration": {
+    "main": "559c54fa8242f2ec48c21269073d92c3ff437071",
+    "worker_base": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb",
+    "worker_receipt_blob": "ab24ba365b8c50a20389600577875f3b8f6298fc",
+    "original_and_integrated_blobs": {
+      "customizations/components/tianxuan/migration/history_git.py": {
+        "base": "0763f31727dd86cfb41b92e54b01991c6abd13a2",
+        "main": "ab7132ad2fa828c10b214c7f367c0aa5ab53955e",
+        "worker": "982fe1b2f2b620c4bfd3257af40e1e01bcc39db4",
+        "integrated": "306d44ddabf1bba90a3e2372ce0494ca92e9e850"
+      },
+      "customizations/components/tianxuan/server/migration_history_api.py": {
+        "base": "5aceea4d01130f7fdcc1218799ab5a2d99a3ed74",
+        "main": "22ce2d0f47b6a4ad351a130e4e97cb6c4a0e1b2c",
+        "worker": "17638c0c10424a030b8ace952ad6574e77e4f2ef",
+        "integrated": "709c6adfa1a5b8fc23aeb1229efcec0f992e20a2"
+      }
+    },
+    "final_artifacts": {
+      "customizations/components/tianxuan/migration/history_git.py": "306d44ddabf1bba90a3e2372ce0494ca92e9e850",
+      "customizations/components/tianxuan/server/migration_history_api.py": "709c6adfa1a5b8fc23aeb1229efcec0f992e20a2",
+      "customizations/components/tianxuan/server/test_migration_tags.py": "72732593b48e20f19f96986836c67189c617de35",
+      "design-docs/gonggong-ai-workbench-g05.md": "81c7bb649ae846129753718a10f79d2de2f5db4f"
+    },
+    "verification": "G04 分支和 G05 标签共用的两处 API 在最新主线上完成三方整合，独立复核 HTTP、AI、租户及精确修订校验；目标测试最终 5 项通过。",
+    "observed_at": "2026-11-21T06:38:47.879458+00:00"
+  }
+}

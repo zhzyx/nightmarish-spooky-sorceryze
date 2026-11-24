@@ -1,0 +1,48 @@
+{
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "issue_number": 2009,
+  "source": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d",
+  "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+  "observed": "2026-11-22T00:35:42.588630+00:00",
+  "initial_evidence": "data-collection/kuafu-2009-parent-reconfirmation.json",
+  "fixture_input_corrections": [
+    "Look up model controls under their current editor dock and settings under the settings panel.",
+    "Include the mock issue title returned by the repository intake query.",
+    "Install the real provenance guard and its two dependencies with the isolated editor.",
+    "Keep its private application directory outside the mutable fixture workspace."
+  ],
+  "baseline": {
+    "intake_code": "INTAKE_LOCAL_FAILURE",
+    "missing_field": "title",
+    "missing_guard": true,
+    "private_directory_rejected": true
+  },
+  "reports": {
+    "legacy-semantic-private": {
+      "markers": [
+        "TASK_NATIVE_AUTHORIZATION_OK",
+        "TASK_NATIVE_RESTART_OK",
+        "TASK_TERMINAL_EXIT_CODES 0 0",
+        "MOCK_ERRORS []"
+      ],
+      "sha256": "9bdd5ed7c88245bdefcde0b4c4117ae42d299a6a2983723a63463981c8ac7dd5"
+    },
+    "legacy-semantic-import": {
+      "markers": [
+        "TASK_FIRST_IMPORT_NATIVE_OK",
+        "TASK_NATIVE_AUTHORIZATION_OK",
+        "TASK_NATIVE_RESTART_OK",
+        "TASK_TERMINAL_EXIT_CODES 0 0",
+        "MOCK_ERRORS []"
+      ],
+      "sha256": "92c3f8f80382f3e90a45405f21e5a736459e5d669ee6edf886e91fb6ddbd201b"
+    },
+    "legacy-semantic-default": {
+      "markers": [
+        "SEMANTIC_MOCK_HTTP_ACCEPTANCE_OK",
+        "MOCK_ERRORS []"
+      ],
+      "sha256": "8bbeb6568440e1acca1b8c25d6dd0c7cf03ec88ffdafa09c9e7d79772a9b7b33"
+    }
+  }
+}

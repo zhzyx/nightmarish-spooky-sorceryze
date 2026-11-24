@@ -80,7 +80,7 @@ class WindowsEditorArtifactTests(unittest.TestCase):
                 out.writestr(extra, b"injected")
         self.sha = "sha256:" + artifact.digest(self.source)
 
-    def restore(self, expected=None):
+    def restore(self, expected=None, *, local_archive=None):
         destination = self.root / "bin"
         responses = [
             self.run,
@@ -89,6 +89,7 @@ class WindowsEditorArtifactTests(unittest.TestCase):
         ]
 
         def download(cmd, stdout, check, timeout):
+            self.assertIsNone(local_archive, "A supplied archive should not be downloaded again")
             self.assertEqual(cmd[0], "/selected host/gh")
             self.assertEqual(cmd[-1], "repos/team/repo/actions/artifacts/42/zip")
             stdout.write(self.source.read_bytes())
@@ -98,7 +99,20 @@ class WindowsEditorArtifactTests(unittest.TestCase):
             patch.object(artifact.github_runtime, "resolve_gh", return_value="/selected host/gh"),
             patch.object(artifact.subprocess, "run", side_effect=download),
         ):
-            return artifact.restore("100", self.repo, "main", expected or self.inputs, destination, self.root)
+            return artifact.restore(
+                "100", self.repo, "main", expected or self.inputs, destination, self.root, local_archive=local_archive
+            )
+
+    def test_local_archive_uses_the_official_digest(self):
+        result = self.restore(local_archive=self.source)
+        self.assertEqual(result["archive_sha256"], self.sha)
+        self.assertEqual((self.root / "bin/godot.windows.editor.x86_64.exe").read_bytes(), self.exe)
+
+    def test_local_archive_rejects_tampering_before_extraction(self):
+        self.source.write_bytes(b"changed after download")
+        with self.assertRaisesRegex(ValueError, "SHA-256"):
+            self.restore(local_archive=self.source)
+        self.assertFalse((self.root / "bin").exists())
 
     def test_webview2_sdk_changes_invalidate_cached_editor(self):
         sdk = self.root / "thirdparty/webview2/sdk"

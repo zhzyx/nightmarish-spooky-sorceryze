@@ -1,0 +1,323 @@
+{
+  "issue_number": 1718,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1718",
+  "request_id": "gonggong-ai-workbench-plan1-k00",
+  "observed_at": "2026-11-21T05:46:52.428325+00:00",
+  "source_baseline": "ab02c5451b8e966b0b0408f776e21c836051ac2f",
+  "source_tree": "7ab3c772372c0e921ac3a796ac3118964ee898e0",
+  "artifacts": {
+    "design-docs/gonggong-ai-workbench-k00.md": "85b9db3ba90358747b2e2c8cc9825b9acf32ebf8"
+  },
+  "inputs": [
+    {
+      "card": "B01",
+      "issue": 1873,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-20T23:39:04Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1873#issuecomment-7053338737",
+      "accepted_by": "Sail-Li",
+      "pr": 1879,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "2fa4132bb713ad23953f282153ba6af3c2f37ac4",
+      "merge": "f1a4fe98b5568820786d2f87b943d1003ce31b7a",
+      "original_source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b01.md": "a3265af2edb2e971f4a963b097857494e6b2a3e4",
+        "data-collection/gonggong-ai-workbench-plan1-b01.json": "0c414aad0263ca31f374ea98f8808dbc9ebb336a"
+      },
+      "interfaces_at_baseline": {
+        "editor/editor_node.cpp": "0a05d837eb41c4097fbb2bdc43a972d0f6a5ea87",
+        "editor/editor_main_screen.cpp": "082a06fcdf7b5fe9ec907ba0367aeab48e58f14e",
+        "editor/docks/daqian/spatial_workbench.gd": "88640cd2ef8a83cab8958e3ccf8cec4926d3c674"
+      },
+      "direct_receivers": [
+        "B05",
+        "B06",
+        "B07"
+      ]
+    },
+    {
+      "card": "B02",
+      "issue": 1870,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-20T23:45:30Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870#issuecomment-7053450184",
+      "accepted_by": "Sail-Li",
+      "pr": 1882,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "96529eb03a85e8d76afed6bc264d3c1b4d37603f",
+      "merge": "5750a0f0826da805bbe9a462826b030605e1ce59",
+      "original_source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b02.md": "3310256ce307256355fe9b1ebb599663fb7545a6",
+        "data-collection/gonggong-ai-workbench-plan1-b02.json": "ad52305ae9a94e92faa866d0dbb3bcb741ca18d6"
+      },
+      "interfaces_at_baseline": {
+        "customizations/components/tianxuan/server/api.py": "653a8beae5597fba56e3b15799e17351097b2403",
+        "customizations/components/tianxuan/server/tianxuan_core.py": "dfa66b698d5a01e329b0c1aa035c0bedffbbd913",
+        "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "33fa7ffaf383d515e95d104643263b127b83cc83"
+      },
+      "direct_receivers": [
+        "B05",
+        "B07",
+        "C01",
+        "D14",
+        "I12"
+      ]
+    },
+    {
+      "card": "B03",
+      "issue": 1874,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-20T23:47:11Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1874#issuecomment-7053477649",
+      "accepted_by": "Sail-Li",
+      "pr": 1883,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "5c04b40af417354bd8c3492780fd5693e2bb438f",
+      "merge": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "original_source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b03.md": "b3101c353b421873d89929e6b09f3dbee32e23fb",
+        "data-collection/gonggong-ai-workbench-plan1-b03.json": "3b13430ae187e13194af63f0e1552926b5911cec"
+      },
+      "interfaces_at_baseline": {
+        "editor/docks/daqian/workspace.gd": "fb6b9f123549158eeba9952ba7a2d8af4a6ff20c",
+        "customizations/components/godot-host/issue_route.py": "e4a073fa20ac1ae3beaa0b924ed4899a0276a377",
+        "editor/docks/daqian/workflow_controller.gd": "0ddd0625d36c15fd620ebe25d77d886afd1f16f1"
+      },
+      "direct_receivers": [
+        "B06",
+        "B07",
+        "D01"
+      ]
+    },
+    {
+      "card": "B04",
+      "issue": 1853,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-20T23:37:38Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1853#issuecomment-7053314565",
+      "accepted_by": "Sail-Li",
+      "pr": 1878,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "adf1d8975e8df167917886857843cb69ca9bb618",
+      "merge": "f90a589d1be50326e58c097ab528bcae13e5fac7",
+      "original_source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b04.md": "ddd6167943b28512b034a92f1d6a7986e4c99c12",
+        "data-collection/gonggong-ai-workbench-plan1-b04.json": "0467df9333baa6bf048de10d53f9be17230fa04e"
+      },
+      "interfaces_at_baseline": {
+        "customizations/components/tianxuan/duobao/git_service.py": "f86fefdb0f302050b9fdcbc8a5edecc75dc6d1a3",
+        "customizations/components/tianxuan/migration/importer.py": "c953dea99dd1c8378c661c03413ec7e1fa51080f"
+      },
+      "direct_receivers": [
+        "B07",
+        "G01",
+        "G02"
+      ]
+    },
+    {
+      "card": "B05",
+      "issue": 1827,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-21T05:35:01Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827#issuecomment-7058017416",
+      "accepted_by": "Sail-Li",
+      "pr": 1889,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "a82e20f1a92a80c7d84d74651c28e3b0931698c3",
+      "merge": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+      "original_source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b05.md": "fc50823363e4adfc5eb5d75e39c697a8c3771731",
+        "data-collection/gonggong-ai-workbench-plan1-b05.json": "4dfeb0ba6f86e3010e48d4d1d0b7fcba859ec8f1",
+        "samples/gonggong-workbench/fixtures/b05/sample.py": "bdb6d9d8f1d34a29d7f7726df364221eeadc1b4e",
+        "samples/gonggong-workbench/fixtures/b05/sample.json": "c9aba384ebf6f8ffbcd99fc14e0983c53db71213",
+        "tests/data/models/suzanne.glb": "baedd49d75bb61bceb8a9bd522943f0b0b256727"
+      },
+      "interfaces_at_baseline": {
+        "samples/gonggong-workbench/fixtures/b05/sample.py": "bdb6d9d8f1d34a29d7f7726df364221eeadc1b4e",
+        "samples/gonggong-workbench/fixtures/b05/sample.json": "c9aba384ebf6f8ffbcd99fc14e0983c53db71213",
+        "tests/data/models/suzanne.glb": "baedd49d75bb61bceb8a9bd522943f0b0b256727"
+      },
+      "direct_receivers": [
+        "C03",
+        "K00"
+      ]
+    },
+    {
+      "card": "B06",
+      "issue": 1872,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-21T05:36:59Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1872#issuecomment-7058041829",
+      "accepted_by": "Sail-Li",
+      "pr": 1890,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "c16ea037babf14acccc4896161fa323543e7015f",
+      "merge": "ab02c5451b8e966b0b0408f776e21c836051ac2f",
+      "original_source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b06.md": "fdd30b74ff2ff005b4f03424569325a2680361c0",
+        "data-collection/gonggong-ai-workbench-plan1-b06.json": "8652ad624946234821021d9ae420d61573c83556"
+      },
+      "interfaces_at_baseline": {
+        "editor/SCsub": "c2a8be61b202c8341a339a82ffaed6182c74b4ad",
+        "editor/docks/daqian_dock.cpp": "d0c8b273ba8db3b5cf5498153df3efb742713549",
+        "tools/package_tianshu_ui.py": "61928f186bd41b706da084fe5483d3d4132923bf",
+        "editor/docks/ai_chat_gonggong.cpp": "08cdb9a3ad6f70666d10e026fe44f34c8ca339bb",
+        "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125"
+      },
+      "direct_receivers": [
+        "K00",
+        "U01"
+      ]
+    },
+    {
+      "card": "B07",
+      "issue": 1719,
+      "issue_state": "CLOSED",
+      "reason": "COMPLETED",
+      "label": "status:done",
+      "closed_at": "2026-11-21T04:49:27Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1719#issuecomment-7057504758",
+      "accepted_by": "Sail-Li",
+      "pr": 1884,
+      "pr_state": "MERGED",
+      "target": "main",
+      "signed_head": "d0e1126f750f3026edcef0fde9a31e37c05517be",
+      "merge": "4d0944182ed372012044cd0835e0377a198c3a95",
+      "original_source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "accepted_blobs": {
+        "design-docs/gonggong-ai-workbench-b07.md": "9544ae0c1b92ced197d3efe1b40d135e30ef423d",
+        "data-collection/gonggong-ai-workbench-plan1-b07.json": "856801f00403a79eb49304de6e1769b003476a71"
+      },
+      "interfaces_at_baseline": {
+        "design-docs/gonggong-ai-workbench-plan1.md": "36445f87b4bb477c67022ca4635409e04676bc3a",
+        "design-docs/tianshu-production-parallel.md": "49677a0372cabb799d93a715eff3a85ad5425abd",
+        "design-docs/duobao-native-workspace-20261117.md": "7605409abff1624dc60413e708b32a94fa9366b3"
+      },
+      "direct_receivers": [
+        "K00"
+      ]
+    }
+  ],
+  "verification": {
+    "method": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 23,
+      "applied": "Checked each signed candidate, target merge, common ancestor relationship, accepted blob identities, cited acceptance comment and completed source issue. Downstream cards retain their own dependencies."
+    },
+    "source_index": {
+      "blob": "36445f87b4bb477c67022ca4635409e04676bc3a",
+      "cards": 164,
+      "checked": "Direct M0 handoffs occur in both provider and receiver entries."
+    },
+    "git_compatibility": {
+      "cwd": "customizations/components/tianxuan/duobao",
+      "command": "python -B -X utf8 -m unittest -v test_git_service.GitServiceTests.test_import_mirror_preserves_branches_tags_and_head test_git_service.GitServiceTests.test_fast_forward_merge test_git_service.GitServiceTests.test_conflicting_merge_raises_and_leaves_clean_state test_git_service.GitServiceTests.test_create_and_delete_tag",
+      "exit_code": 0,
+      "output": "test_import_mirror_preserves_branches_tags_and_head (test_git_service.GitServiceTests.test_import_mirror_preserves_branches_tags_and_head) ... ok\r\ntest_fast_forward_merge (test_git_service.GitServiceTests.test_fast_forward_merge) ... ok\r\ntest_conflicting_merge_raises_and_leaves_clean_state (test_git_service.GitServiceTests.test_conflicting_merge_raises_and_leaves_clean_state) ... ok\r\ntest_create_and_delete_tag (test_git_service.GitServiceTests.test_create_and_delete_tag) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 8.361s\r\n\r\nOK",
+      "tag_ref": "refs/tags/gonggong-windows-x64-20261104-r2",
+      "source_commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+      "tree": "3a317a7ffb809b733f47223e5105df8dcec47b05",
+      "parents": [
+        "e6b9f5c8dad827af52a346f4b0342f30d2e2312f"
+      ]
+    },
+    "module_fixture": {
+      "command": "python -B -X utf8 samples/gonggong-workbench/fixtures/b05/sample.py",
+      "runtime": "3.12.14",
+      "exit_code": 0,
+      "resets": 2,
+      "runs": [
+        {
+          "tenant": "ten_528c3be9dee740d9ae0b1f1da8da298e",
+          "modules": {
+            "character-movement": {
+              "number": 1,
+              "issue": "iss_c17d5d7ad576416b8a80d2703fb40bdc",
+              "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+            },
+            "character-animation": {
+              "number": 2,
+              "issue": "iss_018613478bb94ff285448826c617b398",
+              "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+            }
+          },
+          "shared_model_reads": {
+            "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+        },
+        {
+          "tenant": "ten_37bac1e8c24048cc834b9a2e2017d8cf",
+          "modules": {
+            "character-movement": {
+              "number": 1,
+              "issue": "iss_7518e4882daa400682a41f3de81a1ea0",
+              "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+            },
+            "character-animation": {
+              "number": 2,
+              "issue": "iss_01ffbde720d94929a1c99849f72e6d99",
+              "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+            }
+          },
+          "shared_model_reads": {
+            "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+        },
+        {
+          "tenant": "ten_dad4732630364355b2b20f046a42bfe3",
+          "modules": {
+            "character-movement": {
+              "number": 1,
+              "issue": "iss_9caa0e4b681640688bd44dd07299a89a",
+              "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+            },
+            "character-animation": {
+              "number": 2,
+              "issue": "iss_d01fdfd48c5f4ec99b997adda5b5e7d1",
+              "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+            }
+          },
+          "shared_model_reads": {
+            "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+        }
+      ]
+    }
+  },
+  "handoff": {
+    "K01": "B01 entry inventory and B05 dual-module sample",
+    "K06": "B04 history identity and B07 review disposition map",
+    "additional_dependencies": "The K00 receiver checks each successor's other prerequisites after delivery."
+  }
+}

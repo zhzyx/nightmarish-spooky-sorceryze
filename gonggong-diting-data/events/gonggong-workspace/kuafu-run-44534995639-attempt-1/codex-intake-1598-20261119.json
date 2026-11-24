@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1598-20261119",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-44534995639-attempt-1",
+  "kind": "request",
+  "occurred_at": "2026-11-19T14:51:05.482155+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1598",
+  "agent": {
+    "version": "not-observed",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1598,
+    "title": "夸父阻塞：run-44534995639-attempt-1",
+    "updated_at": "2026-11-19T14:46:02Z",
+    "scope": "Repair stale editor tab-order regression and verify layout migrations under #1577 A1"
+  },
+  "evidence_refs": [],
+  "sha256": "99185439bf8c131c9c25194d629cd8e63209031e211ae50cc306d240a956307f"
+}

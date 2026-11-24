@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "request_id": "semantic-policy-20261120",
+  "issue": 1686,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1686",
+  "recorded_at": "2026-11-20T12:17:46.154898+00:00",
+  "baseline": "08d372816481013ac4d010240ffc2ee8dc2334c8",
+  "operator": "Sail-Li",
+  "authority_ref": "codex:user-request:semantic-policy-20261120",
+  "scope": "Current authorization, review, CI, execution, blocking, acceptance and cleanup instruction chain. Documentation-only correction; frozen definitions and runtime code unchanged.",
+  "corrections": [
+    "separate common framework authorization from actual GitHub ACL",
+    "separate ordinary installed-framework checks from new-definition governance",
+    "reuse applicable independent review; distinguish GitHub approval and user-reserved business judgment",
+    "bind any additional step to source, trigger and missing evidence",
+    "preserve real module CI and candidate binding; do not classify by suffix or tier alone",
+    "separate default PR route from optional host grant and alternative model runtimes",
+    "replace historical login, Issue/event IDs and registry observations with explicit current readback",
+    "route real blockers in the same event; distinguish normal run waiting",
+    "centralize closure, carry-over and task-owned resource cleanup"
+  ],
+  "local_checks": {
+    "documentation": {
+      "state": "passed",
+      "changed_docs": 13,
+      "relative_links": 54,
+      "removed_anchors": [
+        {
+          "path": "customizations/components/codex-dispatch/README.md",
+          "anchor": "codex-派发接入候选"
+        }
+      ],
+      "broken_inbound": [],
+      "errors": [],
+      "normative_characters": {
+        "before": 44936,
+        "after": 42639,
+        "reduction": 2297,
+        "percent": 5.11
+      }
+    },
+    "file_format": {
+      "command": "python3 misc/scripts/file_format.py <changed Markdown paths and design>",
+      "exit_code": 0,
+      "changed_files": []
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "frozen_and_runtime_diff": {
+      "changed": false
+    }
+  },
+  "independent_review": {
+    "worker_id": "/root/sinan_849e14e8e70c40ae",
+    "tool_reference": "collaboration.spawn_agent:/root/sinan_849e14e8e70c40ae",
+    "terminal_reference": "collaboration.list_agents:/root/sinan_849e14e8e70c40ae:completed",
+    "verdict": "passed",
+    "remaining_blockers": [],
+    "resolved_finding": "User-reserved product judgment must not automatically become GitHub approval; corrected and re-read by reviewer.",
+    "reviewed_manifest_sha256": "c446f68137a5a669172d92ff8bc54ffe636662cdcaab83c002c75a8a143b32a7",
+    "reviewed_diff_sha256": "a1e9819b9b6147ac12ba0afcaf0093d638d6ce6b5d055ea51f3288ace0359510",
+    "scenario_input_sha256": "2f52bd8c0dbdeae9f29e79df6fe52b4e2cf9b8914ce2c03371e30c6a92005982",
+    "observed_model": null,
+    "model_evidence": "Native host inheritance; exact observed model not returned.",
+    "scope": "Read-only full changed-document diff and referenced rule chain; spot checks of gate, baseline registry and current binding implementation.",
+    "scenario_answers_are": "Concise faithful summaries of the actual independent reviewer answers; root checked all 24 against the stated rules."
+  },
+  "scenarios": [
+    {
+      "id": 1,
+      "question": "普通业务修复，不修改框架/定义：正式门禁提到框架准入，是否需重新请共工及元衡审查？",
+      "reviewer_answer_summary": "执行已安装框架完整性与既有准入校验，不重开共工/元衡评价。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#术语与触发条件",
+        "framework/AGENTS.md"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 2,
+      "question": "更新 Agent 定义，既有任务授权和旧定义批准仍在：能否沿旧批准启用新候选？",
+      "reviewer_answer_summary": "新定义按精确对象取得适用准入，旧批准不覆盖新候选。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#术语与触发条件",
+        "framework/AGENTS.md"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 3,
+      "question": "WRITE 与 ADMIN 两人跨设备工作：共工操作授权和实际 GitHub 操作有何关系？",
+      "reviewer_answer_summary": "已准入共工操作授权等同；GitHub ACL、分支规则、独立职责及跨设备认领分别核对。",
+      "references": [
+        "Markdown/workflow/repository/README.md#权限与有效来源",
+        "Markdown/workflow/repository/README.md#codex-中已授权的-issue"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 4,
+      "question": "本人 PR、实际无必需 GitHub approval、有适用独立 Agent 审查，已邀请 CODEOWNER 但未回应：下一步？",
+      "reviewer_answer_summary": "适用独立审查及其他交付条件满足后本人继续合入，CODEOWNER 邀请本身不阻塞。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 5,
+      "question": "实际分支要求一名合格审批者，已有独立 Agent 报告：是否可合入？",
+      "reviewer_answer_summary": "取得实际分支规则要求的合格 GitHub approval，Agent 报告不替代。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 6,
+      "question": "用户明确保留最终产品判断，GitHub 无审批门禁：能否自动代判？",
+      "reviewer_answer_summary": "按用户指定方式取得产品判断，继续独立项；不代判或自动增加 GitHub approval。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci",
+        "customizations/platforms/process-management/repository/execution-policy.md#确定性步骤的执行判定"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 7,
+      "question": "同候选已有独立审查和测试，交给阎罗：是否逐文件或逐阶段再审？一轮是否只许一名审查者？",
+      "reviewer_answer_summary": "核验已有证据并补缺，不逐文件/阶段重审；一轮可有多个必要独立审查者。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 8,
+      "question": "修复后只有一个接口变化：哪些审查/验证可复用？旧 SHA 的 CI 能否充当新 SHA 已运行？",
+      "reviewer_answer_summary": "复验变化接口及受影响链路，绑定输入后复用其他证据；旧 SHA CI 不冒充新 SHA 实际运行。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#验证先小后大",
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 9,
+      "question": "必需模块检查缺失或 skipped，其余检查成功：可否算通过？",
+      "reviewer_answer_summary": "缺失或 skipped 的适用必需检查不通过，补齐实际成功结果。",
+      "references": [
+        "Markdown/testing/ci-modules.md#状态检查",
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 10,
+      "question": "改了独立测试 Provider，同时有会嵌入引擎的脚本：是否按后缀免构建或按 tier 加全量 Windows CI？",
+      "reviewer_answer_summary": "按真实差异选择模块并集；嵌入资源保留构建验证，不因 tier 或后缀给独立 Provider 另加全量 Windows CI。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#同一候选的交付核验与模块-ci",
+        "customizations/module-boundaries.md#新增模块的构建边界与验收"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 11,
+      "question": "只改 customizations 内 Markdown：是否一定仅运行文档检查？",
+      "reviewer_answer_summary": "按注册表路径归属选择，Markdown 后缀不自动豁免模块检查。",
+      "references": [
+        "Markdown/testing/ci-modules.md#普通变更的选择规则"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 12,
+      "question": "用户只要本地草稿，本地验证通过：是否应提交推送 main？",
+      "reviewer_answer_summary": "按本地草稿范围交付，不自动提交推送 main。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#术语与触发条件",
+        "customizations/platforms/process-management/repository/execution-policy.md#本地验证通过即推进-main"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 13,
+      "question": "已授权整单，完成一部分 PR：可否以已合入或子 Agent 结束宣布完成？",
+      "reviewer_answer_summary": "回读完整原验收，继续可执行剩余项；部分合入或工作者结束不等于完成。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#确定性步骤的执行判定",
+        "customizations/components/issue-workorders/yanluo.md#交付后验收与人工判断"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 14,
+      "question": "满足尾项结转阈值且承接/关系/授权均核实：旧单关闭原因和剩余项授权如何处理？",
+      "reviewer_answer_summary": "完整承接/关系/文档/修订核实后 cancelled/not_planned 结转关闭；原授权内剩余项继续，新单不增加授权。",
+      "references": [
+        "customizations/platforms/work-management/github/issue-lifecycle.md#阎罗在合入事件中结转尾项",
+        "customizations/components/issue-workorders/yanluo.md#合入后的完成度与拆单"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 15,
+      "question": "CI 正常运行中，工具可等待；随后发生真实认证失败：分别如何处理？",
+      "reviewer_answer_summary": "正常 CI 沿原运行同一等待句柄等待；真实认证失败当次夸父接单，只挂起受影响动作。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#等待与上下文",
+        "customizations/components/issue-workorders/kuafu-routing.md#活跃宿主的操作"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 16,
+      "question": "同一失败无新证据、发布回执未知：应重发命令、继续等待还是先对账/排障？",
+      "reviewer_answer_summary": "相同失败无新证据转排障，发布未知先回读 PR/main，不盲目重发。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#确定性步骤的执行判定",
+        "customizations/platforms/process-management/repository/execution-policy.md#多项工作同时推进时",
+        "customizations/components/issue-workorders/README.md"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 17,
+      "question": "其他设备已有工作者，无法确认终态：能否新建本地认领、清理其资源或接管发布？",
+      "reviewer_answer_summary": "保留未知占用，待真实终态或可信交接；不另建认领绕过、不清理他人资源或接管发布。",
+      "references": [
+        "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+        "customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 18,
+      "question": "本人有 PR 合入权限但没有宿主 HMAC key/private grant：是否阻塞正常 PR 路径？",
+      "reviewer_answer_summary": "正常本人 PR 路径不需 HMAC key/private grant，其他适用条件仍核对。",
+      "references": [
+        "customizations/components/issue-workorders/yanluo.md#协作人以本人账号交付pr-或合并队列",
+        "customizations/components/issue-workorders/yanluo.md#宿主自动快进发布"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 19,
+      "question": "Codex 原生工具可用，无 Godot、天枢计划、外部模型 API Key：是否需先配置这些？",
+      "reviewer_answer_summary": "沿 Codex 原生协议，不额外要求 Godot、天枢或外部 API Key；真实工单、权限、占用、回执保留。",
+      "references": [
+        "Markdown/workflow/repository/README.md#codex-中已授权的-issue",
+        "customizations/components/repository-dispatch/README.md"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 20,
+      "question": "work-items.json 旧 registry 标志 false，但本次 host inspect 有绑定及真实回执：如何判定？",
+      "reviewer_answer_summary": "按本次 inspect 的绑定及真实 start/ack/terminal 判断；旧 false 不是宿主未接通的证据。",
+      "references": [
+        "customizations/components/issue-workorders/README.md#当前来源与执行接入9-最终对账"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 21,
+      "question": "历史示例列旧 Issue/事件号和曾成功登录：能否复制身份、重放历史事件或当成本次权限证据？",
+      "reviewer_answer_summary": "替换本次真实参数并回读身份；不复制旧身份、重放旧事件或改原 envelope/receipt 归属。",
+      "references": [
+        "customizations/components/issue-workorders/README.md#当次操作者接收事件"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 22,
+      "question": "只读贡献者可提 fork PR：是否因此获得上游写权限和全部共工操作授权？",
+      "reviewer_answer_summary": "fork/PR 贡献不授予上游写入/合入或全部共工操作授权。",
+      "references": [
+        "Markdown/workflow/repository/README.md#权限与有效来源",
+        "customizations/components/issue-workorders/yanluo.md#协作人以本人账号交付pr-或合并队列"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 23,
+      "question": "任务已交付，同机有其他工作树/有效安装和本任务干净临时工作树：清理哪些，按什么条件？",
+      "reviewer_answer_summary": "交付/完整验收/终态核实并归档后，仅清理本任务无用且无占用资源；保留他人资源、有效安装和回退版本并记原因。",
+      "references": [
+        "customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理"
+      ],
+      "root_comparison": "matched"
+    },
+    {
+      "id": 24,
+      "question": "具体子模块文字与用户只读范围或实际分支权限冲突：哪种解释适用？",
+      "reviewer_answer_summary": "具体模块定位规则，不扩大用户只读范围、上位约束或实际权限。",
+      "references": [
+        "AGENTS.md#加载规则",
+        "customizations/platforms/process-management/repository/execution-policy.md#术语与触发条件",
+        "framework/FOUNDATION.md"
+      ],
+      "root_comparison": "matched"
+    }
+  ],
+  "reviewed_files": {
+    ".github/CONTRIBUTING.md": "4cae4d77e4595a9c291a75df31b79350c9387a035264c9f08849aca0207695f9",
+    "AGENTS.md": "02181cb2e44b198d6d289b2cba357d2e56d17e5fe73fbe336ddf15c34a138886",
+    "Markdown/testing/ci-modules.md": "9c2fc0e83469270099b50149783bafe0a5405e2af37e9b62da50473e3d182268",
+    "Markdown/workflow/README.md": "ad84bc831659a2c56be351e407157debe1982ff5888c6b7239ccae8b2ac2ce2b",
+    "Markdown/workflow/repository/README.md": "114239dc6f1672ade8532840b6490377ef333068dcc0ae644df4f719853f2dc8",
+    "customizations/components/codex-dispatch/README.md": "1c380fa70d04a98bba538bb6297b09d57560d2ce152a6df4967a9d506b7c3940",
+    "customizations/components/issue-workorders/README.md": "cf0bfdb965e184d941dc220ab45d775f858886acb35745e4406f855011865a08",
+    "customizations/components/issue-workorders/kuafu-routing.md": "6d7a46cb5e2968f8544c3a82ba40fc2707a7b5dc7a0197b31c25f7c7c11b5760",
+    "customizations/components/issue-workorders/yanluo.md": "6c9d73ef29293e52981fa211a85ac7160d544abafdfe8ec3d4a656eff384e04f",
+    "customizations/components/repository-dispatch/README.md": "3122e3af92cbcfd699a5d828cfc4fe2883b5e37093b32c5a5cee3b1642621ae2",
+    "customizations/platforms/development/git/git-workflow.md": "9a260c73e5d46e26551d62fe60638207749bda1b3b46c1d61ccaf0774056065a",
+    "customizations/platforms/process-management/repository/execution-policy.md": "6c2b87d1f3a0e7ff0c7439ec248522b4114bc1d7672dbf2ffd1f1b336560ff51",
+    "design-docs/semantic-policy-20261120.md": "672d7f757c9585c6489f929d6e55332c104a2b486d3915af7b811f59333ec40e",
+    "Markdown/workflow/documentation/README.md": "c79ec2e99434518a0db5b85ac475fa1836dae1ecad66c1cacfa50085b4715129",
+    "Markdown/testing/README.md": "fec5787ab8f059a7420bc951a5dbd3e59b8d696b7e9d7a8edcb540c116c33c99",
+    "customizations/platforms/work-management/github/issue-lifecycle.md": "760c23ac3d7e841d2d0462575d2599aec08c0ce66c34fbb86e23ae03e1efb8ed",
+    "customizations/components/codex-dispatch/HOST_PROTOCOL.md": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "customizations/module-boundaries.md": "1f5663e4864932aae5b5a509804531001387807d52c4941481fc3f5e371bdf14",
+    "CURRENT_FRAMEWORK.json": "451d14611bbb451e5ec183a3c40bb2e27057e8a8c4a6f507c391e2c9c154f83b",
+    "framework/AGENTS.md": "359b2243eb576a4fbde944c0d23d7b434797c2643f885f707f9dc3a73e2dd2cc",
+    "framework/FOUNDATION.md": "af0b14934f8998ac7e751475f8192f52adbeb3a26e3d709ee083bcbfeb42148f",
+    "framework/specs/delivery.md": "d0328d6c85b88af9063c585f1f36c37f0620b476194510c18694c5c4e080f599",
+    "framework/skills/gonggong-check/SKILL.md": "2a01cea1eadd3edf001d2fdf35b030df9fce20e1cd3590120f769f62756dbf8e",
+    "customizations/host-agents.json": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "customizations/components/yanluo/AGENT.md": "0b425059a12ee9a1a8af5cfd8a6b0365fd7a972832f6add9810aa1d50bb9e49f",
+    "customizations/components/yanluo/HOST_PROTOCOL.md": "b26db53b830364fc36477177463f1ccb36526e5d11ab2ab2294592774fabede5",
+    "data-collection/yanluo-0.1.3-approval.json": "b0f2c2a99f1ea71fa31f368fe230f58a2c29b05c8df1a066b4de13bb0a4bb8db"
+  },
+  "limitations": [
+    "This semantic review does not prove zero ambiguity for every model.",
+    "No cross-model A/B execution was performed.",
+    "Documentation does not replace CI, actual permissions, remote delivery readback or issue acceptance."
+  ],
+  "delivery_at_recording": {
+    "pr": null,
+    "main_readback": null,
+    "issue_closed": false,
+    "reason": "Recorded before submission; subsequent actual receipts are recorded by delivery tools and Issue timeline."
+  }
+}

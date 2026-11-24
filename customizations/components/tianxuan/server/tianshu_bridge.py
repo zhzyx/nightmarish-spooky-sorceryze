@@ -16,6 +16,8 @@ import argparse
 import hashlib
 import json
 import os
+import re
+import subprocess
 import sys
 import tempfile
 import time
@@ -23,14 +25,85 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
+
+
+class _ApiRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if req.has_header("Authorization") or req.has_header("X-actor"):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
 
 TIMEOUT = 20
-urlopen = urllib.request.urlopen
+urlopen = urllib.request.build_opener(_ApiRedirect()).open
+LOCAL_API = "http://127.0.0.1:8000"
+GONGGONG_API = "https://167-172-70-41.sslip.io"
+GONGGONG_REPO = "gonggong.git"
+GONGGONG_SOURCE = "zhzyx/nightmarish-spooky-sorceryze"
 
 
 class BridgeError(Exception):
     """API 调用或参数错误。"""
+
+
+class BridgeHTTPError(BridgeError):
+    def __init__(self, status: int, response: Any):
+        super().__init__(f"HTTP {status}: {response}")
+        self.status = status
+        self.detail = response.get("detail") if isinstance(response, dict) else None
+
+
+def duobao_route(args: argparse.Namespace) -> dict[str, str]:
+    """Select the host-owned route. The checkout can only identify its source repository."""
+    repository = os.environ.get("TIANXUAN_GIT_REPO", "")
+    configured = {"api": args.api or LOCAL_API, "repository": repository}
+    project = getattr(args, "project", None) or args.workspace or Path.cwd()
+    project = project.resolve()
+    for directory in (project, *project.parents):
+        if (directory / ".git").exists():
+            break
+        if (directory / ".duobao-source.json").exists():
+            return configured
+    else:
+        return configured
+    # Read the local repository identity, including linked worktrees. Checkout
+    # files, remote URL rewriting and includes cannot supply a destination.
+    try:
+        config = subprocess.run(
+            [
+                os.environ.get("GIT_EXECUTABLE") or "git",
+                "-C",
+                str(directory),
+                "config",
+                "--local",
+                "--no-includes",
+                "--null",
+                "--get-regexp",
+                r"^(remote\.origin\.url|gonggong\.releasesnapshot)$",
+            ],
+            env={k: v for k, v in os.environ.items() if not k.startswith("GIT_")},
+            capture_output=True,
+            timeout=10,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise BridgeError("无法及时读取项目仓库标识") from error
+    if config.returncode not in (0, 1):
+        raise BridgeError("无法读取当前项目的 Git 仓库标识")
+    records = [record.partition(b"\n") for record in config.stdout.split(b"\0") if record]
+    origins = [value.lower() for key, _, value in records if key == b"remote.origin.url"]
+    if not origins and any(key == b"gonggong.releasesnapshot" for key, _, _ in records):
+        raise BridgeError("下载包使用独立的 Git 快照。请打开真实共工 Git 工作副本，再从多宝分支、提交或合入。")
+    if repository or (args.api and args.api.rstrip("/") != GONGGONG_API):
+        return configured
+    allowed = {
+        (prefix + GONGGONG_SOURCE + suffix).encode()
+        for prefix in ("https://github.com/", "git@github.com:", "ssh://git@github.com/")
+        for suffix in ("", ".git")
+    }
+    if len(origins) == 1 and origins[0] in allowed:
+        return {"api": GONGGONG_API, "repository": GONGGONG_REPO}
+    return configured
 
 
 def _cache_file(api: str, provider: str, subject: str) -> Path | None:
@@ -80,6 +153,68 @@ def _endpoint(api: str, path: str, params: dict[str, str] | None = None) -> str:
     return f"{base}{path}"
 
 
+def _load_editor_identity(origin: str) -> dict[str, Any]:
+    helper = Path(__file__).resolve().parents[2] / "godot-host" / "session_credentials.py"
+    request = {"service": "tianxuan-editor", "action": "load", "account": hashlib.sha256(origin.encode()).hexdigest()}
+    try:
+        result = subprocess.run(
+            [sys.executable, "-I", str(helper)],
+            input=json.dumps(request) + "\n",
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=6,
+            check=True,
+        )
+        reply = json.loads(result.stdout)
+        if isinstance(reply, dict) and reply.get("status") == "loaded":
+            record = json.loads(reply["secret"])
+            if isinstance(record, dict) and record.get("version") == 1 and record.get("origin") == origin:
+                return record
+    except (KeyError, OSError, ValueError, TypeError, subprocess.SubprocessError):
+        pass
+    raise BridgeError("无法读取此服务的编辑器身份，请先在本机编辑器登录")
+
+
+def _editor_token(api: str) -> str:
+    origin = api.strip().rstrip("/")
+    if not re.fullmatch(
+        r"(?:https://(?:[a-zA-Z0-9.-]+|\[[a-fA-F0-9:]+\])|http://(?:127\.0\.0\.1|localhost|\[::1\]))"
+        r"(?::[0-9]{1,5})?",
+        origin,
+    ):
+        raise BridgeError("编辑器身份只适用于指定的 HTTPS 服务或本机回环地址")
+    record = _load_editor_identity(origin)
+    token, subject = record.get("token"), record.get("user_id")
+    if not isinstance(token, str) or not token or not token.isascii() or not token.isprintable() or not subject:
+        raise BridgeError("编辑器登录记录无效，请在编辑器中重新登录")
+    try:
+        identity = _request(origin, "GET", "/api/v1/auth/me", token=token)
+    except BridgeHTTPError as exc:
+        raise BridgeError(f"服务无法核实当前编辑器账号（HTTP {exc.status}）") from None
+    if identity.get("id") != subject or not identity.get("role"):
+        raise BridgeError("服务器身份与当前编辑器账号不一致，请重新登录")
+    return token
+
+
+def _response_bytes(request, limit=None) -> bytes:
+    try:
+        with urlopen(request, timeout=TIMEOUT) as response:
+            raw = response.read() if limit is None else response.read(limit + 1)
+            if limit is not None and len(raw) > limit:
+                raise BridgeError("对象超出差异预览上限")
+            return bytes(raw)
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")
+        try:
+            parsed = json.loads(detail)
+        except ValueError:
+            parsed = detail
+        raise BridgeHTTPError(error.code, parsed) from error
+    except urllib.error.URLError as error:
+        raise BridgeError(f"API unreachable: {error.reason}") from error
+
+
 def _request(
     api: str,
     method: str,
@@ -100,18 +235,7 @@ def _request(
         data = json.dumps(body, ensure_ascii=False).encode("utf-8")
         headers["Content-Type"] = "application/json"
     request = urllib.request.Request(_endpoint(api, path, params), data=data, method=method, headers=headers)
-    try:
-        with urlopen(request, timeout=TIMEOUT) as response:
-            raw = response.read().decode("utf-8")
-    except urllib.error.HTTPError as error:
-        detail = error.read().decode("utf-8", errors="replace")
-        try:
-            parsed = json.loads(detail)
-        except ValueError:
-            parsed = detail
-        raise BridgeError(f"HTTP {error.code}: {parsed}") from error
-    except urllib.error.URLError as error:
-        raise BridgeError(f"API unreachable: {error.reason}") from error
+    raw = _response_bytes(request).decode("utf-8")
     if not raw.strip():
         return {}
     try:
@@ -121,6 +245,136 @@ def _request(
     if not isinstance(parsed, dict):
         raise BridgeError("API response must be a JSON object")
     return parsed
+
+
+def _read_git_workcopy(args: argparse.Namespace, body: dict[str, Any]) -> dict[str, Any]:
+    import selected_commit
+
+    if body.get("mode") == "native":
+        raise BridgeError("未找到物化来源，请重新打开工程")
+    if args.command == "workcopy-diff":
+        return cast(dict[str, Any], selected_commit.diff(args.project))
+    return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
+
+
+def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
+    import selected_commit
+
+    body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
+    marker = None
+    for directory in (args.project, *args.project.parents):
+        if (directory / ".git").exists():
+            break
+        if (directory / ".duobao-source.json").exists():
+            marker = directory / ".duobao-source.json"
+            break
+    if marker:
+        from native_workcopy_commit import NativeProject
+
+        def request(method, path, data=None):
+            return _request(args.api, method, "/api/v1/native/" + path, actor=args.actor, token=args.token, body=data)
+
+        def read(path, limit):
+            req = urllib.request.Request(
+                _endpoint(args.api, "/api/v1/native/" + path), headers={"Authorization": "Bearer " + args.token}
+            )
+            return _response_bytes(req, limit)
+
+        project = NativeProject(args.project, marker, args.api, request, read)
+        if args.command == "workcopy-diff":
+            return cast(dict[str, Any], project.diff())
+        if body.get("mode") != "native":
+            raise BridgeError("项目来源已变化，请刷新")
+        if args.command == "workcopy-preview":
+            return cast(dict[str, Any], project.preview(body))
+        return cast(dict[str, Any], project.submit(body))
+    if body.get("mode") == "native":
+        raise BridgeError("未找到物化来源，请重新打开工程")
+    if args.command in ("workcopy-diff", "workcopy-preview"):
+        return _read_git_workcopy(args, body)
+    name = body.get("repo") or args.repo_name
+    if args.bound_repo and name != args.bound_repo:
+        raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", name) or name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(name, safe="") + "/selected-commits"
+
+    def publish(payload):
+        return _request(args.api, "POST", path, actor=args.actor, token=args.token, body=payload)
+
+    def lookup(branch, base, sha):
+        return _request(
+            args.api,
+            "GET",
+            path + "/" + sha,
+            actor=args.actor,
+            token=args.token,
+            params={"branch": branch, "base": base},
+        )
+
+    return cast(
+        dict[str, Any], selected_commit.submit(args.project, [args.api, name, args.actor], body, publish, lookup)
+    )
+
+
+def merge_request(args: argparse.Namespace) -> dict[str, Any]:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.repo_name) or args.repo_name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(args.repo_name, safe="") + "/merge-requests"
+    identity = {"actor": args.actor, "token": args.token}
+    if args.command == "merge-request":
+        sent = {"source": args.source, "target": args.target, "candidate": args.candidate}
+        if args.issue_id:
+            sent["issue_id"] = args.issue_id
+        item = _request(args.api, "POST", path, **identity, body=sent)
+        if any(item.get(key) != value for key, value in sent.items()):
+            raise BridgeError("合入请求回执与提交的候选不匹配")
+    else:
+        if not re.fullmatch(r"mr_[0-9a-f]{64}", args.request_id):
+            raise BridgeError("请输入完整的合入请求编号")
+        path += "/" + args.request_id
+        operation = {
+            "merge-conflicts": "conflicts",
+            "merge-resolve": "resolve",
+            "merge-review": "review",
+            "merge-deliver": "deliver",
+        }.get(args.command)
+        if operation:
+            path += "/" + operation
+        if operation == "resolve":
+            item = _request(args.api, "POST", path, **identity, body={"files": json.loads(args.files)})
+        elif operation == "review":
+            item = _request(args.api, "POST", path, **identity, body={"decision": args.decision})
+        elif operation == "deliver":
+            item = _request(args.api, "POST", path, **identity, body={})
+        else:
+            item = _request(args.api, "GET", path, **identity)
+        if operation != "resolve" and item.get("id") != args.request_id:
+            raise BridgeError("合入请求回执编号不匹配")
+    return item
+
+
+def branch_operation(args: argparse.Namespace) -> dict[str, Any]:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.repo_name) or args.repo_name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    if not args.branch.strip() or args.branch.startswith("-"):
+        raise BridgeError("分支名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(args.repo_name, safe="")
+    identity = {"actor": args.actor, "token": args.token}
+    if args.command == "branch-create":
+        if not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", args.start):
+            raise BridgeError("创建起点须为完整提交 OID")
+        created = _request(
+            args.api, "POST", path + "/branches", **identity, body={"name": args.branch, "start": args.start}
+        )
+        if created.get("sha") != args.start or created.get("branch") != args.branch:
+            raise BridgeError("多宝创建回执不匹配，请回读后再试")
+    tip = _request(args.api, "GET", path + "/branch-tip", **identity, params={"branch": args.branch})
+    if tip.get("branch") != args.branch or not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", str(tip.get("sha", ""))):
+        raise BridgeError("未收到目标分支的精确提交")
+    if args.command == "branch-create" and tip["sha"] != args.start:
+        raise BridgeError("分支在创建后已前移，请重新读取")
+    return {"branch": args.branch, "sha": tip["sha"]}
 
 
 def status(args: argparse.Namespace) -> dict[str, Any]:
@@ -141,6 +395,124 @@ def context(args: argparse.Namespace) -> dict[str, Any]:
         token=args.token,
         params={"system": args.system, "external_id": args.external_id},
     )
+
+
+def archive_history(args: argparse.Namespace) -> dict[str, Any]:
+    """Pin the publication for every page, file and source shown in one search."""
+
+    def read(endpoint: str, **params: str) -> dict[str, Any]:
+        return _request(
+            args.api,
+            "GET",
+            "/api/v1/migration/" + endpoint,
+            actor=args.actor,
+            token=args.token,
+            params={"project": args.project, **params},
+        )
+
+    revision = args.revision
+    if not revision:
+        status = read("status")
+        if not status.get("available") or not status.get("catalog_revision"):
+            raise BridgeError("该项目没有可访问的多宝归档")
+        revision = status["catalog_revision"]
+    query = {"revision": revision}
+    if args.path:
+        query["path"] = args.path
+    if not args.commit:
+        return {**read("history/commits", **query, offset=str(args.offset)), "revision": revision}
+    file = None
+    file_error = ""
+    if args.path:
+        try:
+            file = read("history/file", **query, commit=args.commit)
+        except BridgeHTTPError as error:
+            if (error.status, error.detail) not in (
+                (404, "Archive item unavailable"),
+                (422, "Invalid or unsupported archive content or query"),
+            ):
+                raise
+            file_error = "该修订没有可预览的文本文件：" + args.path
+    mapping = read("history/commit", revision=revision, commit=args.commit)
+    return {"source": mapping, "file": file, "file_error": file_error}
+
+
+def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
+    source_id = args.source_id
+    link = re.fullmatch(r"https://github\.com/([\w.-]+/[\w.-]+)/issues/([1-9]\d*)/?", source_id)
+    pull = re.fullmatch(
+        r"https://github\.com/([\w.-]+/[\w.-]+)/pull/([1-9]\d*)"
+        r"(?:/(?:files)?)?(?:#(issuecomment-|pullrequestreview-|discussion_r)([1-9]\d*))?",
+        source_id,
+    )
+    expected_kind = "issue"
+    if link:
+        source_id = f"github:{link[1]}/issue/{link[2]}"
+    elif pull:
+        expected_kind = {
+            None: "pull",
+            "issuecomment-": "issue_comment",
+            "pullrequestreview-": "review",
+            "discussion_r": "review_comment",
+        }[pull[3]]
+        source_id = f"github:{pull[1]}/{expected_kind}/{pull[4] or pull[2]}"
+    params = {"project": args.project, "source_id": source_id}
+
+    def read(action: str, **query: str) -> dict[str, Any]:
+        return _request(
+            args.api,
+            "GET",
+            "/api/v1/migration/history/" + action,
+            actor=args.actor,
+            token=args.token,
+            params={**params, **query},
+        )
+
+    detail = read("detail", limit="50" if expected_kind == "pull" else "1")
+    row = detail["record"]
+    if row["kind"] != expected_kind or row["source_id"] != source_id:
+        raise BridgeError("该标识未指向历史工单")
+    content = row["content"]
+    if pull and pull[3]:
+        original = content.get("html_url") or content.get("url", "")
+        canonical = f"https://github.com/{pull[1]}/pull/{pull[2]}#{pull[3]}{pull[4]}"
+        if original.replace("/files#", "#") != canonical:
+            raise BridgeError("评审不属于指定的 PR")
+    body = content.get("body") or ""
+    if row.get("truncated"):
+        chunks = []
+        offset = 0
+        while True:
+            page = read("body", revision=detail["revision"], offset=str(offset))
+            chunks.append(page["text"])
+            if page["next_offset"] is None:
+                break
+            if page["next_offset"] <= offset:
+                raise BridgeError("历史工单正文分页无效")
+            offset = page["next_offset"]
+        body = "".join(chunks)
+    if pull and expected_kind == "pull":
+        links = []
+        page = detail["comments"]
+        while True:
+            for entry in page["items"]:
+                item = entry["content"]
+                original = item.get("html_url") or item.get("url", "")
+                if original.replace("/files#", "#").startswith(f"https://github.com/{pull[1]}/pull/{pull[2]}#"):
+                    links.append(original)
+            offset = page["offset"] + len(page["items"])
+            if offset >= page["total"] or not page["items"]:
+                break
+            page = read("detail", revision=detail["revision"], offset=str(offset), limit="50")["comments"]
+        if links:
+            body += "\n\n将原始链接复制到上方输入框可读取归档评审：\n" + "\n".join(links)
+    return {
+        "source_id": source_id,
+        "title": content.get("title") or ("PR 归档评审" if pull and pull[3] else ""),
+        "state": content.get("state", ""),
+        "body": body,
+        "revision": detail["revision"],
+    }
 
 
 def publish(args: argparse.Namespace) -> dict[str, Any]:
@@ -287,9 +659,11 @@ def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     arguments = _normalize_result(arguments)
     parser = argparse.ArgumentParser(description="天璇 ↔ 天枢互通桥")
-    parser.add_argument("--api", default=os.environ.get("TIANXUAN_API", "http://127.0.0.1:8000"))
+    parser.add_argument("--api", default=os.environ.get("TIANXUAN_API"))
+    parser.add_argument("--workspace", type=Path, help="当前打开的项目目录（多宝 Git 路由）")
     parser.add_argument("--actor", default=os.environ.get("TIANXUAN_ACTOR", ""))
-    parser.add_argument("--token", default=os.environ.get("TIANXUAN_TOKEN", ""))
+    parser.add_argument("--token")
+    parser.add_argument("--editor-login", action="store_true", help="使用本机编辑器为目标服务保存并已验证的当前账号")
     parser.add_argument("--identity-provider", default=os.environ.get("TIANXUAN_IDENTITY_PROVIDER", ""))
     parser.add_argument("--identity-subject", default=os.environ.get("TIANXUAN_IDENTITY_SUBJECT", ""))
     parser.add_argument("--identity-secret", default=os.environ.get("TIANXUAN_IDENTITY_SECRET", ""))
@@ -297,11 +671,63 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("status", help="天璇健康与 Gitea 状态").set_defaults(func=status)
+    sub.add_parser("duobao-route", help="本地读取当前项目的多宝仓库").set_defaults(func=duobao_route)
+
+    for command in ("workcopy-diff", "workcopy-preview", "workcopy-submit"):
+        workcopy = sub.add_parser(command)
+        workcopy.add_argument("--project", required=True, type=Path)
+        if command != "workcopy-diff":
+            workcopy.add_argument("--request", required=True, type=Path)
+        workcopy.set_defaults(func=workcopy_operation)
+
+    for command in (
+        "merge-request",
+        "merge-request-status",
+        "merge-conflicts",
+        "merge-resolve",
+        "merge-review",
+        "merge-deliver",
+    ):
+        merge = sub.add_parser(command)
+        merge.add_argument("--repo-name", default="")
+        if command == "merge-request":
+            merge.add_argument("--source", required=True)
+            merge.add_argument("--target", required=True)
+            merge.add_argument("--candidate", required=True)
+            merge.add_argument("--issue-id", default="")
+        else:
+            merge.add_argument("--request-id", required=True)
+        if command == "merge-resolve":
+            merge.add_argument("--files", required=True)
+        if command == "merge-review":
+            merge.add_argument("--decision", choices=("APPROVED", "REQUEST_CHANGES"), required=True)
+        merge.set_defaults(func=merge_request)
+
+    for command in ("branch-create", "branch-tip"):
+        branch = sub.add_parser(command)
+        branch.add_argument("--repo-name", default="")
+        branch.add_argument("--branch", required=True)
+        if command == "branch-create":
+            branch.add_argument("--start", required=True)
+        branch.set_defaults(func=branch_operation)
 
     p = sub.add_parser("context", help="读取外部工单在天璇内的需求/文档/工单")
     p.add_argument("--system", default="tianshu")
     p.add_argument("--external-id", required=True)
     p.set_defaults(func=context)
+
+    p = sub.add_parser("archive-history", help="读取多宝归档提交、文件及原始映射")
+    p.add_argument("--project", required=True)
+    p.add_argument("--revision")
+    p.add_argument("--path", default="")
+    p.add_argument("--commit")
+    p.add_argument("--offset", default=0, type=int)
+    p.set_defaults(func=archive_history)
+
+    p = sub.add_parser("historical-issue", help="只读打开已归档的历史工单")
+    p.add_argument("--project", required=True)
+    p.add_argument("--source-id", required=True)
+    p.set_defaults(func=historical_issue)
 
     p = sub.add_parser("publish", help="从天枢工单创建天璇需求与工单树")
     p.add_argument("--system", default="tianshu")
@@ -348,6 +774,53 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(arguments)
     try:
+        if args.func in (duobao_route, branch_operation, merge_request, workcopy_operation):
+            route = duobao_route(args)
+            if args.func == duobao_route:
+                # A caller-supplied URL can contain private information.
+                location = route["api"] if route["api"] in (LOCAL_API, GONGGONG_API) else "configured"
+                _write(args, {"ok": True, "data": {"api": location, "repository": route["repository"]}})
+                return 0
+            args.bound_repo = route["repository"] if not args.api and not os.environ.get("TIANXUAN_GIT_REPO") else ""
+            args.api = route["api"]
+            args.repo_name = getattr(args, "repo_name", "") or route["repository"]
+            if args.bound_repo and args.repo_name != args.bound_repo:
+                raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
+        else:
+            args.api = args.api or (GONGGONG_API if args.editor_login else LOCAL_API)
+        if getattr(args, "bound_repo", "") and args.command in ("workcopy-diff", "workcopy-preview"):
+            # Automatic routing has identified a Git checkout, not a materialized
+            # native project. These reads never use the remote service or identity.
+            body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
+            _write(args, {"ok": True, "data": _read_git_workcopy(args, body)})
+            return 0
+        if args.editor_login:
+            other_identity = (
+                args.token,
+                args.actor,
+                args.identity_provider,
+                args.identity_subject,
+                args.identity_secret,
+                os.environ.get("TIANXUAN_TOKEN"),
+            )
+            if any(other_identity):
+                raise BridgeError("选择编辑器身份时不能同时指定其他身份")
+            args.api = args.api.strip().rstrip("/")
+            args.token = _editor_token(args.api)
+        elif getattr(args, "bound_repo", ""):
+            # Legacy launchers may supply credentials for the old loopback
+            # default. Only an explicit token or this origin's cache is bound.
+            if not args.token and args.identity_provider and args.identity_subject:
+                args.token = _read_cached_token(args.api, args.identity_provider, args.identity_subject)
+            if not args.token and (os.environ.get("TIANXUAN_TOKEN") or args.identity_provider or args.identity_secret):
+                raise BridgeError(
+                    "当前凭据未绑定多宝公网服务。请在可信启动器显式设置 TIANXUAN_API 并使用目标服务的身份。"
+                )
+            if not args.token:
+                args.actor = ""
+                args.token = ""
+        else:
+            args.token = args.token or os.environ.get("TIANXUAN_TOKEN", "")
         if not args.token and args.identity_provider:
             if not args.identity_subject:
                 raise BridgeError("identity subject is required")
@@ -371,7 +844,7 @@ def main(argv: list[str] | None = None) -> int:
         data = args.func(args)
         envelope = {"ok": True, "data": data}
         code = 0
-    except (BridgeError, ValueError) as error:
+    except (BridgeError, ValueError, OSError, TimeoutError) as error:
         envelope = {"ok": False, "error": str(error)}
         code = 1
     _write(args, envelope)

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-q02",
+  "event_id": "afterk03-intake-1738",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1738",
+  "occurred_at": "2026-11-22T14:30:13.545988+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1738,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T14:30:10Z",
+    "accepted_dependencies": {
+      "1798": "3de079544b2cd0f3782a05cb68576b91e44dc92a"
+    },
+    "source_main": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+    "title": "[方案一 Q02] 验证跨职能工作流与权限"
+  },
+  "evidence_refs": [],
+  "sha256": "99a65263b43063d00e3c7b70cde330c51e9b4d8702ad682cf31fee8dbf54d8f6"
+}

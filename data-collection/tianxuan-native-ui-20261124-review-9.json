@@ -1,0 +1,26 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "reviewer": "/root/sinan_166ba41a04521d99",
+  "implementer": "/root",
+  "observed_at": "2026-11-23T20:52:50.937652+00:00",
+  "state": "passed_with_limits",
+  "extends": "data-collection/tianxuan-native-ui-20261124-review-8.json",
+  "scope": "Upstream d8a1c06c..a5c70178 host route and embedded Daqian compatibility; narrow repair and regression review.",
+  "initial_finding": {
+    "priority": "P2",
+    "description": "Automatic public-route identity gate incorrectly blocked local Git diff and preview for legacy loopback credentials.",
+    "negative_evidence": "2 failed, 1 passed in actual Git fixture"
+  },
+  "conclusion": "Fixed with a pure Git read helper selected only for automatically bound Git diff/preview. Remote submit still requires bound identity; materialized native projects retain their service authentication. No further blocker or required expanded test found.",
+  "reviewed_sha256": {
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "281b9f1561d4a1538502cb53907d53dcad4b66fcd7e3a021fc6f0a427e7e7698",
+    "customizations/components/tianxuan/server/test_tianshu_bridge.py": "ce4dcd73ca1be79b4a7a7a782b4d107daabc5773f91ed0f85508c48493a5d988"
+  },
+  "parent_validation_reference": "data-collection/tianxuan-native-ui-20261124-validation-r6.json",
+  "limits": [
+    "Read-only independent inspection and log readback; reviewer did not run tests or Godot.",
+    "Materialized-project regression verifies bridge credential forwarding with a narrow fixture, not a new real-service acceptance.",
+    "New signed-head CI and main readback still required."
+  ]
+}

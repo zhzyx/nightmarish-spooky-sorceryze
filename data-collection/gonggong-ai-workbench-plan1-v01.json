@@ -1,0 +1,134 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-v01",
+  "issue_number": 1820,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1820",
+  "baseline": "2c36fac9004881889da355670c80b0531e0dec07",
+  "candidate_blobs": {
+    "customizations/components/tianxuan/server/api.py": "352281ef01c96c409deca3b7835e561a15bfbab2",
+    "customizations/components/tianxuan/server/native_validation.py": "dfbfe6d9e19276f7b0eafc5dcc26bcce74dccec5",
+    "customizations/components/tianxuan/sinan-workorders/test_native_validation.py": "0b4f1cd173b3c7c96494fff7721cc9f6c2255c83"
+  },
+  "environment": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.3",
+    "sqlite": "3.50.4"
+  },
+  "command": "python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/sinan-workorders/test_native_validation.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+  "tests": 17,
+  "failures": 0,
+  "errors": 0,
+  "product_reads": [
+    {
+      "before_edit": {
+        "task": "6b396ae190948d6a06bcb0b44041dfa6faab156803892050cba32854997f9d7c",
+        "module": "a",
+        "path": "preview.svg",
+        "current": {
+          "revision": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c",
+          "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+          "state": "passed",
+          "checks": {
+            "check": "passed"
+          }
+        },
+        "receipts": [
+          {
+            "revision": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c",
+            "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "tool": "check",
+            "outcome": "passed",
+            "result_location": {
+              "evidence": "8c0ef13324920ee1961eed5859a9f690e0190a5f5933e402cd32e8291522ec40",
+              "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+            },
+            "revoked": false
+          }
+        ]
+      },
+      "after_edit": {
+        "task": "6b396ae190948d6a06bcb0b44041dfa6faab156803892050cba32854997f9d7c",
+        "module": "a",
+        "path": "preview.svg",
+        "current": {
+          "revision": "48605a2dc5dd38b144c2b7372e9aa62b801f5cfd9bc3eef2e47231af893b1a9f",
+          "sha256": "b10b2bdc62a00686a093c50f5f79cbfd9060d73049da9e76172ec6ddf7dddf6d",
+          "state": "pending",
+          "checks": {
+            "check": "pending"
+          }
+        },
+        "receipts": [
+          {
+            "revision": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c",
+            "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "tool": "check",
+            "outcome": "passed",
+            "result_location": {
+              "evidence": "8c0ef13324920ee1961eed5859a9f690e0190a5f5933e402cd32e8291522ec40",
+              "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+            },
+            "revoked": false
+          }
+        ]
+      }
+    },
+    {
+      "before_edit": {
+        "task": "942ca9ee1dd48ce0f540b7a97ec51dbba8803e807090ecbef3d5f8e46b1bb217",
+        "module": "a",
+        "path": "preview.svg",
+        "current": {
+          "revision": "d16889996d11398aece17571c33e42b72f3ef7eaa458263a857de5e965f077b4",
+          "sha256": "c593f3bb028b1d32a6fe004a4a0c6a6e1b3944858b83f4abb2b53d08d27a6d38",
+          "state": "failed",
+          "checks": {
+            "check": "failed"
+          }
+        },
+        "receipts": [
+          {
+            "revision": "d16889996d11398aece17571c33e42b72f3ef7eaa458263a857de5e965f077b4",
+            "sha256": "c593f3bb028b1d32a6fe004a4a0c6a6e1b3944858b83f4abb2b53d08d27a6d38",
+            "candidate": "610f563d09abd0874ca513ea84ff9631d87b3091f3a13bb4459cac9d4cc6bcfa",
+            "tool": "check",
+            "outcome": "failed",
+            "result_location": {
+              "evidence": "10af9115cee06763a736c7904f9f5f9fab5bbe12427d00671693174104f5df8e",
+              "log_sha256": "ada55d2a540778c4b7f97a5a6ddd93bf0bd13d65f698d71779e41b9da849854c"
+            },
+            "revoked": false
+          }
+        ]
+      },
+      "after_edit": {
+        "task": "942ca9ee1dd48ce0f540b7a97ec51dbba8803e807090ecbef3d5f8e46b1bb217",
+        "module": "a",
+        "path": "preview.svg",
+        "current": {
+          "revision": "d728cfbe72dd705a62086cd943fc6e31240e9f1da262cf1e24189af7df5cbfef",
+          "sha256": "96e7c6f18ba8e753001699781a99cfe83d139865dff59abd658d3080a40ef5d7",
+          "state": "pending",
+          "checks": {
+            "check": "pending"
+          }
+        },
+        "receipts": [
+          {
+            "revision": "d16889996d11398aece17571c33e42b72f3ef7eaa458263a857de5e965f077b4",
+            "sha256": "c593f3bb028b1d32a6fe004a4a0c6a6e1b3944858b83f4abb2b53d08d27a6d38",
+            "candidate": "610f563d09abd0874ca513ea84ff9631d87b3091f3a13bb4459cac9d4cc6bcfa",
+            "tool": "check",
+            "outcome": "failed",
+            "result_location": {
+              "evidence": "10af9115cee06763a736c7904f9f5f9fab5bbe12427d00671693174104f5df8e",
+              "log_sha256": "ada55d2a540778c4b7f97a5a6ddd93bf0bd13d65f698d71779e41b9da849854c"
+            },
+            "revoked": false
+          }
+        ]
+      }
+    }
+  ]
+}

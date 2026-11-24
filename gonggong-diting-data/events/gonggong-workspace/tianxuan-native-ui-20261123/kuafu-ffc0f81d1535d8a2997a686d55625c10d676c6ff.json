@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ffc0f81d1535d8a2997a686d55625c10d676c6ff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6615560e6a38d50716ec4d2fd1805835bb6a9df2811a76e2f66c3276e9233c03",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "e16220afbb0d85a88cc5bcba24662d6adfbe7c19",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45231659951/job/137892671941",
+    "diagnosis": "Windows MSVC 编译已过。原生附件测试把 CodeEdit 的 LF 显示与原始 CRLF 字节文本直接比较；强制 CRLF 后本机复现。测试拆分为原始预览 CRLF 保留与 CodeEdit 正常显示，下载 SHA 校验继续保留；服务夹具结束时补关 SQLite 连接。",
+    "next_action": "独立复核测试修正并提交新候选；等待新 SHA 的 Windows 原生全链回归，不将本机复验当作 Windows 通过。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T18:06:12.537067+00:00",
+    "attempted": "CRLF 夹具复现失败；修正后 macOS 编译产物原生控件 125 项通过；原件上传、预览和下载摘要路径保持。",
+    "repair_owner": "Sail-Li / agent:/root",
+    "continuable": "继续原功能和交付，保留 Windows 后续探针及真实显示验收。"
+  },
+  "occurred_at": "2026-11-23T18:10:18.665723+00:00",
+  "sha256": "4a0ceac0676c66c380beb7bc3b8492cac721c6f411bec7aed6f7856517208454"
+}

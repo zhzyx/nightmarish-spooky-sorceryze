@@ -1,0 +1,472 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s10",
+  "issue_number": 1814,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+  "producer": "wave22_s10",
+  "authority": "codex-user:20261122-plan1-wave22-s10",
+  "source_revision": "3d04c9166fe867135f83b5443d719422cf7dbba367c483328e9b783b7825211c",
+  "baseline": "1ce89753ba15e344f45f02a56f1d080ef1bc4c34",
+  "verified_at": "2026-11-22T10:07:41.322179+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s10/dispatch-c86959ea9c7946f38be8d1ff1e922a4e.json",
+  "intake": {
+    "gate": "intake-only passed",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814#issuecomment-7077226520",
+    "predecessor": {
+      "issue": 1842,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842#issuecomment-7077025073",
+      "accepted_commit": "2c36fac9004881889da355670c80b0531e0dec07",
+      "evidence_git_blob": "a49b24426c50b6c42f2fe19a1eab5d3795889909"
+    }
+  },
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "5157f517a318b4bc26df052c69456b7dcdc52234",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "8acffffd5b4468bf5c9586d08ead070c00f8a656",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "53b6f2cbf71f09c33cc0d0ee03176b23e1f61577",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "fac14a269084e90dce7cd588bd536844099fc4b9",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "c3d9f384a50744d2e069924e59610732fab9b5a0",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "612e23e10d65999033e728aeab3f7d1abbc014ec",
+    "customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py": "1b0b11a227043b87a4c93e77aaf5fc23350e9667",
+    "design-docs/gonggong-ai-workbench-s10.md": "4af2b72507e20172900df59ae23f49d70e0d460d",
+    "editor/docks/workbench/issue_actions/issue_run_control.gd": "43e6a37131112746d0cf10cb3ddafbe967a0c4fb",
+    "tests/editor/run_workbench_task_controls.py": "51aca7275878c1689465695b88d22ae6020dec8e",
+    "tests/editor/workbench_task_controls.gd": "29a03769d85db73e237500df7b6e0f0db3b76e98"
+  },
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/native_api.py": "b3d82d8426bafed5763196c53467e13006bc6b514c5d1f170d247e281f1cc4a9",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "f89bca827d42ef8f73e800747d6dd2d1c59313b2f6a29b31c8b60c19ee415c69",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "f3f1c36c72ace33d2d5a6d3b25bdf8ce343fb84af94a299e68ce8254c3c7e9ed",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "38e7fa5e63f8e68db2b15468cc31d5cacf8c1125dbe5acadf074c23a53a10f7c",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "8758a9629f7352ab3a5cd7190676d9ce7010cf29feb8e2ebbf4cebf961c16261",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "dd099042f3549132f26d082f5648b5393fa90930a05c388b0617364f6d742214",
+    "customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py": "66df3f5e5bc7895107288c10e1c73d7b3f61ee6f9a8ce3f0724bbd29225ced24",
+    "design-docs/gonggong-ai-workbench-s10.md": "1790dec8a79b1d9b3899fd7fb02594b87661d1989e871036a076c952d15a97a7",
+    "editor/docks/workbench/issue_actions/issue_run_control.gd": "b67a6d976673a4b201fd7adf7f913943e8401ed4441b861266260e71eeb7462c",
+    "tests/editor/run_workbench_task_controls.py": "753b2dc7d3610693eecfdd8d1ed87aeac5b436b7f4c48ec201cadbb4d0e45bb8",
+    "tests/editor/workbench_task_controls.gd": "2f56746dc3e5e293929e46ca2806698e97892dc142885276bb6b63ee956a3b94"
+  },
+  "build": {
+    "platform": "Windows AMD64",
+    "toolchain": "Visual Studio 14.5, SDK 10.0.26100.0",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j6",
+    "accepted_comparison": {
+      "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+      "source": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+      "package": {
+        "godot.windows.editor.x86_64.exe": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+        "godot.windows.editor.x86_64.console.exe": "ad5c45c692f11274d132bdb14c73bf6d3270e54621f1d97bdd9d88d52b7a374a",
+        "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+        "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+        "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+        "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+      },
+      "tracked_native_and_package_input_diff_to_base": []
+    },
+    "candidate_embedded_changes": [
+      "editor/docks/workbench/issue_actions/issue_run_control.gd"
+    ],
+    "build_exit": 0,
+    "final_package": {
+      "godot.windows.editor.x86_64.exe": "5631c83c198e33aa1c5b5895f935e86ffe1bc40ad1f5b0f369ae64e4cfb59574",
+      "godot.windows.editor.x86_64.console.exe": "48cf3f7c02154d129f839533f7e5fae6a7a46b04a7932e87d70ba4dbff0f8d0a",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "invalidation": {
+      "first_editor_sha256": "99d1572f81922f16d551b7f205669f0c1c0a373bdc03c83df63f2597fc861b49",
+      "first_header_sha256": "c3e648a5119c694e9c13d275a6c85eafd9c62a6847a9e9faf11cc427bc7843fe",
+      "final_header_sha256": "2a99fc616b6bc807edb3ab79c24cc154da2abb467f4687343c246c0f13c4999d",
+      "change": "Refresh pending decisions from current issue and hide controls for read-only identities.",
+      "observed": [
+        "IssueActions.gen.h generated",
+        "AIWorkbenchSidebar.cpp compiled",
+        "editor static library and executables relinked"
+      ],
+      "rebuild_exit": 0
+    }
+  },
+  "receiver": {
+    "entry": "WorkbenchIssueDetail / issue_run_control on four independent headless sessions against authenticated loopback Tianxuan with three signed local tasks.",
+    "run_command": "python tests/editor/run_workbench_task_controls.py --godot bin/godot.windows.editor.x86_64.exe --report <output.json>",
+    "exit_code": 0,
+    "live_worker_pids_after_return": 0,
+    "raw_result": {
+      "passed": true,
+      "runs": [
+        "e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1",
+        "b63fe72092813354c6d8ab438350a81de14e32c6e4eae240cf9e360a892bd2a3",
+        "b7e8131c53557ca6c8a32f279777351c53dbd906f4c3da891ec40d3c391adfcc"
+      ],
+      "starts": [
+        {
+          "key": "e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1",
+          "pid": 130728
+        },
+        {
+          "key": "b63fe72092813354c6d8ab438350a81de14e32c6e4eae240cf9e360a892bd2a3",
+          "pid": 133828
+        },
+        {
+          "key": "b7e8131c53557ca6c8a32f279777351c53dbd906f4c3da891ec40d3c391adfcc",
+          "pid": 29812
+        }
+      ],
+      "closures": {
+        "e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "b63fe72092813354c6d8ab438350a81de14e32c6e4eae240cf9e360a892bd2a3": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "b7e8131c53557ca6c8a32f279777351c53dbd906f4c3da891ec40d3c391adfcc": {
+          "exit_code": null,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "pause": {
+        "expected": 4,
+        "readback": {
+          "actions": [
+            "cancel"
+          ],
+          "revision": 5.0,
+          "state": "pausing",
+          "summary": "暂停已接收，等待当前工具完成"
+        },
+        "replayed_sequence": 5
+      },
+      "resume": {
+        "expected": 9,
+        "readback": {
+          "actions": [],
+          "revision": 11.0,
+          "state": "produced",
+          "summary": "produced"
+        },
+        "replayed_sequence": 11
+      },
+      "cancel": {
+        "expected": 4,
+        "readback": {
+          "actions": [],
+          "revision": 6.0,
+          "state": "cancelling",
+          "summary": "取消已接收，等待进程关闭"
+        },
+        "replayed_sequence": 5
+      },
+      "pause_checkpoint": {
+        "control": {
+          "state": "paused",
+          "summary": "已暂停；原授权 installed-test-plan，来源修订 4d4b597afc12fa379f139a7e47546e9c2c0a9c7f8cc28ed0775df359c8562905，确认人 usr_dfddbf6b16aa41469e3818f02c48109e，阶段 preview，验收条件 individual output；工作者退出码 0，输出记录 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855，已保存候选 40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+          "revision": 9,
+          "actions": [
+            "resume",
+            "cancel"
+          ]
+        },
+        "id": "e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1",
+        "worker_ref": "native-worker:e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1",
+        "issue": "iss_9d4ff9b536194c9f8bb3b022537efd25",
+        "source_revision": "4d4b597afc12fa379f139a7e47546e9c2c0a9c7f8cc28ed0775df359c8562905",
+        "stage": "preview",
+        "state": "paused",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "provider_model": null,
+        "usage": null,
+        "events": [
+          {
+            "sequence": 1,
+            "recorded_at": "2026-11-22T10:02:42.602Z",
+            "state": "ready",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 2,
+            "recorded_at": "2026-11-22T10:02:42.692Z",
+            "state": "reserved",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 3,
+            "recorded_at": "2026-11-22T10:02:42.714Z",
+            "state": "running",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T10:02:42.744Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          {
+            "sequence": 5,
+            "recorded_at": "2026-11-22T10:02:48.775Z",
+            "state": "running",
+            "step": "control.pause",
+            "details": {
+              "actor": "usr_dfddbf6b16aa41469e3818f02c48109e",
+              "reviewed_sequence": 4
+            }
+          },
+          {
+            "sequence": 6,
+            "recorded_at": "2026-11-22T10:02:49.712Z",
+            "state": "running",
+            "step": "process.closed",
+            "details": {
+              "exit_code": 0,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "sequence": 7,
+            "recorded_at": "2026-11-22T10:02:49.731Z",
+            "state": "running",
+            "step": "workspace.collect",
+            "details": {
+              "changed_modules": [
+                "a"
+              ]
+            }
+          },
+          {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T10:02:49.778Z",
+            "state": "running",
+            "step": "candidate.compose",
+            "details": {
+              "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+              "modules": {
+                "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+              }
+            }
+          },
+          {
+            "sequence": 9,
+            "recorded_at": "2026-11-22T10:02:49.778Z",
+            "state": "paused",
+            "step": "state",
+            "details": {}
+          }
+        ]
+      },
+      "resumed": {
+        "task": "e5e2c5c05bdba4a90366cddc3a85551c14d4e28ff8926d9be75d7cad1ec2f2b1",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_dfddbf6b16aa41469e3818f02c48109e",
+          "criteria": "individual output",
+          "document_id": "doc_5caf689b071d43f3a8dc280cb2663ead",
+          "issue_id": "iss_9d4ff9b536194c9f8bb3b022537efd25",
+          "issue_revision": "b8d5f03848f8a8ec65756c90ea9f0d532ede2d99434c3bd895045d8c5e61d188",
+          "responsible_user": "usr_dfddbf6b16aa41469e3818f02c48109e",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "modules": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "checks": {
+          "check": {
+            "evidence": "a7ae796f2aa6d9f7fad66294fa8e7bd12f6d25134e232ac4c93fbe30baf1064a",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "peer": {
+        "task": "b63fe72092813354c6d8ab438350a81de14e32c6e4eae240cf9e360a892bd2a3",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_dfddbf6b16aa41469e3818f02c48109e",
+          "criteria": "individual output",
+          "document_id": "doc_5caf689b071d43f3a8dc280cb2663ead",
+          "issue_id": "iss_f8ce3b929029407995d2d63524602c7d",
+          "issue_revision": "a1e5d1ab025dae6c1657ebc2ba2bc75d7da4807efbc432fad8942795e56f40a3",
+          "responsible_user": "usr_dfddbf6b16aa41469e3818f02c48109e",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "modules": {
+          "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+        },
+        "checks": {
+          "check": {
+            "evidence": "2124cb6421d3c5296065a1b20f4943fdb62cbeccfd8368b272c81172ba82a327",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "reopened": {
+        "candidate": null,
+        "control": {
+          "actions": [],
+          "revision": 7.0,
+          "state": "cancelled",
+          "summary": "已取消"
+        },
+        "events": [
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:02:42.680Z",
+            "sequence": 1.0,
+            "state": "ready",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:02:56.068Z",
+            "sequence": 2.0,
+            "state": "reserved",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:02:56.082Z",
+            "sequence": 3.0,
+            "state": "running",
+            "step": "state"
+          },
+          {
+            "details": {
+              "modules": {
+                "c": "95f8e1393a57c7f1ecde6da19da297ee4380d6f1b5c0369efb135a6e2f474f73"
+              }
+            },
+            "recorded_at": "2026-11-22T10:02:56.124Z",
+            "sequence": 4.0,
+            "state": "running",
+            "step": "workspace.materialize"
+          },
+          {
+            "details": {
+              "actor": "usr_dfddbf6b16aa41469e3818f02c48109e",
+              "reviewed_sequence": 4.0
+            },
+            "recorded_at": "2026-11-22T10:03:00.872Z",
+            "sequence": 5.0,
+            "state": "running",
+            "step": "control.cancel"
+          },
+          {
+            "details": {
+              "exit_code": null,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "recorded_at": "2026-11-22T10:03:00.894Z",
+            "sequence": 6.0,
+            "state": "running",
+            "step": "process.closed"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:03:00.923Z",
+            "sequence": 7.0,
+            "state": "cancelled",
+            "step": "state"
+          }
+        ],
+        "id": "b7e8131c53557ca6c8a32f279777351c53dbd906f4c3da891ec40d3c391adfcc",
+        "issue": "iss_b2e2bdbd4a9349748cb2e9731d1974d7",
+        "provider_model": null,
+        "source_revision": "af8431765993692094fadd069e64abb0262f337b92960efbf49081575b438fda",
+        "stage": "preview",
+        "state": "cancelled",
+        "usage": null,
+        "worker_ref": "native-worker:b7e8131c53557ca6c8a32f279777351c53dbd906f4c3da891ec40d3c391adfcc"
+      },
+      "authorization_denied": 403,
+      "cancelled_replay_starts": 0,
+      "http_control_requests": [
+        {
+          "operation": "cancel",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "pause",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 403,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 409,
+          "count": 1
+        }
+      ],
+      "editor_sha256": "5631c83c198e33aa1c5b5895f935e86ffe1bc40ad1f5b0f369ae64e4cfb59574"
+    }
+  },
+  "tests": [
+    {
+      "entry": "native workflow, stage, owned worker and Node dispatcher",
+      "files": [
+        "customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py"
+      ],
+      "passed": 93,
+      "failed": 0
+    },
+    {
+      "entry": "ordinary installed ASGI main, independent entries and shared dispatch",
+      "files": [
+        "customizations/components/tianxuan/server/test_native_entry_normal.py",
+        "customizations/components/tianxuan/server/test_native_entry.py",
+        "customizations/components/tianxuan/server/test_native_shared_dispatch.py"
+      ],
+      "passed": 27,
+      "failed": 0
+    }
+  ],
+  "installed_entry_outcome": "Original installed producer stopped at its durable output boundary while a second tenant finished delivery. Explicit resume woke the parked entry and reached accepted delivery on its original work; both physical producer markers were present exactly once.",
+  "fixture_recheck": "The installed-entry fixture initially gated the colleague’s later independent increment as well as the first producer. Its one-shot release now belongs to the isolated fixture; host suite reverified on the final source.",
+  "handoff": {
+    "receiver": "Parent Windows integration and delivery session",
+    "downstream": [
+      1715,
+      1803
+    ],
+    "scope": "Candidate remains uncommitted for parent integration, independent review, protected main readback and issue closure. Windows editor retained for parent until its integrated acceptance; temporary project, worker and service fixtures exited and cleaned."
+  }
+}

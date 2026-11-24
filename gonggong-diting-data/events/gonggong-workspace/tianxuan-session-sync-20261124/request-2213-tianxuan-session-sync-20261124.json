@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2213-tianxuan-session-sync-20261124",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-session-sync-20261124",
+  "kind": "request",
+  "occurred_at": "2026-11-24T08:21:25.590482+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+  "agent": {
+    "id": "codex-tianxuan-session-sync-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "289af05ad5dfc2fe749d44617264a921b6d99f52fbafbdfdc3652ac3f5237a8f"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 2213,
+    "host_snapshot": "data-collection/tianxuan-session-sync-host-2213.json",
+    "design_path": "design-docs/tianxuan-session-sync-20261124.md",
+    "scope": "Issue 2213 shared-login presentation, authenticated service scope, persistence diagnostics, isolated verification and installed acceptance",
+    "execution_state": "in-progress",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "f2513ebda97183fb7c99e9899aabe161dd9a9e8ab823bb1d2389c83f4ffe5768"
+}

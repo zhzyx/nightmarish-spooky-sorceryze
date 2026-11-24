@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "supplements": "data-collection/modular-ci-selection-1668.json",
+  "initial_candidate": "31bbf5f9a2d3b02a5fdcbede42b4e4f1a57850ba",
+  "initial_real_ci": {
+    "modular_ci_pr_run": 44682938966,
+    "modular_ci_result": "failed_closed_unbound_head",
+    "static_pr_run": 44682939051,
+    "static_result": "failed_shebang_ruff_mypy"
+  },
+  "repair": {
+    "base_head_regression": "Real temporary Git repository now exercises the CLI base/head path and verifies output base, head and docs selection",
+    "selector": "Assign head=args.head before changed_files",
+    "executable_bits": "run_module.py, select_modules.py and summarize.py marked executable",
+    "ruff": "0.17.1 check and format passed",
+    "mypy": "2.4.0 passed for 6 source files; exception variable is no longer reused outside its except block",
+    "tests": "30 passed after repair"
+  },
+  "evidence_preservation": "The original collection receipt was restored unchanged; this file appends the repair observation",
+  "real_ci": "pending_repaired_candidate",
+  "manual_full_real_run": "not_run"
+}

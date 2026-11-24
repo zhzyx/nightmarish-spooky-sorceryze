@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c04",
+  "event_id": "wave20-intake-1784",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1784",
+  "occurred_at": "2026-11-21T06:16:42.902766+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1784,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T06:16:40Z",
+    "accepted_dependencies": {
+      "1866": "62b3f5ec7e10b65409466615a4f46b9f41ba7389"
+    },
+    "title": "[方案一 C04] 恢复模块的最近工作位置"
+  },
+  "evidence_refs": [],
+  "sha256": "088d5653822ab373681237916e60dcfe25dfd7c8e25c736c16b92b0cfcf70b22"
+}

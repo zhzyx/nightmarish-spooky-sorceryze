@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-33134e375719cb0d33fc06624bff67ba3725aeb7fd682f911b4daf6c69f065c3",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791",
+  "occurred_at": "2026-11-21T22:08:11.147777+00:00",
+  "evidence_refs": [
+    "dispatch-8490db9f6afd4c1f82e994b11463d570"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "restore-layout-during-authentication",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Cold-start the editor from the earlier release's actual saved dock order and selection while business authentication starts. Verify the stable issue ID and the preexisting turn ID after dock reparenting, saving, and a second process start.",
+      "when": "Authenticated project panels or HTTP transports are moved between an editor sidebar and a full-screen dock during layout restoration.",
+      "counterexample": "Editor routes that never move or detach the request owner do not establish this lifecycle dependency. A script that opens the workbench only after authentication misses the original failure.",
+      "trial_plan": "In a fresh candidate reuse the U13 headless runner, record actual issue/turn pairs, require the saved consultation to survive restart and the same layout to restore no consultation in another project."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u13.json",
+        "sha256": "626bec45452f3b176d661009f4238ac3863c40d3b6247a35c8f6b2b8a791dbf6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u13/dispatch-8490db9f6afd4c1f82e994b11463d570.json",
+      "sha256": "5e36585263e8bc97ace04d29ca71496554fdc909ec09d1f747c33b4d26eb02fa"
+    }
+  },
+  "sha256": "37e15af96352da65ae28d45d328b67597f50082a48fc858842a850d3130624cf"
+}

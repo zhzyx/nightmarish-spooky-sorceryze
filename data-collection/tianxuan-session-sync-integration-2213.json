@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "issue": 2213,
+  "request_id": "tianxuan-session-sync-20261124",
+  "recorded_at": "2026-11-24T09:19:22.583960+00:00",
+  "integration": {
+    "source_signed_commit": "978978a81eb75e85f17d8a551cd89ef21865024c",
+    "source_issue": 2211,
+    "paths": {
+      "data-collection/ai-chat-context-layout-controls-review-2211.json": "84559492b10e63b949b7e78714926e2cc6ec59313868c64903e87f19f19a6720",
+      "data-collection/ai-chat-context-layout-parent-review-2211.json": "9155ebe767f1688fd21a8e3e6b8ae906c30d11d8f80d4f622492e9209c67cb49",
+      "tests/editor/design_confirmation_recovery.gd": "5fc2b5dee1d332b8edd9091a2ae3c5480cfa42fd73b3750fc4fcbbf96360bd8a",
+      "tests/editor/run_native_acceptance.py": "fc789a49d831546671c43f6db7f2d444462598fc9549524378b2d96dbe5ab100",
+      "tests/editor/tianxuan_execution_controls.gd": "d7d81edf17b7801f91cc2256e6f42ba69863c58601e440a89f08587a7fd16bb9"
+    },
+    "product_files_changed": false,
+    "review_evidence": [
+      "data-collection/ai-chat-context-layout-controls-review-2211.json",
+      "data-collection/ai-chat-context-layout-parent-review-2211.json"
+    ]
+  },
+  "installed_candidate": {
+    "commit": "655d1f6836deb1d5db017d0a76d75af166a13934",
+    "binary_sha256": "f97605a8aed18e54aea284073862df94f0c0b23c96482156e90e507fce9e2189",
+    "product_matches_reviewed_login_fix": true,
+    "signature": "ad-hoc; codesign --verify --deep --strict passed",
+    "state": "installed; launch awaiting user window decision"
+  },
+  "additional_validation": {
+    "controls": {
+      "passed": true,
+      "checks": 45,
+      "sha256": "ce2b5f1b4f6e0df01c4fd9bbb53cb9ad3287b4199adde9dd177178e5b9e16389",
+      "binary_sha256": "f97605a8aed18e54aea284073862df94f0c0b23c96482156e90e507fce9e2189"
+    },
+    "parent_confirmation_recovery": {
+      "ok": true,
+      "verification_status": "native_acceptance_passed",
+      "transport_fixture_ok": false,
+      "artifact_sha256": "f97605a8aed18e54aea284073862df94f0c0b23c96482156e90e507fce9e2189",
+      "report_sha256": "7e8ba395c3c6ebdcb1bff0f9149e056fb4d0e992f3c97366f5e75508d91645a1"
+    }
+  },
+  "limits": [
+    "These are isolated fixtures using the actual packaged binary, not real account persistence acceptance.",
+    "Prior production implementation review remains applicable because only reviewed fixture and evidence files were integrated.",
+    "Current origin may require a deployed independent device authorization endpoint; no service deployment or real credential access occurred.",
+    "Windows CI and main delivery remain separate pending receipts."
+  ]
+}

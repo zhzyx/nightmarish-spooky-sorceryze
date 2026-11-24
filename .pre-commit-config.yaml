@@ -143,6 +143,8 @@ repos:
         name: validate-includes
         language: python
         entry: python misc/scripts/validate_includes.py
+        # Independent CMake root: repository-root include rewriting breaks this port.
+        exclude: ^tools/skintokens\.cpp/
         files: \.(c|h|cpp|hpp|cc|hh|cxx|hxx|m|mm|inc)$
 
       - id: eslint
@@ -199,12 +201,21 @@ repos:
         files: \.(c|h|cpp|hpp|cc|hh|cxx|hxx|m|mm|inc|java)$
         exclude: |
           (?x)^(
+            # Independent Apache-2.0 port; checked by skintokens-license below.
+            tools/skintokens\.cpp/.*|
             core/math/bvh_.*\.inc|
             platform/(?!android|ios|linuxbsd|macos|visionos|web|windows)\w+/.*|
             platform/android/java/lib/src/main/java/org/godotengine/godot/gl/GLSurfaceView\.java|
             platform/android/java/lib/src/main/java/org/godotengine/godot/gl/EGLLogWrapper\.java|
             platform/android/java/lib/src/main/java/org/godotengine/godot/utils/ProcessPhoenix\.java
           )$
+
+      - id: skintokens-license
+        name: SkinTokens independent license and notice
+        language: python
+        entry: python tools/skintokens.cpp/scripts/check_license.py
+        files: ^(tools/skintokens\.cpp/|\.pre-commit-config\.yaml$)
+        pass_filenames: false
 
       - id: header-guards
         name: header-guards
@@ -219,7 +230,14 @@ repos:
         types_or: [text]
         exclude: |
           (?x)^(
+            # Patch context whitespace is syntax; checked without rewriting.
+            tools/skintokens\.cpp/patches/ggml/[^/]+\.patch|
             tools/maliang_hunyuan/HUNYUAN-NOTICE|
+            # Preserve already hashed raw-byte audit receipts.
+            data-collection/tianxuan-multidevice-2190-(compiled|learning|repository|validation)\.json|
+            data-collection/duobao-dual-review-2178\.json|
+            data-collection/duobao-dual-module-build-impact-2178\.json|
+            data-collection/duobao-server-deployment-2178\.json|
             data\-collection/native\-installation\-integrity\-repair\-1499\.json|
             data\-collection/native\-production\-entry\-implementation\-1499\.json|
             data\-collection/native\-context\-consumption\-implementation\-1501\.json|
@@ -301,6 +319,12 @@ repos:
         name: GongGong offline snapshot integrity and syntax
         language: python
         entry: python tools/check_gonggong_distribution.py
+        pass_filenames: false
+        always_run: true
+      - id: ci-module-selection
+        name: CI module ownership and selection contracts
+        language: python
+        entry: python -m unittest discover -s tools/ci -p test_*.py -v
         pass_filenames: false
         always_run: true
 #     - id: new-local-hook

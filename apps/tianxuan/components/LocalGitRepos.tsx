@@ -42,7 +42,7 @@ const repoButtonStyle = {
 
 const repoButtonActiveStyle = {
   ...repoButtonStyle,
-  background: "rgba(245, 242, 234, 0.05)",
+  background: "var(--ink-3)",
 } as const;
 
 const branchRowStyle = {
@@ -65,7 +65,7 @@ const errorRowStyle = {
   flexWrap: "wrap",
 } as const;
 
-const errorTextStyle = { color: "#D48B80" } as const;
+const errorTextStyle = { color: "var(--error-text)" } as const;
 
 function shortSha(sha: string): string {
   const trimmed = sha.trim();
@@ -177,7 +177,6 @@ export function LocalGitRepos() {
       <section aria-label={t("local.aria")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
-            <p className="section-kicker">DUOBAO · LOCAL GIT</p>
             <h2>{t("local.title")}</h2>
           </div>
           <span className="mono-key">{t("local.disabled")}</span>
@@ -207,7 +206,6 @@ export function LocalGitRepos() {
     >
       <div className="section-heading" style={headingStyle}>
         <div>
-          <p className="section-kicker">DUOBAO · LOCAL GIT</p>
           <h2>{t("local.title")}</h2>
         </div>
         <span className="mono-key">{summary}</span>

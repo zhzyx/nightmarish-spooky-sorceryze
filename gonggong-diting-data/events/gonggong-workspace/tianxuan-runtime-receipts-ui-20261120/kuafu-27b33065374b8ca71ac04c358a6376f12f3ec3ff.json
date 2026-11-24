@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-27b33065374b8ca71ac04c358a6376f12f3ec3ff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-receipts-ui-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1654",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c8762b272f1ac940ea955d991506ede227e791379c4feae3b320cb9fd5607a4f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1654",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1664",
+    "action": "dispatch",
+    "detection_head": "a21fd6e0bbea0dac2af1ce1e9d3d37c81ff9ffba",
+    "context_sha256": "6b38688dbb08c2dafeb26a0a4e134cc6b4854526660858ec1104bb0f069e5714",
+    "operator": "Sail-Li",
+    "worker": "codex-native:/root",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44595063339 and source Git index de18af26c1c41980da7e18ab4bcea3db3eedc82e",
+    "diagnosis": "Owner response and signing output stopped after verified staged source. GitHub had no A7 PR and no matching process was visible on the host. Native child turn was confirmed interrupted. Root preserved its worktree, transferred the exact staged patch to an independent copy on actual main, and passed two standalone browser fixture suites. Root cause of the stopped turn remains unknown.",
+    "next_action": "Sail-Li current root obtains independent review and signs the new exact candidate, then reads CI and remote main before retiring the isolated drafts.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T19:07:40.498319+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T19:11:00.224012+00:00",
+  "sha256": "de489e36e9028dbed4a5bb36f830405053aebd8767d3b7b24fba7b2a7217ead4"
+}

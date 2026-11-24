@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-78d3c45510b2f0bb2ae9cbf8ae4c628deca21476",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-platform-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "39bd4be328715ed728bbd7d3d9858aa08fe863a712cc9452475fdfdb7616dd08",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1674",
+    "action": "dependency",
+    "detection_head": "f4e6f59706d3017fcaafe775908316f60a1c1b85",
+    "context_sha256": "4cdcc9384aab71b7ca1060dfacff10d94dc3ddd47ef58a23c616e517a3ca2881",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-config-20261120",
+    "authority_ref": "codex:user-request-20261120-game-config-platform",
+    "evidence": "npm ci completed 41 packages; next build succeeded including /game-config; pytest 105 passed; actual Godot acceptance passed",
+    "diagnosis": "Original task dependencies recovered. Node for native SWC uses installed Cursor runtime; trusted system CA retained only in task environment. Downloaded exact locked npm package and verified SHA512 before offline installation.",
+    "next_action": "Continue independent findings fixes and exact-candidate delivery; no dependency blocker remains.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T07:47:06.649881+00:00",
+    "attempted": "Original dependency install and production build succeeded",
+    "repair_owner": "Sail-Li/current Codex",
+    "continuable": "All scope"
+  },
+  "occurred_at": "2026-11-20T08:15:32.574115+00:00",
+  "sha256": "d06d1494877adcff85a69a49dfe324f822306337a52df7f3e738298958cf2036"
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-content-rollback-20261120-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-content-rollback-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-19T17:08:57.912371+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+  "agent": {
+    "id": "codex-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "intent": "Publish a new immutable rollback receipt selecting accepted native content through HTTP, CLI and Web.",
+    "definition": "AGENTS.md",
+    "collection": "data-collection/tianxuan-content-rollback-20261120.json"
+  },
+  "evidence_refs": [],
+  "sha256": "2dbf5e90356bc633ea2e6206cd05479d3375b80bf0721ebf0bf4e1948f7d9ead"
+}

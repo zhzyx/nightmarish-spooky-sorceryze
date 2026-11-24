@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "request_id": "ainative-art-garment-split-20261122",
+  "issue": 2022,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022",
+  "recorded_at": "2026-11-22T17:31:26Z",
+  "state": "local_candidate_validated",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261123",
+    "origin": "current-authorized-host",
+    "definition": "AGENTS.md",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "implementation": {
+    "input": "self-contained static or rigged GLB 2.0",
+    "rigged_strategy": "replace_index_buffers_only",
+    "preserved": [
+      "skins",
+      "skeleton_hierarchy",
+      "rest_poses",
+      "inverseBindMatrices",
+      "JOINTS_0",
+      "WEIGHTS_0",
+      "vertex_attributes",
+      "animations",
+      "unrendered_source_vertices"
+    ],
+    "collection_output_suffix": "_garments.glb",
+    "individual_garment_glb": true,
+    "static_glb_supported": true,
+    "rigged_cloth_prepare": "explicitly_rejected",
+    "source_overwritten": false
+  },
+  "tests": {
+    "garment_core_and_executor": {
+      "command": "python -m unittest discover -s tools/ainative -p 'test_garment_split*.py' -v",
+      "passed": 18,
+      "failures": 0
+    },
+    "full_ainative_regression": {
+      "command": "python -m unittest discover -s tools/ainative -p 'test_*.py'",
+      "passed": 539,
+      "skipped_environment": 62,
+      "duration_seconds": 186.726,
+      "result": "OK"
+    }
+  },
+  "native_acceptance": {
+    "report": "runtime/garment-split-native-20261122/rigged-node-passed.json",
+    "state": "passed",
+    "installed_bundle_matches_source": true,
+    "bundle": "98d0f05c8db6f6ab7c4a9d07462113be4bb0160c7873dac3b66aed2f6ec18d40",
+    "editor_version": "4.8.beta.custom_build.f27dbd3b2",
+    "editor_sha256": "0d7cc04eb8bedc8af3e2899217fd59c0e401e77c4327f55129663f778bffa723",
+    "coverage": [
+      "node_creation",
+      "actual_provider_execution",
+      "collection_and_individual_glb",
+      "skeleton_and_weight_preservation",
+      "semantic_garment_cards",
+      "mesh_decode",
+      "source_bytes_unchanged"
+    ],
+    "workbench_process_31552_running": false
+  },
+  "not_verified": {
+    "real_ai_called": false,
+    "real_ai_recognition_quality": false,
+    "real_character_multiview_visual_review": false,
+    "target_rig_animation_and_collision": false,
+    "cloth_ready": false
+  },
+  "delivery": {
+    "authorized": "local_commit_only",
+    "push_authorized": false,
+    "other_sessions_changes_included": false
+  }
+}

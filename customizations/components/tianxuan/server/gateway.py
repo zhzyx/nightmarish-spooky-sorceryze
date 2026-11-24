@@ -13,16 +13,18 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 import threading
 import uuid
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import urlparse
 
 import httpx
+from access_control import COOKIE
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field, ValidationError
@@ -99,6 +101,15 @@ class ChatRequestBody(BaseModel):
     base_url: str = Field(min_length=1)
     max_tokens: int | None = Field(default=None, gt=0)
     budget_micros: int | None = Field(default=None, ge=0)
+
+
+class WorkspaceMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=16000)
+
+
+class WorkspaceChat(BaseModel):
+    messages: list[WorkspaceMessage] = Field(min_length=1, max_length=25)
 
 
 def _now() -> str:
@@ -415,10 +426,46 @@ def _header(request: Request, name: str) -> str:
     return (request.headers.get(name) or "").strip()
 
 
+def workspace_actor(request: Request, *, write: bool = False) -> str:
+    store = request.app.state.store
+    actor = getattr(request.state, "verified_actor", None)
+    if not actor:
+        scheme, _, token = request.headers.get("authorization", "").partition(" ")
+        key = token.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
+        actor = store.user_for_access_key(key) if key else None
+    if not actor:
+        raise HTTPException(401, "personal access key required")
+    if write and store.role_of(actor) == "viewer":
+        raise HTTPException(403, "read-only account")
+    if write and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+        raise HTTPException(415, "application/json required")
+    return str(actor)
+
+
+def workspace_reply(
+    gateway: ModelGateway | None, tenant: str, actor: str, messages: list[dict[str, Any]]
+) -> dict[str, str]:
+    model = os.environ.get("TIANXUAN_CHAT_MODEL")
+    base_url = os.environ.get("TIANXUAN_CHAT_BASE_URL")
+    model_key = os.environ.get("TIANXUAN_CHAT_MODEL_KEY")
+    if gateway is None or not model or not base_url or not model_key:
+        raise HTTPException(503, "workspace chat is not configured")
+    try:
+        result = gateway.chat(tenant, actor, model, messages, api_key=model_key, base_url=base_url, max_tokens=2048)
+    except BudgetExceeded as exc:
+        raise HTTPException(429, "workspace model budget exhausted") from exc
+    except (MissingCredential, InvalidRequest, UpstreamError, httpx.HTTPError) as exc:
+        raise HTTPException(502, "workspace model did not return a reply") from exc
+    content = result["content"]
+    if not content.strip() or len(content) > 16000:
+        raise HTTPException(502, "workspace model did not return a bounded reply")
+    return {"model": result["model"], "content": content}
+
+
 def create_model_router(gateway: ModelGateway) -> APIRouter:
     """创建模型网关路由；调用方自行 ``app.include_router(...)``。"""
 
-    router = APIRouter(prefix="/api/v1/models", tags=["tianxuan-models"])
+    router = APIRouter(prefix="/api/v1", tags=["tianxuan-models"])
 
     def identity(request: Request) -> tuple[str, str]:
         store = request.app.state.store
@@ -436,7 +483,7 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
             raise HTTPException(403, "identity mismatch")
         return tenant, str(actor)
 
-    @router.post("/chat")
+    @router.post("/models/chat")
     async def chat(request: Request) -> dict[str, Any]:
         tenant_id, actor = await run_in_threadpool(identity, request)
         api_key = _header(request, _HEADER_KEY)
@@ -476,7 +523,22 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
         except httpx.HTTPError as exc:
             raise HTTPException(status_code=502, detail="upstream model request failed") from exc
 
-    @router.get("/usage")
+    @router.post("/workspace/chat")
+    def workspace_chat(body: WorkspaceChat, request: Request) -> dict[str, str]:
+        actor = workspace_actor(request, write=True)
+        context = request.app.state.store.actor_context(actor)
+        messages = body.messages
+        if messages[-1].role != "user" or any(
+            message.role != ("assistant" if index % 2 else "user")
+            or not message.content.strip()
+            or (message.role == "user" and len(message.content) > 8000)
+            for index, message in enumerate(messages)
+        ):
+            raise HTTPException(400, "messages must alternate and end with a user message")
+
+        return workspace_reply(gateway, context["tenant"], actor, [message.model_dump() for message in messages])
+
+    @router.get("/models/usage")
     def usage(request: Request) -> dict[str, Any]:
         tenant_id, _ = identity(request)
         requested = request.query_params.get("tenant_id")

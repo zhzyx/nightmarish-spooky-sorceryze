@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-42b7b1f7e172f633b4c64c7cdcd9a17bafe8bd28652ac70307ef59141e24844b",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1726",
+  "occurred_at": "2026-11-22T17:57:23.548587+00:00",
+  "evidence_refs": [
+    "dispatch-7dcffc6c2b6747d5a0ac93796578452a",
+    "learn-41c5178f7bdd9b3b496eca707799541ee1b82b472556898283d1f8405c3b51df"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 39,
+    "previous": "5fc14f5fae1ae674b5130137e36ed045082b5382b4d5dfd183f176a23c336744",
+    "action": "applied",
+    "details": {
+      "task": "Q03 #1726 动画手改、接续、回放和预览停止点验收。",
+      "observed": "服务重新下载的手改版、签认候选及归档场景均按修订和字节核对。第二次独立打开归档候选，25 对实际视口姿态和时间线修订标签相符。样例账户的操作保留给 Q03，xuekaiyun 的创意签认仍由 Q09 核对。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-q03.json",
+        "sha256": "eff99fc22075990e2b5da48eb1cc1e7af6f99485732e4727b1781b2c3c8100d1"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q03/dispatch-7dcffc6c2b6747d5a0ac93796578452a.json",
+      "sha256": "dfecb5974dd2155b64fc2d020aa78ca82d5c81d4a540714537aa67c07e916f33"
+    }
+  },
+  "sha256": "74c1729a2d700f8c04838d9f0f767691297bb2fd3f140f67c65f79b9614dddc3"
+}

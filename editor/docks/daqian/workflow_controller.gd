@@ -27,6 +27,30 @@ var execution_runs: Dictionary = {}
 var worker_runs: Dictionary = {}
 var preview_runs: Dictionary = {}
 var scope_generation := 0
+var closing := false
+var last_terminal := {}
+
+
+func quiesce() -> void:
+	if closing:
+		return
+	closing = true
+	scope_generation += 1
+	var runs := []
+	for group in [route_runs, execution_runs, worker_runs]:
+		for run: Dictionary in group.values():
+			runs.append(_checkpoint_run(run))
+	for pending: Dictionary in preview_runs.values():
+		runs.append(_checkpoint_run(pending.run))
+	saved["shutdown_checkpoint"] = {"runs":runs, "last_terminal":last_terminal.duplicate(true), "workers":chat_work.duplicate(true)}
+
+
+func _checkpoint_run(run: Dictionary) -> Dictionary:
+	var latest: Dictionary = runtime.snapshot(run.run_id)
+	var binding: Dictionary = latest.get("binding", {})
+	return {"run_id":run.run_id, "generation":run.generation, "sequence":latest.get("sequence"),
+		"workflow":latest.get("workflow"), "state":latest.get("state"), "request_id":latest.get("request_id"),
+		"issue":binding.get("url", binding.get("source_ref", "")), "request":binding.get("request", binding.get("request_ref", ""))}
 
 
 func context() -> Dictionary:
@@ -51,6 +75,8 @@ func execution_key(binding: Dictionary) -> String:
 
 
 func _begin_run(workflow: String, request_id: String, model: Dictionary, binding: Dictionary) -> Dictionary:
+	if closing:
+		return {}
 	if not is_instance_valid(runtime) and ClassDB.class_exists("AIWorkflowRuntime"):
 		runtime = ClassDB.instantiate("AIWorkflowRuntime")
 	if not is_instance_valid(runtime):
@@ -77,11 +103,15 @@ func _publish(run: Dictionary, kind: String, payload: Dictionary = {}, state := 
 		return {}
 	var event: Dictionary = runtime.publish(run.run_id, run.generation, kind, payload, state)
 	if not event.is_empty():
+		if event.get("state") in ["succeeded", "failed", "cancelled"]:
+			last_terminal = _checkpoint_run(run)
 		event_received.emit(event.duplicate(true))
 	return event
 
 
 func bind_conversation(binding: Dictionary, current_source := "") -> String:
+	if closing:
+		return "编辑器正在关闭。"
 	if not session_opener.is_valid():
 		return "推进对话尚未就绪。"
 	return session_opener.call(str(binding.get("url", current_source)), int(binding.get("number", 0)),
@@ -103,6 +133,8 @@ func has_started_worker(binding: Dictionary, current_source := "") -> bool:
 
 func open_conversation(source: String, number: int, request: String, message: String, preview: bool, selection: Dictionary,
 		embedded: bool, receipt := "", existing := false, background := false) -> String:
+	if closing:
+		return "编辑器正在关闭。"
 	if not session_opener.is_valid():
 		return "推进对话尚未就绪。"
 	selection = selection.duplicate(true)
@@ -142,6 +174,8 @@ func finish_preview(source: String, text: String, error := "") -> Dictionary:
 
 
 func submit_execution(binding: Dictionary, message: String, selection: Dictionary, existing: bool, background: bool, retry: bool, record_started := true, embedded := true) -> String:
+	if closing:
+		return "编辑器正在关闭。"
 	if not session_opener.is_valid():
 		return "无法取得共工 AI 对话入口"
 	binding = binding.duplicate(true)
@@ -212,6 +246,8 @@ func discard_routing(binding: Dictionary) -> void:
 
 
 func judge_requirement(binding: Dictionary, answer := "", retry := false, expected_questions: Array = []) -> Dictionary:
+	if closing:
+		return {}
 	binding = binding.duplicate(true)
 	var key := routing_key(binding)
 	if routing_in_flight.has(key) or binding.get("closed", false) or binding.status != "planned":
@@ -339,9 +375,12 @@ func reset_runtime() -> void:
 	routing_stages.clear()
 	execution_turns.clear()
 	chat_work.clear()
+	last_terminal.clear()
 
 
 func consume_work_event(root: String, binding: Dictionary, worker: String, kind: String, stage: String, state: String) -> Dictionary:
+	if closing:
+		return {}
 	var current := context()
 	var actor: Dictionary = current.get("actor", {})
 	if root != current.get("root", "") or actor.is_empty() or binding.get("actor") != actor.user_id:

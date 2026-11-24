@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-h04-coverage-original-files",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h04",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T12:54:57.692716+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1819,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-h04.json",
+    "sha256": "71eb3ae7a78021e1b652ad473780c5660a3eb5ecedf558df674e031493b88952",
+    "verification": "从工单的附件与产物区域或待判断项打开比较窗口，选择同工单两次提交，核对完整修订、文件路径、内容摘要与来源设计。两侧各自读取带版本的原件并校验字节；PNG 在其所属栏显示预览。Mac 验收使用两个账号和三个编辑器窗口，逐侧核对红、蓝原图像素，并回读转交及采纳历史。运行 tests/editor/run_workbench_creative_judgments.py，传入 --godot 和 --report。"
+  },
+  "evidence_refs": [],
+  "sha256": "7da7c71720193c00c0c9b1536f44b657f65c9c9e0c8599b14e904e5436b67155"
+}

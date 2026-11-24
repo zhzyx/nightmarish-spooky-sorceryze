@@ -6,12 +6,16 @@ Never print exceptions: native errors and malformed requests can contain secrets
 """
 
 import ctypes as c
+import hashlib
 import json
+import os
 import re
 import sys
 import unicodedata
+from contextlib import contextmanager, nullcontext
 
 SERVICE = "Godot.ProjectAI.Connection"
+TIANXUAN_SERVICE = "Godot.Tianxuan.Editor"
 MAX_REQUEST_BYTES = 16384
 MAX_SECRET_BYTES = 2400
 MISSING_MAC = -25300
@@ -26,7 +30,7 @@ def valid_secret(value):
     )
 
 
-def mac_operation(action, account, value):
+def mac_operation(action, account, value, service_name=SERVICE):
     security = c.CDLL("/System/Library/Frameworks/Security.framework/Security")
     core = c.CDLL("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")
     pointer, uint = c.c_void_p, c.c_uint32
@@ -47,7 +51,7 @@ def mac_operation(action, account, value):
     )
     release = bind(core, "CFRelease", [pointer], None)
     free = bind(security, "SecKeychainItemFreeContent", [pointer, pointer])
-    service, name = SERVICE.encode("utf-8"), account.encode("ascii")
+    service, name = service_name.encode("utf-8"), account.encode("ascii")
     size, data, item = uint(), pointer(), pointer()
     status = find(None, len(service), service, len(name), name, c.byref(size), c.byref(data), c.byref(item))
     try:
@@ -86,7 +90,7 @@ def mac_operation(action, account, value):
             release(item)
 
 
-def windows_operation(action, account, value):
+def windows_operation(action, account, value, service_name=SERVICE):
     from ctypes import wintypes as w
 
     class Credential(c.Structure):
@@ -106,7 +110,7 @@ def windows_operation(action, account, value):
         ]
 
     api = c.WinDLL("Advapi32", use_last_error=True)
-    target = SERVICE + "/" + account
+    target = service_name + "/" + account
     if action == "delete":
         api.CredDeleteW.argtypes, api.CredDeleteW.restype = [w.LPCWSTR, w.DWORD, w.DWORD], w.BOOL
         if not api.CredDeleteW(target, 1, 0) and c.get_last_error() != MISSING_WINDOWS:
@@ -115,7 +119,7 @@ def windows_operation(action, account, value):
     if action == "save":
         buffer = c.create_string_buffer(value)
         credential = Credential(
-            type=1, target=target, size=len(value), blob=c.cast(buffer, c.c_void_p), persist=2, username=SERVICE
+            type=1, target=target, size=len(value), blob=c.cast(buffer, c.c_void_p), persist=2, username=service_name
         )
         api.CredWriteW.argtypes, api.CredWriteW.restype = [c.POINTER(Credential), w.DWORD], w.BOOL
         if not api.CredWriteW(c.byref(credential), 0):
@@ -138,10 +142,61 @@ def windows_operation(action, account, value):
             api.CredFree(found)
 
 
+@contextmanager
+def editor_write_lock(account):
+    """Keep a delayed logout from deleting another editor's replacement grant."""
+    if sys.platform == "win32":
+        from ctypes import wintypes as w
+
+        kernel = c.WinDLL("kernel32", use_last_error=True)
+        kernel.CreateMutexW.argtypes, kernel.CreateMutexW.restype = [c.c_void_p, w.BOOL, w.LPCWSTR], w.HANDLE
+        kernel.WaitForSingleObject.argtypes = [w.HANDLE, w.DWORD]
+        kernel.ReleaseMutex.argtypes = kernel.CloseHandle.argtypes = [w.HANDLE]
+        handle = kernel.CreateMutexW(None, False, "Local\\Godot.Tianxuan.Editor." + account)
+        if not handle:
+            raise RuntimeError("unavailable")
+        try:
+            if kernel.WaitForSingleObject(handle, 5000) not in (0, 0x80):
+                raise RuntimeError("unavailable")
+            try:
+                yield
+            finally:
+                kernel.ReleaseMutex(handle)
+        finally:
+            kernel.CloseHandle(handle)
+    else:
+        import fcntl
+        from pathlib import Path
+
+        directory = Path.home() / "Library/Caches" / TIANXUAN_SERVICE
+        directory.mkdir(parents=True, mode=0o700, exist_ok=True)
+        fd = os.open(directory, os.O_RDONLY | os.O_NOFOLLOW | os.O_DIRECTORY)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            yield
+        finally:
+            os.close(fd)
+
+
 def dispatch(request):
     try:
         if not isinstance(request, dict):
             return {"status": "invalid"}
+        service_name = SERVICE
+        expected = None
+        if "service" in request:
+            if request["service"] != "tianxuan-editor":
+                return {"status": "invalid"}
+            service_name = TIANXUAN_SERVICE
+            request = {key: value for key, value in request.items() if key != "service"}
+            if "expected" in request:
+                expected = request.pop("expected")
+                if (
+                    request.get("action") not in ("save", "delete")
+                    or not isinstance(expected, str)
+                    or (expected != "missing" and not re.fullmatch("[0-9a-f]{64}", expected))
+                ):
+                    return {"status": "invalid"}
         action, account = request.get("action"), request.get("account")
         if (
             action not in ("load", "save", "delete")
@@ -157,11 +212,18 @@ def dispatch(request):
         return {"status": "invalid"}
     try:
         if sys.platform == "darwin":
-            result = mac_operation(action, account, value)
+            operation = mac_operation
         elif sys.platform == "win32":
-            result = windows_operation(action, account, value)
+            operation = windows_operation
         else:
             return {"status": "unavailable"}
+        lock = editor_write_lock(account) if service_name == TIANXUAN_SERVICE and action != "load" else nullcontext()
+        with lock:
+            if expected is not None:
+                existing = operation("load", account, None, service_name)
+                if ("missing" if existing is None else hashlib.sha256(existing).hexdigest()) != expected:
+                    return {"status": "changed"}
+            result = operation(action, account, value, service_name)
         if action == "load":
             if result is None:
                 return {"status": "missing"}

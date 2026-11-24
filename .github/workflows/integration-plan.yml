@@ -1,17 +1,15 @@
 name: Integration preparation planner
 
 on:
-  pull_request:
-    paths:
-      - "customizations/platforms/development/git/heqi/**"
-      - ".github/workflows/integration-plan.yml"
-  merge_group:
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   planner-tests:
+    name: Integration planner (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:

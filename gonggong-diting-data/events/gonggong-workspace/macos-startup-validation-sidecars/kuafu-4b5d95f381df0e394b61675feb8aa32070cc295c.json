@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4b5d95f381df0e394b61675feb8aa32070cc295c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-startup-validation-sidecars",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7baa37eae1e94de0cb17294ab9388c54045da96d6e7f13fdf2619f70878a5b4a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+    "action": "delivery",
+    "detection_head": "33cddc6b03bd8893da2fe53de2f890e6f3f20d5d",
+    "context_sha256": "d1f05ef53a6803b47eabb7aab543c7c603d15e9cb7ba7290c8237dfddc9db9ac",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709",
+    "evidence": "PR #2135 合入同时侧包门禁已提交本地候选，main 从 f1d145ae 前移 f2d6c6b2，路径交集为空。部署端完整性十项已通过。",
+    "diagnosis": "签发最后一次回读目标发现主线前移。",
+    "next_action": "整合最新 main 后再次正式签发，核查资源探针与生产工作者接口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T19:12:53.916987+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T19:14:51.254226+00:00",
+  "sha256": "fab78f59e20c401b8854c963bb9980043254512e9d5263da9bbfc2734d93fc26"
+}

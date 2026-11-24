@@ -1,0 +1,141 @@
+{
+  "issue_number": 1769,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769",
+  "request_id": "gonggong-ai-workbench-plan1-v02",
+  "base": "0198ae5c9b9360d62e8749f436ba98ef36eae90e",
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/api.py": "54a38ce176b4933cd99803aa313c126de2f3e801fa3f0f582257f099101a3235",
+    "customizations/components/tianxuan/server/test_api_versions.py": "b5905db8cc30ca688369fc962c0b6fd34c208764bc383cfa1ac02ade4da63a18",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "5420e153bad41336f96395c5327ca38c2de871b5356f38c21dfc5f1a348f7a60",
+    "design-docs/gonggong-ai-workbench-d06.md": "71da079327bc3e534e2072408391721ec538492c40898521c1d9c1759633a253",
+    "editor/docks/workbench/business_session.gd": "c2d9d27e63bba1abf8c02a4a0f09f4e63968ad9d9d57ca1c911811ae657b6fd6",
+    "editor/docks/workbench/document_history.gd": "4e91cad624b743fd67b9efcf4ef1924a8b7011e3136a4da715bcca715c1edd45",
+    "tests/editor/run_workbench_changed_paragraph.py": "bcc8c20482879a5384d9fe5fd5b33be26aa474adeeae6d427289562b7688e884",
+    "tests/editor/workbench_changed_paragraph.gd": "00614a01e18d4e99513b466461fde271ab6fb391139d6c809b06ef44075bf3a9"
+  },
+  "verified_at": "2026-11-22T09:43:05.308904+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "commands": [
+    "python -m SCons platform=macos target=editor arch=arm64 vulkan=no -j8",
+    "python tests/editor/run_workbench_changed_paragraph.py --godot bin/godot.macos.editor.arm64 --report native.json",
+    "python tests/editor/run_workbench_documents.py --history --godot bin/godot.macos.editor.arm64 --report history.json",
+    "python -m pytest -q customizations/components/tianxuan/server/test_api_versions.py customizations/components/tianxuan/server/test_acl_matrix.py customizations/components/tianxuan/sinan-workorders/test_native_validation.py"
+  ],
+  "regression": "13 passed, one FastAPI test-client deprecation warning",
+  "native": {
+    "editor_sha256": "262ce60f9fd43b8bc77fee05233e4863a5454eaa92d7561e79b65ca7182ce0dd",
+    "native": {
+      "action": "编辑此段",
+      "colored_lines": [
+        "-白色灯塔",
+        "+蓝色灯塔"
+      ],
+      "diff": "--- v1\n+++ v2\n@@ -1,6 +1,6 @@\n 海岸\n \n-白色灯塔\n+蓝色灯塔\n 保留灯光\n \n 结尾",
+      "highlighted": true,
+      "label": "修改 · v2 第 2 段　蓝色灯塔",
+      "reference": {
+        "document_id": "doc_f71dbc71f62544918404fab555666358",
+        "paragraph": 2,
+        "version": 2
+      },
+      "saved": "海岸\n\n海岸灯塔\n调高灯光\n\n结尾",
+      "selection": "蓝色灯塔\n保留灯光"
+    },
+    "http": [
+      [
+        "GET",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358/versions/2",
+        "project=studio%2Fgame",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358/versions",
+        "project=studio%2Fgame",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358/diff",
+        "from_version=1&to_version=2&paragraphs=true&project=studio%2Fgame",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358/versions/2",
+        "project=studio%2Fgame",
+        200
+      ],
+      [
+        "PATCH",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358",
+        "project=studio%2Fgame",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_f71dbc71f62544918404fab555666358/versions/3",
+        "project=studio%2Fgame",
+        200
+      ]
+    ],
+    "persisted": [
+      "海岸\n\n白色灯塔\n保留灯光\n\n结尾",
+      "海岸\n\n蓝色灯塔\n保留灯光\n\n结尾",
+      "海岸\n\n海岸灯塔\n调高灯光\n\n结尾"
+    ]
+  },
+  "history": {
+    "service": {
+      "diff": "--- v1\n+++ v2\n@@ -2,3 +2,5 @@\n 保留换行\n \n 第二段 · 手写\n+\n+第三段 · 复审",
+      "document_id": "doc_08255a9b203c458ca1eca6dcba0e42aa",
+      "revisions": [
+        {
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+          "version": 1
+        },
+        {
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+          "version": 2
+        },
+        {
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+          "version": 3
+        }
+      ],
+      "project": "studio/game",
+      "restores": [
+        [
+          "/api/v1/docs/doc_08255a9b203c458ca1eca6dcba0e42aa/versions/1/restore",
+          {
+            "call_id": "25f0f63605160b3b470c4882b4242d35",
+            "expected_version": 2
+          },
+          200,
+          503
+        ],
+        [
+          "/api/v1/docs/doc_08255a9b203c458ca1eca6dcba0e42aa/versions/1/restore",
+          {
+            "call_id": "25f0f63605160b3b470c4882b4242d35",
+            "expected_version": 2
+          },
+          200,
+          200
+        ],
+        [
+          "/api/v1/docs/doc_fae660f0024744f2b58c05598e1d2e94/versions/1/restore",
+          {
+            "call_id": "0ea47929cc17b3658d4c89321c1ea739",
+            "expected_version": 2
+          },
+          409,
+          409
+        ]
+      ],
+      "concurrent_head_preserved": true
+    },
+    "report_sha256": "e7635a5056b555b3530fcea80c6cc8436a08d3815e715aa7434685ddf038408d"
+  },
+  "v01_scope": "Validated the revision-bound native workflow object API independently. Ordinary Tianxuan document IDs and integer versions have no task/module/path binding; this comparison carries the actual document ID and immutable source/target versions."
+}

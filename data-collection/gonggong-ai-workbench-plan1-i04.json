@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i04",
+  "issue_number": 1831,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831",
+  "intake": {
+    "exit_code": 0,
+    "issue_comments": 0,
+    "source_revision": "437a6d0b1e6b5db6d93fe518d6c373c14f0757ebee71093be6d65446b9ff7d2c",
+    "I02": {
+      "issue_number": 1854,
+      "state": "CLOSED/COMPLETED",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069"
+    },
+    "upstream_macos": {
+      "coverage": "D14 temporary accounts, revocation and session isolation",
+      "references": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+      ]
+    }
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 26,
+    "head": "5439068310d9cc9da738d01278b88d2870050a4b4a097820090eb18ba23c0174",
+    "trial": "Observed the produced terminal before acceptance. The downstream release required the independent acceptance for the same candidate."
+  },
+  "base_commit": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+  "platform": "Windows x86_64, Godot headless editor",
+  "source_sha256": {
+    "editor/docks/workbench/issue_actions/issue_dependencies.gd": "b37969f21146c8ea7d1a380857505813950ae266b34ae8650748c44b1c328bdf",
+    "tests/editor/run_workbench_issue_dependencies.py": "2774bb216a0c85129b4e7f261ad83641fc3a8775d913da5d567c76bb832209be",
+    "tests/editor/workbench_issue_dependencies.gd": "250a5df14a029bb63a80357721ef02e901b2b2b228b21f4586da618d5abbfb7f",
+    "design-docs/gonggong-ai-workbench-i04.md": "3142ba1f9e7daef72b3ca66149521595db2e762687677683cb83af71710b4e89"
+  },
+  "mounted_with_i03_sha256": {
+    "editor/SCsub": "6a671079751f713ff4aafc86ec3a1a6ae4b15f39f5eada08631a39f1443d8d8e",
+    "editor/editor_builders.py": "73bfb398532829313bd21958aa9ff1593f0bf111c8dbf85a5234b858beffe292",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "39ed51c958949310f63a07fe77303f2fe4d32cb5f9213a0583e73b7b0fad760e"
+  },
+  "build": {
+    "placement": "embedded",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j8",
+    "generated_input_invalidation": {
+      "passed": true,
+      "changed_input": "editor/docks/workbench/issue_actions/issue_dependencies.gd",
+      "change": "Declare editable as bool after parse preflight rejected inference from dynamic session data.",
+      "before_header": "8b2bb89212506a815572a77b7935675a557772d7263ee6642488f49c685816d9",
+      "after_header": "358c9069f537c19406ce1b97885465619b55cca6e0168959d36e6a570c4eeca1",
+      "before_engine": "72cd5a0133b1a8f7d3bfa4df8bcafb3ca4feb09a01cfadb2a0ebc4ab5d187dbc",
+      "after_engine": "4ddbbf7342b0a83d2c1b6ca330107ac5c46d27751ff2036b94352f955aba4b80",
+      "observed_build_steps": [
+        "Generating editor/docks/workbench/IssueActions.gen.h ...",
+        "Compiling editor/docks/workbench/AIWorkbenchSidebar.cpp ...",
+        "Linking Program bin/godot.windows.editor.x86_64.exe ..."
+      ],
+      "initial_build_log_sha256": "8945bf4668d9d03c41eb6663a0ccb0c5e487b05956d0ef21d88abfe639903fec",
+      "incremental_build_log_sha256": "d9aa9640bea709d97e2b2831566500744d7eabedacb4024ef9c5536ba2232732"
+    }
+  },
+  "tests": [
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_issue_flow.py",
+      "passed": 7,
+      "failed": 0,
+      "observed": "Cycle, stale version, replay, access revocation, native done without acceptance, custom stages and human decision."
+    },
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_parallel_producers_completion_and_replay",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "python tests/editor/run_workbench_issue_dependencies.py --godot bin/godot.windows.editor.x86_64.exe --report <temp-report>",
+      "passed": 1,
+      "failed": 0,
+      "receipt": {
+        "engine_sha256": "4ddbbf7342b0a83d2c1b6ca330107ac5c46d27751ff2036b94352f955aba4b80",
+        "upstream_terminal": "produced",
+        "release": {
+          "release": "8a8a761dd8ad12a95160ef7c51b2f0a09832a9339714e9ff3354544c4fd478ee",
+          "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8"
+        },
+        "ui": {
+          "accepted_row": "a　done　已验收",
+          "after": 200,
+          "before": 409,
+          "blocked_row": "a　in-review　未验收，阻塞推进"
+        },
+        "edit_http_statuses": [
+          200,
+          409,
+          200,
+          200
+        ],
+        "persisted_downstream": {
+          "status": "in-progress",
+          "version": 4,
+          "content_revision": "89396589733097ca302fc75f88414ee22f98484559f27870bf13a9c4109ca077"
+        }
+      }
+    }
+  ],
+  "acceptance": {
+    "produced_unaccepted": "Real worker produced the upstream candidate. The visible row remained in-review and the flow rejected downstream advance (HTTP 409).",
+    "accepted": "Independent check, approval, publication and workflow acceptance on the same produced candidate updated the row to done. The downstream advanced (HTTP 200).",
+    "consumer": "Compiled WorkbenchIssueDetail mounted issue_dependencies. A second SQLite connection read the accepted upstream link, unchanged content revision, and downstream status in-progress; logout cleared the panel.",
+    "coordination": "I03 shared mount supplied for local validation. Parent receives implementation, test, design and receipt for release."
+  }
+}

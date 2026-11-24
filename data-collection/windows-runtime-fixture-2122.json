@@ -1,0 +1,205 @@
+{
+  "issue_number": 2122,
+  "request_id": "kuafu-run-45041335303-attempt-1",
+  "owner": "afterk03_bug2122",
+  "recorded_at": "2026-11-22T16:36:21.235227+00:00",
+  "base_commit": "a1b06a1d42d05dcfb3de503f2b996a72f39bbce9",
+  "confirmed": [
+    "Both hosted jobs passed the runtime setup cases. The configured workflow Python path in each debug artifact is the generated Python fixture PE. The editor polls that process and reports its signed exit status; the native result file and its temporary sibling were absent.",
+    "The Windows value is 0xE0434352 (unsigned 3762504530, signed -532462766). Both a launcher exception before Python starts and an explicit exit with the same value in the launched Python process return this identical status to the editor.",
+    "The launcher catches start/wait/exit-code exceptions for diagnostic collection and rethrows them. A child exit is returned unchanged. The outer simulator records the launcher metadata in summary.json under intake_launcher_failures in its finally block. The existing runtime-deployment-simulation artifact uploads that report even on failure.",
+    "The original simulation succeeded locally before and after the diagnostic change; the final run collected both intentional child exits 1 with native valid rejection receipts. Both original hosted heads also passed their subsequent same-head Windows job."
+  ],
+  "unknown": [
+    "Neither historical runner retained the managed exception type, Win32 error, or whether Python itself returned the same status. The injected missing executable establishes one counterexample, not the cause of either historical failure.",
+    "The accepted local editor has different bytes from both historical builds. The original hosting condition did not recur locally. Failures before the managed Main, process termination before diagnostic publication, or unavailable diagnostic storage may still leave no launcher record."
+  ],
+  "historical": [
+    {
+      "case": "q02",
+      "business_issue": 1738,
+      "pr_head": "d1a66d4f3181f751f1dae32629223dae46aea8d6",
+      "first_failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45038336886/job/137257060238",
+      "same_head_passed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45038336886/job/137261764262",
+      "first_attempt_artifact": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45038336886/artifacts/14761046179",
+      "artifact_zip_sha256": "6b5b7a016d509619587b51c8004ef776b377e9be9e14a100b6c948019a26a6cc",
+      "verified_inputs": "summary.json, requirements-intake.receipts.json and requirements-intake.debug.json match the first-attempt artifact as JSON objects",
+      "missing_native_completion": 7,
+      "native_status": "missing",
+      "exit_code": -532462766,
+      "temporary_present": false,
+      "editor_sha256": "637bf4a422f6b0436f0c5af59c81035df1facef9443f543cc39764d2fa0b420e",
+      "tools": {
+        "python": "Python 3.15.2",
+        "node": "v22.23.5",
+        "git": "git version 2.56.1.windows.1",
+        "powershell": "5.1.26100.33822"
+      }
+    },
+    {
+      "case": "v05",
+      "business_issue": 1770,
+      "pr_head": "4706d35f96ae0efc7e37a17116af7a5a7c0090fa",
+      "first_failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45041335303/job/137266347132",
+      "same_head_passed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45041335303/job/137270987991",
+      "first_attempt_artifact": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45041335303/artifacts/14762600176",
+      "artifact_zip_sha256": "2da9b48c70ab120012a50eb69db92dade959f2c61524dd7895b762878bc5196e",
+      "verified_inputs": "summary.json, requirements-intake.receipts.json and requirements-intake.debug.json match the first-attempt artifact as JSON objects",
+      "missing_native_completion": 5,
+      "native_status": "missing",
+      "exit_code": -532462766,
+      "temporary_present": false,
+      "editor_sha256": "c1cb55b9bd2059c35a27e41b623a318a6dcbae945d400419016e0a5fe6383845",
+      "tools": {
+        "python": "Python 3.15.2",
+        "node": "v22.23.5",
+        "git": "git version 2.56.1.windows.1",
+        "powershell": "5.1.26100.33822"
+      }
+    }
+  ],
+  "artifacts": {
+    "original_job_step": "Runtime deployment interruption and original request recovery",
+    "artifact": "runtime-deployment-simulation",
+    "member": "summary.json",
+    "field": "intake_launcher_failures",
+    "privacy": "Runtime name, allowlisted action class, phase, exception type, numeric Win32 error and signed child status. No environment, paths, messages, command line, or standard streams are added."
+  },
+  "source_sha256": {
+    "tests/editor/run_runtime_setup_simulation.py": "4a23cd3b19ca1b0adeb240bbba9f85582d17af1558768bfd677a58c59d0187c4",
+    "tests/editor/run_requirements_intake.py": "43db71ceefedfe2d890a8e2379d97a42dc05b11987c68d2a53b6109a4b2d5f48",
+    "editor/docks/ai_chat_gonggong.cpp": "12612a32d60b84a7f6b8e290b063b12b16ff1fff0e2d41a1c857cd664c013b11",
+    "platform/windows/os_windows.cpp": "cb2e8e522706482339c896ca7abd499be4df11cf1ee5099a9f9e2f4e05997ad3",
+    "tests/editor/requirements_intake.gd": "0d1576dfd25c7098e97dae8bf0e6314682e7631ad3d8733d70177d14d22e6053",
+    ".github/workflows/windows_builds.yml": "abdd16aee81672b8d8a12f013ce4bc5b790b1256f89192b50b7a3621f535b2bf",
+    "tests/editor/test_runtime_fixture_launcher.py": "e449d9d79f7a587a3de4f0d3c5cd84de37ffbda5665d47072aa3779992f0f83a"
+  },
+  "original_source_sha256": {
+    "tests/editor/run_runtime_setup_simulation.py": "13d37ea9683f2a5025cd1eab811553c90015bb0008c79e3928449f434613864d",
+    "tests/editor/run_requirements_intake.py": "43db71ceefedfe2d890a8e2379d97a42dc05b11987c68d2a53b6109a4b2d5f48",
+    "editor/docks/ai_chat_gonggong.cpp": "12612a32d60b84a7f6b8e290b063b12b16ff1fff0e2d41a1c857cd664c013b11"
+  },
+  "original_source_binding": "The two original PR heads and the local base have identical Git blobs for the simulation launcher, native intake harness and issue-guide launch/poll source.",
+  "tests": {
+    "original_local": {
+      "exit": 0,
+      "summary_sha256": "f225200809b64d73967e520404d6bacc29ed23c5f78316754260b5aa81d73c0b",
+      "editor_sha256": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+      "interruption_cases": 3,
+      "journal_cases": 5,
+      "runtime_setup_cases": 10,
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issue_fixture_created": 5,
+      "windows_job": "verified Job empty",
+      "tools": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "git": "git version 2.53.0.windows.3",
+        "powershell": "5.1.26100.9818"
+      }
+    },
+    "final_local": {
+      "exit": 0,
+      "summary_sha256": "5289e52ffd02d3a0ea765be49acddae31a3dee31f2e7f318473e490efbf9037a",
+      "editor_sha256": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+      "interruption_cases": 3,
+      "journal_cases": 5,
+      "runtime_setup_cases": 10,
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issue_fixture_created": 5,
+      "windows_job": "verified Job empty",
+      "tools": {
+        "python": "Python 3.12.14",
+        "node": "v24.22.1",
+        "git": "git version 2.53.0.windows.3",
+        "powershell": "5.1.26100.9818"
+      },
+      "intake_launcher_failures": [
+        {
+          "runtime": "python",
+          "action": "issue-agent",
+          "phase": "child_exit",
+          "exception_type": null,
+          "win32_error": null,
+          "child_exit": 1
+        },
+        {
+          "runtime": "python",
+          "action": "issue-agent",
+          "phase": "child_exit",
+          "exception_type": null,
+          "win32_error": null,
+          "child_exit": 1
+        }
+      ]
+    },
+    "existing_launcher_pipe_probe": {
+      "calls": 160,
+      "parallelism": 8,
+      "exit_0_complete_receipt": 128,
+      "exit_7_complete_receipt": 32,
+      "stdin": "one synthetic line; stdout/stderr readers closed immediately; CREATE_NO_WINDOW"
+    },
+    "focused_test": {
+      "exit": 0,
+      "system_temp": true,
+      "fixture_child_exits": [
+        0,
+        7,
+        3762504530
+      ],
+      "receipts_and_stdin_and_argv_verified": true,
+      "missing_executable": {
+        "native_result_present": false,
+        "signed_status": -532462766,
+        "exception_type": "System.ComponentModel.Win32Exception",
+        "phase": "start",
+        "win32_error": 2
+      },
+      "same_status_forwarded_by_child": {
+        "native_result_present": true,
+        "phase": "child_exit",
+        "signed_child_status": -532462766
+      }
+    },
+    "full_simulation_injected_failure": {
+      "outer_exit": 1,
+      "summary_ok": false,
+      "summary_error": "AssertionError: requirements-intake failed; see process log",
+      "summary_sha256": "c5d06d3075b90ffed19949dcd543a83273957653cb1f7aa6f45c43915a0a09cf",
+      "native_receipts_sha256": "ef05757a4888f73836a4fff093b169e6a3fe3489e9cf5bdd5bee780cd97ba082",
+      "launcher_record": {
+        "runtime": "python",
+        "action": "issue-agent",
+        "phase": "start",
+        "exception_type": "System.ComponentModel.Win32Exception",
+        "win32_error": 2,
+        "child_exit": null
+      },
+      "editor_record": {
+        "size": 116,
+        "sha256": "bbaf59705148ff608640b01c4645e7048f06a358e9693c87dd428d285f8e7c89",
+        "state": "json_object",
+        "identity_sha256": {},
+        "native_status": "missing",
+        "exit_code": -532462766,
+        "read_attempts": 1,
+        "io_error": 7,
+        "parse_line": -1,
+        "temporary_present": false
+      },
+      "injection": "Only the temporary fixture PE redirected issue-agent to an absent executable. All other cases and assertions used the unmodified final simulation."
+    }
+  },
+  "rerun": {
+    "base": "repository root on Windows; system TEMP outside any GongGong workspace; host Python 3.11+, node.exe, git.exe, Windows PowerShell and .NET Framework csc.exe; built editor plus its resources",
+    "original_ci": "python tests/editor/run_runtime_setup_simulation.py --godot ./bin/godot.windows.editor.x86_64.exe --out runtime-report",
+    "focused_positive_and_negative": "python -X utf8 tests/editor/test_runtime_fixture_launcher.py -v",
+    "local_original": "python tests/editor/run_runtime_setup_simulation.py --godot data-collection/receipts/ci-input/editor/godot.windows.editor.x86_64.exe --out data-collection/receipts/2122-final",
+    "powershell_full_negative": "$probe = Get-Content data-collection/windows-runtime-fixture-2122.json -Raw -Encoding utf8 | ConvertFrom-Json; $probe.rerun.full_negative_python | python -X utf8 -",
+    "full_negative_python": "import ctypes, sys\nfrom pathlib import Path\nsys.path.insert(0, str(Path(\"tests/editor\").resolve()))\nimport run_runtime_setup_simulation as sim\nkernel = ctypes.windll.kernel32\nkernel.SetErrorMode(kernel.GetErrorMode() | 0x0002)\noriginal = \"var info = new ProcessStartInfo(TARGET, quoted.ToString());\"\nassert sim.LAUNCHER.count(original) == 1\nsim.LAUNCHER = sim.LAUNCHER.replace(original, 'string program = NAME == \"python\" && args.Length > 1 && args[1] == \"issue-agent\" ? Path.Combine(here, \"intentionally-absent-2122.exe\") : TARGET; var info = new ProcessStartInfo(program, quoted.ToString());')\nsys.argv = [\"probe\", \"--godot\", \"data-collection/receipts/ci-input/editor/godot.windows.editor.x86_64.exe\", \"--out\", \"data-collection/receipts/2122-original-negative\"]\nsim.main()"
+  },
+  "follow_up": "On the next occurrence, compare the original native receipt and the corresponding stage in the same run’s summary. With no matching evidence, retain the historical cause as unknown. Confirm the original source and original job on the revision submitted by the delivery owner."
+}

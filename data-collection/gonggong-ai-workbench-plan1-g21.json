@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-g21",
+  "issue_number": 1730,
+  "parent_issue": 1709,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730",
+  "blocker_reverified": 2153,
+  "scope": "heads, tags and all reachable objects at the agreed G21 window",
+  "run_id": "G21-1730-283e7b2b055e",
+  "source_repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "g20": {
+    "issue_number": 1736,
+    "archive_sha256": "307057431a002cfbcec704179e153b54ab5e48f27cc583189cbd76d1bee28b4d",
+    "frozen_main": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+    "ref_map_sha256": "546c01eb8193872dc99a957c8845f984a4bd8642384f36a4f5be8e87cdbf49cb"
+  },
+  "source_window": {
+    "ref_advertisement_sha256": "283e7b2b055ef5347b72d1597144de3e20e881b5789e54c2ab6e771db85fa249",
+    "count": 723,
+    "started": "2026-11-23T17:13:37.4325826+00:00",
+    "completed": "2026-11-23T17:13:40.9162876+00:00"
+  },
+  "ref_changes": [
+    {
+      "after": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+      "before": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+      "ref": "refs/heads/main"
+    }
+  ],
+  "objects": {
+    "base_all": 60767,
+    "base_heads_tags": 59272,
+    "inventory_sha256": "26c67818df81dccfb0b6a4a26f077589d98328a4193802e87b399c31769137ef",
+    "new_to_store": [
+      "0aa063f88bbe5e7bdd201e79349dae7bfe106dde",
+      "0f948ad6fb816e314c8f72dfbfcaa50c3d848900",
+      "176691ec51bdac634a14e6f37e05b8eb8e33015c",
+      "182a168905d4de92937575005b7908dde98b28a3",
+      "2367041d50633fa8ff5910898be7051a0d58ca7b",
+      "28f707bfa48464f68e49a2286b76fa525ea63eff",
+      "2eee3d818bf82d6bd2e42959cc5f69789e097195",
+      "2f1e88a0b928f4fbd2fec1e2561e3c90410e72f7",
+      "3069c7f4531922bc81b01c7f873d38cd64940783",
+      "31548cd706ab516890a916d67f1f0e22a81daca4",
+      "471c0f417dbc89062f52c9325f408cfc3a9e15ed",
+      "4c63cbcd794080086ebb840cb69ea7603c90d59e",
+      "56b2e6771b8b969427f670a6c875ba352a7f52d9",
+      "6248fd053ff856481fb08c886c12f4fee822ed77",
+      "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+      "6c9f696456d0036384860854f98eb8c78da965d2",
+      "77bad2a124141af9dea61ffd7aad0414e76a6f9f",
+      "84634e5b62d68c9a9767a08bc18735adeca141b7",
+      "8b59691169598f305ef095c95c050095d9ba218e",
+      "93a1b86fd6ca2531923c6d96dabe392d4b8239fd",
+      "9818533b6a4639b9a2945621822d400940c9a64a",
+      "9fcefc6737d0545f2fd913599d0d8453021db83b",
+      "a9f84c0a88d4f08df509163d947a7a6bd5258f12",
+      "aaa77db6cb852e1524b44bb6827bd633df284b31",
+      "aaff1fea2b6fd96ba1e3a0f72949029f37b12eae",
+      "ad9d73ba3c7095fac2434f5f6eeb29d226a60ea8",
+      "c702854b3c8b6f83607a092e245f47ff52f70f21",
+      "ce935ebcf0e2e5a623bc2881eca558816a8e36d9",
+      "d931ad3f2cbc858f1c14256160f1f2fac70158b4",
+      "df517b9e9eace100ec5bbfc1e250f879f175a6fd",
+      "ea87574f55c551b339f7cad9bbecaa9f5ec3e713",
+      "f66d9c33960a94a301be047ad61018ab50798a4e",
+      "f78353543e608cd2d21f1e2ef876a263a8959cac"
+    ],
+    "newly_reachable_from_heads_tags": [
+      "0aa063f88bbe5e7bdd201e79349dae7bfe106dde",
+      "0f948ad6fb816e314c8f72dfbfcaa50c3d848900",
+      "176691ec51bdac634a14e6f37e05b8eb8e33015c",
+      "182a168905d4de92937575005b7908dde98b28a3",
+      "2367041d50633fa8ff5910898be7051a0d58ca7b",
+      "28f707bfa48464f68e49a2286b76fa525ea63eff",
+      "2eee3d818bf82d6bd2e42959cc5f69789e097195",
+      "2f1e88a0b928f4fbd2fec1e2561e3c90410e72f7",
+      "3069c7f4531922bc81b01c7f873d38cd64940783",
+      "31548cd706ab516890a916d67f1f0e22a81daca4",
+      "471c0f417dbc89062f52c9325f408cfc3a9e15ed",
+      "4c63cbcd794080086ebb840cb69ea7603c90d59e",
+      "56b2e6771b8b969427f670a6c875ba352a7f52d9",
+      "6248fd053ff856481fb08c886c12f4fee822ed77",
+      "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+      "6c9f696456d0036384860854f98eb8c78da965d2",
+      "77bad2a124141af9dea61ffd7aad0414e76a6f9f",
+      "84634e5b62d68c9a9767a08bc18735adeca141b7",
+      "8b59691169598f305ef095c95c050095d9ba218e",
+      "93a1b86fd6ca2531923c6d96dabe392d4b8239fd",
+      "9818533b6a4639b9a2945621822d400940c9a64a",
+      "9fcefc6737d0545f2fd913599d0d8453021db83b",
+      "a9f84c0a88d4f08df509163d947a7a6bd5258f12",
+      "aaa77db6cb852e1524b44bb6827bd633df284b31",
+      "aaff1fea2b6fd96ba1e3a0f72949029f37b12eae",
+      "ad9d73ba3c7095fac2434f5f6eeb29d226a60ea8",
+      "c702854b3c8b6f83607a092e245f47ff52f70f21",
+      "ce935ebcf0e2e5a623bc2881eca558816a8e36d9",
+      "d931ad3f2cbc858f1c14256160f1f2fac70158b4",
+      "df517b9e9eace100ec5bbfc1e250f879f175a6fd",
+      "ea87574f55c551b339f7cad9bbecaa9f5ec3e713",
+      "f66d9c33960a94a301be047ad61018ab50798a4e",
+      "f78353543e608cd2d21f1e2ef876a263a8959cac"
+    ],
+    "no_longer_reachable_from_heads_tags": [],
+    "shared_with_base": 59272,
+    "target": 59305,
+    "types": {
+      "blob": 38439,
+      "commit": 3039,
+      "tree": 17827
+    },
+    "uncompressed_bytes": 935991734
+  },
+  "raw_pack": {
+    "bytes": 100556,
+    "sha256": "ec3b40c381f9a1d2f3f843fb374c91c81214f7780fe883d41f58057716582e23"
+  },
+  "transport": {
+    "run_id": "G21-1730-283e7b2b055e",
+    "zip_sha256": "7ef737678d23c3fe68e4a3f621a491537169a1061ed5399323111b8fc7bfef20",
+    "zip_bytes": 140082,
+    "received_at": "2026-11-23T17:22:08.317737+00:00"
+  },
+  "history_completion": {
+    "run_id": "G21-1730-283e7b2b055e",
+    "action": "git fetch --unshallow from verified local production-volume donor",
+    "started": "2026-11-23T17:34:39.136690+00:00",
+    "finished": "2026-11-23T17:35:40.294368+00:00",
+    "rehearsal": "2026-11-23T17:33:00.811655+00:00",
+    "previous_boundaries": [
+      "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+      "c1629e1ae36ea9b10a1a1c2e9ea4a4f9ffeb5c84"
+    ],
+    "shallow_backup_sha256": "3a11427643fdecc476751ca6c124bbb2ee44eb081a9eb11a82941e780fa88b65",
+    "was_shallow": true,
+    "is_shallow_after": false,
+    "window_reachable_before": 59302,
+    "window_reachable_after": 59305,
+    "active_main_oid": "a22d44c536835316b33a807426774008f4dfba02",
+    "active_main_objects_before": 30533,
+    "active_main_objects_after": 45293,
+    "existing_refs_verified": 2273,
+    "refs_sha256_before_and_after": "b68453a5ca9ec34c0c1b6aa2c6bfc9d959aa4704081093d2e4ed691a82afdfde",
+    "git_fsck": "passed"
+  },
+  "additional_commits_visible": [
+    "7ca0cee97d2aff0347a706fe3b9f4f2ca1f9debe",
+    "c1629e1ae36ea9b10a1a1c2e9ea4a4f9ffeb5c84",
+    "d21c0949624d2e1eb3e672d2b68e08037b9c3132"
+  ],
+  "production_receipt": {
+    "run_id": "G21-1730-283e7b2b055e",
+    "actor": "lirui",
+    "project": "gonggong",
+    "namespace": "refs/migration/g21/283e7b2b055e/",
+    "head": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+    "head_ref": "refs/heads/main",
+    "branches": 718,
+    "tags": 3,
+    "verified_refs": 721,
+    "snapshot_head": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+    "ref_map_sha256": "0001ce1eb16b6413740b6cfd3337a2a2024bcb9dceea50f78cf46fef0c74929c",
+    "window": {
+      "ref_advertisement_sha256": "283e7b2b055ef5347b72d1597144de3e20e881b5789e54c2ab6e771db85fa249",
+      "count": 723,
+      "started": "2026-11-23T17:13:37.4325826+00:00",
+      "completed": "2026-11-23T17:13:40.9162876+00:00"
+    },
+    "changed_refs": [
+      {
+        "after": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+        "before": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+        "ref": "refs/heads/main"
+      }
+    ],
+    "new_objects": 33,
+    "source_and_target_reachable": 59305,
+    "reachable_inventory_sha256": "26c67818df81dccfb0b6a4a26f077589d98328a4193802e87b399c31769137ef",
+    "delta_pack_sha256": "ec3b40c381f9a1d2f3f843fb374c91c81214f7780fe883d41f58057716582e23",
+    "delta_pack_bytes": 100556,
+    "transport_sha256": "7ef737678d23c3fe68e4a3f621a491537169a1061ed5399323111b8fc7bfef20",
+    "g20_still_present": true,
+    "preexisting_active_main": "a22d44c536835316b33a807426774008f4dfba02",
+    "active_main_after": "a22d44c536835316b33a807426774008f4dfba02",
+    "git_fsck": "passed",
+    "started_at": "2026-11-23T17:35:57.344541+00:00",
+    "finished_at": "2026-11-23T17:36:52.180321+00:00",
+    "seconds": 54.837
+  },
+  "independent_readback": {
+    "acceptance_scope": "Frozen Git reference and content equality, including default target history traversal",
+    "accepted": true,
+    "added_objects": 33,
+    "all_ref_differences_to_g20": [
+      {
+        "after": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+        "before": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+        "ref": "refs/heads/main"
+      }
+    ],
+    "branches": 718,
+    "content_manifest_sha256": "05d838c43b14fce259f43aaac44ddd13442b4c2419d0fd15a3b58556d92cd93d",
+    "count": 59305,
+    "default_graph": {
+      "extra_in_default": [],
+      "missing_from_default": [],
+      "object_ids_sha256": "692e17de366ceda3526ec9c0e0b61529ca2103654db5bbfa032ff9e7fedde765",
+      "reachable_count": 59305,
+      "shallow": "false"
+    },
+    "evidence_sha256": {
+      "audit_objects.py": "c2f1b60cdedae1f6c23a213b83cd50016f3ae27a5155ba1b7541e1ed552bb4b7",
+      "before.json.gz": "7992e30e6dffa7a951cf637a29acb711bd3841724e005ab062d629845b18c2ea",
+      "published.json.gz": "0e7fcaa38843d504925cbef4250ec438b734380a6e9d21394764ae15ecf2a4b1",
+      "run_review.py": "0e1bdc4f419685566feaffe078e30b2f720cc5e61b864976673f10579feefcf7",
+      "source.json.gz": "47c4fab637f1b5dc8c03c250eada1a1fe2695be67d6ad6488763fadbc09a75a0"
+    },
+    "finished": "2026-11-23T17:40:01.121573+00:00",
+    "g20_all_objects": 60767,
+    "g20_archive_sha256": "307057431a002cfbcec704179e153b54ab5e48f27cc583189cbd76d1bee28b4d",
+    "g20_preserved_refs_including_HEAD": 2272,
+    "inventory_sha256": "26c67818df81dccfb0b6a4a26f077589d98328a4193802e87b399c31769137ef",
+    "issue_number": 1730,
+    "live_main": "a22d44c536835316b33a807426774008f4dfba02",
+    "live_refs": 1,
+    "live_refs_unchanged": true,
+    "main": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+    "namespace": "refs/migration/g21/283e7b2b055e/",
+    "object_mismatches": 0,
+    "object_verification": "Both Git stores streamed every reachable object; recomputed the Git SHA-1 from type, length and raw bytes and compared per-object SHA-256 between stores.",
+    "reference_mismatches": 0,
+    "schema_version": 1,
+    "source_HEAD_ref": "refs/heads/main",
+    "source_advertisement_sha256": "283e7b2b055ef5347b72d1597144de3e20e881b5789e54c2ab6e771db85fa249",
+    "started": "2026-11-23T17:39:14.582037+00:00",
+    "tags": 3,
+    "total_refs_with_snapshot_HEAD": 722,
+    "types": {
+      "blob": 38439,
+      "commit": 3039,
+      "tree": 17827
+    },
+    "uncompressed_bytes": 935991734
+  },
+  "receipt_sha256": {
+    "install_delta-receipt.json": "1f0c9ffd120d63d10c6942b297536bbb71f3d6de09bd08ae0f90da91b67ea594",
+    "complete_depth-receipt.json": "d2fe64f2cbf52dea6c65edfc2293f45e0ec96773bf232232056dc5e5aa7b9244",
+    "rehearse_depth-receipt.json": "1fcbca4b207078516afa566b81a853a3fa19185c42f0e7737c7c32bb179de996",
+    "independent-g21/independent-receipt.json": "3890018fb4c7a081b7f7ad1da8e5bc0199c9466e68c05c8d30b4bec7655de1b6"
+  }
+}

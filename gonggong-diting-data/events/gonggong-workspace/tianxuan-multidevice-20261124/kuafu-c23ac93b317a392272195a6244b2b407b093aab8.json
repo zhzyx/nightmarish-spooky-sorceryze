@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c23ac93b317a392272195a6244b2b407b093aab8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d228bbd7b7201b947ff674d49099ef472f4ab79dea6658e2f667c42d0afb3afd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "delivery",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "diagnosis": "发布预检依次发现说明文件重复关联字段、Git传输重置及证据换行转换。已由入口自动添加关联字段、当前命令使用HTTP/1.1、按仓库惯例保留本单精确证据字节并重新暂存。",
+    "next_action": "回读完整index与工作区字节，再执行正式门禁和签发，不改写历史学习证据。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:57:25.585320+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:58:33.566508+00:00",
+  "sha256": "2eafa711fa58bf01e6f37b4453baa6e8bac1f5bf51c17598b6156d8a5f292d89"
+}

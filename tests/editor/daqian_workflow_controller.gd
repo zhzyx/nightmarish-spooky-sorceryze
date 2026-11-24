@@ -166,6 +166,19 @@ func run() -> void:
 	controller.reset_runtime()
 	check(controller.execution_turns.is_empty() and controller.chat_work.is_empty(), "Reset retained old ownership")
 	check(events.back().kind == "cancelled", "Reset omitted common cancellation")
+	check(controller.submit_execution(host.binding, "Finish on close", selection, false, false, false).is_empty(), "Initial close-race run failed")
+	var active_receipt: Dictionary = host.opened[5].execution_receipt
+	var dispatch_at_close := host.opened.duplicate(true)
+	controller.event_received.connect(func(event):
+		if event.kind == "completed":
+			controller.quiesce()
+			check(not controller.submit_execution(host.binding, "Unauthorized next step", selection, false, false, false).is_empty(), "Successor passed close boundary")
+	)
+	check(controller.finish_execution(active_receipt, "", true), "Original completion lost")
+	check(host.opened == dispatch_at_close, "Host received a successor after close")
+	var final: Dictionary = controller.saved.shutdown_checkpoint
+	check(final.last_terminal.state == "succeeded" and final.last_terminal.issue == host.binding.url and final.runs.is_empty(), "Final checkpoint did not bind the completed run")
+	print("R02_CHECKPOINT ", JSON.stringify(final))
 	for message in failures:
 		push_error(message)
 	if failures.is_empty():

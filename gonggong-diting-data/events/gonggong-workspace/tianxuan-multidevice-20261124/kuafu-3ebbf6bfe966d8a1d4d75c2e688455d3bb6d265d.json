@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3ebbf6bfe966d8a1d4d75c2e688455d3bb6d265d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c6c0e376ef5367c21556dc4119da50222589c208aa490d7a90f54065f310c863",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "delivery",
+    "detection_head": "9091b15f369bb7a95579dd908540fcd1a5b9929d",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2198",
+    "diagnosis": "main在候选签发过程中合入持久编辑器身份39baf，四个重叠代码文件使交付回读拒绝。自己的隔离工作树保留9091备份后整合；服务已兼容永久期限与父撤销、旧编辑器credential标签迁移及只读设备回查，17项授权整合测试通过。司南正负责持久客户端与旧根key存储迁移；未操作原发布者工作副本或生产配置。",
+    "next_action": "完成客户端整合和独立审查后将集成index固定到39baf主线，重新编译受影响原生资源、实测并正式签发完整候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:39:33.274241+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T00:52:04.221975+00:00",
+  "sha256": "20a37e99380b8ddcfa373ac16943a3159d22678b48ac986d7e78432071a15c51"
+}

@@ -5,6 +5,8 @@ thirdparty/* linguist-vendored
 
 # Normalize EOL for all files that Git considers text files
 * text=auto eol=lf
+# Preserve Issue #2190 evidence bytes referenced by immutable learning events.
+data-collection/tianxuan-multidevice-2190-*.json -text whitespace=cr-at-eol
 # Preserve exact #1501 source and live receipts referenced by immutable audit hashes.
 data-collection/native-context-consumption-implementation-1501.json -text whitespace=cr-at-eol
 data-collection/native-context-live-validation-1501.json -text whitespace=cr-at-eol
@@ -28,10 +30,17 @@ tools/maliang_hunyuan/HUNYUAN-NOTICE -text -whitespace
 *.tza binary
 
 # GongGong workspace integration
+# Preserve the exact migration and independent-review receipt bytes for #2178.
+data-collection/duobao-dual-review-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-native-live-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-dual-module-build-impact-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-server-deployment-2178.json -text whitespace=cr-at-eol
 framework/** -text whitespace=cr-at-eol
 # Preserve the reviewed upstream module's trailing blank line; the frozen snapshot hook checks exact bytes.
 framework/modules/sinan/refresh.mjs whitespace=cr-at-eol,-blank-at-eof
 integrations/godot/*.patch -whitespace
+# Preserve the pinned upstream SkinTokens source and GGML patch bytes.
+tools/skintokens.cpp/** -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
 integrations/godot/verification*.json -text whitespace=cr-at-eol
 distribution/notices/* -text -whitespace

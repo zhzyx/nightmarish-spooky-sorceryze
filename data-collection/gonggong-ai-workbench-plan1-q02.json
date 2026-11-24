@@ -1,0 +1,513 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-q02",
+  "issue_number": 1738,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1738",
+  "verified_at": "2026-11-22T14:49:05.266584+00:00",
+  "source_revision": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+  "dependency": {
+    "issue_number": 1798,
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "pr": 2094,
+    "merge_commit": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+    "receipt": "data-collection/plan1-h05-windows-integration.json",
+    "accepted": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1798#issuecomment-7080572095"
+  },
+  "worker": {
+    "id": "/root/sinan_c43268ce0ec538aa",
+    "role": "afterk03_q02",
+    "start": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q02/dispatch-7f319dc2647447c593560e661aeb7d16.json"
+  },
+  "candidate": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "editor_package_source": "PR #2094 integration package retained for Q02",
+    "editor_package_sha256": {
+      "godot.windows.editor.x86_64.console.exe": "0c1733a9759926273b13c7c3a2f724e7bb352d911b43c886c97d33f674ec43b9",
+      "godot.windows.editor.x86_64.exe": "631dd988f6437bc35aa5c5b38d9c7443f7e26382af50e688f0863afd4d7c254c",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    },
+    "python": "3.12.14",
+    "dependencies": {
+      "uvicorn": "0.54.0",
+      "fastapi": "0.162.7",
+      "starlette": "1.10.0",
+      "httpx": "0.28.1",
+      "pillow": "13.0.0",
+      "pytest": "9.2.0"
+    }
+  },
+  "services": {
+    "tianxuan": "api.create_app(Tianxuan(file), native_store=NativeStore(file), native_only=True), TIANXUAN_AUTH_MODE=accounts; uvicorn on a private IPv4 loopback port",
+    "duobao": "NativeStore, SQLite; attachment upload creates the original and approved-asset serves it",
+    "entry": "Godot editor command palette editor/open_ai_workbench, WorkbenchBusinessSession",
+    "storage_readback": "Reopened Tianxuan and NativeStore after editor exit and server shutdown"
+  },
+  "tested_sha256": {
+    "tests/editor/run_workbench_cross_functional.py": "4129aabf98648ee5a932fead101ba53c37733d5e35d10b5da192e638a8224d6c",
+    "tests/editor/workbench_cross_functional.gd": "2ab29260d2828cc7c7816c9ebc85a575329648cf8f54c126aaeb8aeefec90703",
+    "tests/editor/run_workbench_issue_detail.py": "ef1c4d988fa40e81fc2fbe0a66328bbe3a9384c5c8ec37df84a6ef2fa2cc6b51",
+    "tests/editor/workbench_issue_detail.gd": "79ced90bb96b113993a7321ab3b2ecc3e3d5161e6c3da1492394802a9211acc6",
+    "tests/editor/run_unified_settings_native.py": "3865d09771ff5c97c7951e59c4a29adfde29555dcd51d124fa5bb5367a76f889",
+    "tests/editor/editor_test_isolation.py": "40711cdcc9ad8103dbe800afc445b883d2e0e07f0043d5adf00e163ca69c9a42",
+    "editor/docks/workbench/business_session.gd": "09f8c032323caf1bbd4a51584a752dae7ad40879f6704e3bf34ae8ab394f8450",
+    "editor/docks/workbench/issue_detail.gd": "bb189f50dee7f2b8e7f9d92eb59729baf79533c19e07b898583e84f321536d82",
+    "editor/docks/workbench/issue_artifacts.gd": "758a1757e77c331c47ba4603c2b046bbdd7e7c247004600898f85047ab418d8d",
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "1727cd34cfe1920aef17b64d8c371bf689ae1ff034c02996483a2dad39179f94",
+    "editor/docks/workbench/issue_actions/issue_comments.gd": "767eef6345b7c86873f2cd4fd478c6b64ea72f2858c755fd9b25f1cafd507943",
+    "customizations/components/tianxuan/duobao/native_store.py": "79c2b230c2cd81ea9492340d6b22f18cd23398c11d61fd37dc345654d04aea56",
+    "design-docs/gonggong-ai-workbench-q02.md": "2a0cf1ff160f671fddce97a730bed585f21aba9ed168d204faa8a0c621eb5792",
+    "data-collection/plan1-h05-windows-integration.json": "6a6c2241590db1ffbf2c3f7bbfd1b46269672c401bdb21898c67811b6cde3a51",
+    "customizations/components/tianxuan/server/api.py": "0b02ba1fe4b2a3b45aaebe821ea515b2cf2fe21c0e44d82b422ea6251ba71e3b",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "a21541ad1c4bda35e94b420f9f2904235984bf2afff5f21160d9999286fb9d21",
+    "customizations/components/tianxuan/server/native_api.py": "e672b04f5788a3bac3eac8fec6d7054af3315765973008e1fd6ac117bc5d0e46",
+    "customizations/components/tianxuan/server/work_management.py": "a17a1aa4a5c258dc35490d6eb5c44b02c7cd126abde0bb4a2177aba312b9e967",
+    "customizations/components/tianxuan/server/work_management_api.py": "32bfe4d6b0eb058f1cf765a1a599fb71a8b8bfeafe1b4d877fa9b98b54c09887",
+    "customizations/components/tianxuan/server/issue_upload_api.py": "650fa049c6887a44db4a79c1aba1a99f98bbd2455d0fc1472ed9b73c74a4d071",
+    "customizations/components/tianxuan/server/test_work_management.py": "fcae08df437567152e8910ccae63db72ed75e707dccd94800a57ae75d9c72b47",
+    "customizations/components/tianxuan/server/test_issue_upload.py": "0b5766509a9732f6b228a86d08b4b90d32b2cea4f79ab9e5bcbacb1a47880edd",
+    "customizations/components/tianxuan/server/test_approved_asset.py": "e5c1b6039668edd50a15ac5be89c04b87db7ad88902ebe03f64845d169356d7a"
+  },
+  "native_test": {
+    "exit": 0,
+    "rerun": "python -X utf8 tests/editor/run_workbench_cross_functional.py --godot bin/godot.windows.editor.x86_64.console.exe --report <output.json>",
+    "executed": "D:/GongGong-work/tx-venv/Scripts/python.exe -X utf8 tests/editor/run_workbench_cross_functional.py --godot D:/GongGong/data-collection/receipts/1709-after-k03-20261122/accepted-2094-editor/godot.windows.editor.x86_64.console.exe --report <unique system TEMP report>",
+    "godot": [
+      "--headless",
+      "--editor",
+      "--path",
+      "<private project>",
+      "--script",
+      "res://probe.gd"
+    ],
+    "receipt": {
+      "editor_sha256": "631dd988f6437bc35aa5c5b38d9c7443f7e26382af50e688f0863afd4d7c254c",
+      "project": "studio/icons",
+      "requirement": "doc_e9189a0495b540eb8554df4efa949086",
+      "issue_id": "iss_69e25692918d4ce2a088da93b8b1400a",
+      "issue_number": 1,
+      "accounts": {
+        "artist": "usr_d212055faa304db0b073dc858a27d479",
+        "planner": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+        "programmer": "usr_cc4551be396f4f38a932dc982693b538",
+        "excluded": "usr_a74c68dfe18a4aa8861ac89e45802833"
+      },
+      "ui": {
+        "attachment": {
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "path": "icon.png",
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "version": 1.0
+        },
+        "comment": {
+          "author": "usr_cc4551be396f4f38a932dc982693b538",
+          "author_name": "程序",
+          "body": "程序已读取签认原件并核对像素",
+          "created_at": "2026-11-22T14:46:17.945707+00:00",
+          "id": "icmt_8558a2b560f643a385501f7f8c34b67f",
+          "issue_id": "iss_69e25692918d4ce2a088da93b8b1400a",
+          "parent_id": null,
+          "tenant_id": "ten_7fc3479145394cd09eb5037a2c9b3aaf"
+        },
+        "consumed": {
+          "height": 8,
+          "pixel": "ff7f50",
+          "sha256": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "width": 8
+        },
+        "denied_read": "没有权限查看此工单",
+        "denied_write": 403,
+        "handoff": "核对图标原件\n#1 · 提交 v2 · icon.png\nrequirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f @ 03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367\n判断人　usr_d212055faa304db0b073dc858a27d479\nusr_7a0393ff66aa41819f29c7fb4d2e1b02 → usr_d212055faa304db0b073dc858a27d479  请美术核对图标轮廓",
+        "sessions": [
+          {
+            "id": "usr_d212055faa304db0b073dc858a27d479",
+            "name": "美术",
+            "project": "studio/icons",
+            "role": "editor"
+          },
+          {
+            "id": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+            "name": "策划",
+            "project": "studio/icons",
+            "role": "editor"
+          },
+          {
+            "id": "usr_d212055faa304db0b073dc858a27d479",
+            "name": "美术",
+            "project": "studio/icons",
+            "role": "editor"
+          },
+          {
+            "id": "usr_cc4551be396f4f38a932dc982693b538",
+            "name": "程序",
+            "project": "studio/icons",
+            "role": "editor"
+          },
+          {
+            "id": "usr_a74c68dfe18a4aa8861ac89e45802833",
+            "name": "未授权成员",
+            "project": "studio/icons",
+            "role": "editor"
+          }
+        ],
+        "signature": "提交 v2 已采纳 · requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f @ 03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367\n签认人　usr_d212055faa304db0b073dc858a27d479\n已核对图标轮廓，采纳此版本\n暂无待本人判断的事项",
+        "submission": {
+          "action": "work.submit_asset",
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "created_at": "2026-11-22T14:46:13.930474+00:00",
+          "decision": "pending",
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "initiator": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "kind": "concept",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "path": "icon.png",
+          "responsible": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "version": 2.0
+        }
+      },
+      "http": [
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "POST",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "POST",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/work/submit_asset",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "method": "POST",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/work/transfer",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "method": "POST",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/work/decide",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/work/approved-asset",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/artifacts",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "POST",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_cc4551be396f4f38a932dc982693b538",
+          "method": "GET",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 200
+        },
+        {
+          "actor": "usr_a74c68dfe18a4aa8861ac89e45802833",
+          "method": "GET",
+          "path": "/api/v1/issues/by-number/1/detail",
+          "project": "studio/icons",
+          "status": 403
+        },
+        {
+          "actor": "usr_a74c68dfe18a4aa8861ac89e45802833",
+          "method": "POST",
+          "path": "/api/v1/issues/iss_69e25692918d4ce2a088da93b8b1400a/comments",
+          "project": "studio/icons",
+          "status": 403
+        }
+      ],
+      "reopened_history": [
+        {
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "path": "icon.png",
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "decision": "attached",
+          "action": "work.submit_asset",
+          "version": 1,
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "created_at": "2026-11-22T14:46:13.854826+00:00"
+        },
+        {
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "kind": "concept",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "path": "icon.png",
+          "initiator": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "responsible": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 2,
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "created_at": "2026-11-22T14:46:13.930474+00:00"
+        },
+        {
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "path": "icon.png",
+          "submission_version": 2,
+          "kind": "concept",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "note": "请美术核对图标轮廓",
+          "initiator": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "responsible": "usr_d212055faa304db0b073dc858a27d479",
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "previous_responsible": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "decision": "pending",
+          "action": "work.transfer",
+          "version": 3,
+          "actor": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "created_at": "2026-11-22T14:46:15.281753+00:00"
+        },
+        {
+          "revision": "03849bbf0d4e63e00a6bb25b187b20345b7bc3aedef68037bf1a9b0404011367",
+          "decision": "approved",
+          "path": "icon.png",
+          "submission_version": 2,
+          "kind": "concept",
+          "module": "requirement-attachment-iss_69e25692918d4ce2a088da93b8b1400a-5a2f731d93006aca5661edc3d425b936b180cd9d248738a9248b5b1ff1bee48f",
+          "note": "已核对图标轮廓，采纳此版本",
+          "initiator": "usr_7a0393ff66aa41819f29c7fb4d2e1b02",
+          "responsible": "usr_d212055faa304db0b073dc858a27d479",
+          "digest": "2c319321810f677b6f6bf483ccae764e41751d34bef3cf9484520f232b268357",
+          "action": "work.decide",
+          "version": 4,
+          "actor": "usr_d212055faa304db0b073dc858a27d479",
+          "created_at": "2026-11-22T14:46:16.660587+00:00"
+        }
+      ],
+      "reopened_comments": [
+        {
+          "id": "icmt_8558a2b560f643a385501f7f8c34b67f",
+          "tenant_id": "ten_7fc3479145394cd09eb5037a2c9b3aaf",
+          "issue_id": "iss_69e25692918d4ce2a088da93b8b1400a",
+          "author": "usr_cc4551be396f4f38a932dc982693b538",
+          "body": "程序已读取签认原件并核对像素",
+          "created_at": "2026-11-22T14:46:17.945707+00:00",
+          "author_name": "程序",
+          "parent_id": null
+        }
+      ]
+    }
+  },
+  "regressions": {
+    "native_issue_detail": {
+      "exit": 0,
+      "rerun": "python -X utf8 tests/editor/run_workbench_issue_detail.py --godot bin/godot.windows.editor.x86_64.console.exe --report <output.json>",
+      "result": {
+        "engine_sha256": "0c1733a9759926273b13c7c3a2f724e7bb352d911b43c886c97d33f674ec43b9",
+        "observed_fields": [
+          "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　785a25566e583f1860e3c5143c256e3d2764fc0ecca872b446025dea3e0379fa",
+          "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　3bedfa2daed075a4085df84a00baa5f5fea5ce92bc2e8d09eae620af2e582fdc"
+        ],
+        "http_readback": [
+          [
+            "/api/v1/issues/by-number/1/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "/api/v1/issues/by-number/2/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "/api/v1/issues/by-number/3/detail",
+            "studio/game",
+            403
+          ],
+          [
+            "/api/v1/issues/by-number/99999/detail",
+            "studio/game",
+            404
+          ],
+          [
+            "/api/v1/issues/by-number/1/detail",
+            "studio/game",
+            200
+          ]
+        ],
+        "error_feedback": [
+          "没有权限查看此工单",
+          "当前项目中不存在此编号的工单"
+        ],
+        "checks": [
+          "command palette opened sidebar",
+          "assigned and unassigned compared to reopened database",
+          "private and absent results cleared prior detail",
+          "successful refresh after 404, logout cleared the visible record"
+        ]
+      }
+    },
+    "service": {
+      "exit": 0,
+      "pytest": [
+        "test_work_management.py",
+        "test_issue_upload.py",
+        "test_approved_asset.py"
+      ],
+      "cwd": "repository root",
+      "directory": "customizations/components/tianxuan/server/",
+      "rerun": "python -m pytest -q -p no:cacheprovider --basetemp <unique system TEMP directory> customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_issue_upload.py customizations/components/tianxuan/server/test_approved_asset.py",
+      "result": "18 passed, 1 warning in 15.98s",
+      "warning": "StarletteDeprecationWarning on FastAPI TestClient import"
+    }
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "upstream": "editor-dependency-handoff/bind-consumer-release r37: matched merged commit, upstream acceptance, and editor package digests",
+    "native": "editor-native-acceptance/assert-async-operation-started r15: paired actual authenticated HTTP activity with UI result and reopened stores"
+  }
+}

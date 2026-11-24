@@ -18,6 +18,7 @@ RUNTIME = ROOT / "customizations/platforms/ai-access/host-http/runtime"
 sys.path.insert(0, str(RUNTIME))
 sys.path.insert(0, str(ROOT / "customizations/components/tianxuan/duobao"))
 import runner
+from native_observations import model_observation, public_model_name
 from native_workspace import _capture_stage_owner, _verify_stage_owner, absolute, portable, tree_names
 # isort: on
 
@@ -220,11 +221,18 @@ def launch(registry, context_factory=None):
 
     with closing(runner.connect(Path(p["state_dir"]))) as db:
         history = runner.events(db, runner.jid_for(p["task"]))
-    evidence = next(
-        e["data"]["protocol_evidence"]
-        for e in reversed(history)
-        if e["kind"] == "call_end" and e["data"]["status"] == "received"
-    )
+    received = [e["data"] for e in history if e["kind"] == "call_end" and e["data"]["status"] == "received"]
+    evidence = received[-1]["protocol_evidence"]
+    calls = []
+    for call in received:
+        usage = call["protocol_evidence"].get("usage") or {}
+        protocol = call["profile"]["protocol"]
+        calls.append({
+            "call": call["call"],
+            "source": {"codex-native-proposal": "codex-cli", "local-agent-proposal": "local-agent"}.get(protocol),
+            "requested_model": public_model_name(call["requested_model"]),
+            **model_observation(usage.get("observed_model"), usage.get("raw")),
+        })
     runner.require(
         evidence["original_request_digest"] == runner.digest(request)
         and proposal["request_id"] == request["request_id"]
@@ -257,6 +265,9 @@ def launch(registry, context_factory=None):
         runner.canonical({
             "execution": execution,
             "proposal_applied": True,
+            "provider_model": calls[-1]["provider_model"],
+            "usage": calls[-1]["usage"],
+            "model_calls": calls,
             "runtime_state": p["state_dir"],
             "candidate_accepted": False,
         })

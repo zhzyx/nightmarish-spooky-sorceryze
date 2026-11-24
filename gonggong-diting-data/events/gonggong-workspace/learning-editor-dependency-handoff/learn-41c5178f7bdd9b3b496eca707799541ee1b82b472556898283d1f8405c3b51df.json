@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-41c5178f7bdd9b3b496eca707799541ee1b82b472556898283d1f8405c3b51df",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+  "occurred_at": "2026-11-22T15:11:34.527108+00:00",
+  "evidence_refs": [
+    "dispatch-642d5b190ef14282b1fcbc01e943ea74",
+    "learn-617779cd9325d45c2fbab88bb060e6c0a6b05ed216329808618c12249cbee19f"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 38,
+    "previous": "dfb65e7b0c8bd4b518b75cd8b7acb380363e8b33b8d87ad68bb56ce6051d4f9c",
+    "action": "applied",
+    "details": {
+      "task": "H06 #1768 binds a confirmed animation successor to an exact human creative submission and runs an independent program during selection.",
+      "observed": "Both HTTP and native signature runs produced exactly one matching child after acceptance, zero launches for the other draft, and zero new launches after replay or reconnect. Identical native bytes submitted twice still required distinct approval."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-h06.json",
+        "sha256": "518ce1cc061888fdd16c7d963410213fabb87cd75b4cd7c9c256a1827a74a9a3"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-h06/dispatch-642d5b190ef14282b1fcbc01e943ea74.json",
+      "sha256": "ba41fbccb48dc1193860921a81ba05e88c6e5fe38836f54682b922f9e9ef4b80"
+    }
+  },
+  "sha256": "5fc14f5fae1ae674b5130137e36ed045082b5382b4d5dfd183f176a23c336744"
+}

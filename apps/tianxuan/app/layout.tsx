@@ -4,9 +4,13 @@ import type { ReactNode } from "react";
 import { currentIdentity } from "@/lib/server-api";
 import { IdentityProvider } from "@/components/IdentityProvider";
 import { AppShell } from "@/components/AppShell";
+import { ThemeProvider } from "@/components/ThemeSelect";
 import { LOCALE_COOKIE, normalizeLocale, translate } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
+import { normalizeTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
+import "./workspace-shell.css";
+import "./routes.css";
 
 export function generateMetadata(): Metadata {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
@@ -24,17 +28,19 @@ export function generateMetadata(): Metadata {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0B0E11",
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   const identity = await currentIdentity();
+  const theme = normalizeTheme(cookies().get(THEME_COOKIE)?.value);
   return (
-    <html lang={locale === "en" ? "en" : "zh-CN"}>
+    <html data-theme={theme} lang={locale === "en" ? "en" : "zh-CN"}>
       <body>
         <I18nProvider initialLocale={locale}>
-          <IdentityProvider identity={identity}><AppShell>{children}</AppShell></IdentityProvider>
+          <ThemeProvider initialTheme={theme}>
+            <IdentityProvider identity={identity}><AppShell>{children}</AppShell></IdentityProvider>
+          </ThemeProvider>
         </I18nProvider>
       </body>
     </html>

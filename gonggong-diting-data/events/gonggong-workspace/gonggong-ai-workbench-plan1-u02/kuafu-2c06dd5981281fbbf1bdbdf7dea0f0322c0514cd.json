@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2c06dd5981281fbbf1bdbdf7dea0f0322c0514cd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-u02",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dbd401862c15465ec432ce0ee4ba924530f1c04217daee0fe47e29171b0e2e1e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1905",
+    "action": "delivery",
+    "detection_head": "82adeffcaf7ebcf9a82c742176cbd9e4a2ad6a22",
+    "context_sha256": "f9febbabf90b1cdbce4799725477887cc072aa365aea4e4d75f09c32778a63d1",
+    "operator": "Sail-Li",
+    "worker": "macos-delivery-coordinator",
+    "authority_ref": "github:Sail-Li/WRITE; #1869",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1906",
+    "diagnosis": "C05 与 U02 的设计索引处于同一文件的独立段落。已在最新主线整合，分别复核两处链接及实现文件摘要。正式门禁重新通过。",
+    "next_action": "在 #1906 的精确签发版本上核验 CI 并回读主线与原单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T08:15:37.357118+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T08:19:24.324585+00:00",
+  "sha256": "ccfb89acf4c92bd08552c30247dbe319db7ba5cc02c65ac7318b4473adf37ea6"
+}

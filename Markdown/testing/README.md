@@ -14,6 +14,7 @@
 
 | 范围 | 入口 |
 | --- | --- |
+| 全仓模块归属、CI 选择器与状态检查 | `ci-modules.md` |
 | Windows 编辑器与 AIChat 回归 | 见 `../build/windows-editor/README.md` |
 | AINative Python 契约与工具 | `python -m unittest discover -s tools/ainative -p "test_*.py"` |
 | Gameplay 原生测试 | `<editor-binary> --headless --test --test-case="*Gameplay*"`，将占位符替换为本次构建的实际编辑器 |

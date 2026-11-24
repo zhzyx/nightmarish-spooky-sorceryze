@@ -12,6 +12,43 @@ Import("env")
 env.editor_sources = []
 
 if env.editor_build:
+    env.CommandNoCache(
+        "docks/tianxuan/TianxuanScripts.gen.h",
+        [
+            "docks/tianxuan/session_controller.gd",
+            "docks/tianxuan/workspace_controller.gd",
+            "docks/tianxuan/local_conversation_controller.gd",
+            "docks/tianxuan/locale.gd",
+            "docks/tianxuan/document_controller.gd",
+            "docks/tianxuan/editor_controller.gd",
+            "docks/tianxuan/issue_controller.gd",
+            "docks/tianxuan/issues_page.gd",
+            "docks/tianxuan/issue_assets.gd",
+            "docks/tianxuan/issue_flow.gd",
+            "docks/tianxuan/asset_decoder.gd",
+            "docks/tianxuan/repositories_controller.gd",
+            "docks/tianxuan/repositories_page.gd",
+            "docks/tianxuan/repository_collaboration_controller.gd",
+            "docks/tianxuan/repository_collaboration_page.gd",
+            "docks/tianxuan/game_config_controller.gd",
+            "docks/tianxuan/game_config_page.gd",
+            "docks/tianxuan/migration_controller.gd",
+            "docks/tianxuan/migration_page.gd",
+            "docks/tianxuan/accounts_controller.gd",
+            "docks/tianxuan/accounts_page.gd",
+            "docks/tianxuan/execution_controller.gd",
+            "docks/tianxuan/execution_page.gd",
+            "docks/tianxuan/documents_page.gd",
+            "docks/tianxuan/design_page.gd",
+            "docks/tianxuan/library_page.gd",
+            "docks/tianxuan/native_theme.gd",
+            "docks/tianxuan/markdown_view.gd",
+            "docks/tianxuan/home_page.gd",
+            "docks/tianxuan/workspace_view.gd",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
     ainative_sources = [
         node for node in Glob("#samples/ainative-workbench/addons/ainative/*.gd") if node.name != "plugin.gd"
     ]
@@ -22,6 +59,52 @@ if env.editor_build:
         "ainative/bundle.gen.h",
         ainative_sources,
         env.Run(ainative_builders.build_bundle),
+    )
+
+    env.CommandNoCache(
+        "docks/workbench/BusinessSession.gen.h",
+        [
+            "docks/workbench/business_session.gd",
+            "docks/workbench/paragraph_suggestion.gd",
+            "docks/workbench/document_history.gd",
+            "docks/workbench/design_signoff.gd",
+            "docks/workbench/design_tasks.gd",
+            "docks/workbench/design_progress.gd",
+            "docks/workbench/document_collaboration.gd",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
+    env.CommandNoCache(
+        "docks/workbench/module_selector.gen.h",
+        [
+            "docks/workbench/module_selector.gd",
+            "docks/workbench/asset_picker.gd",
+            "docks/workbench/saved_editor_changes.gd",
+            "docks/workbench/script_candidate.gd",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
+    env.CommandNoCache(
+        "docks/workbench/IssueCreation.gen.h",
+        [
+            "docks/workbench/issue_creation.gd",
+            "docks/workbench/issue_detail.gd",
+            "docks/workbench/issue_time.gd",
+            "docks/workbench/issue_custom_fields.gd",
+            "docks/workbench/issue_milestone.gd",
+            "docks/workbench/issue_search.gd",
+            "docks/workbench/issue_roadmap.gd",
+            "docks/workbench/issue_artifacts.gd",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
+    env.CommandNoCache(
+        "docks/workbench/IssueActions.gen.h",
+        env.Glob("docks/workbench/issue_actions/*.gd"),
+        env.Run(editor_builders.workbench_issue_actions_builder),
     )
 
     graph_sources = ["docks/daqian/graph_layout.gd", "docks/daqian/issue_graph.gd"]
@@ -43,6 +126,9 @@ if env.editor_build:
             *([] if desktop_ui else graph_sources),
             "docks/daqian/operation_details.gd",
             "docks/daqian/issue_inspector.gd",
+            "docks/daqian/duobao_branches.gd",
+            "docks/daqian/duobao_merge.gd",
+            "docks/daqian/duobao_commit.gd",
             "docks/daqian/canvas_context.gd",
             "docks/daqian/spatial_workbench.gd",
             "docks/daqian/workspace.gd",

@@ -1,0 +1,12 @@
+{
+  "original": {
+    "exit_code": 1,
+    "log": "ERROR: samples/gonggong-workbench/fixtures/b05/sample.py: <MISSING OWNERS> {'@godotengine/buildsystem'}\nINFO: samples/gonggong-workbench/fixtures/b05/sample.py: ['@zhzyx']",
+    "codeowners_sha256": "408b41fcd4e9f671fb85236d3d0989e2550ce094f9b5aa179226d8f0a06e8830"
+  },
+  "corrected": {
+    "exit_code": 0,
+    "log": "INFO: samples/gonggong-workbench/fixtures/b05/sample.py: ['@zhzyx', '@godotengine/buildsystem']",
+    "codeowners_sha256": "a7321d666d33c3f4f71244166865022099ca510cbe424673283fab95dd647b48"
+  }
+}

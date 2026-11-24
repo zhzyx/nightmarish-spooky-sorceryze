@@ -1,0 +1,40 @@
+{
+  "issue_number": 1783,
+  "request_id": "gonggong-ai-workbench-plan1-g18",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1783",
+  "baseline": "21885f8c13ebac2169527fd767806604c877674f",
+  "verified_at": "2026-11-22T09:10:25.503828+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "command": "python3 customizations/components/tianxuan/migration/rehearse_write_rollback.py",
+  "mode": "disposable local Git replicas, Duobao GitService, persistent tenant-scoped entry",
+  "result": {
+    "before": {
+      "route": "existing",
+      "original": {
+        "refs/heads/main": "5af21e49228084be1dc46418968b3351cb038c00",
+        "refs/heads/topic": "5af21e49228084be1dc46418968b3351cb038c00",
+        "refs/tags/baseline": "5af21e49228084be1dc46418968b3351cb038c00"
+      },
+      "duobao": {
+        "refs/heads/main": "5af21e49228084be1dc46418968b3351cb038c00",
+        "refs/heads/topic": "5af21e49228084be1dc46418968b3351cb038c00",
+        "refs/tags/baseline": "5af21e49228084be1dc46418968b3351cb038c00"
+      }
+    },
+    "cutover_commits": {
+      "main": "b2ad3f103e5eec597451c7306b872fe8f67220bb",
+      "topic": "768901cd1378304a6f735be54ce050dc83823c33"
+    },
+    "recovered_refs": {
+      "refs/heads/main": "b2ad3f103e5eec597451c7306b872fe8f67220bb",
+      "refs/heads/topic": "768901cd1378304a6f735be54ce050dc83823c33",
+      "refs/tags/baseline": "5af21e49228084be1dc46418968b3351cb038c00"
+    },
+    "final_route": "existing",
+    "after_original_write": {
+      "refs/heads/main": "115caf0606dfc3695e06e528d47ea46cc1fbeee2",
+      "refs/heads/topic": "768901cd1378304a6f735be54ce050dc83823c33",
+      "refs/tags/baseline": "5af21e49228084be1dc46418968b3351cb038c00"
+    }
+  }
+}

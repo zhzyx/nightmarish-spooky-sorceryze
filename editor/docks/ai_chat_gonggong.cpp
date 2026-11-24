@@ -181,20 +181,10 @@ void AIChatDock::_poll_gonggong_receipt() {
 	gonggong_receipt_timer->stop();
 	gonggong_receipt_pid = -1;
 	const String strStatus = dictResult["receipt_status"];
-	Dictionary dictDiagnostic;
-	dictDiagnostic["status"] = strStatus;
-	dictDiagnostic["exit_code"] = iGongGongReceiptExitCode;
-	dictDiagnostic["read_attempts"] = uGongGongReceiptReadAttempts;
-	dictDiagnostic["io_error"] = eRead;
-	dictDiagnostic["parse_line"] = dictResult.get("receipt_parse_line", -1);
-	dictDiagnostic["temporary_present"] = FileAccess::exists(gonggong_receipt_path.get_basename() + ".tmp");
+	const Dictionary dictDiagnostic = AIChatReceipt::Diagnostic(dictResult, gonggong_receipt_path, iGongGongReceiptExitCode, uGongGongReceiptReadAttempts);
 	set_meta("gonggong_receipt_diagnostic", dictDiagnostic);
 	// Private cache evidence contains metadata only, never raw receipt or stderr.
-	Ref<FileAccess> refDiagnostic = FileAccess::open(gonggong_receipt_path + ".diagnostic.json", FileAccess::WRITE);
-	if (refDiagnostic.is_valid()) {
-		refDiagnostic->store_string(JSON::stringify(dictDiagnostic));
-		refDiagnostic.unref();
-	}
+	AIChatReceipt::WriteDiagnostic(gonggong_receipt_path, dictDiagnostic);
 	if (strStatus != "valid" || iGongGongReceiptExitCode != 0) {
 		const String strActionError = strStatus == "valid" ? _redact(String(dictResult.get("error", ""))).left(160) : String();
 		dictResult["ok"] = false;
@@ -1068,6 +1058,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 }
 
 void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_request) {
+	remove_meta("issue_guide_receipt_diagnostic");
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (p_action == "issue-agent") {
@@ -1127,6 +1118,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		return;
 	}
 	issue_guide_pid = pid;
+	issue_guide_read_attempts = 0;
 	issue_guide_action = p_action;
 	issue_guide_run_generation = issue_guide_generation;
 	issue_guide_state = p_action == "issue-draft" ? "drafting" : p_action == "issue-create" ? "creating"
@@ -1153,24 +1145,43 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 }
 
 void AIChatDock::_poll_issue_guide() {
-	if (OS::get_singleton()->is_process_running(issue_guide_pid)) {
+	if (issue_guide_pid < 0) {
 		return;
+	}
+	if (issue_guide_read_attempts == 0) {
+		if (OS::get_singleton()->is_process_running(issue_guide_pid)) {
+			return;
+		}
+		issue_guide_exit_code = OS::get_singleton()->get_process_exit_code(issue_guide_pid);
+		issue_guide_read_deadline = Time::get_singleton()->get_ticks_msec() + 1000;
+	}
+	if (issue_guide_run_generation != issue_guide_generation || issue_guide_state.is_empty()) {
+		issue_guide_timer->stop();
+		issue_guide_pid = -1;
+		_clear_issue_guide_files();
+		return; // A cancelled guide never applies a late result.
+	}
+	Dictionary result = AIChatReceipt::Read(issue_guide_output_path);
+	const Error io_error = Error(int(result["receipt_io_error"]));
+	if (AIChatReceipt::CanRetry(io_error, ++issue_guide_read_attempts, Time::get_singleton()->get_ticks_msec(), issue_guide_read_deadline)) {
+		return; // Retry only the read of this child's result.
 	}
 	issue_guide_timer->stop();
 	issue_guide_pid = -1;
-	Variant parsed;
-	if (FileAccess::exists(issue_guide_output_path)) {
-		parsed = JSON::parse_string(FileAccess::get_file_as_string(issue_guide_output_path));
+	const String status = result["receipt_status"];
+	const Dictionary diagnostic = AIChatReceipt::Diagnostic(result, issue_guide_output_path, issue_guide_exit_code, issue_guide_read_attempts);
+	set_meta("issue_guide_receipt_diagnostic", diagnostic);
+	if (!bool(result["ok"]) || issue_guide_exit_code != 0) {
+		AIChatReceipt::WriteDiagnostic(issue_guide_output_path, diagnostic);
+	}
+	// The bridge uses exit 1 with ok:false for application-level rejection.
+	// Preserve its reason for the existing authentication and reconciliation UI.
+	if (status != "valid" || (bool(result["ok"]) && issue_guide_exit_code != 0)) {
+		result["ok"] = false;
+		result["error"] = vformat("receipt_%s; exit=%d; io=%d; attempts=%d", status == "valid" ? String("process_failed") : status, issue_guide_exit_code, int(io_error), issue_guide_read_attempts);
 	}
 	_clear_issue_guide_files();
-	if (issue_guide_run_generation != issue_guide_generation || issue_guide_state.is_empty()) {
-		return; // A cancelled guide never applies a late result.
-	}
-	Dictionary result;
-	if (parsed.get_type() == Variant::DICTIONARY) {
-		result = parsed;
-	}
-	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
+	const bool ok = result["ok"];
 	const String error = result.get("error", U"桥接进程没有返回有效结果。");
 	if (issue_guide_action == "issue-agent") {
 		if (issue_guide_fields.get("initial_issue", Variant()) != _work_order_binding("issue_number") || issue_guide_fields.get("initial_request", Variant()) != _work_order_binding("request_id")) {
@@ -1347,6 +1358,7 @@ bool AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id)
 	bound["request_id"] = p_request_id;
 	bindings[GetAiSession().strConversation] = bound;
 	settings->set_project_metadata("daqian", "bindings", bindings);
+	RefreshWorkbenchReference();
 	settings->save_project_metadata();
 	if (sub_agents.has(active_agent)) {
 		Dictionary child = sub_agents[active_agent];

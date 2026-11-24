@@ -1,20 +1,24 @@
 name: Tianxuan deploy build
 
 on:
-  pull_request:
-    paths:
-      - "deploy/**"
-      - "apps/tianxuan/**"
-      - "customizations/components/tianxuan/**"
-      - "framework/**"
-      - "customizations/platforms/ai-access/host-http/runtime/**"
-      - "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs"
-      - "tools/ainative/owned_process.py"
-      - "tools/codex_cli/subscription_session.js"
-      - "tools/codex_cli/content_preview.js"
-      - "tools/codex_cli/subscription_profile.py"
-      - ".github/workflows/tianxuan-deploy-build.yml"
+  workflow_call:
+    inputs:
+      release_revision:
+        type: string
+        required: false
+      run_context_burst:
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      release_revision:
+        description: "Export the smoke-tested Web image for this full main commit SHA"
+        type: string
+        required: false
+      run_context_burst:
+        description: "Run the deferred synthetic 250-client burst (not production capacity acceptance)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,15 +30,33 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Select delivered source for Web export
+        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        env:
+          REVISION: ${{ inputs.release_revision }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]
+          git fetch --quiet --unshallow origin main
+          git rev-list --first-parent "$GITHUB_SHA" | grep -Fx "$REVISION" >/dev/null
+          git checkout --quiet --detach "$REVISION"
       - name: Build API image
-        run: docker build --pull -f deploy/Dockerfile.api -t tianxuan-api:ci .
+        run: |
+          docker build --pull -f deploy/Dockerfile.api -t tianxuan-api:ci .
+          echo "GONGGONG_TESTED_API_IMAGE=$(docker image inspect tianxuan-api:ci --format '{{.Id}}')" >> "$GITHUB_ENV"
       - name: Native package execution and context
         run: |
-          docker run --rm --network none --read-only --memory 192m --cpus 1 \
+          docker create --name native-package --network none --read-only --memory 192m --cpus 1 \
             --tmpfs /tmp:rw,nosuid,nodev,size=67108864,mode=1777 \
             -e NATIVE_TEST_NODE=/usr/local/bin/node \
-            --workdir /app tianxuan-api:ci \
-            python -B -m pytest -q -p no:cacheprovider -k 'not test_250_local_tool_burst' \
+            --workdir /app "$GONGGONG_TESTED_API_IMAGE" \
+            sh -ec '
+              for test_module do
+                python -B -m pytest -v -p no:cacheprovider --basetemp=/tmp/native-pytest \
+                  -k "not test_250_local_tool_burst" "$test_module"
+              done
+            ' native-package \
             customizations/components/tianxuan/server/test_native_entry_normal.py \
             customizations/components/tianxuan/server/test_native_shared_dispatch.py \
             customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py \
@@ -45,14 +67,46 @@ jobs:
             customizations/components/tianxuan/server/test_native_entry_context_admission.py \
             customizations/components/tianxuan/server/test_native_entry_context_backpressure.py \
             customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py
+          trap 'docker rm -f native-package >/dev/null' EXIT
+          docker start native-package
+          pid=$(docker inspect -f '{{.State.Pid}}' native-package)
+          group=$(awk -F: '$1=="0" {print $3}' "/proc/$pid/cgroup" 2>/dev/null || true)
+          (
+            while [[ -n "$group" && -r "/sys/fs/cgroup$group/memory.current" ]]; do
+              root="/sys/fs/cgroup$group"
+              date -u --iso-8601=ns
+              printf 'memory.current=%s memory.peak=%s events=%s\n' \
+                "$(cat "$root/memory.current")" "$(cat "$root/memory.peak")" "$(xargs < "$root/memory.events")"
+              pids=$(paste -sd, "$root/cgroup.procs")
+              if [[ -n "$pids" ]]; then ps -o pid,ppid,rss,comm -p "$pids" || true; fi
+              sleep 0.5
+            done
+          ) > "$RUNNER_TEMP/native-package-memory.log" 2>&1 &
+          observer=$!
+          code=$(docker wait native-package)
+          kill "$observer" 2>/dev/null || true
+          wait "$observer" || true
+          docker logs --timestamps native-package > "$RUNNER_TEMP/native-package-tests.log" 2>&1
+          cat "$RUNNER_TEMP/native-package-tests.log"
+          docker inspect --format 'OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}}' native-package | tee "$RUNNER_TEMP/native-package-exit.log"
+          tail -n 100 "$RUNNER_TEMP/native-package-memory.log"
+          exit "$code"
+      - name: Preserve native package memory and test timeline
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-package-measurements
+          path: ${{ runner.temp }}/native-package-*.log
+          if-no-files-found: warn
       # This budget includes 250 test-client threads plus the coordinator.
       # It is a functional burst check, not a production capacity measurement.
       - name: Native context burst with isolated test-driver budget
+        if: github.event_name == 'workflow_dispatch' && inputs.run_context_burst
         run: |
           docker run --rm --network none --read-only --memory 512m --cpus 1 \
             --tmpfs /tmp:rw,nosuid,nodev,size=67108864,mode=1777 \
             -e NATIVE_TEST_NODE=/usr/local/bin/node \
-            --workdir /app tianxuan-api:ci \
+            --workdir /app "$GONGGONG_TESTED_API_IMAGE" \
             python -B -m pytest -q -p no:cacheprovider -k test_250_local_tool_burst \
             customizations/components/tianxuan/server/test_native_entry_context_backpressure.py
       - name: Build Web image
@@ -75,6 +129,14 @@ jobs:
           curl -fsS http://127.0.0.1:8080/api/v1/health
           curl -fsS -o /dev/null -w 'web %{http_code}\n' http://127.0.0.1:8080/
           docker compose --env-file .env ps
+      - name: Check node HTTP proxy
+        if: github.event_name != 'workflow_dispatch' || inputs.release_revision == ''
+        run: |
+          # The default stack has no node runtime. The API returns a JSON 404.
+          code=$(curl -sS -o "$RUNNER_TEMP/node-response" -w '%{http_code}' \
+            'http://127.0.0.1:8080/native-nodes/events?cursor=0')
+          test "$code" = 404
+          jq -e '.detail == "Not Found"' "$RUNNER_TEMP/node-response"
       - name: WebSocket proxy
         run: |
           python -m pip install --quiet websockets
@@ -99,6 +161,109 @@ jobs:
 
           asyncio.run(main())
           PY
+      - name: Export tested API package
+        env:
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || inputs.release_revision || github.sha }}
+          CONTEXT_BURST_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.run_context_burst }}
+        run: |
+          set -euo pipefail
+          test "$(docker image inspect tianxuan-api:ci --format '{{.Id}}')" = "$GONGGONG_TESTED_API_IMAGE"
+          mkdir native-api-package
+          docker save "$GONGGONG_TESTED_API_IMAGE" | gzip -n > native-api-package/api-image.tar.gz
+          docker run --rm --network none --read-only --entrypoint python \
+            "$GONGGONG_TESTED_API_IMAGE" -I -B -c \
+            'import hashlib,json,pathlib; root=pathlib.Path("/app"); print(json.dumps({p.relative_to(root).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.rglob("*")) if p.is_file()},sort_keys=True,indent=2))' \
+            > native-api-package/image-files.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          root = Path("native-api-package")
+          def digest(path):
+              with path.open("rb") as stream:
+                  return hashlib.file_digest(stream, "sha256").hexdigest()
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          image = os.environ["GONGGONG_TESTED_API_IMAGE"]
+          manifest = {
+              "schema": 1,
+              "image_id": image,
+              "image_bytes": json.loads(subprocess.check_output(["docker", "image", "inspect", image]))[0]["Size"],
+              "source_commit": git("rev-parse", "HEAD"),
+              "source_tree": git("rev-parse", "HEAD^{tree}"),
+              "candidate_head": os.environ["CANDIDATE_HEAD"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "validation_scope": {
+                  "ordinary_functional_checks": "passed",
+                  "synthetic_250_client_burst": "passed" if os.environ["CONTEXT_BURST_REQUESTED"] == "true" else "not_run_user_deferred",
+                  "production_multi_user_capacity": "not_accepted",
+              },
+              "files": {name: {"bytes": (root / name).stat().st_size, "sha256": digest(root / name)}
+                        for name in ("api-image.tar.gz", "image-files.json")},
+              "build_inputs": {name: digest(Path(name)) for name in (
+                  "deploy/Dockerfile.api", "deploy/Dockerfile.api.dockerignore",
+                  ".github/workflows/tianxuan-deploy-build.yml")},
+              "acceptance": "This job tested this image. Consumers must also verify all applicable CI and candidate delivery to main.",
+          }
+          (root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps({key: manifest[key] for key in ("image_id", "source_commit", "candidate_head", "run_id")}))
+          PY
+      - name: Upload tested API package
+        uses: actions/upload-artifact@v7
+        with:
+          name: tianxuan-api-${{ github.run_id }}-${{ github.run_attempt }}
+          path: native-api-package/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+      - name: Select Web package export
+        id: web-export
+        if: (github.event_name == 'workflow_dispatch' && inputs.release_revision != '') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            git fetch --quiet --depth=1 origin "$PR_BASE"
+            changed=$(git diff --name-only "$PR_BASE" HEAD -- \
+              deploy/Dockerfile.web deploy/Dockerfile.web.dockerignore apps/tianxuan/next.config.mjs)
+            [[ -n "$changed" ]] || exit 0
+          fi
+          echo 'enabled=true' >> "$GITHUB_OUTPUT"
+      - name: Export smoke-tested Web image
+        if: steps.web-export.outputs.enabled == 'true'
+        env:
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || inputs.release_revision || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir web-package
+          container=$(cd deploy && docker compose ps -q web)
+          image=$(docker inspect --format '{{.Image}}' "$container")
+          bytes=$(docker image inspect --format '{{.Size}}' "$image")
+          docker save "$image" | gzip -n > web-package/web-image.tar.gz
+          cd web-package
+          jq -n --arg source "$(git rev-parse HEAD)" --arg tree "$(git rev-parse 'HEAD^{tree}')" \
+            --arg image "$image" --arg digest "$(sha256sum web-image.tar.gz | cut -d' ' -f1)" \
+            --arg workflow "$GITHUB_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg candidate "$CANDIDATE_HEAD" --arg event "$GITHUB_EVENT_NAME" --argjson image_bytes "$bytes" \
+            '{schema:1, source_commit:$source, source_tree:$tree, workflow_commit:$workflow, image_id:$image, run_id:$run,
+              run_attempt:$attempt, candidate_head:$candidate, event:$event, image_bytes:$image_bytes,
+              files:{"web-image.tar.gz":{sha256:$digest}}}' > manifest.json
+      - name: Upload tested Web package
+        if: steps.web-export.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: tianxuan-web-${{ github.run_id }}-${{ github.run_attempt }}
+          path: web-package/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
       - name: Compose logs
         if: failure() && hashFiles('deploy/.env') != ''
         working-directory: deploy

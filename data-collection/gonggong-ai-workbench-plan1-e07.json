@@ -1,0 +1,129 @@
+{
+  "issue": 1796,
+  "request_id": "gonggong-ai-workbench-plan1-e07",
+  "baseline": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb",
+  "tested_at": "2026-11-22T09:54:41.461820+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "command": "python tests/editor/run_workbench_paragraph_suggestion.py --godot bin/godot.macos.editor.arm64 --windowed --report receipt.json",
+  "sha256": {
+    "editor/docks/workbench/document_collaboration.gd": "600fbdd08bf13ea7937e689c54682ecc58ad38ffca9b491e6be953730c9bb47c",
+    "editor/docks/workbench/paragraph_suggestion.gd": "b2c784cc56d2cfffc95cd7a6d07a4b2f4bee40db1132a72c88e10a47443a692c",
+    "tests/editor/run_workbench_paragraph_suggestion.py": "bc7356c8a9b91cb39d2abf3b32eb67d69fbc966fc7558a3867e2595d4b847cfa",
+    "tests/editor/workbench_paragraph_suggestion.gd": "b028b7592a98c86c73a378aa99e73428f3c8e4240e571cce1c0de128649ab303"
+  },
+  "native": {
+    "state": "passed",
+    "host": "compiled native sidebar",
+    "display": "windowed",
+    "model_transport": "fixture",
+    "trace": [
+      {
+        "paragraph": 3,
+        "preview": "点亮整座桥\n持续三秒",
+        "selected": "照亮桥面\n持续两秒",
+        "version_before_accept": 1
+      }
+    ],
+    "editor_sha256": "594bb77b731294e2037118c7a62a1b33e0ebd23b8c7fa83238fcfb1185dd7198",
+    "previews": [
+      {
+        "paragraph": 3,
+        "revision_seen": 1,
+        "writes_seen": 0
+      },
+      {
+        "paragraph": 3,
+        "revision_seen": 1,
+        "writes_seen": 0
+      },
+      {
+        "paragraph": 3,
+        "revision_seen": 1,
+        "writes_seen": 0
+      },
+      {
+        "paragraph": 3,
+        "revision_seen": 2,
+        "writes_seen": 2
+      },
+      {
+        "paragraph": 3,
+        "revision_seen": 1,
+        "writes_seen": 3
+      },
+      {
+        "paragraph": 3,
+        "revision_seen": 3,
+        "writes_seen": 3
+      },
+      {
+        "paragraph": 2,
+        "revision_seen": 3,
+        "writes_seen": 3
+      },
+      {
+        "paragraph": 1,
+        "revision_seen": 4,
+        "writes_seen": 3
+      }
+    ],
+    "saved_v2": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+    "patch_statuses": [
+      [
+        200,
+        503
+      ],
+      [
+        200,
+        200
+      ],
+      [
+        409,
+        409
+      ]
+    ],
+    "same_call_id_on_retry": true,
+    "merged_version": 4,
+    "merged_markdown": "# 人工定稿的虹桥  \r\n \t\r\n再次确认的桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+    "rebased_write_statuses": [
+      [
+        409,
+        409
+      ],
+      [
+        409,
+        409
+      ],
+      [
+        409,
+        409
+      ],
+      [
+        200,
+        503
+      ],
+      [
+        200,
+        200
+      ]
+    ],
+    "conflict_preserved_external_write": true,
+    "stale_selection_document_identity_cleared": true
+  },
+  "cli": {
+    "mode": "authenticated Tianxuan service + real CLI; deterministic model HTTP transport",
+    "doc": "doc_e8fc7a76db884aa5b6962b1aa9c949de",
+    "revisions": [
+      1,
+      2,
+      3
+    ],
+    "candidate_sha256": "c0a7e0250b557c30672a1ce8690aa5d586f9ae89a34e92903af8f52e5e5dd5b9",
+    "merged_sha256": "7ac11653981c753db68b769f67e41bc1e2fe27ebff3bfd9a038f95873a6eff0b",
+    "merged": "月光照亮入口。\n\n中间的过桥规则。\n\n到达后点亮三盏灯。\n",
+    "diff": "--- v1\n+++ v3\n@@ -1,5 +1,5 @@\n-日光照亮入口。\n+月光照亮入口。\n \n 中间的过桥规则。\n \n-到达后点亮一盏灯。\n+到达后点亮三盏灯。",
+    "overlap_status": 409,
+    "unchanged_revision_after_overlap": 3
+  },
+  "review": "独立审查者复核四个交付文件。在合并的比较与写入之间增加第二次真实的并发写，409 时保留候选；回执丢失则用原 payload 和 call_id 重试。成功回执在弹窗隐藏前登记当前版本，保护原第 3 段的选择。修正后的用例同时核对 v4 正文、原选区和重试标识。"
+}

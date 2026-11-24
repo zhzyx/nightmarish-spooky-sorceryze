@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bba890c7763f54ee0f4e40717101f3942316b6e8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cbcbee71a7e70037c795ed92b4586752c6cb66cf3e7870b636121a4d32e9b346",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1697",
+    "action": "user-report",
+    "detection_head": "531c1252b0eca282b9fc469147923e53cafe6de3",
+    "context_sha256": "609a2032267d3e88a74132743c401d4ec95228088ac7c0259a6c96bdde994762",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-resume-undelivered-repair-20261120",
+    "evidence": "Four original delegated turns retain old inProgress observations after follow-up messages; local native independent review and repair agents have actual running handles.",
+    "diagnosis": "No new execution receipt proves the old workers resumed. Host or worker failure cause remains unknown. Do not infer termination from elapsed time or release original claims.",
+    "next_action": "User was asked once to inspect and stop genuinely stuck generations. Preserve original candidates; continue isolated native repairs and reuse exact review/module CI evidence. Reconcile actual terminal or handoff before publishing changes to original candidates.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T15:16:41.602099+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T15:18:42.973552+00:00",
+  "sha256": "666c57a29a52159f2e045fd44b6c2703f1c6e800a6f4eeb38ed726f2111fbc13"
+}

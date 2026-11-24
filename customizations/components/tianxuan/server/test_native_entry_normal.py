@@ -18,6 +18,8 @@ HERE = Path(__file__).resolve().parent
 for folder in (HERE, HERE.parent / "duobao", HERE.parent / "sinan-workorders"):
     sys.path.insert(0, str(folder))
 
+from native_model_host import executable_sha256  # noqa: E402
+
 PROGRAM = r"""
 import base64, hashlib, json, os, pathlib, sys
 role = sys.argv[1]
@@ -34,7 +36,15 @@ if role in ('planner', 'reviewer'):
  print(canonical(dict(input_digest=digest(canonical(r).encode()),source=r['source'],proposal=proposal,runtime_state='deterministic-test-installation')))
 elif role=='producer':
  p=pathlib.Path(os.environ['NATIVE_WORKSPACE']);
- if json.loads(pathlib.Path(os.environ['NATIVE_CONTEXT']).read_text(encoding='utf-8'))['title']=='Revoke':
+ title=json.loads(pathlib.Path(os.environ['NATIVE_CONTEXT']).read_text(encoding='utf-8'))['title']
+ if title=='Pause' and not (p.parent.parent/'pause-go').exists():
+  import time
+  (p.parent/'pause-wait').touch(exist_ok=False)
+  deadline=time.monotonic()+20
+  while not (p.parent.parent/'pause-go').exists():
+   assert time.monotonic()<deadline
+   time.sleep(.02)
+ if title=='Revoke':
   import time
   (p.parent/'revoke-wait').write_text('waiting'); time.sleep(30)
  (next(p.glob('*-text'))/'output').write_text('deterministic accepted output',encoding='utf-8')
@@ -57,7 +67,7 @@ class NormalEntryTests(unittest.TestCase):
             python = str(Path(sys.executable).resolve())
             driver = str(HERE.parent / "sinan-workorders" / "native_entry_driver.mjs")
             environment = {k: v for k, v in os.environ.items() if k.upper() in {"SYSTEMROOT", "WINDIR"}}
-            files = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in (python, node, str(program), driver)}
+            files = {p: executable_sha256(p) for p in (python, node, str(program), driver)}
             commands = {
                 r: dict(argv=[python, "-X", "utf8", str(program), r], env=environment)
                 for r in ("planner", "producer", "checker", "reviewer")
@@ -117,7 +127,7 @@ class NormalEntryTests(unittest.TestCase):
                                 headers=headers,
                                 json=dict(
                                     request_id="normal" + str(i),
-                                    title="Normal entry",
+                                    title="Normal entry" if i else "Pause",
                                     outcome="Output",
                                     scope="Text",
                                     acceptance="output must equal deterministic accepted output",
@@ -129,10 +139,56 @@ class NormalEntryTests(unittest.TestCase):
                             response = client.post(
                                 "/api/v1/native/entry/execute",
                                 headers=headers,
-                                json=dict(requirement=requirement, call_id="execute", scopes=["text"]),
+                                json=dict(
+                                    requirement=requirement,
+                                    call_id="execute",
+                                    scopes=["text"],
+                                    **({"model": "installed"} if i else {}),
+                                ),
                             )
                             self.assertEqual(response.status_code, 200, response.text)
-                            entries.append((response.json()["entry"], headers))
+                            key = response.json()["entry"]
+                            recovered = client.post(
+                                "/api/v1/native/entry/calls/status", headers=headers, json={"call_id": "execute"}
+                            )
+                            self.assertEqual(recovered.status_code, 200, recovered.text)
+                            self.assertEqual(recovered.json()["entry"], key)
+                            self.assertEqual(recovered.json()["requested_profile"], "installed" if i else None)
+                            entries.append((key, headers))
+                        # The normal installed entry must wake its paused producer
+                        # after an explicit decision, even after its Node driver closed.
+                        workers = root / "state" / "workers"
+                        deadline = time.monotonic() + 20
+                        while not list(workers.glob("*/pause-wait")):
+                            self.assertLess(time.monotonic(), deadline)
+                            time.sleep(0.02)
+                        (marker,) = workers.glob("*/pause-wait")
+                        run = marker.parent.name
+                        owner = entries[0][1]
+                        workflow_url = "/api/v1/native/workflow/"
+
+                        def current_run():
+                            response = client.post(workflow_url + "status", json={"key": run}, headers=owner)
+                            self.assertEqual(response.status_code, 200, response.text)
+                            return response.json()["progress"]
+
+                        row = current_run()
+                        pause = dict(key=run, issue=row["issue"], expected=row["control"]["revision"])
+                        decision = client.post(workflow_url + "pause", json=pause, headers=owner)
+                        (workers / "pause-go").touch()
+                        self.assertEqual(decision.status_code, 200, decision.text)
+                        deadline = time.monotonic() + 45
+                        while True:
+                            row = current_run()
+                            peer = client.get("/api/v1/native/entry/" + entries[1][0], headers=entries[1][1]).json()
+                            if row["state"] == "paused" and peer["state"] == "delivered":
+                                break
+                            self.assertLess(time.monotonic(), deadline, (row["state"], peer))
+                            time.sleep(0.05)
+                        resume = dict(pause, expected=row["control"]["revision"])
+                        decision = client.post(workflow_url + "resume", json=resume, headers=owner)
+                        self.assertEqual(decision.status_code, 200, decision.text)
+                        self.assertEqual(decision.json()["candidate"], row["candidate"])
                         deadline = time.monotonic() + 90
                         for key, headers in entries:
                             while time.monotonic() < deadline:
@@ -156,6 +212,8 @@ class NormalEntryTests(unittest.TestCase):
                             client.get("/api/v1/native/entry/" + entries[0][0], headers=entries[1][1]).status_code, 404
                         )
                         self.assertEqual(len(list((root / "state" / "workers").rglob("physical-producer-marker"))), 2)
+                        initial = client.get("/api/v1/native/entry/" + entries[0][0], headers=entries[0][1])
+                        initial_selection = initial.json()["progress"]["publication"]["selection"]
                         owner = entries[0][1]
                         response = client.post(
                             "/api/v1/users",
@@ -199,6 +257,69 @@ class NormalEntryTests(unittest.TestCase):
                             ),
                         )
                         self.assertEqual(len(list((root / "state" / "workers").rglob("physical-producer-marker"))), 3)
+                        route = "/api/v1/native/entry/" + key
+                        page = client.get(route + "/releases?after=0&limit=100", headers=headers)
+                        self.assertEqual(page.status_code, 200, page.text)
+                        first, second = page.json()["events"]
+                        self.assertEqual(initial_selection, first["selection"])
+                        self.assertEqual(status["progress"]["publication"]["selection"], second["selection"])
+                        self.assertTrue(first["accepted"] and second["accepted"])
+                        self.assertEqual(page.json()["head"], second["selection"])
+                        request = dict(call_id="restore", selection=first["selection"], expected=second["selection"])
+                        response = client.post(route + "/rollback", headers=headers, json=request)
+                        self.assertEqual(response.status_code, 200, response.text)
+                        rollback = response.json()
+                        self.assertNotIn(rollback["selection"], [first["selection"], second["selection"]])
+                        self.assertEqual(rollback["modules"], first["modules"])
+                        self.assertEqual(rollback["candidate"], first["candidate"])
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=headers, json=request).json(), rollback
+                        )
+                        self.assertEqual(
+                            client.post(
+                                route + "/rollback", headers=headers, json=dict(request, expected=rollback["selection"])
+                            ).status_code,
+                            409,
+                        )
+                        self.assertEqual(
+                            client.post(
+                                route + "/rollback", headers=headers, json=dict(request, call_id="stale")
+                            ).status_code,
+                            409,
+                        )
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=entries[1][1], json=request).status_code, 409
+                        )
+                        tail = client.get(route + "/releases?after=" + str(second["sequence"]), headers=headers).json()
+                        self.assertEqual([r["selection"] for r in tail["events"]], [rollback["selection"]])
+                        self.assertEqual(tail["head"], rollback["selection"])
+                        progress = client.get(route, headers=headers).json()["progress"]
+                        self.assertEqual(progress["percent"], 100)
+                        self.assertEqual(
+                            progress["publication"],
+                            dict(
+                                selection=rollback["selection"],
+                                candidate=first["candidate"],
+                                restored_from=first["selection"],
+                            ),
+                        )
+                        self.assertTrue(client.post("/api/v1/auth/logout", headers=headers).json()["revoked"])
+                        next_request = dict(
+                            call_id="after-withdrawal", selection=second["selection"], expected=rollback["selection"]
+                        )
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=headers, json=next_request).status_code, 401
+                        )
+                        new_login = client.post(
+                            "/api/v1/auth/session", json=dict(email="colleague@example.invalid", password="password123")
+                        ).json()
+                        renewed_editor = {"Authorization": "Bearer " + new_login["token"]}
+                        denied = client.post(route + "/rollback", headers=renewed_editor, json=next_request)
+                        self.assertEqual(denied.status_code, 409, denied.text)
+                        self.assertEqual(
+                            client.get(route + "/releases", headers=renewed_editor).json()["head"],
+                            rollback["selection"],
+                        )
                         headers = entries[1][1]
                         response = client.post(
                             "/api/v1/requirements",
@@ -226,6 +347,13 @@ class NormalEntryTests(unittest.TestCase):
                         self.assertTrue(list((root / "state" / "workers").rglob("revoke-wait")))
                         self.assertTrue(client.post("/api/v1/auth/logout", headers=headers).json()["revoked"])
                         self.assertEqual(client.get("/api/v1/native/entry/" + key, headers=headers).status_code, 401)
+                        new_session = client.post(
+                            "/api/v1/auth/session", json={"email": "person1@example.invalid", "password": "password123"}
+                        ).json()
+                        renewed = {"Authorization": "Bearer " + new_session["token"]}
+                        observed = client.get("/api/v1/native/entry/" + key, headers=renewed)
+                        self.assertEqual(observed.status_code, 200, observed.text)
+                        self.assertEqual(observed.json()["entry"], key)
                         deadline = time.monotonic() + 15
                         while time.monotonic() < deadline and not any(
                             f["id"] == key for f in main._NATIVE_ENTRY.consumer.failures
@@ -255,6 +383,10 @@ class NormalEntryTests(unittest.TestCase):
                     tenant = main._STORE.actor_context(owner["user_id"])["tenant"]
                 finally:
                     main._STORE.db.close()
+                # Restart the isolated deterministic installation. Exercise strict HTTP
+                # authentication against this live fixture without presenting its test
+                # programs as a production installation during startup.
+                main = importlib.reload(main)
                 with patch.dict(
                     os.environ,
                     dict(
@@ -263,9 +395,25 @@ class NormalEntryTests(unittest.TestCase):
                         TIANXUAN_PUBLIC_ORIGIN="https://testserver",
                     ),
                 ):
-                    main = importlib.reload(main)
                     try:
-                        with TestClient(main.app, base_url="https://testserver") as client:
+                        from native_store import NativeStoreError
+
+                        with self.assertRaisesRegex(NativeStoreError, "cannot serve key-mode production"):
+                            main.OrdinaryEntry(
+                                main._STORE,
+                                main._NATIVE_STORE,
+                                str(manifest),
+                                env["TIANXUAN_NATIVE_INSTALLATION_SHA256"],
+                                str(root / "state"),
+                            )
+                        strict_app = main.create_app(
+                            main._STORE,
+                            native_store=main._NATIVE_STORE,
+                            native_only=True,
+                            native_workflow=main._NATIVE_ENTRY.workflow,
+                            native_entry=main._NATIVE_ENTRY,
+                        )
+                        with TestClient(strict_app, base_url="https://testserver") as client:
                             headers = {"Authorization": "Bearer " + access["key"]}
                             self.assertEqual(
                                 client.post("/api/v1/auth/register", headers=headers, json={}).status_code, 403

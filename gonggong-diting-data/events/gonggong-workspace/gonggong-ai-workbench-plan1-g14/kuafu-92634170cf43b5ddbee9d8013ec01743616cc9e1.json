@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-92634170cf43b5ddbee9d8013ec01743616cc9e1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g14",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4ea3870a725d7e45582e201b4d16f1ed6c37ffd2c2733684ccb3e6b3b36b8541",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2025",
+    "action": "delivery",
+    "detection_head": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+    "context_sha256": "305ef279eb94cd84a356c08644b8a5279e89e3ae73a1960ac80fd8c57d585adb",
+    "operator": "Sail-Li",
+    "worker": "codex-mac-round10-duobao",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44993569963",
+    "diagnosis": "PR evidence guard rejected the aggregated issues array. The candidate now includes a request_id and issue_number at the top level for each associated request.",
+    "next_action": "Replay official writer submission, validate the signed candidate and remote main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:24:13.542633+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T06:25:38.960387+00:00",
+  "sha256": "178097e240359e2891ed35c543ce48092965515f38a98d03efe5de5473ee379a"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-26500d03c6c1f911f759e4780b76ffd8474fbfb2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-workbench-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f3650507a7ca896ac56ab2310f9ed3a6e341b570cd2c2bafefaa56a8466fe4a9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1675",
+    "action": "validation",
+    "detection_head": "f4e6f59706d3017fcaafe775908316f60a1c1b85",
+    "context_sha256": "6b4b3cac7828006fe54d4ab4379a53dbd385f807b99b13e79b4c48da2974ea2c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-config-20261120",
+    "authority_ref": "codex:user-request-20261120-game-config-platform",
+    "evidence": "Formal issue_gate --issue 1672 --base-ref origin/main returned local_checks_passed; input delta 74556741288a113ee0880db09d29e61b13a5989e3e834cdbe3f1126201beac7c",
+    "diagnosis": "Final reviewer reconciliation appended a genuine event after the first index staging. Staged that receipt and verified Diting tracked history. Private Python venv symlinks also violated the collection-tree rule; converted only own venv executables to ordinary copies and verified interpreter dependencies.",
+    "next_action": "Original formal gate now passes; continue exact-candidate signed submission and CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T08:19:13.589338+00:00",
+    "attempted": "Diting git-check and formal issue gate both passed",
+    "repair_owner": "Sail-Li/current Codex",
+    "continuable": "All delivery steps"
+  },
+  "occurred_at": "2026-11-20T08:21:20.010886+00:00",
+  "sha256": "b6c5e62b7cf0916d1cf27c32b4aeff60afa68b9f64897de33e48ff02b483a4d6"
+}

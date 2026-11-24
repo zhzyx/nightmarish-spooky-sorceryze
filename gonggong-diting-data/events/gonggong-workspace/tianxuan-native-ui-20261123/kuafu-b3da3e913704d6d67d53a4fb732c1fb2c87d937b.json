@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b3da3e913704d6d67d53a4fb732c1fb2c87d937b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0f071f219be13f386971cb7c133f134323ccdbf73e14766c8bad1b497d8aa2f2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "f4cbe94778f5f93d091547d80b720a30dfab050f",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45236433721/job/137909447680",
+    "diagnosis": "The execution probe observed a delivered task while release history was still loading. Its second refresh returned early because the first refresh was in flight. A delayed real-service response reproduced the loading boundary failure; waiting for completion preserves every release, rollback and replay assertion. No product source changed.",
+    "next_action": "Independent review and a new signed candidate, then repeat the exact Windows native regression. Native, race and layout checks on PR2159 passed; Windows execution remains unverified until the next run.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T18:28:46.670003+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T18:38:20.443038+00:00",
+  "sha256": "9b34a7c8bb9b95c49dba40440266adb170820abf3b15c5c670acb400fef74119"
+}

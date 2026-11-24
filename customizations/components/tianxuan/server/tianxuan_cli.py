@@ -290,6 +290,15 @@ def _cmd_requirements_export(client: httpx.Client, args: argparse.Namespace) -> 
 # ---------- argument parsing ----------
 
 
+def _cmd_runs_execute(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]:
+    payload = {"requirement": args.requirement, "call_id": args.call_id, "scopes": args.scope}
+    if args.model is not None:
+        payload["model"] = args.model
+    if args.dependency:
+        payload["dependencies"] = args.dependency
+    return _request(client, "POST", "/api/v1/native/entry/execute", json_body=payload)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the parser; environment defaults are read here, not at import."""
     parser = argparse.ArgumentParser(
@@ -393,6 +402,55 @@ def build_parser() -> argparse.ArgumentParser:
     requirements_export = requirement_commands.add_parser("export", help="Export a requirement as Markdown")
     requirements_export.add_argument("request_id", help="Request ID")
     requirements_export.set_defaults(func=_cmd_requirements_export)
+
+    runs = commands.add_parser("runs", help="Start and inspect installed native execution")
+    actions = runs.add_subparsers(dest="runs_command", required=True)
+    capabilities = actions.add_parser("capabilities", help="Read installed scopes and node capabilities")
+    capabilities.set_defaults(func=lambda client, args: _request(client, "GET", "/api/v1/native/entry/capabilities"))
+    execute = actions.add_parser("execute", help="Execute a saved requirement")
+    execute.add_argument("requirement")
+    execute.add_argument("--call-id", required=True, help="Stable ID for this logical invocation")
+    execute.add_argument("--scope", action="append", required=True, help="Installed output scope (repeatable)")
+    execute.add_argument("--model", help="Installed producer profile; omit for automatic selection")
+    execute.add_argument("--dependency", action="append", help="Existing task in this requirement (repeatable)")
+    execute.set_defaults(func=_cmd_runs_execute)
+    releases = actions.add_parser("releases", help="Read the product channel selection history")
+    releases.add_argument("entry")
+    releases.add_argument("--after", type=int, default=0)
+    releases.add_argument("--limit", type=int, default=100)
+    releases.set_defaults(
+        func=lambda client, args: _request(
+            client,
+            "GET",
+            f"/api/v1/native/entry/{_quote_id(args.entry)}/releases",
+            params={"after": str(args.after), "limit": str(args.limit)},
+        )
+    )
+    rollback = actions.add_parser("rollback", help="Restore an accepted stable-channel selection")
+    rollback.add_argument("entry")
+    rollback.add_argument("--selection", required=True)
+    rollback.add_argument("--expected", required=True, help="Exact current selection ID")
+    rollback.add_argument("--call-id", required=True)
+    rollback.set_defaults(
+        func=lambda client, args: _request(
+            client,
+            "POST",
+            f"/api/v1/native/entry/{_quote_id(args.entry)}/rollback",
+            json_body={"selection": args.selection, "expected": args.expected, "call_id": args.call_id},
+        )
+    )
+    lookup = actions.add_parser("lookup", help="Recover status after an unknown execute response")
+    lookup.add_argument("call_id")
+    lookup.set_defaults(
+        func=lambda client, args: _request(
+            client, "POST", "/api/v1/native/entry/calls/status", json_body={"call_id": args.call_id}
+        )
+    )
+    status = actions.add_parser("status", help="Read an entry, its tasks, and current progress")
+    status.add_argument("entry")
+    status.set_defaults(
+        func=lambda client, args: _request(client, "GET", f"/api/v1/native/entry/{_quote_id(args.entry)}")
+    )
 
     return parser
 

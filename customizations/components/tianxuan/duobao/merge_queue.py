@@ -5,6 +5,7 @@ Git 只是底层对象存储与传输；合入的排队、检验、重试和证�
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shlex
@@ -21,8 +22,16 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from git_service import GitService, MergeConflict
-from policy import PolicyError, ensure_merge_allowed, parse_protected_branches
+from exact_integration import apply_checked, git
+from git_service import GitService, GitServiceError, MergeConflict
+from policy import (
+    PolicyError,
+    approved_reviewers,
+    ensure_checks_passed,
+    ensure_merge_allowed,
+    ensure_pr_merge_allowed,
+    parse_protected_branches,
+)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS merge_queue (
@@ -48,7 +57,7 @@ CREATE TABLE IF NOT EXISTS merge_workers (
 );
 """
 
-STATUSES = {"queued", "validating", "merged", "conflict", "rejected", "cancelled"}
+STATUSES = {"queued", "validating", "merged", "conflict", "rejected", "cancelled", "checked", "stale"}
 CHECK_OUTPUT_LIMIT = 2000
 
 
@@ -220,15 +229,22 @@ class MergeQueue:
         *,
         pr_number: int | None = None,
         issue_ref: str = "",
+        candidate: str | None = None,
+        resolved_from: str | None = None,
     ) -> dict[str, Any]:
         repo_path = self._repo_path(repo)
-        branches = set(self.git.list_branches(repo_path))
-        if source not in branches:
-            raise ValueError(f"unknown source branch: {source}")
-        if target not in branches:
-            raise ValueError(f"unknown target branch: {target}")
         if source == target:
             raise ValueError("source and target must differ")
+        if candidate is not None:
+            if self.git.branch_tip(repo_path, source) != candidate:
+                raise ValueError("candidate does not match the current source branch")
+            target_base = self.git.branch_tip(repo_path, target)
+        else:
+            branches = set(self.git.list_branches(repo_path))
+            if source not in branches:
+                raise ValueError(f"unknown source branch: {source}")
+            if target not in branches:
+                raise ValueError(f"unknown target branch: {target}")
         pr_number, issue_ref = _validate_binding(pr_number, issue_ref)
         actor_role = self._resolve_role(actor)
         decision = ensure_merge_allowed(
@@ -246,12 +262,21 @@ class MergeQueue:
         if binding:
             evidence["binding"] = binding
         item_id = _new_id()
+        if candidate is not None:
+            evidence["exact_request"] = {"candidate": candidate, "target_base": target_base}
+            if resolved_from:
+                evidence["resolved_from"] = resolved_from
+            identity_parts = [actor, str(repo_path), source, target, candidate, target_base]
+            if issue_ref:
+                identity_parts.append(issue_ref)
+            identity = json.dumps(identity_parts)
+            item_id = "mr_" + hashlib.sha256(identity.encode()).hexdigest()
         now = _now()
         with self._lock, self.db:
-            self.db.execute(
+            inserted = self.db.execute(
                 "INSERT INTO merge_queue (id, repo, source, target, title, priority, status, "
                 "attempts, evidence, created_by, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, ?, ?, ?, ?)",
+                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING",
                 (
                     item_id,
                     str(repo_path),
@@ -265,6 +290,8 @@ class MergeQueue:
                     now,
                 ),
             )
+        if inserted.rowcount == 0:
+            return self.get(item_id)
         self._emit(
             actor,
             "repo.merge.enqueued",
@@ -309,7 +336,7 @@ class MergeQueue:
         args.extend([max(1, min(int(limit), 200)), max(0, int(offset))])
         with self._lock:
             rows = self.db.execute(sql, args).fetchall()
-        return [self._decode(row) for row in rows]
+        return [self._current_check(self._decode(row)) for row in rows]
 
     def count_items(self, status: str | None = None) -> int:
         where, args = self._filter(status)
@@ -322,7 +349,80 @@ class MergeQueue:
             row = self.db.execute("SELECT * FROM merge_queue WHERE id = ?", (item_id,)).fetchone()
         if row is None:
             raise KeyError(item_id)
-        return self._decode(row)
+        return self._current_check(self._decode(row))
+
+    def _current_check(self, item: dict[str, Any]) -> dict[str, Any]:
+        exact = item["evidence"].get("exact_request")
+        if exact:
+            if item["status"] == "merged":
+                item["check_state"] = "merged"
+                return item
+            try:
+                source = self.git.branch_tip(item["repo"], item["source"])
+                target = self.git.branch_tip(item["repo"], item["target"])
+                current = source == exact["candidate"] and target == exact["target_base"]
+            except (GitServiceError, OSError):
+                current = False
+            item["check_state"] = item["status"] if current else "stale"
+        return item
+
+    def reviewed_delivery(self, item_id, actor, *, review=None, approvals=0, required_checks=()):
+        with self._lock, self.db:
+            self.db.execute("BEGIN IMMEDIATE")
+            row = self.db.execute("SELECT * FROM merge_queue WHERE id=?", (item_id,)).fetchone()
+            if row is None:
+                raise KeyError(item_id)
+            item = self._current_check(self._decode(row))
+            evidence = item["evidence"]
+            if not evidence.get("exact_request") or not evidence.get("binding", {}).get("issue_ref"):
+                raise ValueError("Create an exact request linked to a work order")
+            if self._resolve_role(actor) not in ("admin", "editor"):
+                raise PolicyError("Only project editors can review or deliver")
+            decisions = evidence.setdefault("reviews", {})
+            marker = "refs/duobao/delivered/" + item_id
+            applied = git(self.git.git_executable, item["repo"], "rev-parse", "--verify", marker, check=False)
+            if review is not None:
+                if review not in ("APPROVED", "REQUEST_CHANGES"):
+                    raise PolicyError("Unsupported review decision")
+                if item["check_state"] != "checked" or applied.returncode == 0:
+                    raise ValueError("Only a current checked request can be reviewed")
+                decisions[actor] = review
+            elif actor != item["created_by"]:
+                raise PolicyError("Only the requester can deliver this request")
+            elif applied.returncode == 0:
+                # The target and marker were written in one Git transaction.
+                evidence["merge_sha"] = applied.stdout.decode().strip()
+            else:
+                if item["check_state"] != "checked":
+                    raise ValueError("Checks must pass on the current source and target")
+                reviews = [
+                    {"user": user, "state": state}
+                    for user, state in decisions.items()
+                    if self._resolve_role(user) in ("admin", "editor")
+                ]
+                if any(r["state"] == "REQUEST_CHANGES" for r in reviews):
+                    raise PolicyError("A reviewer requested changes")
+                ensure_pr_merge_allowed(
+                    item["target"],
+                    self.protected_branches,
+                    actor_role=self._resolve_role(actor),
+                    approvals=approved_reviewers(reviews),
+                    required_approvals=approvals,
+                    path="queue",
+                )
+                checks = [
+                    {"context": c["command"], "state": "success" if c["exit_code"] == 0 else "failure"}
+                    for c in evidence.get("checks", [])
+                ]
+                ensure_checks_passed(checks, required_checks)
+                evidence["merge_sha"] = apply_checked(self.git.git_executable, item)
+            if review is None:
+                item["status"] = "merged"
+            self.db.execute(
+                "UPDATE merge_queue SET evidence=?, status=?, updated_at=? WHERE id=?",
+                (json.dumps(evidence, ensure_ascii=False), item["status"], _now(), item_id),
+            )
+        return self.get(item_id)
 
     def cancel(self, item_id: str) -> dict[str, Any]:
         now = _now()
@@ -462,12 +562,17 @@ class MergeQueue:
 
     def _execute(self, item: dict[str, Any]) -> dict[str, Any]:
         repo = self._repo_path(item["repo"])
-        branches = set(self.git.list_branches(repo))
-        if item["source"] not in branches or item["target"] not in branches:
-            return {
-                "status": "rejected",
-                "evidence": {"error": "source or target branch no longer exists"},
-            }
+        exact = item["evidence"].get("exact_request")
+        if exact:
+            if self._current_check(item)["check_state"] == "stale":
+                return {"status": "stale", "evidence": {}}
+        else:
+            branches = set(self.git.list_branches(repo))
+            if item["source"] not in branches or item["target"] not in branches:
+                return {
+                    "status": "rejected",
+                    "evidence": {"error": "source or target branch no longer exists"},
+                }
 
         actor_role = self._resolve_role(item["created_by"])
         try:
@@ -486,19 +591,26 @@ class MergeQueue:
                 },
             }
 
-        preview = self._preview(repo, item["source"], item["target"])
+        preview = self._preview(repo, item["source"], item["target"], exact=exact)
         evidence: dict[str, Any] = {
             "validated_at": _now(),
             "checks": preview["checks"],
             "conflicts": preview["conflicts"],
             "policy": decision,
         }
+        if exact and self._current_check(item)["check_state"] == "stale":
+            return {"status": "stale", "evidence": evidence}
         if preview["conflicts"]:
             evidence["error"] = "merge conflict"
             return {"status": "conflict", "evidence": evidence}
         if any(check["exit_code"] != 0 for check in preview["checks"]):
             evidence["error"] = "validation checks failed"
             return {"status": "rejected", "evidence": evidence}
+
+        if exact:
+            # Exact requests stop at preflight. Applying the change requires the delivery stage.
+            evidence["checked_tree"] = preview["tree"]
+            return {"status": "checked", "evidence": evidence}
 
         try:
             sha = self.git.merge(repo, item["source"], item["target"])
@@ -510,9 +622,10 @@ class MergeQueue:
         evidence["merged_at"] = _now()
         return {"status": "merged", "evidence": evidence}
 
-    def _preview(self, repo: Path, source: str, target: str) -> dict[str, Any]:
+    def _preview(self, repo: Path, source: str, target: str, *, exact: dict[str, str] | None = None) -> dict[str, Any]:
         checks: list[dict[str, Any]] = []
         conflicts: list[str] = []
+        tree = None
         with tempfile.TemporaryDirectory(prefix="duobao-queue-") as temporary:
             worktree = Path(temporary) / "worktree"
             environment = self._check_environment()
@@ -523,8 +636,9 @@ class MergeQueue:
                 capture_output=True,
                 env=environment,
             )
+            checkout = ["--detach", exact["target_base"]] if exact else [target]
             subprocess.run(
-                [self.git.git_executable, "-C", str(worktree), "checkout", "--quiet", target],
+                [self.git.git_executable, "-C", str(worktree), "checkout", "--quiet", *checkout],
                 check=True,
                 capture_output=True,
                 env=environment,
@@ -542,7 +656,7 @@ class MergeQueue:
                     "--no-verify",
                     "--no-commit",
                     "--no-ff",
-                    f"origin/{source}",
+                    exact["candidate"] if exact else f"origin/{source}",
                 ],
                 check=False,
                 capture_output=True,
@@ -561,7 +675,11 @@ class MergeQueue:
                 env=environment,
             )
             conflicts = [line.strip() for line in conflicted.stdout.splitlines() if line.strip()]
+            if merged.returncode and not conflicts:
+                raise ValueError("merge preview failed: " + merged.stderr.strip()[-CHECK_OUTPUT_LIMIT:])
             if merged.returncode == 0 and not conflicts:
+                if exact:
+                    tree = git(self.git.git_executable, worktree, "write-tree").stdout.decode().strip()
                 for check in self.checks:
                     checks.append(self._run_check(worktree, check))
             subprocess.run(
@@ -570,7 +688,7 @@ class MergeQueue:
                 capture_output=True,
                 env=environment,
             )
-        return {"conflicts": conflicts, "checks": checks}
+        return {"conflicts": conflicts, "checks": checks, "tree": tree}
 
     def _check_environment(self, home: Path | None = None) -> dict[str, str]:
         """合并检查默认不继承部署凭据；管理员可用白名单显式放行。"""

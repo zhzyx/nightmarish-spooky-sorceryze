@@ -118,6 +118,55 @@ class AdapterProcessTests(unittest.TestCase):
             finally:
                 command.close()
 
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin exit notification ordering")
+    def test_group_signal_denial_before_exit_becomes_observable(self):
+        with tempfile.TemporaryDirectory() as folder, tempfile.TemporaryFile() as output:
+            release = Path(folder) / "finish"
+            script = "import pathlib,sys,time\nwhile not pathlib.Path(sys.argv[1]).exists(): time.sleep(.001)\n"
+            command = OwnedCommand(
+                [sys.executable, "-c", script, str(release)], stdout=output, stderr=None, env=None, limit=100
+            )
+
+            observe = command.poll
+            first_observation = []
+
+            def observe_exit():
+                status = observe()
+                if not first_observation:
+                    first_observation.append(status)
+                    release.touch()
+                return status
+
+            try:
+                with (
+                    patch("os.killpg", side_effect=PermissionError("exit notification is pending")),
+                    patch.object(command, "poll", side_effect=observe_exit),
+                ):
+                    command.close()
+                self.assertEqual(first_observation, [None])
+                self.assertEqual(command.process.returncode, 0)
+            finally:
+                release.touch(exist_ok=True)
+                command.process.wait(timeout=5)
+
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin group ownership")
+    def test_unverified_group_cleanup_can_be_retried_with_the_pinned_leader(self):
+        with tempfile.TemporaryFile() as output:
+            command = OwnedCommand([sys.executable, "-c", "pass"], stdout=output, stderr=None, env=None, limit=100)
+            try:
+                with (
+                    patch("os.killpg", side_effect=PermissionError("denied")),
+                    patch("owned_process._darwin_group_quiet", return_value=False),
+                    self.assertRaises(PermissionError),
+                ):
+                    command.close()
+                self.assertFalse(command.closed)
+                self.assertIsNone(command.process.returncode)
+            finally:
+                command.close()
+            self.assertEqual(command.process.returncode, 0)
+            self.assertTrue(all(stream.closed for stream in command.outputs))
+
     @unittest.skipUnless(sys.platform == "darwin", "Darwin native provenance profile")
     def test_owned_cleanup_inside_native_protection_profile(self):
         code = (
@@ -348,10 +397,12 @@ class AdapterProcessTests(unittest.TestCase):
                             "error": "raise SystemExit(7)",
                             "flood": 'import os; os.write(1, b"x" * 65536)',
                         }.get(outcome, "import time; time.sleep(30)")
+                        # Allow interpreter startup for the exit-code and output checks.
+                        timeout = 0.15 if outcome == "timeout" else 3
                         result = owner._run_owned(
-                            "fixture", [sys.executable, "-c", code], "watch.log", "image_generation", 0.15, root
+                            "fixture", [sys.executable, "-c", code], "watch.log", "image_generation", timeout, root
                         )
-                        self.assertEqual(result, {"success": 0, "error": 7}.get(outcome))
+                        self.assertEqual(result, {"success": 0, "error": 7}.get(outcome), failures)
 
                     with (
                         patch("kimi_work_image_provider.MAX_LOG_BYTES", 4096),
@@ -366,7 +417,11 @@ class AdapterProcessTests(unittest.TestCase):
                     while any(alive(identity) for identity in identities) and time.monotonic() < deadline:
                         time.sleep(0.02)
                     self.assertFalse(any(alive(identity) for identity in identities))
-                    self.assertEqual(bool(failures), outcome in ("timeout", "flood"))
+                    flood_reason = (
+                        "image_output_invalid" if provider_type == KimiWorkImageProvider else "model3d_output_invalid"
+                    )
+                    reason = {"timeout": "image_timeout", "flood": flood_reason}.get(outcome)
+                    self.assertEqual(failures, [("fixture", "failed", reason)] if reason else [])
 
     @unittest.skipIf(os.name == "nt", "POSIX leader pinning; Windows uses a Job handle")
     def test_async_launch_retains_pinned_leader_until_scope_finishes(self):
@@ -420,13 +475,21 @@ class EmbeddedBundleTests(unittest.TestCase):
         )
         statements = []
         for statement in block.body:
-            statements.append(statement)
             if (
                 isinstance(statement, ast.Expr)
                 and isinstance(statement.value, ast.Call)
                 and ast.unparse(statement.value.func) == "env.CommandNoCache"
             ):
-                break
+                # Other generated headers may be registered before the bundle.
+                # Execute the actual bundle registration, not an unrelated builder.
+                target = statement.value.args[0]
+                if isinstance(target, ast.Constant) and target.value == "ainative/bundle.gen.h":
+                    statements.append(statement)
+                    break
+                continue
+            statements.append(statement)
+        else:
+            self.fail("editor/SCsub does not register ainative/bundle.gen.h")
 
         class SourceNode:
             def __init__(self, path):
@@ -453,6 +516,7 @@ class EmbeddedBundleTests(unittest.TestCase):
                 "Glob": lambda pattern: [SourceNode(path) for path in repository.glob(pattern.removeprefix("#"))],
             },
         )
+        self.assertEqual(captured["target"], "ainative/bundle.gen.h")
         helper = repository / "tools/editor_provenance_process.py"
         self.assertIn(helper, [Path(str(source)).resolve() for source in captured["sources"]])
         files = builders.bundle_files(captured["sources"])

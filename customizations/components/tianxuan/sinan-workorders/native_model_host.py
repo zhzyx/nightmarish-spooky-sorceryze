@@ -17,6 +17,11 @@ import time
 from pathlib import Path
 
 
+def executable_sha256(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
 class NativeContextSession:
     """Private bounded mailbox; the existing owned-process helper owns all children."""
 
@@ -107,6 +112,9 @@ class NativeContextSession:
         while True:
             self._check(authority=False, installation=False)
             if output.exists():
+                # The publisher flushed both pipes before renaming this receipt.
+                self.command.observe_output()
+                self._check(authority=False, installation=False)
                 if output.is_symlink() or output.stat().st_size > 524288:
                     raise ValueError("Invalid mailbox response")
                 receipt = json.loads(output.read_bytes())
@@ -165,9 +173,9 @@ class NativeContextSession:
                     or not isinstance(action["arguments"], dict)
                 ):
                     raise ValueError("Invalid host tool action")
-                self.authority.emit("model_receipt", receipt)
-                self._check()
+                closure = {}
                 if receipt["status"] == "final":
+                    self._check()
                     while self.command.poll() is None:
                         self._check(authority=False, installation=False)
                         time.sleep(0.01)
@@ -175,10 +183,14 @@ class NativeContextSession:
                     self.command.close()
                     if code != 0 or self.command.overflow.is_set() or self.command.read_error.is_set():
                         raise ValueError("Session final drain failed")
-                    receipt["process_tree_closed"] = True
-                    receipt["process_exit_code"] = code
-                return receipt
+                    closure = {"process_tree_closed": True, "process_exit_code": code}
+                self._check()
+                self.authority.emit("model_receipt", receipt)
+                return {**receipt, **closure}
             if self.command.poll() is not None:
+                # Publication can race the earlier lookup. Validate any final packet normally.
+                if output.exists():
+                    continue
                 raise ValueError("Session exited without response")
             time.sleep(0.01)
 
@@ -249,9 +261,7 @@ class NativeModelHost:
         binding = digest({
             "profile": profile,
             "sources": [hashlib.sha256(p.read_bytes()).hexdigest() for p in sources],
-            "executables": [
-                hashlib.sha256(Path(profile[k]).read_bytes()).hexdigest() for k in ("node", "entry", "python")
-            ],
+            "executables": [executable_sha256(profile[k]) for k in ("node", "entry", "python")],
             "helper": self.helper.implementation_fingerprint(),
         })
         return profile, binding

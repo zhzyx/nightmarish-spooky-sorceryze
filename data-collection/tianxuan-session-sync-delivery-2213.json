@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "issue_number": 2213,
+  "request_id": "tianxuan-session-sync-20261124",
+  "related_issues": [
+    2211,
+    2180
+  ],
+  "recorded_at": "2026-11-24T10:02:28.915471+00:00",
+  "worker": "/root",
+  "source_delivery": {
+    "state": "merged_and_read_back",
+    "readback_at": "2026-11-24T09:55:38.231076+00:00",
+    "pull_request": {
+      "baseRefName": "main",
+      "headRefOid": "db0439d700ac037aadc5b5763530f887b12a713a",
+      "mergeCommit": {
+        "oid": "18e9b795ee45056a4fd8717e01ef742dabdaec2c"
+      },
+      "mergedAt": "2026-11-24T09:52:23Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED"
+    },
+    "main_observed": "18e9b795ee45056a4fd8717e01ef742dabdaec2c",
+    "candidate_and_merge_tree": "e3d5abaf3063c63cbd2a9476aeff084ed5c9de81",
+    "installed_product_matches_main": true,
+    "installation_only_test_evidence_delta": [
+      "data-collection/ai-chat-context-layout-controls-review-2211.json",
+      "data-collection/ai-chat-context-layout-parent-review-2211.json",
+      "data-collection/tianxuan-session-sync-integration-2213.json",
+      "tests/editor/design_confirmation_recovery.gd",
+      "tests/editor/run_native_acceptance.py",
+      "tests/editor/tianxuan_execution_controls.gd"
+    ],
+    "issue_acceptance_remaining": [
+      "account-service deployment and actual durable login restart verification",
+      "original pig-model entry user acceptance; no asset production claimed"
+    ]
+  },
+  "required_checks": [
+    {
+      "name": "issue-association",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218183/job/138341644119"
+    },
+    {
+      "name": "CI / Select changed modules",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138341644319"
+    },
+    {
+      "name": "CI / Select changed modules",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364187310/job/138341746177"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218005/job/138341644710"
+    },
+    {
+      "name": "Module / editor",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138341818825"
+    },
+    {
+      "name": "editor-native / Editor (target=editor)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138341818941"
+    },
+    {
+      "name": "tianxuan-tests / Module and web tests",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138341819329"
+    },
+    {
+      "name": "tianxuan-deploy / Docker images",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138341818947"
+    },
+    {
+      "name": "CI / Modular tests",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364218062/job/138354148134"
+    },
+    {
+      "name": "CI / Modular tests",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45364187310/job/138341919519"
+    }
+  ],
+  "windows_ci_readback": {
+    "schema_version": 1,
+    "kind": "bounded_delivery_evidence_readback",
+    "worker": "/root/local_chat_review",
+    "at": "2026-11-24T10:00:11.572635+00:00",
+    "run_id": 45364218062,
+    "signed_commit": "db0439d700ac037aadc5b5763530f887b12a713a",
+    "workflow_conclusion": "success",
+    "editor_job_id": 138341818941,
+    "editor_job_conclusion": "success",
+    "archives": [
+      {
+        "name": "parent-binding-design-recovery",
+        "artifact_id": 14908425191,
+        "bytes": 1164518,
+        "sha256": "0344676bbea302722cddb76ca4bae0c7e921cf0b2b907ff0346710480da9a714",
+        "github_digest_matches": true,
+        "head_sha": "db0439d700ac037aadc5b5763530f887b12a713a"
+      },
+      {
+        "name": "tianxuan-native-workspace",
+        "artifact_id": 14907077133,
+        "bytes": 32123,
+        "sha256": "4770b69603e5b27c82d204ebc2bcb25615bcb9203a5a4a9e904cec7ff25f0fbe",
+        "github_digest_matches": true,
+        "head_sha": "db0439d700ac037aadc5b5763530f887b12a713a"
+      }
+    ],
+    "archive_bytes_total": 1196641,
+    "native_binary_sha256": "562dac0a422e95f61e44973d1decd128f7b20496cf969090f6b4a55289df1450",
+    "native_checks": {
+      "controller.json": 171,
+      "execution-controls.json": 45,
+      "execution.json": 17,
+      "layout.json": 248,
+      "races.json": 21
+    },
+    "nested_native_checks": {
+      "local_conversation_contract": 43,
+      "host_progress_contract": 16,
+      "production_handoff_contract": 27,
+      "current_editor_context_contract": 38,
+      "session_sync_contract": 34
+    },
+    "native_assertions_total": 660,
+    "unique_source_files_verified_against_signed_git_blobs": 74,
+    "matched_hash_entries": 312,
+    "source_hash_mismatches": [],
+    "generated_obj_inputs_not_in_git": {
+      "editor/docks/tianxuan/TianxuanModelHost.windows.editor.x86_64.obj": [
+        "d938393347bf05f05bbd88758c5585a07b06439bbec3677450f0af95ba75f122"
+      ],
+      "editor/docks/tianxuan/TianxuanWorkbench.windows.editor.x86_64.obj": [
+        "87ed3ae5f73692fa5b4b1f587a7c1c4f8d7cd6e8f444d100d58d8c0c932854d4"
+      ]
+    },
+    "parent_reports": [
+      {
+        "file": "binding.json",
+        "sha256": "c216e47a77fafc03db59551629b2aabe71fc21f2f4d5f3e9c9236963a2ea8ae3",
+        "passed": true
+      },
+      {
+        "file": "binding-save-failure.json",
+        "sha256": "4702e59eccbdcfac85725e529108bc19e5c8445e166c202107ec8f28923dccf0",
+        "passed": true
+      },
+      {
+        "file": "confirmation.json",
+        "sha256": "b3229f79369b0f209ad44eb7311239256a9fc23ba7c03947a38061247b08a2b1",
+        "passed": true
+      }
+    ],
+    "parent_confirmation": {
+      "verification_status": "native_acceptance_passed",
+      "verified_decisions": 3,
+      "cold_new_operation": "context_recorded",
+      "cold_waiting_sibling": "interrupted",
+      "all_confirmation_recovery_checks": true,
+      "transport_fixture_ok": false,
+      "script_error_seen": false
+    },
+    "supplementary_tests": {
+      "requirements_agent_python": 42,
+      "codex_bridge_node": 21
+    },
+    "signed_parent_sources_match_prior_independent_review": true,
+    "diagnostics_preserved": true,
+    "diagnostic_summary": [
+      "Native reports retain empty-name, PagedAllocator, dependency and RID/ObjectDB exit diagnostics.",
+      "The local-conversation negative test retains the expected storage-blocker directory failure.",
+      "Parent recovery retains safe-save failure output for the injected storage case and RID/ObjectDB exit diagnostics.",
+      "Cold binding reports retain scan-thread-aborted and resource exit warnings."
+    ],
+    "limits": [
+      "This is a bounded delivery receipt check, not another code review.",
+      "The two generated Windows .obj digests are mutually consistent in the reports; these build outputs cannot be compared to Git source blobs.",
+      "Parent reports lack a complete source fingerprint manifest; binding uses GitHub artifact head/run provenance, the signed workflow and the two reviewed parent test source hashes.",
+      "transport_fixture_ok remains false for the generic base-stage summary; the existing native-specific verification and recovery assertions pass.",
+      "Headless fixture results do not prove physical Windows pixels, IME, or real model-provider effectiveness.",
+      "No editor package was downloaded, no product or public evidence was modified, and no real credentials were read.",
+      "The user accepted the installed login synchronization separately; live device persistence still depends on deployment of the existing account-service capability."
+    ],
+    "status": "passed_with_explicit_limits"
+  },
+  "installed_macos": {
+    "commit": "655d1f6836deb1d5db017d0a76d75af166a13934",
+    "version": "4.8.beta.custom_build.655d1f683",
+    "binary_sha256": "f97605a8aed18e54aea284073862df94f0c0b23c96482156e90e507fce9e2189",
+    "signature": "ad-hoc; codesign --verify --deep --strict passed",
+    "main_product_matches": true,
+    "diff_to_main": [
+      "data-collection/ai-chat-context-layout-controls-review-2211.json",
+      "data-collection/ai-chat-context-layout-parent-review-2211.json",
+      "data-collection/tianxuan-session-sync-integration-2213.json",
+      "tests/editor/design_confirmation_recovery.gd",
+      "tests/editor/run_native_acceptance.py",
+      "tests/editor/tianxuan_execution_controls.gd"
+    ],
+    "launch_verified": true,
+    "automatic_main_screen_navigation": false
+  },
+  "actual_acceptance": {
+    "both_chat_expand_and_context": "accepted_by_user_before_this_fix",
+    "left_right_login_sync": "accepted_by_user_on_655d1f683",
+    "device_persistence": "user_reports_temporary_login_not_saved",
+    "restart_restoration": "not_verified_for_this_real_account"
+  },
+  "deployment_gap": {
+    "feature_delivered_in_issue": 2190,
+    "source": "99bd91004202170bb304a70faa963f14bef49335",
+    "last_reported_production_image": "sha256:92b9c0a7fdf2acac639ad5c0ff54cbd1c07fa7c20f8991369445bef5860f34b7",
+    "actual_current_image_not_admin_verified": true,
+    "business_login_url_is_not_deployment_access": true,
+    "handoff_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2186#issuecomment-7127927844",
+    "handoff_acceptance": "pending",
+    "production_mutations_by_this_task": false
+  },
+  "remaining": [
+    "Obtain existing deployment management connection or an accepted handoff from the original operator.",
+    "Upgrade the account service with consistent backup and rollback, then verify real device persistence and restart restoration.",
+    "Complete remaining original pig-model production-entry user acceptance; no real asset generation was performed.",
+    "Preserve the physical Windows window/IME validation boundary; these CI checks are headless."
+  ],
+  "issue_closed": false,
+  "duobao_submission": {
+    "state": "not_configured"
+  }
+}

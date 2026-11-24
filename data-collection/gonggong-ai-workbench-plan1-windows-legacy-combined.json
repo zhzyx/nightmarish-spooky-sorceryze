@@ -1,0 +1,478 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+  "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/tianxuan_core.py": "006b6d175a830d79cbf8d5af317e44c7b13c4188",
+    "editor/docks/ai_chat_dock.cpp": "5edbd72d03a43017bbb3e7ac6d6e0dfa40009b27",
+    "editor/docks/ai_chat_dock.h": "ffaaed5e93791d770e95b9ca39f179ec2c6197de",
+    "editor/docks/ai_chat_gonggong.cpp": "28329ead44f3fb14e59c2ac18caa75933b25753a",
+    "editor/docks/ai_chat_receipt.h": "664fa7b8f27280c8df1286a5cd179c20c6edb80e",
+    "editor/docks/ai_chat_sub_agents.cpp": "7d8aeeffad2e328be82d00620bbf58e2aa614d3b",
+    "editor/docks/daqian/workspace.gd": "3b053d5bee4ac7be4869b1aa6f775224d1da2310",
+    "editor/docks/editor_dock.cpp": "3534855c390af048c79079f76f403d3cddc97921",
+    "editor/docks/editor_dock_manager.cpp": "ddd5298990ee2370f09c842bb8dea958e9bff2a5",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "3ca042860608b05a9e67bcdb9b6d7b2483d7c42e",
+    "editor/docks/workbench/business_session.gd": "17017374312fb532621dbfe2e142e0932eb6dac2",
+    "editor/docks/workbench/issue_detail.gd": "37293af2a3f3b73a07ecb66f062a8d2a44030f45",
+    "editor/docks/workbench/module_selector.gd": "0603731482216a585e6f3f8563d4c1f03c09a3eb",
+    "editor/editor_main_screen.cpp": "bfedabcd3cd566c9cfddf43ecd41fdc4233c51b4",
+    "editor/editor_main_screen.h": "454e729a89444bf2d5116610138e1433ba925928",
+    "scene/gui/text_edit.cpp": "d87d326008c488224e0349c84db00d95d4034833",
+    "tests/editor/ai_chat_tab_order.gd": "b305cd39992fdcda48d40cd1966ab668cc01145c",
+    "tests/editor/ai_chat_task_authorization.gd": "40323f595b9358fb28e56962a861b7a71e9f45a7",
+    "tests/editor/daqian_ai_entry.gd": "acc4ac8e8ae2f52d11b303688da6098e268f7c0c",
+    "tests/editor/daqian_graph.gd": "3dfd1be50140b7d917770c3132656a2095afd18b",
+    "tests/editor/daqian_issue_details.gd": "95a6517644fc55151bcd27ece6a151588b8e18b9",
+    "tests/editor/design_confirmation_recovery.gd": "feb1418866cde248361b38d8b151263f6fbcb55b",
+    "tests/editor/receipt_diagnostics.py": "b227feb3114f2042094a99cd681086497ff2f373",
+    "tests/editor/requirements_intake.gd": "0322ff54485bdf6f03b8108788cb8dfa1ae1ed36",
+    "tests/editor/run_ai_chat_semantic.py": "c5d469e005728042b4794885cb61d7f2583b9736",
+    "tests/editor/run_requirements_intake.py": "61e4c7bfd5496d31b8914de8200b2e818996bb0a",
+    "tests/editor/run_workbench_context_milestone.py": "a5951ce67c4ae47c5cfaf2010731b7bd1750ed5e",
+    "tests/editor/run_workbench_issue_classification.py": "eda227333010db1d0cc38aea650d21b52338ef3a",
+    "tests/editor/run_workbench_issue_consultation.py": "063b17165d8bbeea93685fdcd0b80f2c8c7e01ea",
+    "tests/editor/run_workbench_legacy_routes.py": "9701a8988ce992d3ebba4d34f2496f926bd87f46",
+    "tests/editor/test_receipt_diagnostics.py": "086d7d7e200cf8c92d7c4066496292d6c27ab318",
+    "tests/editor/workbench_context_milestone.gd": "1487ea1fc605dc2b4726b55534494a81e3a0d5cf",
+    "tests/editor/workbench_legacy_routes.gd": "c841a59f1018e1439a76401e5501306248d988ed"
+  },
+  "checks": {
+    "d12": "4767283c1d98aa90689b783cfd60f84ff078f44e2a1779dc4fae54b48b0184a5",
+    "d04": "a5aeb961dd7c69f84313c7b59a6162cc1912b6d446c562ec7a3fbfe8150916e9",
+    "c07": "a2e7e20a44e7f0bfc5344286057496849f26f9e8b68df9aee3b174e752b1acee",
+    "c06": "b613d84d6d9c9c2a6c5eedad26bff1594da1bcbb170f758c3d2c8f74fcaf1628",
+    "u15": "0ba04f4ab442e23b6203036aa9944daa3358f033667481443d58d6ec44b240c9",
+    "d14": "7626242794dbc6b83c9609a0a2a77260a2eb546e16af34e393bbee4ca7efa8c6",
+    "i01": "c8b7a9263357d79e8dccf4e8a4d81fb75d06f9a5d00974434b142b38378b3608",
+    "i02": "e440df59529e5e8a4eb12c16cd075726ac4fe064205c98e7e63c75c3b1432f06",
+    "u10": "d8c6edc20bacf1ad0ffc5405760fb7c340335623928136ad8b8827b3c8bef796",
+    "d03": "19031809ae24101f803b0011dd450e17b1dd2df8308a912e0e55ca7f8c951318",
+    "g11": "7ced5f3e52f15f1e275f419188e51273a4c9f97a70d13048ad87ee00d8db02af",
+    "d05": "560c11450dfaac1a97d30610a5f879f084dba42edad89a40038c78708768a9b5",
+    "i03": "afb6fa877908ed4a32f0b5d181c29bb91aff4b9a6128d7130e63347eaa615530",
+    "i04": "f61a208cf6374f3ae69f2ad3ce461c4ff687441c9376dc54a0023080bf8b735c",
+    "i05": "6023349139f246557cf5affc668fcc6a3ba7d3517b9407e78a6ad05302999073",
+    "i06": "5359fe98875e1b326b682624655a338780f01d06b04054f8b4a6733737912e31",
+    "i07": "856e044a11f3e3ddc9d9b7ddc568334bcad4b01af3d49241d6c434befe6f229c",
+    "i09": "e5bb6457143ad9f1dcf9147a9d4d0d52d8fec57408493ec8c9fa7c0f47920364",
+    "i10": "b4589f12fa457ce4fcf0b5832d87f3f60cfff49f0f7fb77d2f4f929d5a833122",
+    "i11": "8d646fbe0319da1a7381715a38c16e192e49a7cefccbde1bfc4e1a33c38b8c78",
+    "i14": "c8f9ed1455d40b04d90ee2f58263c5047fa92659a8b218d11d061e35fa210916",
+    "i17": "28fd7d93e50c5305b139a83fc5017b53ab3acbec643ac9270cda4a4782f54fa6",
+    "u11": "26ab5b247e36b0bb47391c9b96529ff4554ce01ba0645e9d911e04db27f63dad",
+    "d06": "d145531258dd9e3764c63a2c706b2bdc9f986171bde6cd91ff8c39d1ccda606f",
+    "d07": "1dc2016ffad6ef81d695a579e757315501a63d6e737d9217ab84c7efbc9fbef2",
+    "g12": "eccf5460e2dd2797065aad1af2739bec897f6bfc69b0e6a6a85934e9afc0478b",
+    "g13": "e1f61dcec4cb58f9c9d6b5f79b9db9ea0626bc1bca55d89de5ec270886544597",
+    "i15": "4fbb92bd7161b1b84319360c4d1b19057b69603db3e5df99705b85c93178f41a",
+    "d08": "f90939c3b9ef8330db0c2758ffc8098ae7f80308641514cfb6e7eedb2320c560",
+    "d09": "ef70e0163acdffd3cea745c255f762b06f1281ebb9e8c42cd61f5f01e9e7c610",
+    "k01": "99a5811046a7e6c1a07b4ab008929a8df62395ecc2b86c1d95245a53e841bf95",
+    "u13": "d3f2b265da2b43151ce1cfd27ed6ee6a6460b738423a1a4e4c9f0983226038d9",
+    "i08": "fc9992c15c49830c4f4c990ce3ad0bc31815905aafc3034c21c4a3ea7451520a",
+    "i18": "1a09e9e74a4a5ddd61e6c1ec2f5535027a4fee74dcab11a9f1db582eff25324f"
+  },
+  "issues": {
+    "k01": 1717,
+    "u13": 1791
+  },
+  "observed": "2026-11-22T01:01:02.228384+00:00",
+  "verified_windows_build": {
+    "builder": "D:\\GongGong-work\\w22-ship-diag",
+    "verified_tree": "e32b51157c3d387a3cfcb249098c3154d3228534",
+    "actual_target": "f08a2959dea068a8d216064e141d85717fddf371",
+    "platform_exceptions": [
+      ".github/workflows/macos_builds.yml",
+      "tests/editor/macos_save_panel/SavePanelTests.swift",
+      "tests/editor/macos_save_panel/probe.gd",
+      "tests/editor/macos_save_panel/project.yml",
+      "tests/editor/run_macos_save_panel.py"
+    ],
+    "verified_build": {
+      "tree": "e32b51157c3d387a3cfcb249098c3154d3228534",
+      "baseline": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d",
+      "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+      "build_log_sha256": "326bda661e8170a5852197b87474d74928d845a7738bc6da361b5b79d1b8c9df",
+      "observed": "2026-11-22T00:36:00.754771+00:00"
+    },
+    "observed": "2026-11-22T00:52:45.054003+00:00",
+    "runtime_package_digests": {
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "godot.windows.editor.x86_64.console.exe": "68ca33660fcca7cea81e62cfeab59fcc722beac58ce893354e7e24437076c605"
+    }
+  },
+  "kuafu_issue": 2009,
+  "bridge_and_parent_recovery": {
+    "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+    "source_base": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+    "tree": "f08a2959dea068a8d216064e141d85717fddf371",
+    "results": {
+      "parent": {
+        "report_sha256": "a60e59263195fe94f91c9cbb7f01d0309a6d6310fcffe59358bc430b1d375c4a",
+        "scenario": "parallel-parent-restart",
+        "recovery": {
+          "actor_drift": true,
+          "cache_conflict": true,
+          "cancel": true,
+          "children_unchanged": true,
+          "consultation_refused": true,
+          "design_drift": true,
+          "disk_conflict": true,
+          "failed_save_no_grant": true,
+          "live_request_started": true,
+          "never_started_c_preserved": true,
+          "ok": true,
+          "original_parent": 0,
+          "parent_switch": true,
+          "same_approval_persisted": true,
+          "storage_obstruction": true,
+          "tools_off": true,
+          "unrelated_parent_refused": true
+        },
+        "verified_decisions": [
+          {
+            "producer": 1,
+            "decision_sha256": "62abff0e784dd809d4a5773b54a38cb6af214371e5b4283e9924f529e18c7f0e",
+            "criteria": [
+              "A"
+            ]
+          },
+          {
+            "producer": 2,
+            "decision_sha256": "cbf60b43724b4d202da3606a399f89d8936a2cce6602ab8fa09e8d3fec160001",
+            "criteria": [
+              "B"
+            ]
+          },
+          {
+            "producer": 3,
+            "decision_sha256": "fb378407eadb9175936d0249bc69cca6e02ca67d1de6cfb1cc7ce1a3690733df",
+            "criteria": [
+              "C"
+            ]
+          }
+        ]
+      },
+      "deployment": {
+        "report_sha256": "cc69eb1a3c80a0d3562810d7d9b6a4c06a481233f282ffe0d4adfea1c9a5d0d4",
+        "cases": 3,
+        "journals": 5,
+        "model_requests": 19
+      },
+      "missing": {
+        "report_sha256": "9c9e1b7a3cbfdb6eccb5b1659e860b4f02ab5b4f5868e7fe6bbc537f2baccdb4",
+        "state": "missing",
+        "exit": 7,
+        "rejected": true
+      },
+      "parse_failed": {
+        "report_sha256": "a2f7344cf115946b58a70f9574d80a6274cc46f8180cf3f0d051ec343bfb82b6",
+        "state": "parse_failed",
+        "exit": 0,
+        "rejected": true
+      },
+      "process_failed": {
+        "report_sha256": "fb05d7c113d08b6b0dddf8443209586924377cace7c5e216c7819ce3c9ebae1b",
+        "state": "valid",
+        "exit": 7,
+        "rejected": true
+      }
+    },
+    "observed": "2026-11-22T00:58:03.671441+00:00"
+  },
+  "combined_regressions": {
+    "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+    "source_base": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+    "text_edit_tests": 22,
+    "text_edit_assertions": 6446,
+    "layout_report": "96ab39ceb3da6043ae5eb479849c7ef1ea48f249e12a07f6b74099737e4dc6cc",
+    "palette_report": "c70bbe07ad558f28850a48ea02bbc6b6bc8c6693c16e9b54d9a2bf7ed7582631",
+    "design_service": "14 passed, 1 warning in 7.99s",
+    "observed": "2026-11-22T00:54:04.778304+00:00"
+  },
+  "worker_sources": {
+    "b2009": "e080f89bf4322bec26e5dd9bf24e3448aff005c8",
+    "b29": "a4af323a27ca292071ddd70072e1c096dff0f0a5"
+  },
+  "results": {
+    "k01": {
+      "state": "passed",
+      "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+      "sample": {
+        "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "modules": [
+          "mod_70c536020de741de8142bc851611289f",
+          "mod_04dae92748c342f8905ee1ba73815b29"
+        ],
+        "asset": {
+          "source_module": "shared-character-model",
+          "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+          "path": "models/suzanne.glb"
+        },
+        "entry": "shortcut",
+        "answer": "K01 movement consultation received"
+      },
+      "received_turn": {
+        "id": "07d7b4db-ba08-4a66-86c2-7bf046cf9908",
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "state": "answered",
+        "answer": "K01 movement consultation received",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_70c536020de741de8142bc851611289f",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      },
+      "conversation_writes": [
+        [
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "/api/v1/workspace/conversations/9bf5470f-68a4-4438-acd9-491fd02a274c/turns",
+          200
+        ]
+      ],
+      "model_call_count": 1,
+      "received_by_model": {
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_70c536020de741de8142bc851611289f",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      }
+    },
+    "u13": {
+      "stored_executions": 0,
+      "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+      "result": "passed",
+      "legacy_saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "phases": [
+        {
+          "phase": "legacy_chat",
+          "loaded_layout_sha256": "a65cf2d014b3a556cf316436aac6318cc0c8224491c5ac89327e8a86ffb2d8bc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 0,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": true,
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "legacy_tianshu",
+          "loaded_layout_sha256": "674f8b1717b8193f19d0cb971f1b78167a7be2d7c1323a10d0deb7c4da21e8cc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": true,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_4e0e960b80c04401a6572687fd9d452a"
+              }
+            ],
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "b883fde2-39d0-55db-bc35-10a16d7ea1e8",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "a51957d5-0669-4bac-8e41-b4cac2863e2a"
+              },
+              {
+                "chat": "3c6f7ebb-d3b4-501c-8ea1-36e7027329ce",
+                "link": "/issues/iss_4e0e960b80c04401a6572687fd9d452a",
+                "turn": "5bd01413-0bbe-4851-ad99-111ff2f17c4b"
+              },
+              {
+                "chat": "b883fde2-39d0-55db-bc35-10a16d7ea1e8",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "a51957d5-0669-4bac-8e41-b4cac2863e2a"
+              },
+              {
+                "chat": "3c6f7ebb-d3b4-501c-8ea1-36e7027329ce",
+                "link": "/issues/iss_4e0e960b80c04401a6572687fd9d452a",
+                "turn": "5bd01413-0bbe-4851-ad99-111ff2f17c4b"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "restart",
+          "loaded_layout_sha256": "0ef983c6ce95029a9e656c0399111c6bc9fec40a294c6f4803040550fff546f1",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_4e0e960b80c04401a6572687fd9d452a"
+              }
+            ],
+            "restored_turn": "5bd01413-0bbe-4851-ad99-111ff2f17c4b",
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "b883fde2-39d0-55db-bc35-10a16d7ea1e8",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "a51957d5-0669-4bac-8e41-b4cac2863e2a"
+              },
+              {
+                "chat": "3c6f7ebb-d3b4-501c-8ea1-36e7027329ce",
+                "link": "/issues/iss_4e0e960b80c04401a6572687fd9d452a",
+                "turn": "5bd01413-0bbe-4851-ad99-111ff2f17c4b"
+              },
+              {
+                "chat": "b883fde2-39d0-55db-bc35-10a16d7ea1e8",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "a51957d5-0669-4bac-8e41-b4cac2863e2a"
+              },
+              {
+                "chat": "3c6f7ebb-d3b4-501c-8ea1-36e7027329ce",
+                "link": "/issues/iss_4e0e960b80c04401a6572687fd9d452a",
+                "turn": "5bd01413-0bbe-4851-ad99-111ff2f17c4b"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "other_project",
+          "loaded_layout_sha256": "0ef983c6ce95029a9e656c0399111c6bc9fec40a294c6f4803040550fff546f1",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "foreign_project_cleared": true,
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "unchanged",
+          "loaded_layout_sha256": "021aeec43a8f5ac984702753b1dc1902854e90340952a1c8f0de6790b1287027",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": false,
+            "selected": "Script",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

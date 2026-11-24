@@ -64,8 +64,12 @@ The CLI prints the durable run ID before polling; use `--run ID` with the same
 services. Editor local settings use this Python interpreter and factory
 `comfy_provider:factory`; start Godot from an environment with
 `AINATIVE_COMFY_CONFIG` set. Preview decodes PNG/GLB and existing review/publish
-creates new `.tres` / `.tscn` files. Graph saves embed input snapshots and omit
-endpoint, storage, factory, credentials and input filesystem paths.
+creates new `.tres` / `.tscn` files. Graph saves preserve ordered input paths and
+embed matching snapshots, so reopening displays the original paths. Legacy blank
+paths are materialized under the workflow's `assets/inputs` directory. At run time,
+a nonempty path whose resource is missing is cleared and reported in a native error
+dialog; execution never silently substitutes a snapshot for that missing path.
+Endpoint, storage, factory and credentials remain excluded.
 
 The image path uses SD-Turbo's checkpoint, text conditioning, Euler sampling at
 CFG 1, then VAE decode. A single image context becomes the img2img initial latent.
@@ -161,6 +165,82 @@ front/right/back/left for four. A single explicitly marked three-view sheet is c
 into front/right/back panels before upload; it is not sent as one ordinary photograph.
 Cropping uses Pillow when that sheet mode is requested.
 
+Version 2 `image_to_mesh` adds a vision-guided review loop. Kimi inspects every input
+image independently, synthesizes one subject and rejects inconsistent references. The
+collection has no fixed size or semantic order: analyzed front views receive more weight
+than side views, and side views more than top views, while detail close-ups remain review
+evidence rather than being mislabeled as full-body inputs. Tripo's per-call limit only
+controls the dynamic selection for each generation attempt. The analysis also creates a
+task-specific `review_plan`: base front/rear/profile/overhead evidence checks the generated
+3D subject, while detail regions and directions come from the actual references and user
+intent. The renderer implements explicit head, upper/lower body, left/right hand and generic
+object-detail regions; the plan never claims an unsupported camera capability. Human subjects
+do not automatically receive a head contract. Only a plan with `head_gate=true` renders and
+requires `head_front`, `head_three_quarter` and `head_side`; accepted GLBs then carry the V2
+head decisions and explicit unverified rigging/animation flags in
+`asset.extras.maliang_head_review`. Review schema V2 accepts a complete mouth/chin/lower
+face and joined neck, recognizable (not 1:1 replicated) identity, normal facial proportions,
+and geometry without visible animation blockers. A top view passes when direction and gross
+layout are similar; its exact elevation angle and occluded fine details need not match. Input
+references are compared only for directions/details they actually contain, and missing input
+directions are never invented. These allowances do not permit missing anatomy or contradictory
+layout. Animation readiness is a visual geometry decision only, not evidence of a skeleton,
+skin weights or a played animation. The plan, model SHA, render receipt, review prompt and
+validator stay bound to the same view set. Legacy reviews are requested again on the same GLB
+and renders, never silently promoted. Completed API responses are recovered with their
+request/instruction hashes before any new request. Incomplete reports trigger a targeted
+request containing only the missing rendered views; complementary evidence can then merge,
+while a conflicting verdict for the same view is rejected rather than resolved by choosing
+a pass.
+Head/body merging separately
+requires source-bound `maliang_head_landmarks` with the neck base below the chin, rather
+than an unmarked fixed-Y face crop. Non-humanoid meshes do not use this human contract.
+The first attempt uses weighted image references. Subsequent supported appearance-only
+attempts use `model_adjust` / `texture_3d_model` with the immediately previous GLB as the
+required source, its latest review feedback, and recorded `parent_model_sha256` lineage.
+They never silently fall back to text-only full regeneration. A landmarked merged head
+with a complete face but a failed neck join may make one local `align_neck` attempt through
+`geometry_repair.py`: only the named head POSITION accessors move, the source is preserved,
+the old visual review is invalidated, and all review views must be rendered again. This
+branch uses no remote generation, upload or Blender. Missing anatomy, wrong proportions
+and other blocking structural failures stop further repair with `model3d_geometry_edit_unsupported`.
+Deferred geometry requests such as hair/body reshaping are excluded from texture prompts;
+they do not block independent material fixes. Appearance-supported failures continue the
+incremental loop. When no supported correction remains, the provider preserves the last
+reviewed GLB and finishes successfully with `capability_limited=true`,
+`visual_review_passed=false`, the complete rejected review, and every unresolved issue.
+The Workbench displays one native warning dialog for that run/node/model. Its title,
+button, body, status and issue summaries must be entirely in Chinese: do not expose
+raw English review prose or internal field names in the dialog. The original English
+review remains intact in the task record and artifact metadata as evidence; the dialog
+presents categorized Chinese issue summaries and explicitly says that visual review
+was not fully passed. This delivery is not a passed review and receives no accepted
+head/animation marker. Texture adjustment is
+not presented as geometry repair. Network, invalid-output, rendering, and vision/API
+uncertainty errors remain failures rather than capability-limited successes.
+Incremental prompts are bounded to 1000 characters. Only a fully accepted review can set
+`visual_review_passed=true` or attach the accepted human head-review metadata. Saved review
+responses can recover without replaying generation. The node prompt is used during visual
+analysis because the direct Tripo image route does not accept mixed image-plus-text constraints.
+This reviewed path requires `KIMI_API_KEY`.
+Each V2 review also identifies which rendered full-body view actually shows the subject's
+front. A failed review with a rotated front view triggers one bounded recovery on the same
+GLB: apply the corresponding yaw correction, render every view again, and request a new
+review. This recovery does not call generation or `model_adjust`, does not change geometry,
+and never repeats when the corrected review still fails. Accepted human GLBs record the
+confirmed review frame with the original geometry SHA. Only the corrected review decides
+whether publishing, incremental adjustment, or a structural stop is appropriate. Saved
+legacy reviews lacking the front-view decision are requested again on their original GLB
+and renders before recovery; no angle is inferred from their free-form prose.
+
+Every reviewed generation/adjustment round is also published as an immutable Mesh artifact,
+ordered by `generation_iteration`; the ordinary `result` port still references only the final
+delivery. The Workbench turns these artifacts into per-round dynamic nodes with actual GLB
+thumbnails, independent interactive previews and GLB save actions. Connecting a particular round to a Mesh consumer freezes that
+artifact's bytes and provenance as the downstream input, including after workflow save/reopen;
+it does not silently substitute the final round or require regenerating the original upstream
+node for a target-only run.
+
 The direct service does not accept additional text constraints together with image or
 multiview input. Such requests fail explicitly instead of silently dropping the text.
 A three-view marker is used only to select sheet splitting. Generation model `v3.1` is
@@ -194,6 +274,192 @@ embed ordered source-model and guidance-image snapshots. The resulting Artifact 
 `operation=texture_3d_model`, source/new task IDs and hashes, guidance mode, geometry,
 `original_model_not_overwritten=true` and `blender_used=false`. Other generation modes reject this
 node explicitly instead of routing it to an incompatible provider.
+
+### Local geometry adjustment V2
+
+`model_adjust` V1 remains the appearance contract. V2 additionally declares `operation` and
+`repair`; the only operations are `align_neck` and `reshape_crown`. Local workers use the
+configured model Python rather than assuming that the host CLI Python contains NumPy.
+Every source is immutable and hash-bound, and output is a new GLB with its own receipt.
+`reshape_crown` requires explicit confirmation, a mesh name, the expected crown height,
+a hairline and blend band, bounded crown/front scales and a confirmed review-frame yaw.
+It changes only vertices above that hairline, preserves lower positions bit-for-bit,
+updates affected normals and never decimates or changes topology. Its geometry-buffer
+hash prevents applying an old recipe to changed geometry. This is not arbitrary face
+repair or inferred landmark placement. Local edits invalidate the previous head review
+and require all render views again. Camera positions use anatomical sides: a +Z-facing
+character's right view is taken from -X, not from screen-right. A confirmed review-frame
+yaw rotates only the render stage, never the source geometry. These branches submit no
+Tripo API generation, texture, segmentation or completion operation.
+
+### Pre-rig human body shape adjustment V1
+
+The separate `human_shape_adjust` node adjusts a static humanoid GLB before final
+skeleton and skin generation. Its ordinary form exposes only `height_cm`,
+`head_ratio`, `arm_length_scale`, `leg_length_scale` and `build`; the operation
+recorded in the artifact is `reshape_humanoid`. Height is an integer from 20–400 cm
+in 10 cm increments. The provider converts it to `height_m = height_cm / 100` only
+at the existing local deformation boundary, and records the effective `height_cm`
+in its receipt and provenance. Legacy `height_m` workflows are migrated by exact
+unit conversion without rounding fractional centimeters. The deformation is
+deterministic and local, with no Tripo API generation, Blender, image generation
+or texture adjustment.
+
+By default `human_shape_landmarks.py` renders the immutable source and makes one
+Kimi vision request through the configured planner. This automatic landmark stage
+requires the same API/review configuration as humanoid review; it is not a remote
+mesh generation. The AI returns T/A pose, anatomical front, confidence and 15
+landmarks normalized by full model height. A recognized side/back front triggers
+one bounded render-and-AI recovery using the existing yaw map; corrected
+normalized coordinates are rotated back into the source frame using both source
+and rotated bounds. AINative writes the source SHA-256, converts estimates to
+source coordinates and checks anatomy plus nearest-source
+vertex distances. Low confidence after recovery, unresolved front, missing
+coordinates or excessive geometry mismatch stops before deformation. The receipt states
+`quality=ai_estimated_geometry_checked`, confidence and per-landmark distances;
+it never claims motion-capture accuracy or human confirmation.
+
+Developer JSON may explicitly supply `reference_pose` and a source-bound
+`landmarks` override with `head_top`, `chin`, `neck`, both
+`shoulder/elbow/wrist` chains and both `hip/knee/ankle` chains. Coordinates are
+Y-up. Anatomical left is derived from the left/right landmarks, so a recovered
+source need not face a canonical X direction. Both automatic and overridden paths enforce the
+same source/anatomy contract. There is no extra confirmation checkbox. The source
+must have no Skin, no mesh-node transform and no shared POSITION accessors;
+existing rigged assets are rejected instead of invalidating inverse binds.
+
+Build and limb-chain deformation run first, head scale is solved for the requested
+final ratio, and uniform target-height normalization runs last with feet at Y=0.
+Height is 0.2–4 m, head ratio 3–12, arm/leg scales 0.75–1.35, and build -1–1.
+The output records measured height, head ratio and bilateral limb lengths,
+`landmark_estimation=ainative_ai_geometry_checked` for the default path, updated
+landmarks, source/output hashes and
+`requires_new_head_review=requires_new_rigging=true`. Existing head review and
+merged-head landmarks are invalidated. Stale tangents are removed and affected
+normals refreshed; material references, indices and source bytes are preserved.
+Derived landmarks use `validation_state=automatically_derived_review_required`;
+no manufactured human-confirmation flag is emitted. All required views must be
+reviewed again before fitting the final skeleton and skin.
+
+### Garment inventory and visible-surface extraction
+
+`garment_split.py` and `garment_inventory.py` provide local, source-bound
+extraction from an already generated character. The source must be a
+self-contained, triangle-based GLB. Static meshes require identity mesh-node
+transforms; rigged meshes preserve their original hierarchy and transforms.
+Valid skins, sparse accessors, external dependencies and primitive extensions
+are checked explicitly. The original GLB is never overwritten. Hidden body
+geometry, occluded layers and complete wearable garments are not reconstructed.
+
+```powershell
+python tools/ainative/garment_split.py inspect character.glb inspection.json
+python tools/ainative/garment_inventory.py planner.json inspection.json private/inventory --image front=front.png --component CMP_ID=component.png
+python tools/ainative/garment_split.py inventory-spec character.glb inspection.json private/inventory/inventory.json derived split-spec.json
+python tools/ainative/garment_split.py split split-spec.json
+```
+
+Inspection emits stable, source-SHA-bound vertex-connected `component_id`
+values, bounds and triangle counts. Connectivity alone is not a semantic
+boundary. The vision request accepts whole-model views and separately labeled
+component previews; an AI response may select only component IDs represented by
+an attached component image. Whole-model evidence without a component preview
+can produce an open-vocabulary inventory, but its geometry remains unresolved.
+AI `automatic` state is neither human confirmation nor visual acceptance.
+
+`inventory-spec` converts only evidence-bound component candidates. Add
+`--confirmed` only after the caller has actually reviewed the complete inventory
+and selection. For a fused surface, edit the specification with confirmed
+source triangle IDs instead:
+
+```json
+{
+  "review_state": "confirmed",
+  "selection": {
+    "mode": "reviewed_triangles",
+    "primitives": [{"node": 0, "primitive": 0, "triangles": [12, 13, 18]}]
+  }
+}
+```
+
+Each selected source triangle may belong to only one output item. Extraction
+repacks the selected vertex attributes and indices, preserves material/texture
+references and embedded images, and records exact source-triangle mapping and
+output hashes in `split_manifest.json`. Existing output paths are rejected.
+
+For a rigged source, extraction replaces only the index buffers. The complete
+skeleton, `skins`, `inverseBindMatrices`, `JOINTS_0`, `WEIGHTS_0`, original
+vertex attributes and animations are preserved. Unreferenced source vertices
+remain in the GLB so skin attributes can never be remapped accidentally; only
+the selected triangles render. The cloth-preparation path currently rejects
+rigged inputs rather than silently treating them as static geometry.
+
+A confirmed `cloth` or `mixed` item may additionally declare a `cloth` object
+with `kind` (`cape` or `skirt`), six-number meter `box`, optional `columns`,
+`rows` and `cloth_top`. This invokes the existing author-sampled proxy pipeline.
+The resulting item state is `cloth_prepared`, never `cloth_ready`: actual target
+rig, animation, collision, reopen and visual acceptance remain downstream.
+Preparation failure preserves the extracted GLB and makes the manifest
+`capability_limited`. See `design-docs/maliang-garment-split-20261122.md` for
+the current scope and evidence boundary. Synthetic tests do not establish real
+AI segmentation quality or production cloth behavior.
+
+The Workbench **衣服拆分 / `garment_split`** node does not require a saved
+generation service. Choose or link one Mesh and run directly. With the default
+empty `items`, `garment_complete.py` now targets independent wearable garments
+on static or rigged GLBs: two 12-bit triangle-ID passes and five ordinary views
+share the same cameras, Kimi vision requests supply normalized visible-surface
+masks, and local code assigns visible source triangles. For dense meshes, the
+same camera, garment mask, visible-plane depth and facing direction recover
+subpixel triangles omitted by raster sampling; connected-component flood fill
+and occluded back surfaces are not used. Base-garment masks include attached
+embroidery and ornament instead of cutting decoration-shaped holes. It never
+treats a connected component or a text label as a complete garment. This
+recognition step requires `KIMI_API_KEY`; missing evidence, uncertain coverage
+and ownership conflicts remain unresolved instead of producing a downgrade.
+Self-intersecting mask contours are rejected. Independent hair, exposed-skin,
+hand and footwear exclusion masks apply during both pixel voting and subpixel
+completion; hand/foot exclusions are not applied to the matching garment slot.
+A final topology pass fills only unowned faces with at least two selected edge
+neighbors, with adjacency cached once per source primitive.
+Rigged inputs preserve the original hierarchy, skins, inverse bind matrices,
+joint indices and weights; reconstructed inner and boundary vertices inherit
+those attributes and are checked explicitly. After reconstruction, a mandatory
+quality gate renders the collection in front/right/back/left/top and submits
+source/output pairs for the same cameras. Per-item missing-surface and
+extraneous-surface defects (including holes, skin, hair, hands and footwear)
+are recorded in `quality_gate`; any defect keeps `visual_review_passed=false`,
+adds an unresolved reason and prevents the item from being presented as
+visually accepted. A failed gate performs at most one generic defect-bound mask
+revision, rebuild and second gate. Missing-surface repair unions valid contours;
+extraneous-surface repair replaces the affected contour. Rejected GLBs and
+`quality_repair_history` are retained, and a second defect remains unresolved.
+Cached gate receipts are bound to both source and collection SHA-256.
+
+An accepted automatic item becomes `wearable_shell` only with
+`coverage=complete_visible` and a closed position-welded mesh after removing the
+body and reconstructing inner thickness and boundary walls. The outer material,
+UVs and source-triangle mapping are retained. This state is not visual, target-rig
+fit, animation, collision or cloth acceptance. Partial surfaces cannot be promoted
+by solidification. Explicit developer `items` retain the older source-bound
+surface-extraction path, including exact rig preservation, and are labeled as
+fragments rather than complete clothes.
+
+The main result is `_garments.glb`, a collection containing only accepted items;
+each item also appears as a named dynamic garment node with its own thumbnail,
+GLB save action and immutable fixed-artifact downstream input. Cards distinguish
+complete shells from surface fragments, show unresolved counts and continue to
+require visual review. Workflow output snapshots preserve all garments and fixed
+connections across save/reopen.
+
+`garment_split_provider.py` persists local Executor intents and results under
+the run-scoped `garment-split-state` directory. Provider identity fingerprints
+the provider, geometry core, automatic recognition, inventory, GLB repair,
+cloth-preparation and render-script inputs. An interrupted synchronous local job
+is not blindly replayed. Rigged cloth preparation is rejected explicitly, and
+`cloth_prepared` does not become `cloth_ready` merely because a graph run
+succeeded. `garment_split_node_acceptance.gd` is the native Workbench acceptance
+entry; it requires a Godot executable and the explicit fixture environment
+documented in that script.
 
 ### Local configuration and credentials
 

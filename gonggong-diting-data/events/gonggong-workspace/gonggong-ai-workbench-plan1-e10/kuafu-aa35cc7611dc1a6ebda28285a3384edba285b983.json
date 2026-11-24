@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-aa35cc7611dc1a6ebda28285a3384edba285b983",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4e065c8fa10a9e6052e5f5eb8d102228c0312636015d5957db120e3e31947acd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2092",
+    "action": "delivery",
+    "detection_head": "e8b40ea7d472868629b62af109acc03e42be7fae",
+    "context_sha256": "bea8f582fd45f36733a04b48fa7d4cecb9f99e0d773501b9da582606e97a0760",
+    "operator": "Sail-Li",
+    "worker": "mac-round13-edit",
+    "authority_ref": "mac-round13-edit",
+    "evidence": "github:zhzyx/nightmarish-spooky-sorceryze:issue:2092",
+    "diagnosis": "本次提交中的 evidence 使用数值 issue，门禁按 issue_number 或完整 URL 关联原单，因而在推送前拒绝。已运行正式 collected_file_index 将本次 request 事件和原单明确绑定。",
+    "next_action": "重新执行 writer_submit，待精确候选 CI 和 main 回读通过后，在原工单和本阻塞单记录复验并关闭。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T14:05:14.866363+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T14:08:10.862486+00:00",
+  "sha256": "d2902e745a9b44b41ebb8bf7dc6eb8f59959bd2fd59a53568ae3a8b30c2aef17"
+}

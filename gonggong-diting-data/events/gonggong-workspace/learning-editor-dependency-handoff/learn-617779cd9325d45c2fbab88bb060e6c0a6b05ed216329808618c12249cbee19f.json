@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-617779cd9325d45c2fbab88bb060e6c0a6b05ed216329808618c12249cbee19f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812",
+  "occurred_at": "2026-11-22T09:40:58.637735+00:00",
+  "evidence_refs": [
+    "dispatch-726b64de3f944438b7dd9305897fd7e4",
+    "learn-400a0fd7676e428a32d035765af90540276246b628fadb2913301e8b7efb002a"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 37,
+    "previous": "d3a00ca1f2e727f965fe73afe305d09c001f5dd296af9dc9e4f1ac24d632ca00",
+    "action": "applied",
+    "details": {
+      "task": "S05 #1812 feeds the same observed producer completion to three fresh dispatchers with and without exact independent acceptance.",
+      "observed": "The signed successor wrote one physical start and reached its checked target with acceptance, and zero starts without it. A different ticket, replaced upstream, inaccessible successor and unrelated entry did not release the branch."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s05.json",
+        "sha256": "b976407f27022732b8bd33876b4d1eb1367a2e857ebda01fea7e6f54411241a4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s05/dispatch-726b64de3f944438b7dd9305897fd7e4.json",
+      "sha256": "04e58ed72112bb3e6fbca094130e72f12d8116c004f97c9431ffbc08b6d53b6a"
+    }
+  },
+  "sha256": "dfb65e7b0c8bd4b518b75cd8b7acb380363e8b33b8d87ad68bb56ce6051d4f9c"
+}

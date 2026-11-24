@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i10",
+  "issue_number": 1753,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753",
+  "observed_at": "2026-11-22T03:04:00.569186+08:00",
+  "intake": {
+    "exit_code": 0,
+    "issue_status": "status:in-progress",
+    "I02": {
+      "number": 1854,
+      "state": "CLOSED/COMPLETED",
+      "main_pr": 1961
+    }
+  },
+  "baseline": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+  "source_sha256": {
+    "editor/SCsub": "733eb1cb53aea3af6768ca97558517293203d990ffa695a541408faf5fcb8342",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "5dd92901e08fcf06f3fe97704e9d88e5c035af8b06df49e3f2addec798f1ed03",
+    "editor/docks/workbench/issue_time.gd": "d11a5ebc25bbd6584195bb44a7f7f60b140e89e4fe2c509cc04e85b69065fec3",
+    "tests/editor/workbench_issue_time.gd": "cb1442ec02602fd8aabda445defeeab4d6b07b3b7bfbba378c3f61ff46012720",
+    "tests/editor/run_workbench_issue_time.py": "af9515aa3beae299a08d262879093df0208b1f7273b838a4932be5c090f9f3a5",
+    "design-docs/gonggong-ai-workbench-i10.md": "673b9713eb9154c6fe1f85004f4236e39227558a8cb1054d7920676b63a00031"
+  },
+  "source_git_blob": {
+    "editor/SCsub": "6c9f51dea564411e7c9310bec7bf27a9cc8849a2",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "dc2389783b0229c3814f9fecf8c7a465358c5710",
+    "editor/docks/workbench/issue_time.gd": "c5a92cdb699f29d4d354b7df0ae9d2d1232ca346",
+    "tests/editor/workbench_issue_time.gd": "db924b1cd9b11a0e989a2fe4f0299fe52208c11f",
+    "tests/editor/run_workbench_issue_time.py": "97a7377ca24ef14377cde1a8eed551b97898cf12",
+    "design-docs/gonggong-ai-workbench-i10.md": "39daf50497b0e55402ed5d90ddf557d36ce5709e"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "lesson": "godot-build-placement / trace-native-consumer r24",
+    "applied": "Observed source-to-generated-header invalidation and relinking of the Windows editor. Embedded source is a native input."
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "baseline_log_sha256": "14fb4b8298c358773e955ba6bbc78fad449f8f313be9b9c5b89dc559e5e5a49d",
+    "candidate_log_sha256": "1f03225731dbccfc08e93e1ff4205cf21f81f0b0e1177464617c8b75274d5a53",
+    "baseline_header_sha256": "c66da8241611303063f884d26d33c49396811dc8274e1f0896faf5db71a6e07d",
+    "candidate_header_sha256": "0ad0935033de3a987137f61a04c6d989181c3b84faf00a1c272297c2cfa3c6b6",
+    "candidate_engine_sha256": "c874cb890cd31eba51acf2511039e20b299c7bf66682469a15004c1ee116f03e",
+    "exit_code": 0,
+    "baseline_engine_sha256": "284b6073abefdcd64d7914411e989ba9590557e2097500fa6a41d5136c759501",
+    "baseline_sidebar_object_sha256": "4b08c6efebefa9df7934a3766e9b716a1c16b9bc81b22893d4ce2c233735f623",
+    "candidate_sidebar_object_sha256": "35ab250925b07dfed338957177344326e7be5ad0ced236a8de5259c40e36f1a4"
+  },
+  "native": {
+    "exit_code": 0,
+    "entry": "Open AI Workbench > 工单详情 > 读取详情 > 工时",
+    "test": "tests/editor/run_workbench_issue_time.py",
+    "receipt_loss": "Fixture returned HTTP 503 after Tianxuan committed the second log. The editor retried the identical body and call ID.",
+    "after_first": "预计 75 分钟 · 已登记 12 分钟",
+    "after_retry": [
+      "预计 75 分钟 · 已登记 35 分钟",
+      "12 分钟　核对草图\n23 分钟　调整模型"
+    ],
+    "ambiguous_status": "工时回执待确认，请重试同一请求",
+    "before": "预计 0 分钟 · 已登记 0 分钟",
+    "reopened": [
+      "预计 75 分钟 · 已登记 35 分钟",
+      "12 分钟　核对草图\n23 分钟　调整模型"
+    ],
+    "requests": [
+      {
+        "operation": "plan",
+        "body": {
+          "call_id": "c754b8d8d8d85497ff44435e5914a340",
+          "expected_version": 1,
+          "plan": {
+            "estimated_minutes": 75
+          }
+        },
+        "committed_status": 200
+      },
+      {
+        "operation": "log",
+        "body": {
+          "call_id": "cb8643cf2c077be1421bf6dfab675cf8",
+          "expected_version": 2,
+          "minutes": 12,
+          "note": "核对草图"
+        },
+        "committed_status": 200
+      },
+      {
+        "operation": "log",
+        "body": {
+          "call_id": "01c8e6b208d98559dcd31720093acd66",
+          "expected_version": 3,
+          "minutes": 23,
+          "note": "调整模型"
+        },
+        "committed_status": 200
+      },
+      {
+        "operation": "log",
+        "body": {
+          "call_id": "01c8e6b208d98559dcd31720093acd66",
+          "expected_version": 3,
+          "minutes": 23,
+          "note": "调整模型"
+        },
+        "committed_status": 200
+      }
+    ],
+    "reopened_authority": {
+      "id": "iss_8c93d51c395e4cfe91e8ae710b1d5b08",
+      "version": 4,
+      "plan": {
+        "iteration": "W2",
+        "milestone": "场景录制",
+        "roadmap": "",
+        "status": "",
+        "estimated_minutes": 75,
+        "custom_fields": {
+          "团队": "场景"
+        }
+      },
+      "logs": [
+        {
+          "minutes": 12,
+          "note": "核对草图",
+          "action": "work.log",
+          "version": 3,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:03:07.384772+00:00"
+        },
+        {
+          "minutes": 23,
+          "note": "调整模型",
+          "action": "work.log",
+          "version": 4,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:03:07.446002+00:00"
+        }
+      ],
+      "logged_minutes": 35,
+      "assets": {},
+      "history": [
+        {
+          "plan": {
+            "custom_fields": {
+              "团队": "场景"
+            },
+            "iteration": "W2",
+            "milestone": "场景录制"
+          },
+          "action": "work.plan",
+          "version": 1,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:02:58.842713+00:00"
+        },
+        {
+          "plan": {
+            "estimated_minutes": 75
+          },
+          "action": "work.plan",
+          "version": 2,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:03:07.341609+00:00"
+        },
+        {
+          "minutes": 12,
+          "note": "核对草图",
+          "action": "work.log",
+          "version": 3,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:03:07.384772+00:00"
+        },
+        {
+          "minutes": 23,
+          "note": "调整模型",
+          "action": "work.log",
+          "version": 4,
+          "actor": "usr_e03eb75e5f9e45828d58b591635cdb37",
+          "created_at": "2026-11-21T19:03:07.446002+00:00"
+        }
+      ]
+    },
+    "engine_sha256": "c874cb890cd31eba51acf2511039e20b299c7bf66682469a15004c1ee116f03e"
+  },
+  "regressions": {
+    "service": {
+      "test": "customizations/components/tianxuan/server/test_work_management.py",
+      "passed": 7,
+      "exit_code": 0
+    },
+    "I02": {
+      "test": "tests/editor/run_workbench_issue_detail.py",
+      "exit_code": 0,
+      "engine_sha256": "c874cb890cd31eba51acf2511039e20b299c7bf66682469a15004c1ee116f03e",
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    },
+    "ruff": {
+      "check": "passed",
+      "format": "passed"
+    }
+  }
+}

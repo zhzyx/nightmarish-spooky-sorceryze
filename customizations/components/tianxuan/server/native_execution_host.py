@@ -8,12 +8,35 @@ startup never replays it. The caller must own the domain transaction for enqueue
 import asyncio
 import contextvars
 import json
+import re
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from native_requirement_plan import requirement_digest
 from native_store import NativeStoreError, _digest, _json
-from tianxuan_core import _token_hash
+from native_workflow import OccupiedWrites
+from tianxuan_core import _token_hash, session_active
+
+
+def entry_key(tenant, actor, call_id):
+    if not isinstance(call_id, str) or not 1 <= len(call_id) <= 128:
+        raise NativeStoreError("Bounded idempotency key required")
+    return _digest(_json([tenant, actor, call_id]).encode())
+
+
+def workspace_approval(domain, actor, document):
+    if not re.fullmatch(r"workspace-[0-9a-f]{64}", document.get("request_id") or ""):
+        return None
+    try:
+        from workspace_conversations import require_workspace_approval
+    except ModuleNotFoundError as error:
+        if error.name != "workspace_conversations":
+            raise
+        raise NativeStoreError("Workspace approval reader is not installed") from None
+    approval = require_workspace_approval(domain, actor, document["id"], document["version"])
+    if not approval:
+        raise NativeStoreError("Confirmed workspace design required")
+    return approval
 
 
 class EntryLedger:
@@ -54,9 +77,7 @@ class EntryLedger:
         document = self.domain.get_doc_shared(actor, requirement)
         tenant = self.domain.actor_context(actor)["tenant"]
         source = requirement_digest(document)
-        if not isinstance(call_id, str) or not 1 <= len(call_id) <= 128:
-            raise NativeStoreError("Bounded idempotency key required")
-        key = _digest(_json([tenant, actor, call_id]).encode())
+        key = entry_key(tenant, actor, call_id)
         if self.domain.user_for_token(credential) != actor:
             raise NativeStoreError("Current authenticated credential required")
         token_hash = _token_hash(credential)
@@ -64,9 +85,17 @@ class EntryLedger:
             db.execute("SELECT 1 FROM access_keys WHERE token_hash=? AND revoked_at IS NULL", (token_hash,)).fetchone()
             is not None
         )
-        payload = _json(dict(requirement=requirement, source=source, choices=choices))
+        intent = dict(requirement=requirement, source=source, choices=choices)
+        approval = workspace_approval(self.domain, actor, document)
+        if approval is not None:
+            intent["approval"] = approval
+        payload = _json(intent)
         old = db.execute("SELECT * FROM native_entry_intents WHERE id=?", (key,)).fetchone()
         if old:
+            if approval and "approval" not in json.loads(old["payload"]):
+                raise NativeStoreError(
+                    "Historical entry predates version approval; recover its status before a new call"
+                )
             if old["payload"] != payload:
                 raise NativeStoreError("Entry idempotency key rebound")
             self.authorize(key)
@@ -110,8 +139,7 @@ class EntryLedger:
             ).fetchone()
             if row is None or row["user_id"] != row["actor"]:
                 raise NativeStoreError("Entry credential withdrawn")
-            expires = datetime.fromisoformat(row["expires_at"])
-            if expires.tzinfo is None or expires <= datetime.now(timezone.utc):
+            if not session_active(row["expires_at"]):
                 raise NativeStoreError("Entry credential expired")
             if (
                 row["access_key"]
@@ -122,10 +150,14 @@ class EntryLedger:
             ):
                 raise NativeStoreError("Entry access key withdrawn")
             self.domain._require_requirement(row["actor"], row["requirement"], write=True)
-            source = self.domain.db.execute("SELECT source FROM native_entry_intents WHERE id=?", (key,)).fetchone()[0]
+            intent = self.domain.db.execute(
+                "SELECT source,payload FROM native_entry_intents WHERE id=?", (key,)
+            ).fetchone()
             document = self.domain.get_doc_shared(row["actor"], row["requirement"])
-            if requirement_digest(document) != source:
+            if requirement_digest(document) != intent["source"]:
                 raise NativeStoreError("Entry source revision withdrawn")
+            if workspace_approval(self.domain, row["actor"], document) != json.loads(intent["payload"]).get("approval"):
+                raise NativeStoreError("Workspace approval changed")
             return True
 
     def pending(self, *, include_held=False):
@@ -507,7 +539,16 @@ class WorkflowService:
     async def __call__(self, operation, payload):
         self.authorize()
         workflow, actor = self.workflow, self.actor
-        if operation == "await-terminal":
+        if (
+            operation in {"await-judgment", "admit-judgment"}
+            and self.issues is not None
+            and payload["issue"] not in self.issues
+        ):
+            raise NativeStoreError("Creative successor belongs to another entry")
+        if operation == "await-judgment":
+            await workflow.await_judgment(actor, payload["issue"], payload["binding"])
+            result = {"observed": True}
+        elif operation == "await-terminal":
             result = await workflow.await_terminal(actor, payload["key"])
         elif operation == "integration-await":
             result = await workflow.integration.continuous.await_lane(actor, payload["key"], payload["event"])
@@ -532,7 +573,7 @@ class WorkflowService:
                 raise NativeStoreError("Unsupported integration operation")
             return getattr(integration, method)(actor, payload["group" if method == "authorize" else "key"])
         if operation == "inspect":
-            board = w.inspect(actor)
+            board = w.inspect(actor, owned_issues=self.issues)
             owned = None
             if self.issues is not None:
                 with w.domain._connection_lock:
@@ -543,13 +584,16 @@ class WorkflowService:
                     }
                 board["requests"] = [r for r in board["requests"] if r["ticket"] in owned]
                 board["produced"] = [k for k in board["produced"] if k in owned]
+                board["stage_checks"] = [k for k in board["stage_checks"] if k in owned]
                 board["snapshot"]["items"] = [r for r in board["snapshot"]["items"] if r["key"] in owned]
                 board["snapshot"]["ready"] = [k for k in board["snapshot"]["ready"] if k in owned]
-                for active in board["environment"]["active"]:
-                    if active["ticket"] not in owned and not (
-                        board["requests"] and len(board["environment"]["active"]) >= board["environment"]["capacity"]
-                    ):
-                        active.pop("terminalObservable", None)
+                waiting = {r["key"] for r in board["snapshot"]["items"] if r.get("waitReason") == "resource_conflict"}
+                waiting_assets = OccupiedWrites(r["writes"] for r in board["requests"] if r["ticket"] in waiting)
+                active = board["environment"]["active"]
+                full = bool(board["requests"]) and len(active) >= board["environment"]["capacity"]
+                for holder in active:
+                    if holder["ticket"] not in owned and not full and not waiting_assets.overlaps(holder["writes"]):
+                        holder.pop("terminalObservable", None)
 
             integration = getattr(w, "integration", None)
             if integration is not None:
@@ -572,10 +616,28 @@ class WorkflowService:
                         board["integrations"] = dict(ready=[], errors=[], continuous=[])
 
             return board
+        if operation == "admit-judgment":
+            if self.issues is not None and payload["issue"] not in self.issues:
+                raise NativeStoreError("Creative successor belongs to another entry")
+            return w.authorize_installed(actor, payload["issue"], _judgment_binding=payload["binding"])
         if operation == "advance":
-            return w.advance(actor, isolate=True, exclude=payload.get("exclude", []))
-        if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
+            return w.advance(
+                actor,
+                isolate=True,
+                exclude=payload.get("exclude", []),
+                completion=payload.get("completion"),
+                owned_issues=self.issues,
+            )
+        if operation == "execute":
+            return w.execute_receipt(actor, payload["key"])
+        if operation == "execution-readback":
+            return w.execution_readback(actor, payload["key"], issues=self.issues)
+        if operation == "record-execution-fault":
+            return w.record_execution_fault(actor, payload["key"], issues=self.issues)
+        if operation in {"status", "check", "review", "reconcile", "finish"}:
             return getattr(w, operation)(actor, payload["key"])
+        if operation == "verify-stage":
+            return w.verify_stage(actor, payload["key"])
         if operation == "reserve":
             return w.reserve(actor, payload["assignment"])
         if operation not in {"revalidate", "start", "ack", "record"}:

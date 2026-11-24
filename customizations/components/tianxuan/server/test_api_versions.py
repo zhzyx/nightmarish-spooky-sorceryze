@@ -61,3 +61,35 @@ def test_version_and_document_not_found() -> None:
     client, headers, document = _setup()
     assert client.get(f"/api/v1/docs/{document['id']}/versions/99", headers=headers).status_code == 404
     assert client.get("/api/v1/docs/doc_missing/versions", headers=headers).status_code == 404
+
+
+def test_changed_paragraph_numbers_match_editor_and_only_head_is_editable() -> None:
+    client, headers, document = _setup()
+    base = f"/api/v1/docs/{document['id']}"
+    bodies = [
+        "Initial\r\n\r\n\u00a0\r\n\r\nMiddle\r\nline\r\n\r\nEnd",
+        "Initial\n\n\u00a0\n\nNew\nline\n\nExtra\n\nEnd",
+    ]
+    for version, body in enumerate(bodies, start=2):
+        client.patch(base, headers=headers, json={"body_md": body, "expected_version": version}).raise_for_status()
+
+    def compare(left, right):
+        return (
+            client
+            .get(
+                base + "/diff", params={"from_version": left, "to_version": right, "paragraphs": True}, headers=headers
+            )
+            .raise_for_status()
+            .json()
+        )
+
+    assert compare(3, 4)["changes"] == [
+        {"before": 3, "after": 3, "preview": "New"},
+        {"before": None, "after": 4, "preview": "Extra"},
+    ]
+    assert compare(4, 3)["changes"] == [
+        {"before": 3, "after": 3, "preview": "Middle"},
+        {"before": 4, "after": None, "preview": "Extra"},
+    ]
+    assert compare(3, 4)["editable"] and not compare(4, 3)["editable"]
+    assert compare(4, 4)["changes"] == []

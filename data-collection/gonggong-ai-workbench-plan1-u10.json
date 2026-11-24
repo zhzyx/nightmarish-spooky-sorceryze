@@ -1,0 +1,105 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u10",
+  "issue_number": 1760,
+  "source_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1760",
+  "observed_at": "2026-11-21T17:30:33.198952+00:00",
+  "integration_base": "373430fb1c8e8345841365e0957f2ce54a9be57c",
+  "direct_dependencies": {
+    "1864": "c82b8bc3a22112af8e2b3f78e6a1f224b3161ea5",
+    "1865": "25d67bedb29eb7c0947e767be8ad435054853ab4"
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/server/workspace_conversations.py": "93a67a764a578d8225e35ae686c8edd623557a6b9d17c08187310e13381d0bc2",
+    "editor/docks/workbench/business_session.gd": "a39c83eab6d9e021fb4abf41d4ada001fea1f3f2d448dedd2dc8804bc2da1add",
+    "editor/docks/workbench/module_selector.gd": "0877721690115d94c7e3bd5fd939475a761e577220b5d147c1f14a277a637271",
+    "tests/editor/run_workbench_document_reference.py": "7a706e83cdfc25644f1b158a42c2e911cbe9fd5b17a7705c1901b17a9e7854fa",
+    "tests/editor/workbench_document_reference.gd": "770bcb2cfde25f6bdc48c31d2c37a8a363ea077ef9d695ba18f4acc902012c9f",
+    "design-docs/gonggong-ai-workbench-u10.md": "1217d41d687a696a3652d20403b28ff8c2042ef1f47fcc3d3cb8ec811758ae5c"
+  },
+  "platform": "Windows x86_64, headless Godot editor with authenticated loopback Tianxuan/SQLite",
+  "verification": {
+    "state": "passed",
+    "editor_sha256": "ce76c6c2ffd18aa4514ebfb41e929be4056720a9a6b8a0f86405dfa17dfbcc15",
+    "turn": {
+      "conversation": "bb848b7e-6a68-4373-851f-08ed68ca571d",
+      "current_version": 2.0,
+      "opened": {
+        "document_id": "doc_3598037695ff4198b869d05f727b88f9",
+        "paragraph": 2,
+        "version": 1
+      },
+      "sent": {
+        "kind": "document",
+        "object_id": "doc_3598037695ff4198b869d05f727b88f9",
+        "paragraph": 2.0,
+        "revision": 1.0
+      }
+    },
+    "real_service_reads": [
+      [
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "/api/v1/business-modules",
+        200
+      ],
+      [
+        "/api/v1/business-modules/default/location",
+        200
+      ],
+      [
+        "/api/v1/issues",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_3598037695ff4198b869d05f727b88f9/versions/1",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations",
+        201
+      ],
+      [
+        "/api/v1/business-modules/default/location",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations/bb848b7e-6a68-4373-851f-08ed68ca571d/turns",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_3598037695ff4198b869d05f727b88f9",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_3598037695ff4198b869d05f727b88f9/versions/1",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations/bb848b7e-6a68-4373-851f-08ed68ca571d",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations/bb848b7e-6a68-4373-851f-08ed68ca571d/turns",
+        409
+      ],
+      [
+        "/api/v1/workspace/conversations/bb848b7e-6a68-4373-851f-08ed68ca571d",
+        200
+      ]
+    ],
+    "persisted_reference": {
+      "kind": "document",
+      "object_id": "doc_3598037695ff4198b869d05f727b88f9",
+      "revision": 1,
+      "paragraph": 2
+    }
+  },
+  "regression": "5 existing workspace conversation tests passed, including snapshots without paragraph and retry compatibility.",
+  "acceptance": "真实 Godot 原生文档视图发送第 1 版第 2 段。该段移至第 2 版第 3 段后，已发送消息仍选中旧版本的原文，服务端持久化快照一致；伪造不存在的段落返回 409，已有消息保持原样。"
+}

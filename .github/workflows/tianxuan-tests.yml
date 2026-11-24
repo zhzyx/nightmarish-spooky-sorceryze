@@ -1,13 +1,8 @@
 name: Tianxuan tests
 
 on:
-  pull_request:
-    paths:
-      - "customizations/components/tianxuan/**"
-      - "apps/tianxuan/**"
-      - "deploy/**"
-      - ".github/workflows/tianxuan-tests.yml"
-  merge_group:
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -35,7 +30,10 @@ jobs:
       - name: Run Tianxuan server and Duobao tests
         env:
           GIT_EXECUTABLE: git
-        run: python -m pytest customizations/components/tianxuan -q
+        # High-load measurement is deferred by the user; small-scale admission,
+        # revocation, retry and recovery checks remain part of this suite.
+        # The retained 250-client test is opt-in in deploy-build workflow_dispatch.
+        run: python -m pytest customizations/components/tianxuan -q -k 'not test_250_local_tool_burst'
       - name: Typecheck and build Tianxuan web shell
         working-directory: apps/tianxuan
         run: |

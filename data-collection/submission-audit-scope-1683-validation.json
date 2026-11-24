@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "issue": 1683,
+  "request_id": "submission-audit-scope-20261120",
+  "base": "632dd860907d08c8e10d424de8995de87a167970",
+  "observed_at": "2026-11-20T11:35:31.501126+00:00",
+  "source_files": {
+    "customizations/components/issue-workorders/submission_audit.py": "4078a9ca159f3014628cdcfa78aa56b2ec12d5d35d3e2ffe3536acba92a39913",
+    "customizations/components/issue-workorders/writer_submit.py": "00e32c09fc44576e334fb8148dab221d390fb80172a65822678b4d2c4fcb8ab7",
+    "customizations/components/issue-workorders/test_submission_audit.py": "2790cec5ae572b444dcb114b5fdb669e5a503e6657a01fdc82e52bcef011c3fb",
+    "customizations/components/issue-workorders/test_writer_submit.py": "7af5690378e097647ed664c3d16b56ee84d1d5fa24860e8989ea87ea449f34a7",
+    "customizations/components/issue-workorders/yanluo.md": "74d8b3852939857c421bb5db9fd2a47f20c754f13854153b64c957f9e0d3c9bf"
+  },
+  "verification": [
+    {
+      "command": "python -m pytest customizations/components/issue-workorders/test_submission_audit.py customizations/components/issue-workorders/test_writer_submit.py tools/test_editor_delivery_finalize.py tools/ci -q",
+      "result": "68 passed, 48 subtests passed"
+    },
+    {
+      "command": "ruff check / ruff format / mypy (four changed Python files)",
+      "result": "passed"
+    },
+    {
+      "command": "unittest submission_audit and writer_submit after queue metadata update",
+      "result": "21 passed"
+    }
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_6f5062f7a88f791e",
+    "launch": "collaboration.spawn_agent",
+    "terminal": "collaboration.list_agents:completed",
+    "result": "passed_no_blocking_findings",
+    "tests": "68 standard-library unittest tests passed; diff --check passed",
+    "scope": "Five source files above; incremental queue metadata reviewed; no implementation by reviewer"
+  },
+  "original_candidate_reclassification": {
+    "pr": 1682,
+    "writer": "kaiyunxue",
+    "signed_commit": "b4df6f331e15d75c53bb517b375b7f2865ba5823",
+    "tree": "75bd15787ae232a93c613a15de786ce91ec7ab7e",
+    "audit_profile": {
+      "schema_version": 1,
+      "tier": "tier3_shared_engine_or_ci",
+      "tier_level": 3,
+      "changed_count": 11,
+      "boundaries": {
+        "documentation_and_specs": 1,
+        "host_adapters_and_apps": 1,
+        "telemetry_and_evidence": 6,
+        "tests_and_samples": 3
+      },
+      "tier_triggers": {
+        "tier0_docs_telemetry": [
+          "data-collection/maliang-image-artifact-nodes-20261120-pr.md",
+          "data-collection/maliang-image-artifact-nodes-20261120-validation.json",
+          "data-collection/requests/maliang-image-artifact-nodes-20261120/5b470059-7d85-48df-ba21-54e00e814df6.json",
+          "design-docs/maliang-image-artifact-nodes-20261120.md",
+          "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-bdb90aa938fe0e5b6590d492872206e77285780c3f57f8c4d57af59bf1610ac9.json",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/kuafu-ab0d2e112767c16072f4bb293414613eb0eb0afe.json",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/maliang-image-artifact-nodes-20261120-request.json"
+        ],
+        "tier3_shared_engine_or_ci": [
+          "samples/ainative-workbench/addons/ainative/workbench.gd",
+          "samples/ainative-workbench/artifact_node_acceptance.gd",
+          "samples/ainative-workbench/prompt_refresh_acceptance.gd",
+          "tools/ainative/test_prompt_refresh_factory.py"
+        ]
+      },
+      "yanluo_requirements": {
+        "formal_issue_gate": true,
+        "diting_committed_check": true,
+        "independent_review_required": true,
+        "review_scope": "changed_paths_and_bound_criteria_only",
+        "governance_admission_required": false,
+        "module_impact_check_required": false,
+        "scoped_engine_ci_required": false,
+        "full_windows_editor_ci_required": false,
+        "allow_slice_delivery_keep_issue_open": true,
+        "zero_overlap_main_drift_policy": "merge_if_disjoint_and_ci_green_else_reverify",
+        "mandatory_ci_checks": [
+          "CI / Modular tests",
+          "CI / Select changed modules",
+          "Module / maliang",
+          "blender-geometry / Original Windows CLI and real Blender geometry",
+          "issue-association",
+          "maliang-offline / editor / Editor (target=editor)",
+          "maliang-offline / package-and-run",
+          "📊 Static checks / Code style, file formatting, and docs"
+        ],
+        "review_evidence_policy": "reuse_bound_evidence_recheck_affected_changes",
+        "github_approval_policy": "actual_branch_rules_only"
+      },
+      "ci_policy": "module-registry",
+      "tier_role": "legacy_review_hint",
+      "module_selection": {
+        "schema_version": 1,
+        "mode": "changed",
+        "base": "632dd860907d08c8e10d424de8995de87a167970",
+        "head": "75bd15787ae232a93c613a15de786ce91ec7ab7e",
+        "changed_files": [
+          "data-collection/maliang-image-artifact-nodes-20261120-pr.md",
+          "data-collection/maliang-image-artifact-nodes-20261120-validation.json",
+          "data-collection/requests/maliang-image-artifact-nodes-20261120/5b470059-7d85-48df-ba21-54e00e814df6.json",
+          "design-docs/maliang-image-artifact-nodes-20261120.md",
+          "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-bdb90aa938fe0e5b6590d492872206e77285780c3f57f8c4d57af59bf1610ac9.json",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/kuafu-ab0d2e112767c16072f4bb293414613eb0eb0afe.json",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/maliang-image-artifact-nodes-20261120-request.json",
+          "samples/ainative-workbench/addons/ainative/workbench.gd",
+          "samples/ainative-workbench/artifact_node_acceptance.gd",
+          "samples/ainative-workbench/prompt_refresh_acceptance.gd",
+          "tools/ainative/test_prompt_refresh_factory.py"
+        ],
+        "path_ownership": {
+          "data-collection/maliang-image-artifact-nodes-20261120-pr.md": "repository-metadata",
+          "data-collection/maliang-image-artifact-nodes-20261120-validation.json": "repository-metadata",
+          "data-collection/requests/maliang-image-artifact-nodes-20261120/5b470059-7d85-48df-ba21-54e00e814df6.json": "repository-metadata",
+          "design-docs/maliang-image-artifact-nodes-20261120.md": "docs",
+          "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-bdb90aa938fe0e5b6590d492872206e77285780c3f57f8c4d57af59bf1610ac9.json": "repository-metadata",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/kuafu-ab0d2e112767c16072f4bb293414613eb0eb0afe.json": "repository-metadata",
+          "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/maliang-image-artifact-nodes-20261120-request.json": "repository-metadata",
+          "samples/ainative-workbench/addons/ainative/workbench.gd": "maliang",
+          "samples/ainative-workbench/artifact_node_acceptance.gd": "maliang",
+          "samples/ainative-workbench/prompt_refresh_acceptance.gd": "maliang",
+          "tools/ainative/test_prompt_refresh_factory.py": "maliang"
+        },
+        "modules": [
+          "maliang",
+          "docs",
+          "repository-metadata"
+        ],
+        "generic_matrix": [
+          {
+            "module": "maliang",
+            "runs_on": "ubuntu-latest"
+          }
+        ],
+        "status_checks": {
+          "maliang": [
+            "Module / maliang",
+            "blender-geometry / Original Windows CLI and real Blender geometry",
+            "maliang-offline / package-and-run",
+            "maliang-offline / editor / Editor (target=editor)"
+          ],
+          "docs": [],
+          "repository-metadata": []
+        }
+      },
+      "registry_sha256": "e1163353cc55eccc363010b8369bd31ad95ebe06382485fbef01d7c0a4731ce3"
+    },
+    "business_acceptance": "not_claimed",
+    "handoff": "original_publisher_retains_ownership"
+  },
+  "limitations": [
+    "Review reuse is the delivery contract and existing candidate binding; no new review cache is claimed.",
+    "Original business PR1682 is not merged or accepted by this task.",
+    "Exact candidate CI and main readback follow publication."
+  ]
+}

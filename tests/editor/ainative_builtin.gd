@@ -31,9 +31,9 @@ func finish():
 
 func wait_idle():
 	var deadline = Time.get_ticks_msec()+45000
-	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec()<deadline:
+	while (not panel.jobs.is_empty() or panel.auto_step or panel.is_preview_loading()) and Time.get_ticks_msec()<deadline:
 		await create_timer(.02).timeout
-	return check(panel.jobs.is_empty() and not panel.auto_step,'real host subprocess completed')
+	return check(panel.jobs.is_empty() and not panel.auto_step and not panel.is_preview_loading(),'real host subprocess completed')
 
 func run():
 	if OS.get_environment('AINATIVE_TEST_MODE')=='runtime':
@@ -63,6 +63,13 @@ func run():
 	if not check(panel!=null and panel.get_meta('ainative_builtin',false),'native tab opens the bundled workbench without addons'):
 		finish(); return
 	await process_frame
+	check(panel.process_button != null and panel.get_child(panel.get_child_count() - 1) == panel.process_button, 'native MaLiang keeps the view-process button at the bottom')
+	panel.process_button.pressed.emit()
+	await process_frame
+	check(panel.process_panel.visible and panel.process_steps != null and panel.process_logs != null, 'native process panel exposes reasoning steps and full logs')
+	panel.find_child('MinimizeProcessButton', true, false).pressed.emit()
+	await process_frame
+	check(not panel.process_panel.visible and panel.process_button.text == '查看具体过程', 'native process panel minimizes without leaving MaLiang')
 	await verify_workspace(dock,tabs)
 	if OS.get_environment('AINATIVE_TEST_MODE')=='sample':
 		await create_timer(.3).timeout
@@ -83,11 +90,14 @@ func run():
 	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
 	var kinds = []
 	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_metadata(i))
-	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust'],'unified image generation and all three Mesh node kinds are available')
+	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust','human_shape_adjust','humanoid_rig','garment_split'],'unified image generation, Mesh processing, pre-rig human shape adjustment, local humanoid rig and garment surface split nodes are available')
 	for i in panel.generator_choice.item_count:
 		panel.generator_choice.select(i)
 		panel.add_generator()
 		check(panel.nodes.back().type==kinds[i],'Chinese generator option preserves protocol: '+kinds[i])
+		if kinds[i]=='human_shape_adjust':
+			check(panel.parameter_form.rows.height_cm.visible and not panel.parameter_form.rows.height_m.visible and panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with centimeter height and automatic AINative pose and landmark fitting')
+			check(panel.apply_fields() and not panel.nodes.back().parameters.has('prompt') and not panel.nodes.back().parameters.has('landmarks') and not panel.nodes.back().parameters.has('confirmed'),'bundled human shape apply adds neither prompt, manual landmarks nor human confirmation')
 		panel.delete_node()
 	panel.generator_choice.select(2)
 	panel.select_node(panel.nodes[0].id)
@@ -96,12 +106,16 @@ func run():
 	verify_chinese_controls()
 	await verify_settings_navigation(dock)
 	await verify_generation_service_controls()
+	verify_capability_notice()
+	verify_failure_dialog()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
 	details.state_key = panel.state_dir.get_file()
+	details.state_root = panel.state_dir
 	details.host_sha256 = FileAccess.get_sha256(panel.host_edit.text)
 	var bundle = tools.get_base_dir()
+	details.bundle_root = bundle
 	details.bundle_version = bundle.get_file()
 	details.bundle_sha256 = {'manifest.json':FileAccess.get_sha256(bundle.path_join('manifest.json'))}
 	for folder in ['scripts', 'tools']:
@@ -127,11 +141,13 @@ func run():
 		finish(); return
 	verify_importer_conversion()
 	await verify_mesh()
+	await verify_garment_node()
 	await verify_rigging()
 	await prepare_portable_runtime()
 	var capture = OS.get_environment('AINATIVE_TEST_CAPTURE')
 	if not capture.is_empty():
 		panel.native_buttons.rig.pressed.emit()
+		panel.process_button.pressed.emit()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')
@@ -141,15 +157,16 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker preserves the eight supported service modes')
+	check(service_modes == ["comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker removes offline and preserves seven supported choices')
 	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
-	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
+	check(panel._service_mode() == "comfy" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
+	panel.endpoint_edit.text = 'http://127.0.0.1:1'
 	var serial = panel.serial
 	panel.check_service()
 	if not await wait_idle(): return
-	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "offline" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
-	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
+	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "comfy" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
+	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking an unconfigured service neither invents readiness nor activates configuration')
 	panel.select_service_mode('kimi_native')
 	panel.service_choice.item_selected.emit(panel.service_choice.selected)
 	panel.kimi_model_edit.text = 'obsolete-language-model'
@@ -162,7 +179,7 @@ func verify_generation_service_controls():
 	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
 	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible and not panel.endpoint_edit.visible and not panel.endpoint_edit.editable and draft.endpoint.is_empty() and not draft.has('kimi_model'), 'Kimi Native exposes direct 3D settings and discards obsolete language model routing')
-	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native', 'both Mesh generation kinds and model adjustment route to Kimi Native')
+	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native' and panel._generator_provider('human_shape_adjust') == 'kimi_native', 'Mesh generation, model adjustment and local human shape adjustment route to Kimi Native')
 	check(panel._generator_provider('generate_image') == 'kimi_work_image' and panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'unified and legacy 2D kinds route to the independent Kimi Work image service')
 	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
 	panel.save_service_settings()
@@ -178,15 +195,26 @@ func verify_generation_service_controls():
 	restored.hide()
 	await process_frame
 	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.service_saved.endpoint.is_empty() and not restored.service_saved.has('kimi_model') and not restored.endpoint_edit.visible and restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path, 'Kimi Native settings survive a real Workbench reopen')
+	restored.select_service_mode('codex')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	restored.cli_path_edit.text = 'unsaved-native-codex'
+	restored.select_service_mode('comfy')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	restored.endpoint_edit.text = 'http://127.0.0.1:65432'
+	restored.select_service_mode('kimi_native')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	check(restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path and restored.service_saved == draft, 'native service switching restores Kimi without replacing the active saved provider')
+	var profiles = JSON.parse_string(FileAccess.get_file_as_string(restored.service_profiles_path))
+	check(profiles is Dictionary and profiles.get('profiles', {}).get('codex', {}).get('cli_path') == 'unsaved-native-codex' and profiles.get('profiles', {}).get('comfy', {}).get('endpoint') == 'http://127.0.0.1:65432', 'native unsaved provider settings persist before service startup')
 	restored.queue_free()
 	await process_frame
 	panel.service_choice.select(0)
 	panel.service_choice.item_selected.emit(0)
 	# Changing the draft picker does not replace the saved provider used by jobs.
-	# Restore the controlled offline fixture before any actual Mesh execution.
+	# Save a controlled local configuration before the Mesh Copy execution.
 	panel.save_service_settings()
-	var offline = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
-	check(panel._service_mode() == 'offline' and panel.service_saved.get('mode') == 'offline' and offline is Dictionary and offline.get('mode') == 'offline', 'service setup fixture restores the saved offline provider before execution')
+	var active = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
+	check(panel._service_mode() == 'comfy' and panel.service_saved.get('mode') == 'comfy' and active is Dictionary and active.get('mode') == 'comfy', 'service setup saves a real provider choice without an offline mode')
 
 func verify_context_controls():
 	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')
@@ -201,6 +229,12 @@ func verify_context_controls():
 	panel.graph.popup_request.emit(panel.graph.size - Vector2(20, 20))
 	check(panel.context_menu.visible and panel.serial == serial, 'bundled blank-canvas context opens without executing providers')
 	panel.context_menu.hide()
+	panel.params_edit.text = '{broken'
+	panel.params_edit.text_changed.emit()
+	panel.graph.popup_request.emit(panel.graph.size - Vector2(20, 20))
+	check(panel.context_menu.visible and not panel.failure_dialog.visible, 'bundled blank-canvas context remains available with an invalid inspector draft')
+	panel.context_menu.hide()
+	panel.select_node(panel.nodes[0].id)
 	panel.create_context_node("copy")
 	await process_frame
 	var added = panel.nodes.back().id
@@ -244,6 +278,10 @@ func verify_file_pickers():
 	panel.add_generator()
 	data = panel.nodes.back()
 	check(data.type == 'image_to_mesh' and data.version == '2' and panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'image-to-Mesh accepts multiple source images')
+	data.parameters.prompt = 'legacy hidden requirement'
+	data.text = 'legacy hidden node text'
+	panel.select_node(data.id)
+	check(not panel.parameter_form.prompt_edit.is_visible_in_tree() and not panel.node_image_model_edit.is_visible_in_tree() and data.parameters.prompt.is_empty() and data.text.is_empty(), 'bundled image-to-Mesh is image-only and clears legacy text without a redraw model')
 	panel.source_picker.files_selected.emit(PackedStringArray([source, source]))
 	check(data.source_paths.size() == 2, 'image-to-Mesh preserves picked source ordering')
 	panel.delete_node()
@@ -253,7 +291,7 @@ func verify_file_pickers():
 	panel.generator_choice.select(3)
 	panel.add_generator()
 	data = panel.nodes.back()
-	check(data.type == 'model_adjust' and data.parameters.prompt.is_empty() and panel.output_kind(data) == 2, 'model adjustment starts with optional guidance and a Mesh output')
+	check(data.type == 'model_adjust' and data.version == '2' and data.parameters.prompt.is_empty() and panel.output_kind(data) == 2, 'model adjustment starts with optional guidance, local-operation V2 support and a Mesh output')
 	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILE and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'model adjustment takes one source model and ordered reference images')
 	check(str(panel.source_picker.filters).contains('*.glb') and str(panel.source_picker.filters).contains('*.gltf') and not str(panel.source_picker.filters).contains('*.png'), 'model adjustment source picker accepts models rather than images')
 	var model_source = ProjectSettings.globalize_path('res://fixture.glb')
@@ -360,6 +398,48 @@ func verify_chinese_controls():
 	var error = panel.diagnostic_error('测试操作失败','FileNotFoundError: synthetic diagnostic')
 	check(error.contains('失败') and not error.contains('FileNotFoundError') and FileAccess.get_file_as_string(panel.state_dir.path_join('diagnostics.log')).contains('FileNotFoundError'),'raw external failure details are retained locally behind a Chinese summary')
 
+func verify_capability_notice():
+	var artifact = {
+		'id':'capability-test','revision':'a'.repeat(64),'type':'mesh',
+		'payload':{'provenance':{'capability_limited':true,'visual_review_passed':false,'unresolved_issues':['Body proportions require unsupported geometry editing','Hair is too tall']}}
+	}
+	var state = {'state':'succeeded','result':{'artifacts':[artifact]}}
+	check(panel._capability_limited_artifact(state)==artifact,'capability-limited success is detected from mesh provenance')
+	var notice = panel._capability_notice_text(artifact)
+	check(notice.contains('成功结果交付') and notice.contains('视觉审核未完全通过') and notice.contains('整体或局部比例') and notice.contains('发型'),'capability notice distinguishes delivery from full review and lists Chinese issue summaries')
+	check(not notice.contains('review') and not notice.contains('SHA256') and not notice.contains('Body proportions') and not notice.contains('Hair is'),'capability dialog and status do not expose English review prose')
+	panel._show_capability_notice('synthetic-node',artifact)
+	check(panel.capability_notice_dialog.visible and panel.capability_notices.size()==1,'capability-limited delivery opens one native warning dialog')
+	panel.capability_notice_dialog.hide()
+	panel._show_capability_notice('synthetic-node',artifact)
+	check(panel.capability_notices.size()==1,'same run, node and model do not repeatedly open the warning')
+	state.result.artifacts[0].payload.provenance.capability_limited = false
+	check(panel._capability_limited_artifact(state).is_empty(),'ordinary fully reviewed success does not open a capability warning')
+
+func verify_failure_dialog():
+	var previous_run = panel.run_id
+	var previous_link = panel.service_config_link.visible
+	panel.run_id = 'synthetic-failure-run'
+	var reason = 'Kimi 视觉理解与复核缺少 KIMI_API_KEY；合成测试未提交生成。'
+	var failed = {'state':'failed','nodes':{'broken':{'state':'failed','attempt':0,'error':'provider_failed','public_error':reason,'job':{'error':'provider_failed'}}}}
+	panel._controller_completed('status',failed,{})
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains(reason) and panel.failure_text.text.contains('broken'),'failed node opens a dialog containing the actual provider reason')
+	check(not panel.failure_text.editable and panel.failure_text.selecting_enabled and panel.failure_copy_button.text=='复制全部报错','failure dialog provides selectable text and an explicit copy action')
+	var notice_count = panel.failure_notices.size()
+	panel._controller_completed('status',failed,{})
+	check(panel.failure_notices.size()==notice_count,'automatic polling does not repeatedly open the same node failure')
+	panel.failure_copy_button.pressed.emit()
+	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
+		check(DisplayServer.clipboard_get()==panel.failure_text.text and panel.failure_copy_hint.text.contains('已复制'),'copy action places the complete failure on the clipboard')
+	else:
+		check(panel.failure_copy_hint.text.contains('手动选择文本复制'),'unsupported display offers manual selection instead of a false clipboard success')
+	panel.failure_dialog.hide()
+	panel._show_run_problem('服务配置无效：合成测试','ai')
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains('服务配置无效'),'service and validation failures use the same copyable dialog')
+	panel.failure_dialog.hide()
+	panel.run_id = previous_run
+	panel.service_config_link.visible = previous_link
+
 func verify_importer_conversion():
 	var converter = load(panel.get_script().resource_path.get_base_dir().path_join('runtime_mesh.gd'))
 	if not check(converter!=null,'bundled local GLTF runtime converter loads'): return
@@ -462,6 +542,18 @@ func verify_mesh():
 	if not await wait_idle(): return
 	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('失败'),'Mesh publication cannot overwrite an existing version')
 	check(FileAccess.get_sha256(source)==before,'offline run and publication preserve source Mesh bytes')
+	var result_node = panel.selected_id
+	panel.path_edit.text = panel.state_dir.path_join('generated-workflow.json')
+	panel.save_graph()
+	var saved_workflow = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(saved_workflow.get('output_history',{}).get(result_node,[]).size()==1,'builtin workflow embeds the generated GLB after execution')
+	panel.open_graph()
+	panel.select_node(result_node)
+	if not await wait_idle(): return
+	print('OUTPUT_PERSISTENCE_STATUS ',panel.status.text,' RUN ',panel.run_id,' HISTORY ',panel.preview_history.keys(),' PATH ',panel.preview_source_path)
+	check(panel.run_id.is_empty() and panel.preview_history.get(result_node,[]).size()==1,'builtin workflow restores generated-result history without another Executor run')
+	check(panel.preview_source_path.begins_with(panel.path_edit.text+'.assets/') and FileAccess.get_sha256(panel.preview_source_path)==before,'builtin restored GLB is a durable byte-identical content-addressed file')
+	check(is_instance_valid(panel.preview_scene),'builtin restored GLB decodes into the existing Mesh preview')
 	panel.native_buttons.other.pressed.emit()
 	await process_frame
 	check(panel.native_sections.split.is_visible_in_tree() and panel.mesh_container.is_visible_in_tree(),'other tools retain the shared Mesh preview viewport')
@@ -470,12 +562,18 @@ func verify_mesh():
 	await process_frame
 	check(not panel.graph.visible and panel.rigging_panel.is_visible_in_tree(),'rigging navigation opens its controls directly')
 
-func make_humanoid(path: String) -> bool:
+func make_humanoid(path: String, include_review: bool = true) -> bool:
 	var scene = Node3D.new()
 	scene.name = 'SyntheticTPoseFixtureNotAI'
 	for box in [
 		[Vector3(0,1.05,0),Vector3(.38,.62,.22)],
 		[Vector3(0,1.6,0),Vector3(.25,.35,.25)],
+		[Vector3(0,1.405,0),Vector3(.12,.12,.12)],
+		[Vector3(-.05,1.63,.126),Vector3(.04,.025,.015)],
+		[Vector3(.05,1.63,.126),Vector3(.04,.025,.015)],
+		[Vector3(0,1.585,.14),Vector3(.04,.06,.04)],
+		[Vector3(0,1.52,.127),Vector3(.075,.014,.012)],
+		[Vector3(0,1.46,.126),Vector3(.1,.035,.02)],
 		[Vector3(.55,1.28,0),Vector3(.8,.16,.16)],
 		[Vector3(-.55,1.28,0),Vector3(.8,.16,.16)],
 		[Vector3(.11,.38,0),Vector3(.16,.76,.18)],
@@ -495,11 +593,122 @@ func make_humanoid(path: String) -> bool:
 	var error = document.append_from_scene(scene,state)
 	if error==OK: error = document.write_to_filesystem(state,path)
 	scene.free()
-	return check(error==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
+	if error != OK: return check(false,'synthetic T-pose GLB fixture is encoded without AI inference')
+	if not include_review: return true
+	# This fixture has explicit eyes, nose, mouth, chin and an overlapping neck.
+	# Record only that synthetic geometry review, not a human identity verdict.
+	var file = FileAccess.open(path,FileAccess.READ)
+	if file == null: return check(false,'synthetic fixture GLB can be reopened')
+	var geometry_sha = FileAccess.get_sha256(path)
+	file.seek(12)
+	var length = file.get_32()
+	file.seek(20)
+	var json_document = JSON.parse_string(file.get_buffer(length).get_string_from_utf8())
+	var binary_size = file.get_32()
+	file.get_32()
+	var binary = file.get_buffer(binary_size)
+	file.close()
+	if not json_document is Dictionary: return check(false,'synthetic fixture GLB JSON is valid')
+	json_document.asset['extras'] = json_document.asset.get('extras',{})
+	json_document.asset.extras['maliang_head_review'] = {
+		'schema_version':1,
+		'mode':'automatic',
+		'ai_reviewed':true,
+		'geometry_sha256':geometry_sha,
+		'head_geometry_mode':'integrated',
+		'passed':true,
+		'head_gate':{
+			'applicable':true,
+			'complete_face':true,
+			'neck_join_pass':true,
+			'observation':'Explicit synthetic eyes, nose, mouth, chin and overlapping neck; not a human identity assessment.'
+		},
+		'head_views':{'head_front':true,'head_three_quarter':true,'head_side':true},
+		'evidence':'synthetic_fixture_explicit_geometry_not_identity',
+		'rigging_verified':false,
+		'animation_verified':false
+	}
+	var encoded = JSON.stringify(json_document).to_utf8_buffer()
+	while encoded.size()%4 != 0: encoded.append(32)
+	var output = FileAccess.open(path,FileAccess.WRITE)
+	if output == null: return check(false,'synthetic fixture metadata can be written')
+	output.store_string('glTF')
+	output.store_32(2)
+	output.store_32(28+encoded.size()+binary_size)
+	output.store_32(encoded.size())
+	output.store_string('JSON')
+	output.store_buffer(encoded)
+	output.store_32(binary_size)
+	output.store_32(0x004E4942)
+	output.store_buffer(binary)
+	output.close()
+	return check(output.get_error()==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
+
+func verify_garment_node():
+	var source = ProjectSettings.globalize_path('res://rigged.glb')
+	var before = FileAccess.get_sha256(source)
+	panel.generator_choice.select(6)
+	panel.add_generator()
+	var data: Dictionary = panel.nodes.back()
+	check(panel.apply_fields() and data.parameters.items.is_empty(), 'bundled garment node applies and preserves an empty saveable draft')
+	data.parameters = {"items":[{"id":"cloth","label":"测试衣服","category":"garment","slot":"other","behavior":"skinned","confidence":1.0,"review_state":"confirmed","selection":{"mode":"reviewed_triangles","primitives":[{"node":0,"primitive":0,"triangles":[0]}]}}]}
+	panel.select_node(str(data.id))
+	panel.source_picker.file_selected.emit(source)
+	check(not panel.parameter_form.garment_items_edit.visible and panel.apply_fields(),'bundled garment node keeps developer geometry JSON out of ordinary UI')
+	panel.run_node_preview(str(data.id))
+	if not await wait_idle(): return
+	details.garment_execution = {'current':panel.current.duplicate(true),'failure':panel.failure_text.text,'status':panel.status.text,'host':panel.host_edit.text,'selected':str(data.id)}
+	check(panel.current.get('state')=='succeeded','bundled garment node executes through its installed local Provider')
+	var entry: Dictionary = panel._latest_mesh_entry(str(data.id))
+	check(not entry.is_empty() and entry.get('iterations',[]).size()==1,'bundled garment node publishes collection and independent garment GLB')
+	check(entry.get('provenance',{}).get('rigged',false) and entry.get('provenance',{}).get('skeleton_preserved',false) and entry.get('provenance',{}).get('skin_weights_preserved',false),'bundled garment node preserves the original skeleton and skin weights')
+	check(panel.host_edit.text.contains('/ainative/bundles/'),'garment node host is the actual installed bundle')
+	await settle()
+	var cards = panel.artifact_nodes.values().filter(func(record): return record.get('artifact_role','')=='garment')
+	check(cards.size()==1 and cards[0].entry.get('provenance',{}).get('garment_id','')=='cloth','bundled garment node creates its semantic independent artifact card')
+	if cards.size()==1:
+		panel.add_node()
+		var consumer_id = str(panel.nodes.back().id)
+		var garment_card = panel.graph.get_node(NodePath(str(cards[0].id))) as GraphNode
+		var thumbnail = garment_card.get_node('ArtifactMeshPreview')
+		var deadline = Time.get_ticks_msec()+10000
+		while thumbnail.is_loading() and Time.get_ticks_msec()<deadline: await process_frame
+		check(not thumbnail.is_loading(),'bundled garment thumbnail finishes its initial decode before connection')
+		var before_instances: Dictionary = {}
+		for child in panel.graph.get_children():
+			if child is GraphNode: before_instances[str(child.name)] = child.get_instance_id()
+		var before_decode: int = thumbnail.decode_count
+		panel.connect_nodes(str(cards[0].id),0,consumer_id,0)
+		var preserved = true
+		for id in before_instances:
+			var current = panel.graph.get_node_or_null(NodePath(id))
+			if current==null or current.get_instance_id()!=before_instances[id]: preserved = false
+		check(preserved,'bundled garment connection preserves every existing graph and artifact instance')
+		check(thumbnail.decode_count==before_decode,'bundled garment connection does not decode the GLB thumbnail again')
+		check(panel.graph.get_connection_list().any(func(edge): return str(edge.from_node)==str(cards[0].id) and str(edge.to_node)==consumer_id),'bundled garment connection adds only the selected artifact wire')
+		panel.disconnect_nodes(str(cards[0].id),0,consumer_id,0)
+		preserved = true
+		for id in before_instances:
+			var current = panel.graph.get_node_or_null(NodePath(id))
+			if current==null or current.get_instance_id()!=before_instances[id]: preserved = false
+		check(preserved and thumbnail.decode_count==before_decode,'bundled garment disconnect also preserves nodes and decoded previews')
+		check(not panel.edges.any(func(edge): return edge.to==consumer_id),'bundled garment disconnect removes only the consumer edge')
+	if not entry.is_empty():
+		panel.load_preview(entry,str(data.id),str(entry.get('run','')))
+		await settle()
+		var garment_meshes: Array = []
+		if is_instance_valid(panel.preview_scene):
+			garment_meshes = panel.preview_scene.find_children('*','MeshInstance3D',true,false)
+			if panel.preview_scene is MeshInstance3D: garment_meshes.append(panel.preview_scene)
+		check(not garment_meshes.is_empty(),'bundled garment collection preview decodes into actual Mesh geometry')
+		details.garment_execution = {'host':panel.host_edit.text,'collection':entry.get('artifact',{}).duplicate(true),'status':panel.current.get('state',''),'source_sha256':before}
+	check(FileAccess.get_sha256(source)==before,'bundled garment extraction preserves source GLB bytes')
 
 func verify_rigging():
 	var rig = panel.rigging_panel
+	check(not rig.advanced_panel.visible,'rigging defaults to the simple one-click interface')
 	rig.set_source(ProjectSettings.globalize_path('res://fixture.glb'))
+	check(not rig.bind_button.disabled and rig.check_button.disabled and rig.save_button.disabled,'one-click source selection enables only binding')
 	rig.confirm.button_pressed = true
 	rig.fit()
 	if is_instance_valid(rig.built):
@@ -513,13 +722,14 @@ func verify_rigging():
 	if not make_humanoid(source): return
 	var source_hash = FileAccess.get_sha256(source)
 	rig.set_source(source)
-	rig.confirm.button_pressed = true
-	rig.fit()
-	if not check(is_instance_valid(rig.built),'synthetic T-pose builds an actual bound character'):
+	rig.bind_one_click()
+	if not check(is_instance_valid(rig.built),'synthetic T-pose builds an actual bound character through one-click binding'):
 		details.rig_diagnostic = rig.message.text
 		print('RIG_DIAGNOSTIC ',rig.message.text)
 		return
-	check(rig.built.get_meta('rigging',{}).get('status')=='reviewed_template','suitable confirmed T-pose reaches the reviewed binding state')
+	check(rig.params.one_click and not rig.confirm.button_pressed,'one-click binding needs no manual confirmation or advanced parameters')
+	check(rig.built.get_meta('rigging',{}).get('status')=='reviewed_template','automatic anatomy checks allow a suitable T-pose to be saved')
+	check(not rig.check_button.disabled and not rig.save_button.disabled,'successful one-click binding exposes deformation checking and saving')
 	var skeleton = rig.built.get_node('Skeleton3D') as Skeleton3D
 	var body = rig.built.get_node('Body') as MeshInstance3D
 	check(skeleton.get_bone_count()==18 and body.skin.get_bind_count()==18,'binding creates 18 real bones and Skin bind poses')
@@ -559,7 +769,14 @@ func verify_rigging():
 		movement[motion] = maximum
 		check(animation.current_animation==motion and maximum>.01,'actual skinned ROM deformation: '+motion)
 	details.rom_maximum_displacement = movement
-	rig.rest()
+	rig.check_deformations()
+	check(animation.current_animation=='raise_arms' and rig.deformation_queue.size()==3,'deformation check starts the automatic motion sequence')
+	rig._process(2.1)
+	check(animation.current_animation=='squat','deformation check advances to squat')
+	rig._process(2.1)
+	check(animation.current_animation=='turn','deformation check advances to turn')
+	rig._process(2.1)
+	check(rig.deformation_queue.is_empty() and animation.current_animation.is_empty(),'deformation check restores the rest pose')
 	rig.target.text = panel.state_dir.path_join('rig-v1.tscn')
 	rig.save_version()
 	if not check(FileAccess.file_exists(rig.target.text),'reviewed rig publishes a new character version'): return
@@ -571,6 +788,56 @@ func verify_rigging():
 	rig.reopen()
 	check(is_instance_valid(rig.built) and rig.source==source and rig.source_field.text==source,'reopening a bound version restores both source model state and visible source input')
 	check(FileAccess.get_sha256(source)==source_hash,'binding, animation and publication preserve source GLB bytes')
+	verify_humanoid_node(source)
+	rig.target.text = panel.state_dir.path_join('rig-v1.tscn')
+	rig.reopen()
+
+func synthetic_ai_receipt(source_sha: String) -> Dictionary:
+	return {'passed':true,'source_sha256':source_sha,'head_review':{
+		'schema_version':2,'mode':'automatic','ai_reviewed':true,'passed':true,
+		'geometry_sha256':source_sha,'source_sha256':source_sha,'head_geometry_mode':'integrated',
+		'head_gate':{'applicable':true,'complete_face':true,'neck_join_pass':true,'identity_pass':true,'face_proportions_pass':true,'animation_geometry_pass':true,'observation':'synthetic AI adapter receipt'},
+		'head_views':{'head_front':true,'head_three_quarter':true,'head_side':true},
+		'acceptance':{'top_view':'approximate_allowed','face':'recognizable_identity_normal_proportions','animation':'geometry_readiness_only_rig_unverified'},
+		'animation_geometry_ready':true,'rigging_verified':false,'animation_verified':false}}
+
+func verify_humanoid_node(source: String):
+	panel.humanoid_text_review_fixture = {
+		'schema_version':1,'text_only':true,'synthetic':true,'passed':true,'local_passed':true,
+		'summary':'合成文本回执：本地实测证据完整。','issues':[],'feedback':[],
+		'repair':{'command':'none','parameters':{}},'retry_count':1,'max_retries':3,
+		'review_document':{'schema_version':1,'passed':true},'api_receipt':{'provider':'synthetic_fixture'}
+	}
+	var id = 'humanoid_node'
+	panel.nodes.append({'id':id,'type':'humanoid_rig','version':'1','provider':'local-humanoid-rig','source':source,'image_context':'','text':'','parameters':{'height_m':1.8},'x':40.0,'y':60.0})
+	panel.rebuild()
+	panel.select_node(id)
+	check(panel.node_run_blocker(id).is_empty(),'bundled humanoid node runs without a generation service')
+	panel.run_node_preview(id)
+	var entry = panel._latest_character_entry(id)
+	check(not entry.is_empty() and not entry.get('provenance',{}).get('capability_limited',true),'bundled humanoid node produces a fully ROM-validated character')
+	if entry.is_empty():
+		details.humanoid_node_diagnostic = panel.status.text
+		return
+	check(entry.provenance.get('anatomical_bone_count',0)==17 and entry.provenance.get('validation',{}).get('bone_count',0)==18,'bundled node output has seventeen anatomical bones plus independent root')
+	check(FileAccess.file_exists(entry.path) and FileAccess.get_sha256(entry.path)==entry.artifact.revision,'bundled character artifact is durable and digest-bound')
+	panel._open_preview_rigging()
+	check(panel.rigging_panel.visible and is_instance_valid(panel.rigging_panel.built) and panel.rigging_panel.source==source,'double-click action enters bundled rigging with the matching source')
+	var unreviewed = panel.state_dir.path_join('synthetic-unreviewed.glb')
+	if not make_humanoid(unreviewed,false): return
+	panel.show_native_section('mesh')
+	panel.select_node(id)
+	panel._set_node_file('source',unreviewed)
+	var before = panel.preview_history.get(id,[]).size()
+	check(panel.has_method('_start_humanoid_ai_review') and not panel.has_method('_confirm_head_review'),'bundled node exposes AI review and no manual confirmation callback')
+	var input_entry = panel._direct_humanoid_input(id)
+	panel.humanoid_review_node = id
+	panel.humanoid_review_source = unreviewed
+	panel.humanoid_review_directory = 'synthetic-native-ai-review'
+	panel.humanoid_review_input = input_entry.duplicate(true)
+	panel._complete_humanoid_ai_review(synthetic_ai_receipt(FileAccess.get_sha256(unreviewed)),{'directory':'synthetic-native-ai-review'})
+	var reviewed = panel._latest_character_entry(id)
+	check(not reviewed.is_empty() and panel.preview_history.get(id,[]).size()>before and reviewed.get('provenance',{}).get('source_sha256','')==FileAccess.get_sha256(unreviewed),'accepted synthetic AI receipt resumes the bundled rig and binds the new source')
 
 func prepare_portable_runtime():
 	var rig = panel.rigging_panel

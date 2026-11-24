@@ -73,8 +73,7 @@ func initialize(workbench, settings: ConfigFile):
 	chooser.title = '选择已有 ComfyUI 本机运行库'
 	chooser.dir_selected.connect(func(path): runtime_path.text = path)
 	add_child(chooser)
-	var fresh = (host._service_mode() == 'offline'
-			and not settings.has_section_key('service', 'mode')
+	var fresh = (not settings.has_section_key('service', 'mode')
 			and not FileAccess.file_exists(host.service_config_path)
 			and host.factory_edit.text == 'editor_demo:factory')
 	var default_bundle = fresh and using_bundle() and _uses_native_host()
@@ -149,7 +148,7 @@ func operate(action: String):
 		if not FileAccess.file_exists(interpreter):
 			failed(host.diagnostic_error('发行包缺少内置 Python，请恢复完整发行包。', interpreter))
 			return
-	else:
+	elif host._service_mode() in ['codex', 'local_mesh']:
 		for candidate in ['venv/Scripts/python.exe', 'venv/bin/python']:
 			var python = root.path_join(candidate)
 			if FileAccess.file_exists(python):
@@ -178,7 +177,7 @@ func completed(data: Dictionary, request: Dictionary):
 		var details = {'code':data.get('code', ''), 'runtime_root':request.runtime_root, 'logs':data.get('log_path', manager_root)}
 		failed(host.diagnostic_error(notice.text, details))
 		return
-	if not using_bundle() and not str(data.get('python', '')).is_empty(): host.python_edit.text = str(data.python)
+	if host._service_mode() in ['codex', 'local_mesh'] and not using_bundle() and not str(data.get('python', '')).is_empty(): host.python_edit.text = str(data.python)
 	if data.get('action') == 'start' and request.runtime_root != lease_runtime: release_connection()
 	if data.get('owned', false) and not str(data.get('lease_path', '')).is_empty():
 		lease_runtime = request.runtime_root

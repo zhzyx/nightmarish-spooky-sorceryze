@@ -1,0 +1,557 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d03",
+  "issue_number": 1860,
+  "base": "b9a5907aa45b31234229abc44c3295b93ed67121",
+  "platform": "macOS arm64",
+  "editor_sha256": "b616b5fcdc5ddeade6ac1e92b34a5387a7adbbcbe1cd92170e1a2664d580ef15",
+  "sources_sha256": {
+    "editor/docks/workbench/module_selector.gd": "16781cbc1a5439f433727b375ef525a3965d5cca7fa3af4ce3fd456f18ff9052",
+    "apps/tianxuan/components/WorkspaceDesign.tsx": "6730262a1ba322654f71e0fbed2b770a7c809d0b34b6de7457ed03e9a5ada03c",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "1ba84b77ae06f5eaf2d579b0a64a2b47c443cd7cbe43a16b3554503bd3c8cee8",
+    "customizations/components/tianxuan/server/test_workspace_conversations.py": "5092818a4f5d5e26b9e94a3a6db26d7b424757ff67e14164b12f4e98367f1ae1",
+    "tests/editor/run_workbench_consultation_design.py": "624633c08a664f9a2d3e5dc7fd45710b18c613e7920666ae779e54e6693f6c76",
+    "tests/editor/workbench_consultation_design.gd": "033a2c0d257eb788feeeea53e9861c6112f49382513e5df1c45a967eef97e10b"
+  },
+  "native": {
+    "windowed": {
+      "editor_version": "4.8.beta.custom_build",
+      "mode": "windowed",
+      "controls": [
+        {
+          "body": "Original design paragraph.\n\nHandwritten note: the lever can be reached from the path.\n\nGoal: open the bridge.\n\nPlan: one lever.\n\nDecision: lever color.\n\nAcceptance: one pull opens the bridge.\n\nUser edit: show the open bridge from the path.",
+          "revision": 3.0,
+          "source": "来源会话 67f71ce3-0223-4df4-9b12-7ef0fb2a602b · 会话版本 5"
+        },
+        {
+          "body": "---\nrequest_id: workspace-47cf30222c6ae8ed558bc20e4c91e912b3f8982bc36f94b1026db0c7d6785c1c\nkind: requirement\nlang: en\n---\n\n# Bridge lever\n\n## 目标\n\nOriginal design paragraph.\n\nHandwritten note: the lever can be reached from the path.\n\nGoal: open the bridge.\n\nPlan: one lever.\n\nDecision: lever color.\n\nAcceptance: one pull opens the bridge.\n\nUser edit: show the open bridge from the path.\n\n## 范围\n\n### Planning (v4)\n\nOperate the lever.\n\n### Detailed design (v5)\n\nOperate the lever.\n\n\n## 验收\n\nOne pull opens the bridge.\n",
+          "document": {
+            "document_id": "doc_750dbc3adc5b453693604f7c489a08af",
+            "paragraph": 1,
+            "version": 1
+          },
+          "source": "67f71ce3-0223-4df4-9b12-7ef0fb2a602b"
+        }
+      ],
+      "gateway_input": {
+        "conversation": [
+          {
+            "user": "How should the bridge open?",
+            "reply": "Use one lever. Decide on the lever color later. Check that one pull opens the bridge."
+          }
+        ],
+        "confirmed_stages": {},
+        "existing_draft": "Original design paragraph.\n\nHandwritten note: the lever can be reached from the path."
+      },
+      "http": [
+        [
+          "POST",
+          "/api/v1/workspace/conversations",
+          201,
+          201
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/turns",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/drafts",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/suggest",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/drafts",
+          409,
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/drafts",
+          200,
+          503
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          null,
+          503
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/direction/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/plan/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/plan/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/design/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/design/design/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b/requirement",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/67f71ce3-0223-4df4-9b12-7ef0fb2a602b",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/docs/doc_750dbc3adc5b453693604f7c489a08af/versions/1",
+          200,
+          200
+        ]
+      ],
+      "result": "passed"
+    },
+    "native": {
+      "editor_version": "4.8.beta.custom_build",
+      "mode": "headless",
+      "controls": [
+        {
+          "body": "Original design paragraph.\n\nHandwritten note: the lever can be reached from the path.\n\nGoal: open the bridge.\n\nPlan: one lever.\n\nDecision: lever color.\n\nAcceptance: one pull opens the bridge.\n\nUser edit: show the open bridge from the path.",
+          "revision": 3.0,
+          "source": "来源会话 114d0f17-fda1-436f-b592-cd05add49f48 · 会话版本 5"
+        },
+        {
+          "body": "---\nrequest_id: workspace-0301d6e67efa9ab142a4d9454197b1233cc1537237b7d54fafb5b38d9dacd412\nkind: requirement\nlang: en\n---\n\n# Bridge lever\n\n## 目标\n\nOriginal design paragraph.\n\nHandwritten note: the lever can be reached from the path.\n\nGoal: open the bridge.\n\nPlan: one lever.\n\nDecision: lever color.\n\nAcceptance: one pull opens the bridge.\n\nUser edit: show the open bridge from the path.\n\n## 范围\n\n### Planning (v4)\n\nOperate the lever.\n\n### Detailed design (v5)\n\nOperate the lever.\n\n\n## 验收\n\nOne pull opens the bridge.\n",
+          "document": {
+            "document_id": "doc_086d193fc8f74403bee7a88febfe6ded",
+            "paragraph": 1,
+            "version": 1
+          },
+          "source": "114d0f17-fda1-436f-b592-cd05add49f48"
+        }
+      ],
+      "gateway_input": {
+        "conversation": [
+          {
+            "user": "How should the bridge open?",
+            "reply": "Use one lever. Decide on the lever color later. Check that one pull opens the bridge."
+          }
+        ],
+        "confirmed_stages": {},
+        "existing_draft": "Original design paragraph.\n\nHandwritten note: the lever can be reached from the path."
+      },
+      "http": [
+        [
+          "POST",
+          "/api/v1/workspace/conversations",
+          201,
+          201
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/turns",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/drafts",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/suggest",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/drafts",
+          409,
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/drafts",
+          200,
+          503
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          null,
+          503
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/direction/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/plan/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/plan/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/design/drafts",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/design/design/confirm",
+          200,
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48/requirement",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/114d0f17-fda1-436f-b592-cd05add49f48",
+          200,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/docs/doc_086d193fc8f74403bee7a88febfe6ded/versions/1",
+          200,
+          200
+        ]
+      ],
+      "result": "passed"
+    }
+  },
+  "web": {
+    "browser": "157.0.8103.79",
+    "conversation": "5218de4e-69c1-4553-ab89-f5842ab231cf",
+    "doc": "doc_5e051d9c54ee47dda3854d323131a789",
+    "direction": "手写方向：保留长按标注。\n\n方案：方形路标。验收：相邻路标可辨。",
+    "local_preserved_after_real_409": true,
+    "handwritten_occurrences": 1,
+    "typing_during_request_preserved": true,
+    "writing_locked_during_save": true,
+    "unicode_codepoint_limit_verified": true,
+    "requests": [
+      [
+        "GET",
+        "/api/v1/workspace/conversations",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/runs",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations",
+        201
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/turns",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/direction/suggest",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/direction/suggest",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/direction/drafts",
+        409
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/direction/drafts",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/direction/confirm",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/plan/drafts",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/plan/confirm",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/design/drafts",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/design/design/confirm",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/requirement",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/requirement-review",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations/5218de4e-69c1-4553-ab89-f5842ab231cf/requirement-review",
+        200
+      ]
+    ]
+  },
+  "regressions": [
+    "C06 module navigation",
+    "C07 asset ownership",
+    "D04 document editing",
+    "U10 pinned document-paragraph references",
+    "workspace conversation HTTP suite"
+  ],
+  "model": "Isolated deterministic service intentionally echoed the handwritten paragraph. No external provider used.",
+  "diagnostics": "The native probes reported resource cleanup warnings at exit. Headless additionally reported a window-position warning on reopen. Both probes verified the visible content, version and original conversation.",
+  "independent_review": {
+    "original_web_and_native": [
+      "6 service regression tests covering persisted precise whitespace, omitted and empty draft_body callers, prompts, database isolation, expected_version and non-mutating suggestions",
+      "Additional direct checks of leading four-space indentation, terminal newline, prose soft wrapping/trailing spaces, indented code across internal blank lines and 8,000 Unicode code points",
+      "Chrome/React actual candidate with temporary transport: unsaved text sent, later typing survives suggestion, late replies do not cross remounted conversation, save prevents typing while pending, valid 4,001 non-BMP response and 8,000/8,001 input boundaries",
+      "Chrome/React real AICommandBar, WorkspaceDesign and workspaceRequest: HTTP 409 on POST followed by one same-conversation GET, local text and remote text both visible, no second POST",
+      "Chrome/React integrated stage navigation: upstream direction save invalidates detailed stage, direction and planning reconfirmed in sequence, prior unsaved detailed design recovered",
+      "Godot arm64 isolated headless and windowed real controls against loopback service: saved/manual and model material integrated once, conflict comparison, save committed/503 receipt then 503 first read, subsequent GET only recovers revision 3, published document v1 reopened via source chat",
+      "Independent edited temporary Godot probe: delayed suggestion crosses real SignOut signal, two model calls completed and one original revision remains, old response restores no text, source, selection or busy state",
+      "Candidate includes main C07 asset ownership navigation and references; git diff --check HEAD succeeded"
+    ],
+    "combined_review_sha256": "64d8b2122a2b7a9da2294f478b62d22fae52fe75bdee880eaa82abfdeb339161",
+    "joint": "The same consultation opened both its published design revision and an older, pinned source paragraph after that document advanced to v2."
+  }
+}

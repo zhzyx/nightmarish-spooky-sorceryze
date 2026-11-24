@@ -1,0 +1,1566 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "milestone_issue": 1711,
+  "scope": "Historical receipt cross-check before K07; formal acceptance remains open. The earlier 897-row extraction has no published row list. The figures below use a new extraction and cannot be subtracted from that older report.",
+  "frozen_source": "91a78e9b17738cf187538e012f75f5e8302f085d",
+  "original_report": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7082964499",
+  "closed_issues_at_freeze": 148,
+  "total_digest_observations": 1019,
+  "classified_counts": {
+    "issue_or_receipt_cited_revision_raw": 499,
+    "unlocated": 82,
+    "retained_file_or_archive_member": 185,
+    "reproduced_package_at_cited_revision": 82,
+    "verified_vendor_archive_member": 75,
+    "unreachable_local_commit_at_same_path": 21,
+    "same_bytes_at_other_git_path": 13,
+    "cited_history_raw": 1,
+    "unreachable_local_blob_without_path": 2,
+    "other_local_git_revision_at_same_path": 4,
+    "validated_diting_event_digest": 16,
+    "retained_candidate_file": 1,
+    "reconstructed_fixture_bytes_at_cited_revision": 35,
+    "regenerated_header_at_cited_revision": 3
+  },
+  "evidence_scope": "Matched bytes, event envelope digests and reproducible outputs are counted separately. Historical execution or delivery requires the original Issue and target receipt. Other paths, local files and unreachable objects carry their observed provenance only.",
+  "private_verification_bundle_sha256": "ebef3748ea11ac2c8d71ff9a736f6d5f3be29607bdefc0240af8f29586f2215f",
+  "verification_index_sha256": "bbd1adca22f487f82efbf7b502a05af24f772dfc87bf0de2b641500d787d437d",
+  "direct_git_sample": [
+    {
+      "path": "samples/gonggong-workbench/fixtures/b05/sample.json",
+      "commit": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+      "sha256": "8f9da1789c13229403edac11fe1e2539cd133c5a26b707a251c9bcdf262c43b3"
+    },
+    {
+      "path": "design-docs/gonggong-ai-workbench-u07.md",
+      "commit": "326480e4e55ad7efddeb9d32e98efc1b7a8ebaa7",
+      "sha256": "971fe180fc1f8ab37c19730898aa7d3135a7c54a83bdcbb461914ba13f834988"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/wenqu_bridge.py",
+      "commit": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+      "sha256": "0963acf487bd46bd851a18a6fafefc3d1c352b089875a018f6501861784c8c3f"
+    },
+    {
+      "path": "tests/editor/workbench_issue_detail.gd",
+      "commit": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+      "sha256": "3c76cfca6148ec0e427014f6c3c7194440926ecf7e5b2dafbece80882400029c"
+    },
+    {
+      "path": "tests/editor/daqian_graph.gd",
+      "commit": "8573f02be4f73206e2ade4337f120d33b6344682",
+      "sha256": "9bd1467b0ce36dc8e70da4bf1ff4ab3fcf70e7ae4fc694e1b7686fd8087d5db5"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "commit": "2c36fac9004881889da355670c80b0531e0dec07",
+      "sha256": "1b4f30cf36b5f30c221e5bea2f737d81433811b572940cfe401e20c91f420569"
+    },
+    {
+      "path": "tests/editor/run_workbench_saved_editor_changes.py",
+      "commit": "9392eef2bc44d87926210fb108a5c405723230f9",
+      "sha256": "70ca259b9574adcf294525a8eea2acbd50b81c13ab410b285a6611ba89171506"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_work_management.py",
+      "commit": "98df392cb058e2a47b4fda3133dc6b6ea03b8d3f",
+      "sha256": "de94a88d067910c6c02c95f654c9253fd3de06f9735cdab9953d6b3ca35edd08"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "commit": "1ee330636c4d6a7d73b82d34d7b609dd341cbe70",
+      "sha256": "79c2b230c2cd81ea9492340d6b22f18cd23398c11d61fd37dc345654d04aea56"
+    },
+    {
+      "path": "editor/docks/daqian/duobao_merge.gd",
+      "commit": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+      "sha256": "4967ea80e27032403bf274293277387595fc914ab844b1add56e0032fb063f31"
+    }
+  ],
+  "still_needed_by_type": {
+    "original source checkout or tested file bytes": 16,
+    "original built executable or archived CI output": 25,
+    "original fixture, private attachment, or worker output": 18,
+    "original private run receipt, configuration, or log": 19,
+    "original generator inputs or generated output": 4
+  },
+  "unlocated_observations": [
+    {
+      "issues": [
+        1864
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c05.json",
+      "receipt_blob": "17eda80a3933e7d46fb3ecefb494b7ca0642380e",
+      "fields": [
+        [
+          "style_reverification",
+          "old_source_hashes",
+          "customizations/components/tianxuan/server/test_workspace_conversations.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "sha256": "ba8d78746665e01e393e87771f044f39a2a6e2ec946ad5c84b9f2b2ec2e6c9e4",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1744
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c06.json",
+      "receipt_blob": "1f4be666ad3db0d45a33bb751efc2ccde5ea8323",
+      "fields": [
+        [
+          "build",
+          "artifact_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "a3ef5f3a4da6ee3b9a40ff8319c857fad28a80666d97836ba495157901556714",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1744
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c06.json",
+      "receipt_blob": "1f4be666ad3db0d45a33bb751efc2ccde5ea8323",
+      "fields": [
+        [
+          "build",
+          "artifact_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "7431d99c0d82a019e1948457881d3d0f470e05230981381c17f3ae120190f0c0",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "services/diagnose.py"
+        ]
+      ],
+      "path": "services/diagnose.py",
+      "sha256": "0e52c09103be36a4f222b7273ba1e8462d07ea74a6162ed1ffd448b068601202",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "services/native_probe.gd"
+        ]
+      ],
+      "path": "services/native_probe.gd",
+      "sha256": "d4ea8844640e179046eb99a9de866ee1a9f85ed2ca4e18b64cb43428c2b18d51",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "services/result.json"
+        ]
+      ],
+      "path": "services/result.json",
+      "sha256": "f97d5aa8675c98d50505ee7665a83331e38f280d2af02f27749b1553407f3bd7",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "editor/context-probe.gd"
+        ]
+      ],
+      "path": "editor/context-probe.gd",
+      "sha256": "94cfc6c9520f85a4625561beb2d80c977d6d0ced7d85854d2cd1c4c60ec94def",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "editor/run_context.py"
+        ]
+      ],
+      "path": "editor/run_context.py",
+      "sha256": "331d9aedb4dc568f6a6d8ceb8186f61c73889a5b1e90e766301d44b36c76aee2",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "editor/out-final/result.json"
+        ]
+      ],
+      "path": "editor/out-final/result.json",
+      "sha256": "f36985da7b1e2efe920d83a2bf9ceaaa50d19053072e254744ae2d095449fb91",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "editor/ref-turns.py"
+        ]
+      ],
+      "path": "editor/ref-turns.py",
+      "sha256": "0861d41296dd354f9466e75f1201929faa48a65b62a30ebb522accb06d0e8d5e",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1744,
+        1780,
+        1785,
+        1809,
+        1810,
+        1829,
+        1844,
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+      "receipt_blob": "f14c31902112a25d40e09ac768470581d678cdf3",
+      "fields": [
+        [
+          "checksums",
+          "editor/ref-turns.json"
+        ]
+      ],
+      "path": "editor/ref-turns.json",
+      "sha256": "6768cb1911fb113d4d00fce712d3f60edfca301ccc9b9ee992a8eac3ef3854e7",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1785
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c07.json",
+      "receipt_blob": "5fefd80e61d5681e797b4892b73a0a6d8b0d51b3",
+      "fields": [
+        [
+          "build",
+          "artifact_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "2ec21e4d60f0492d6624f73cee102ba455b3b269e79dcc36d4fe2a4460052d2e",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "source_sha256",
+          "tests/editor/run_tianshu_spatial.py"
+        ]
+      ],
+      "path": "tests/editor/run_tianshu_spatial.py",
+      "sha256": "b81b1edddfd37b60d6de2b78bb55c511056a834cf5b84bb86c07070bcce65f24",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "integrated/premerge/reference.json"
+        ]
+      ],
+      "path": "integrated/premerge/reference.json",
+      "sha256": "c94c43c0e83e3fcfd908cf399eb4bd6302b4f0f7082a7103fa98e1797470fe8a",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "integrated/premerge/spatial.json"
+        ]
+      ],
+      "path": "integrated/premerge/spatial.json",
+      "sha256": "e736dbe997ecad22e779d39514b920f5668aa9303a9957152067d1836af048c7",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "integrated/premerge/layout.json"
+        ]
+      ],
+      "path": "integrated/premerge/layout.json",
+      "sha256": "48ade3073a063d27cc08dee0f8a755e2cab3d2fc0da280795ebb853398cad614",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "integrated/premerge/consultation.json"
+        ]
+      ],
+      "path": "integrated/premerge/consultation.json",
+      "sha256": "839d84b9b7d422fcb4652040e8c579475bc2f1119e947b8c9c5be46a20523301",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "c08/signed-references.json"
+        ]
+      ],
+      "path": "c08/signed-references.json",
+      "sha256": "1ac4254506fe539ba35968c81c6789eddb61fe6b6b87a5828160dfd0dd4ad108",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "c08-review/original-scope.json"
+        ]
+      ],
+      "path": "c08-review/original-scope.json",
+      "sha256": "aa66feaba69b43532552d6d5f94f79df031c94a95b2da2deeacab0f2ce5d0d55",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1839
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-c08.json",
+      "receipt_blob": "7bf4c181a1ab5b23c15513e4314f19841725744a",
+      "fields": [
+        [
+          "evidence_sha256",
+          "c08-review/run.py"
+        ]
+      ],
+      "path": "c08-review/run.py",
+      "sha256": "b800b25d5cdda621e6c388066379f7efdc77195ee58a6ea51fbee03091e4ad65",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1807
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u03.json",
+      "receipt_blob": "c45aabf930855e7b2098b6dc73300b5275d41047",
+      "fields": [
+        [
+          "candidate",
+          "sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "0ddf046988be405094677fca900edfad093915346e59e744beaea75d3eac6199",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1807
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u03.json",
+      "receipt_blob": "c45aabf930855e7b2098b6dc73300b5275d41047",
+      "fields": [
+        [
+          "candidate",
+          "sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "d268524e26846e206cb5d585fd81c23e79f420480573ae9e02da13120c966441",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1807
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u03.json",
+      "receipt_blob": "c45aabf930855e7b2098b6dc73300b5275d41047",
+      "fields": [
+        [
+          "candidate",
+          "sha256",
+          "u03-build.log"
+        ]
+      ],
+      "path": "u03-build.log",
+      "sha256": "8abf71388110528cca020f111cfaa6f9a8e40308ed4cd82eba6a68ffc1c12c52",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1807
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u03.json",
+      "receipt_blob": "c45aabf930855e7b2098b6dc73300b5275d41047",
+      "fields": [
+        [
+          "candidate",
+          "sha256",
+          "u03-final-build.log"
+        ]
+      ],
+      "path": "u03-final-build.log",
+      "sha256": "a50992bd8a159049556375e70be48654901156fb76eb660fa312ec85d8438f78",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1808
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u04.json",
+      "receipt_blob": "6a767fb38939072ee941b01a837d52f52ee23eab",
+      "fields": [
+        [
+          "targeted_verification",
+          "test_sha256",
+          "ai_chat_tab_order.gd"
+        ]
+      ],
+      "path": "ai_chat_tab_order.gd",
+      "sha256": "1ec397a9e01995583ad03f170a6efa42c1d628339d09f377122a5cf88efeb285",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1745
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u06.json",
+      "receipt_blob": "0d85471024efdbe0ed22d6766a7b1e3298c8d123",
+      "fields": [
+        [
+          "build",
+          "sha256"
+        ]
+      ],
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "sha256": "3d0a93ebb36a46c17ca84e875acd9ded0bc6435c2c5ed32f34713446d93c0298",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "batch/final-run/results.json"
+        ]
+      ],
+      "path": "batch/final-run/results.json",
+      "sha256": "939e6439f9083cf334cd59fb2f207e8604d1658656250dffb764b008fe56d070",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "batch/rerun.py"
+        ]
+      ],
+      "path": "batch/rerun.py",
+      "sha256": "663bd669f4ba6b044444a679c071b7b014d662bf9a3c78d1dcbdcc72018f21e9",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "refs/results.json"
+        ]
+      ],
+      "path": "refs/results.json",
+      "sha256": "214d863f98b30b5bb06081b11b7e322c6ad74c381a2f24c55def2ab30c010aba",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "refs/run.py"
+        ]
+      ],
+      "path": "refs/run.py",
+      "sha256": "68f3798b58bf1b8e532f457ec69fc368cc3decbd8b731e6879cfed2c433c0c93",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "refs/probe.gd"
+        ]
+      ],
+      "path": "refs/probe.gd",
+      "sha256": "ee0225e124c1e3cdc5b3205bc78caa66aa212dc9d6a5c51bfb6fe81fd1d8bc70",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "refs/service.json"
+        ]
+      ],
+      "path": "refs/service.json",
+      "sha256": "f2e979eb40eb54353570d938798a3d64a0789624b582c1edef86a2a0f4b5e758",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1771,
+        1794,
+        1799,
+        1800,
+        1816,
+        1817,
+        1828,
+        1830
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-macos-round3-20261121.json",
+      "receipt_blob": "7cb059e604cc42585169de1f08a94296d855ba30",
+      "fields": [
+        [
+          "raw_evidence_sha256",
+          "d01/before.json"
+        ]
+      ],
+      "path": "d01/before.json",
+      "sha256": "fa8916cfe0dc8001f43bd7289817fcf025a556c57831d846d470e145a8f517c5",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1809
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u12.json",
+      "receipt_blob": "70b7069f2a0905e2ca27ec1a031b342e9d0ddb87",
+      "fields": [
+        [
+          "build",
+          "artifacts_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "1a9c72757b175a3fd9b8fc8a62405f68d4fb3025501a2656e0db107ea0c87abf",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1809
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u12.json",
+      "receipt_blob": "70b7069f2a0905e2ca27ec1a031b342e9d0ddb87",
+      "fields": [
+        [
+          "build",
+          "artifacts_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "4b88f910a7699bcaa8657e863cd1f53df88932608057a4c2d58db343864117ad",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1810
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u15.json",
+      "receipt_blob": "457a9f9c05094d670e283d30cf584cc40c886874",
+      "fields": [
+        [
+          "source_sha256",
+          "tests/editor/run_workbench_reference_removal.py"
+        ]
+      ],
+      "path": "tests/editor/run_workbench_reference_removal.py",
+      "sha256": "0bc8192660bba8ee76b4f279e84cd55a3f873d5f29d4a908d375f7d806428115",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "after.json"
+        ]
+      ],
+      "path": "after.json",
+      "sha256": "ce0fb59a0e120a67c0ba596ba4ba42f3d9b5719658d00db76647d27ecd074ef9",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "legacy-final.json"
+        ]
+      ],
+      "path": "legacy-final.json",
+      "sha256": "dbfbcba9fd29600a50b4a23198b59e4fd0640edbf899b051d4462b9af9cbaec4",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "review/boundary-final.json"
+        ]
+      ],
+      "path": "review/boundary-final.json",
+      "sha256": "0f755a4a4aea09582d7d045ec54199e95e24c6d2177e6199a5d9d06cbce214d4",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "review/tab-final.json"
+        ]
+      ],
+      "path": "review/tab-final.json",
+      "sha256": "cd0214daf4a7cc6b7d3ebb03aba2672df601af080df2803b3f1aae3a329ce2e4",
+      "needed": "original private run receipt, configuration, or log"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "consult.py"
+        ]
+      ],
+      "path": "consult.py",
+      "sha256": "a2ff2d25e6009f69a1f8387ef2564df157410c0ce9c7cab02c5243192511f509",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1862
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d01.json",
+      "receipt_blob": "0c08388666647d36d5ce664d16b56db932789a0c",
+      "fields": [
+        [
+          "test_artifact_sha256",
+          "consult.gd"
+        ]
+      ],
+      "path": "consult.gd",
+      "sha256": "4d55f005799289d33b744b92a55b344646332e0e12e3a2d4fe8e3ebb722228ad",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1857
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d10.json",
+      "receipt_blob": "a9955e8aa9bd5552504c89489d591a1e594c3589",
+      "fields": [
+        [
+          "build",
+          "generated_headers",
+          "BusinessSession.gen.h"
+        ]
+      ],
+      "path": "BusinessSession.gen.h",
+      "sha256": "bdc07bd7b4fefd6d7199f32fcc1ac619a3e0191780484a8862ecea172181765c",
+      "needed": "original generator inputs or generated output"
+    },
+    {
+      "issues": [
+        1857
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d10.json",
+      "receipt_blob": "a9955e8aa9bd5552504c89489d591a1e594c3589",
+      "fields": [
+        [
+          "build",
+          "generated_headers",
+          "IssueCreation.gen.h"
+        ]
+      ],
+      "path": "IssueCreation.gen.h",
+      "sha256": "dd31ce737e6e26f75531b838a7b759f5d9cb8b16834ceefb00a8631982096819",
+      "needed": "original generator inputs or generated output"
+    },
+    {
+      "issues": [
+        1867
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-d14.json",
+      "receipt_blob": "eb348ea43d51c6cc91f060814774cd00d7a05324",
+      "fields": [
+        [
+          "native_product",
+          "project_source_sha256_unchanged",
+          "project.godot"
+        ]
+      ],
+      "path": "project.godot",
+      "sha256": "3483029a70f7a6de28391860b7ad570678ee359dc167a2b2bc105493be9b4498",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1859
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i01.json",
+      "receipt_blob": "25d8cb0ae693ec84361d7d57625f3b9f3f68abea",
+      "fields": [
+        [
+          "regressions",
+          "d14",
+          "project_source_sha256_unchanged",
+          "project.godot"
+        ]
+      ],
+      "path": "project.godot",
+      "sha256": "3483029a70f7a6de28391860b7ad570678ee359dc167a2b2bc105493be9b4498",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1831
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i04.json",
+      "receipt_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41",
+      "fields": [
+        [
+          "source_sha256",
+          "editor/docks/workbench/issue_actions/issue_dependencies.gd"
+        ]
+      ],
+      "path": "editor/docks/workbench/issue_actions/issue_dependencies.gd",
+      "sha256": "b37969f21146c8ea7d1a380857505813950ae266b34ae8650748c44b1c328bdf",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1831
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i04.json",
+      "receipt_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41",
+      "fields": [
+        [
+          "source_sha256",
+          "tests/editor/workbench_issue_dependencies.gd"
+        ]
+      ],
+      "path": "tests/editor/workbench_issue_dependencies.gd",
+      "sha256": "250a5df14a029bb63a80357721ef02e901b2b2b228b21f4586da618d5abbfb7f",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1831
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i04.json",
+      "receipt_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41",
+      "fields": [
+        [
+          "source_sha256",
+          "design-docs/gonggong-ai-workbench-i04.md"
+        ]
+      ],
+      "path": "design-docs/gonggong-ai-workbench-i04.md",
+      "sha256": "3142ba1f9e7daef72b3ca66149521595db2e762687677683cb83af71710b4e89",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1754
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i11.json",
+      "receipt_blob": "6a8a4b7d2648af4ecb59570b90808d3141ec77aa",
+      "fields": [
+        [
+          "native_build",
+          "first_build",
+          "files",
+          "editor/docks/workbench/IssueCreation.gen.h"
+        ]
+      ],
+      "path": "editor/docks/workbench/IssueCreation.gen.h",
+      "sha256": "689b23bdae7be8e7674b3d8fc3ec1aff7fd0a3aac473e74a32aab813e46a6b7d",
+      "needed": "original generator inputs or generated output"
+    },
+    {
+      "issues": [
+        1754
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i11.json",
+      "receipt_blob": "6a8a4b7d2648af4ecb59570b90808d3141ec77aa",
+      "fields": [
+        [
+          "native_build",
+          "first_build",
+          "files",
+          "bin/godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "sha256": "d6ff6ac3ba5a8954c5ebdf34531b325b4e3c64b806f369fa04513fc8b342523d",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1790
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i12.json",
+      "receipt_blob": "844f95a6e8da835393254b7639beb9221a7dcba3",
+      "fields": [
+        [
+          "hashes",
+          "bin/godot.macos.editor.arm64"
+        ]
+      ],
+      "path": "bin/godot.macos.editor.arm64",
+      "sha256": "ed81087d188d04d0f3ba3378f2388d5a59f7de0423abe98848e05074c58fdeb2",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1755
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-i13.json",
+      "receipt_blob": "5fdd2da131fde45d90f60aee0225fa33c98331b5",
+      "fields": [
+        [
+          "build",
+          "sha256",
+          "bin/godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "sha256": "2f881fcda528dc5c85c0b97bccc40b0d348f89e49333cb65e91d14e68fa0d310",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1841
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-a04.json",
+      "receipt_blob": "bbb29320382a623435d3bd71f0dae8753ddd480c",
+      "fields": [
+        [
+          "tests",
+          0,
+          "cases",
+          1,
+          "observed",
+          "artifact",
+          "sha256"
+        ]
+      ],
+      "path": "a/preview.svg",
+      "sha256": "c593f3bb028b1d32a6fe004a4a0c6a6e1b3944858b83f4abb2b53d08d27a6d38",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1763
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-s07.json",
+      "receipt_blob": "9b8dea36fc3e56d71bb0bdc74c69d766fbcbb4e2",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "74aa7107313f1c3d19030a245847dd04471ffdb3001264f65574a83ce7e0c947",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1763
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-s07.json",
+      "receipt_blob": "9b8dea36fc3e56d71bb0bdc74c69d766fbcbb4e2",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "dc159290cf8fba45a23e68b158be9c19d1e3be2cab8e355e2f13a8386da3e5e2",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1814
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-s10.json",
+      "receipt_blob": "e7be3bb5a91df1f2897fefedcf34443bb51ea801",
+      "fields": [
+        [
+          "build",
+          "final_package",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "5631c83c198e33aa1c5b5895f935e86ffe1bc40ad1f5b0f369ae64e4cfb59574",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1814
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-s10.json",
+      "receipt_blob": "e7be3bb5a91df1f2897fefedcf34443bb51ea801",
+      "fields": [
+        [
+          "build",
+          "final_package",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "48cf3f7c02154d129f839533f7e5fae6a7a46b04a7932e87d70ba4dbff0f8d0a",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1793
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u16.json",
+      "receipt_blob": "fa891fb420286693fdb1a78e71886a05f97b627a",
+      "fields": [
+        [
+          "build",
+          "artifact_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "ec00da6297de74886455449e609e9d011b491b87db29b07bd24346ed17a0a6ae",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1793
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-u16.json",
+      "receipt_blob": "fa891fb420286693fdb1a78e71886a05f97b627a",
+      "fields": [
+        [
+          "build",
+          "artifact_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "08ce9a422dc8af5a0239d526b6a182e63d4f20351a3fa740a2f6797eb6b3cbfe",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1797
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-e09.json",
+      "receipt_blob": "7144218fcee98a40b0357b40341df50af37d46d3",
+      "fields": [
+        [
+          "build",
+          "runtime_files",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "eb7f952efea2673c8cb55aeeb8688eb751ebe949c7a6e941700f5c2e0d50cc9d",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1797
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-e09.json",
+      "receipt_blob": "7144218fcee98a40b0357b40341df50af37d46d3",
+      "fields": [
+        [
+          "build",
+          "runtime_files",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "790aa174d79e65b0484d133145c2e416e0e737d0f569f8e7077f0158c903c9e8",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1798
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-h05.json",
+      "receipt_blob": "f7c1928f5986369ce0932638987a8bb69f60b360",
+      "fields": [
+        [
+          "native_test",
+          "receipt",
+          "history",
+          5,
+          "digest"
+        ]
+      ],
+      "path": "hero.png",
+      "sha256": "4b91e7b6d3c4a150247a653368126bd8d42e24293fbae41f4fccb003be12c6d4",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1798
+      ],
+      "receipt_path": "data-collection/plan1-h05-windows-integration.json",
+      "receipt_blob": "d982a41f1dfaf72901eec06f4d9b05321862aa12",
+      "fields": [
+        [
+          "native",
+          "creative_judgments",
+          "history",
+          5,
+          "digest"
+        ]
+      ],
+      "path": "hero.png",
+      "sha256": "4b91e7b6d3c4a150247a653368126bd8d42e24293fbae41f4fccb003be12c6d4",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1770
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-v05.json",
+      "receipt_blob": "ee82caae9a3b9e3508adde4b4f5a2e0686e50d60",
+      "fields": [
+        [
+          "build",
+          "files",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "4d0ca673961ba07604a2f86015016d2b98e5e7fa20e99941cd9b1d6d58e67a81",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1770
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-v05.json",
+      "receipt_blob": "ee82caae9a3b9e3508adde4b4f5a2e0686e50d60",
+      "fields": [
+        [
+          "build",
+          "files",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "12c7f4322af4d0d4ab105cf42b8519972fae4b731357cfd278901e3b7f7920de",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1803
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-r07.json",
+      "receipt_blob": "9ff4a91328b3e092c2114aa1f541db082b1be952",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "ff19e4f27e86f47f51f3f77723cd596283593ee9c293ea5568b680798b3af76d",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1803
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-r07.json",
+      "receipt_blob": "9ff4a91328b3e092c2114aa1f541db082b1be952",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "25799dfeeefae1f93d2ec92d5780d9a89204c6e5855e2a6b263269f7f030cf42",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1777
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-r08.json",
+      "receipt_blob": "d94a090fa9858e836a1316ae55bc1ba54c0e02d2",
+      "fields": [
+        [
+          "build",
+          "generated_headers",
+          "IssueActions.gen.h"
+        ]
+      ],
+      "path": "IssueActions.gen.h",
+      "sha256": "106baf3ef8bc3593e58902dbb6e8f877b22605d1635a99dc009ae555399ac689",
+      "needed": "original generator inputs or generated output"
+    },
+    {
+      "issues": [
+        1777
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-r08.json",
+      "receipt_blob": "d94a090fa9858e836a1316ae55bc1ba54c0e02d2",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.console.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.console.exe",
+      "sha256": "8be9477e3e2824afe55eab8e0c5dd4a017e295a72c10870dcef73253f2e54778",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1777
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-r08.json",
+      "receipt_blob": "d94a090fa9858e836a1316ae55bc1ba54c0e02d2",
+      "fields": [
+        [
+          "build",
+          "package_sha256",
+          "godot.windows.editor.x86_64.exe"
+        ]
+      ],
+      "path": "godot.windows.editor.x86_64.exe",
+      "sha256": "93f20c4eb1f3b2d38e91a471bd285002ab2d92ff97d393dcb02f4caa82e10443",
+      "needed": "original built executable or archived CI output"
+    },
+    {
+      "issues": [
+        1777
+      ],
+      "receipt_path": "data-collection/plan1-r08-windows-integration.json",
+      "receipt_blob": "9970381a70f691fcb9b56c8ef0c97ffb4d37d3d2",
+      "fields": [
+        [
+          "native",
+          "creative_judgments",
+          "history",
+          5,
+          "digest"
+        ]
+      ],
+      "path": "hero.png",
+      "sha256": "4b91e7b6d3c4a150247a653368126bd8d42e24293fbae41f4fccb003be12c6d4",
+      "needed": "original fixture, private attachment, or worker output"
+    },
+    {
+      "issues": [
+        1824
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g06.json",
+      "receipt_blob": "027dbd6403e6c39188e4cece52bcae33744c1f1d",
+      "fields": [
+        [
+          "style_reverification",
+          "old_source_hashes",
+          "customizations/components/tianxuan/migration/audit_external_objects.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/migration/audit_external_objects.py",
+      "sha256": "2e8faf5de27b0a64eeb951acbb27d1e75def0d29cf1eaa3c020a9f5fe09f04d4",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1824
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g06.json",
+      "receipt_blob": "027dbd6403e6c39188e4cece52bcae33744c1f1d",
+      "fields": [
+        [
+          "style_reverification",
+          "old_source_hashes",
+          "customizations/components/tianxuan/migration/test_audit_external_objects.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/migration/test_audit_external_objects.py",
+      "sha256": "a89f7f4906427edc798db5c8afd5c5e24849a0b7e1a7579bb19470fc590e3d5b",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1825
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g12.json",
+      "receipt_blob": "407a23cdaf04244ba1fc0b46d3043fd002e4fdaf",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/api.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "50fd50f813e82ee8f4c0f3a8c3eafc081cbeb599ae3d90d924f2251644e5861c",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1825
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g12.json",
+      "receipt_blob": "407a23cdaf04244ba1fc0b46d3043fd002e4fdaf",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/tianxuan_core.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "9d44fd59616c1d7909b64fbe2fa82375931096b6c5782383d95adedf6fd5a3b5",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1825
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g12.json",
+      "receipt_blob": "407a23cdaf04244ba1fc0b46d3043fd002e4fdaf",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/issue_revision_api.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/issue_revision_api.py",
+      "sha256": "ca998b0e49c1b5ef0abe6eb64c1c058da3e87fb9dacf56133e25377a9e16d05c",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1826
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g13.json",
+      "receipt_blob": "c010760f046a5d36ccc837d2e5fa0d9f9fa94afd",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/api.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "c1b6df273b38a1a40a9b70a78df0428d7089f9400613334214a9b1a05aa057e5",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1826
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g13.json",
+      "receipt_blob": "c010760f046a5d36ccc837d2e5fa0d9f9fa94afd",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/schemas.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/schemas.py",
+      "sha256": "fb10dd027cdaba1441215a48aaa6622c04a4c85683a534dac0bc0d95470bdb52",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1826
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g13.json",
+      "receipt_blob": "c010760f046a5d36ccc837d2e5fa0d9f9fa94afd",
+      "fields": [
+        [
+          "candidate_file_sha256",
+          "editor/SCsub"
+        ],
+        [
+          "integration_verification",
+          "candidate_file_sha256",
+          "editor/SCsub"
+        ]
+      ],
+      "path": "editor/SCsub",
+      "sha256": "3fbfb027b990bb51f09921a15db6ce2fb7f6002a11233ed62d1f249fa5ab8328",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1826
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g13.json",
+      "receipt_blob": "c010760f046a5d36ccc837d2e5fa0d9f9fa94afd",
+      "fields": [
+        [
+          "integration_verification",
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/api.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "0821508b75b14bbcda6ed1e859ca27435e0d5c3de64454985197062b0a8f16c9",
+      "needed": "original source checkout or tested file bytes"
+    },
+    {
+      "issues": [
+        1826
+      ],
+      "receipt_path": "data-collection/gonggong-ai-workbench-plan1-g13.json",
+      "receipt_blob": "c010760f046a5d36ccc837d2e5fa0d9f9fa94afd",
+      "fields": [
+        [
+          "integration_verification",
+          "candidate_file_sha256",
+          "customizations/components/tianxuan/server/schemas.py"
+        ]
+      ],
+      "path": "customizations/components/tianxuan/server/schemas.py",
+      "sha256": "cb9976db7e57e9fe9182104f1c1fa77f92cff607b4d3e008e209de2fc715e46d",
+      "needed": "original source checkout or tested file bytes"
+    }
+  ]
+}

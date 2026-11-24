@@ -2,19 +2,44 @@
 import {dispatchEvent} from '../../../platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 import {pathToFileURL} from 'node:url';
 
+const controlStates = new Set(['paused', 'cancelled']);
+
 export async function dispatchNative(event, requests, service, launch) {
+  let catalog, waiting;
   const host = {
     // Server reserve performs atomic capacity/source comparison; no network lock.
     withLock: fn => fn(),
-    inspect: () => service('inspect', {}),
+    inspect: async () => {
+      const board = await service('inspect', {});
+      catalog = board.environment.catalog;
+      waiting = new Set(board.snapshot.items.filter(item => item.waitReason === 'resource_conflict').map(item => item.key));
+      return board;
+    },
     revalidate: a => service('revalidate', {assignment: a}),
     reserve: (a, e) => service('reserve', {assignment: a, event: e}),
     startSource: a => service('start', {assignment: a}),
     launch,
     ack: (a, receipt) => service('ack', {assignment: a, receipt}),
-    record: value => service('record', value),
+    record: value => service('record', value.state === 'running' && controlStates.has(value.receipt?.controlState) ? {...value, state: value.receipt.controlState} : value),
   };
-  return dispatchEvent(event, requests, host);
+  const batch = await dispatchEvent(event, requests, host);
+  for (const item of batch.results) {
+    if (item.state === 'running' && controlStates.has(item.receipt?.controlState)) item.state = item.receipt.controlState;
+  }
+  const byTicket = new Map(requests.map(request => [request.ticket, request]));
+  for (const item of batch.deferred) {
+    if (item.reason === 'not_ready' && waiting.has(item.ticket)) item.reason = 'resource_conflict';
+    if (item.reason !== 'required_model_or_capabilities_unavailable') continue;
+    const request = byTicket.get(item.ticket);
+    // Native contracts pin the installed profile before dispatch.
+    const model = catalog.find(entry => entry.id === request.model);
+    item.model = request.model;
+    if (model?.localStatus) item.localStatus = model.localStatus;
+    item.modelAvailable = model?.available === true && model.targets.includes(request.target ?? 'agent');
+    item.requiredCapabilities = request.capabilities;
+    item.missingCapabilities = request.capabilities.filter(capability => !model?.capabilities.includes(capability));
+  }
+  return batch;
 }
 
 export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
@@ -23,7 +48,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
   return async (operation, value) => {
     const response = await fetch(new URL(`/api/v1/native/workflow/${operation}`, url), {
       method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${token}`},
-      body: JSON.stringify(value), signal: AbortSignal.timeout(['await-terminal', 'integration-await'].includes(operation) ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
+      body: JSON.stringify(value), signal: AbortSignal.timeout(['await-terminal', 'integration-await', 'await-judgment'].includes(operation) ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
     });
     const chunks = []; let bytes = 0;
     for await (const chunk of response.body) {
@@ -40,6 +65,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
 export async function driveNative(service, initial = {type: 'user.requested', reference: 'native-cli'}) {
   const watched = new Set(), continuousEvents = new Set();
   const checked = new Set(), integrated = new Set(), groupErrors = new Set();
+  const verifiedStages = new Set(), judgmentBranches = new Set();
   const attempted = new Set(), finished = new Set(), pending = new Set(), rejectedEvents = new Set();
   const result = {results: [], deliveries: [], deferred: [], errors: []};
   let coordinator = Promise.resolve();
@@ -86,13 +112,15 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       if (merged.state === 'conflicts_pending') throw Error('Integration remains conflicted');
       result.deliveries.push({key, ...await service('integration-finish', {key})});
     } catch (error) {result.errors.push({key, stage: 'integration', reason: String(error.message ?? error)});}
-    await signal({type: 'execution.finished', reference: original});
+    await signal({type: 'dependency.changed', reference: original});
   };
   const signal = event => {
     // Serialize only event inspection/planning. Long workers/reviews remain outside.
     coordinator = coordinator.then(async () => {
       try {
-        const advanced = await service('advance', {exclude: [...rejectedEvents]});
+        const payload = {exclude: [...rejectedEvents]};
+        if (event.type === 'execution.finished') payload.completion = event.reference;
+        const advanced = await service('advance', payload);
         for (const error of advanced.errors ?? []) {
           rejectedEvents.add(error.event);
           result.errors.push({stage: 'advance', ...error});
@@ -100,6 +128,17 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       } catch (error) {result.errors.push({stage: 'advance', reason: String(error.message ?? error)});}
       const board = await service('inspect', {});
       deliveryCapacity = Math.max(1, board.environment.capacity);
+      for (const branch of board.judgment_branches ?? []) {
+        const key = JSON.stringify(branch);
+        if (judgmentBranches.has(key)) continue;
+        judgmentBranches.add(key);
+        const {issue, binding} = branch;
+        track(service(branch.pending ? 'await-judgment' : 'admit-judgment', {issue, binding})
+          .then(() => {
+            if (branch.pending) judgmentBranches.delete(key);
+            return signal({type: 'dependency.changed', reference: binding});
+          }));
+      }
       for (const active of board.environment.active ?? []) {
         if (!active.terminalObservable || attempted.has(active.ticket) || watched.has(active.ticket)) continue;
         watched.add(active.ticket);
@@ -120,10 +159,24 @@ export async function driveNative(service, initial = {type: 'user.requested', re
           if (receipt.state === 'publisher_busy') receipt = await service('integration-await', request);
           result.deliveries.push(receipt);
           if (receipt.state === 'held') result.errors.push({stage: 'integration', key: lane.key, reason: receipt.error});
-          await signal({type: 'execution.finished', reference: lane.event});
+          await signal({type: 'dependency.changed', reference: lane.event});
         })());
       }
       for (const group of board.integrations?.ready ?? []) if (!integrated.has(group.key)) track(integrate(group.key));
+      for (const key of board.stage_checks ?? []) {
+        if (delivering >= deliveryCapacity) break;
+        if (verifiedStages.has(key)) continue;
+        verifiedStages.add(key);
+        delivering++;
+        track((async () => {
+          try {
+            const receipt = await service('verify-stage', {key});
+            (result.stages ??= []).push(receipt);
+          } catch (error) {result.errors.push({key, stage: 'verify-stage', reason: String(error.message ?? error)});}
+          finally {delivering--;}
+          await signal({type: 'execution.finished', reference: key});
+        })());
+      }
       for (const key of [...(board.produced ?? []), ...(board.contributions ?? [])]) if (!finished.has(key)) track(delivery(key, (board.contributions ?? []).includes(key)));
       const requests = board.requests.filter(request => !attempted.has(request.ticket));
       if (!requests.length) return;
@@ -134,12 +187,21 @@ export async function driveNative(service, initial = {type: 'user.requested', re
         try {
           let terminal;
           try {terminal = await service('execute', {key: assignment.ticket});}
-          catch {terminal = await observe(assignment.ticket);}
+          catch {
+            const recovery = await service('execution-readback', {key: assignment.ticket});
+            if (recovery.id !== assignment.ticket) throw Error('Recovery receipt does not match the original execution');
+            (result.recoveries ??= []).push(recovery);
+            try {await service('record-execution-fault', {key: assignment.ticket});}
+            catch (error) {result.errors.push({key: assignment.ticket, stage: 'record-execution-fault', reason: String(error.message ?? error)});}
+            terminal = await observe(assignment.ticket);
+          }
           if (['reserved', 'running', 'held'].includes(terminal.state)) terminal = await observe(assignment.ticket);
           // The terminal frees production capacity before potentially slow review.
           await signal({type: 'execution.finished', reference: assignment.ticket});
-          if (!['produced', 'accepted'].includes(terminal.state)) throw Error('Worker not successfully terminal');
-          return {workerId: assignment.ticket, reference: assignment.ticket, model: assignment.model.id, target: assignment.target};
+          const controlled = controlStates.has(terminal.state);
+          if (!controlled && !['produced', 'accepted', 'stage-reached', 'stage-unmet'].includes(terminal.state)) throw Error('Worker not successfully terminal');
+          if (terminal.id !== assignment.ticket || terminal.worker_ref !== 'native-worker:' + terminal.id) throw Error('Worker receipt does not match the assigned execution');
+          return {workerId: terminal.id, reference: terminal.id, worker_ref: terminal.worker_ref, ...(controlled ? {controlState: terminal.state} : {}), model: assignment.model.id, target: assignment.target};
         } catch (error) {
           await signal({type: 'execution.failed', reference: assignment.ticket});
           throw error;
@@ -158,6 +220,7 @@ export async function driveNative(service, initial = {type: 'user.requested', re
     await Promise.race(pending);
     await coordinator;
   }
+  result.deferred = result.deferred.filter(item => !attempted.has(item.ticket));
   return result;
 }
 

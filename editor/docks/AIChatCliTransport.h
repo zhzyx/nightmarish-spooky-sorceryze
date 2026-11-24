@@ -42,6 +42,11 @@
 struct AIChatSessionTransport
 {
 	int64_t nCliProcess = -1;
+#ifdef MACOS_ENABLED
+	bool bGroupFinished = false;
+	bool bGroupCancelPending = false;
+	int32_t nGroupExitCode = -1;
+#endif
 	Ref<FileAccess> refCliStdout;
 	Ref<FileAccess> refCliStderr;
 	String strCliConfiguration;
@@ -109,7 +114,7 @@ public:
 	void Cancel();
 	void ReleaseRequest();
 	void RequestReset();
-	bool IsProcessAlive() const;
+	bool IsProcessAlive();
 	bool HasProcess() const;
 	bool HasSession() const;
 	bool IsWaiting() const;

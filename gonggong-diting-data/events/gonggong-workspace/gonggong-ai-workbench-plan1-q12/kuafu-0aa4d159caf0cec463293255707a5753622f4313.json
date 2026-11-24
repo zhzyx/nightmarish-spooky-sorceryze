@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0aa4d159caf0cec463293255707a5753622f4313",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q12",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fe8b7e74f0919808f55d78cdccb4b108ebd058f78258cda506307ef0f5f45cf6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2088",
+    "action": "delivery",
+    "detection_head": "bdc51d4b13ee0d54eb19a98a038cd3f6ae5d8dbc",
+    "context_sha256": "2241ac0799f0d2a3b91b4e34c245379efdccffeece6d1dfa157f0020e9543f80",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "diagnosis": "The copied worker receipt used CRLF in the Windows worktree while its staged Git blob contained LF. The formal evidence check compared the actual bytes and stopped before publication.",
+    "next_action": "Preserve the raw receipt in the worker evidence archive, align the integration copy to the exact staged LF blob, then repeat the original signed delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T13:46:36.597407+00:00",
+    "attempted": null,
+    "repair_owner": "Current Windows integration owner",
+    "continuable": "Independent editor reopens and creative decision tests"
+  },
+  "occurred_at": "2026-11-22T13:49:19.576063+00:00",
+  "sha256": "33688b2406c984eacc0e2ad61413b4893bb43af2302bc8ee48b59520865cfc52"
+}

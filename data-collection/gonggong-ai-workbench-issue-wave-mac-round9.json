@@ -1,0 +1,53 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "source_pr": 1997,
+  "source_head": "86f7d94b920df4f36d2ed0fec72eeb4bba20bd37",
+  "integration_base": "161862a8d9956240f6a6e3d89e5a260cf7faeca0",
+  "editor_sha256": "53bb07393d58a8b7a2574ec53ef19b534e90857f94e264c4c6da6483a7035a43",
+  "macos_arm64_probe_results": [
+    {
+      "issue": 1789,
+      "case": "milestone",
+      "exit": 0
+    },
+    {
+      "issue": 1752,
+      "case": "custom_fields",
+      "exit": 0
+    },
+    {
+      "issue": 1753,
+      "case": "time",
+      "exit": 0
+    },
+    {
+      "issue": 1754,
+      "case": "search",
+      "exit": 0
+    },
+    {
+      "issue": 1832,
+      "case": "artifacts",
+      "exit": 0
+    },
+    {
+      "issue": 1758,
+      "case": "classification",
+      "exit": 0
+    },
+    {
+      "issue": 1756,
+      "case": "lifecycle",
+      "exit": 0
+    },
+    {
+      "issue": 1811,
+      "case": "consultation",
+      "exit": 0
+    }
+  ],
+  "native_workflow_and_issue_lifecycle_tests": 33,
+  "original_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44952938163/job/136994710771",
+  "recovery": "The legacy replay fixture now records current acceptance through the ordinary lifecycle API before the first close, then still verifies a replay cannot close a managed issue."
+}

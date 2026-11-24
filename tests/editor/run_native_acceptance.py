@@ -595,6 +595,11 @@ func _parent_boundary_951():
         )
         Path(target).write_bytes(script.encode("utf8"))
         if RESTORE_CONFIRMATION:
+            # The shared composer can restore under the auxiliary sidebar.
+            # Adapt the fixture's control/transcript lookup before appending
+            # the helper itself; never relocate production UI to fit the test.
+            script = script.replace("dock.find_child(", "_recovery_control_951(")
+            script = script.replace('dock.find_children("*", "RichTextLabel", true, false)', "_recovery_labels_951()")
             script += Path(__file__).with_name("design_confirmation_recovery.gd").read_text(encoding="utf8")
             anchor = '\t\t_send("PRODUCTION_COLD_STATUS_951")'
             assert script.count(anchor) == 1

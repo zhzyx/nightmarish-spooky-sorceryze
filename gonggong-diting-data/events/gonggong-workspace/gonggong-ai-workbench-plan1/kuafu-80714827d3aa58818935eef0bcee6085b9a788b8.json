@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-80714827d3aa58818935eef0bcee6085b9a788b8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "021cd04a398a292e9004a95ec8229c049dfc13a01e820202de85849fbbe2fa4f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2063",
+    "action": "permission",
+    "detection_head": "fcbcd42d73ba43fea28a34c8d13e470f50ad9444",
+    "context_sha256": "df7f2f3b9762f5c3dcb2df63fc9780370790bf4a87f469dc14e3a30a3860a714",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "Verified S05 and S06 terminal receipts. S05 retained nine test fixture directories. S06 retained the scoped review directory, caches and listed temporary paths. Both exact source candidates were isolated from those files.",
+    "diagnosis": "The host approval review declined deletion after the actual test processes exited. Source verification and product delivery can proceed from the isolated candidates.",
+    "next_action": "Preserve the affected directories. Resume cleanup when a new host authorization or authorized manual cleanup receipt is available. Continue the separate product acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T10:05:24.550609+00:00",
+    "attempted": null,
+    "repair_owner": "Windows host operator for cleanup permissions",
+    "continuable": "S05, S06, S07, S09, S10 and K03 product delivery"
+  },
+  "occurred_at": "2026-11-22T10:08:50.134380+00:00",
+  "sha256": "b0756a417e62d4107a60f17187b0e600c8316b0d498a794cd6ff649bab930cdd"
+}

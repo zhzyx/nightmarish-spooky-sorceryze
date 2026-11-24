@@ -1,0 +1,58 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "base": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+  "reviewed_product_tree": "c8f003314a424ed108847f10b5dcc982edde2854",
+  "verified_at": "2026-11-19T07:15:31.3614318+00:00",
+  "checks": [
+    {
+      "status": "passed",
+      "evidence": "Compiled, type checked and emitted 12 pages.",
+      "version": "14.2.35",
+      "check": "Next.js production build"
+    },
+    {
+      "status": "passed",
+      "evidence": "test_api_gateway.py, test_gateway.py, test_native_api.py. 33 passed. One upstream TestClient deprecation warning.",
+      "check": "FastAPI gateway and native regression"
+    },
+    {
+      "status": "passed",
+      "chrome_version": "157.0.8103.79",
+      "evidence": [
+        "Next production build plus actual FastAPI, SQLite issue and native stores, and ModelGateway with controlled upstream transport.",
+        "Editor signs in with a personal Key. Completed fixture issue is excluded. Pending and in-progress work show actual status. Refresh and detail expansion work.",
+        "Two sends reach workspace/chat and render replies using one and then three context messages. Composing Enter keeps the draft.",
+        "System media changes update the palette. Manual preference survives reload. The Settings and topbar appearance controls stay synchronized.",
+        "550px compact navigation opens and closes. No document overflow at 320px. Light navigation foreground is rgb(29,29,31).",
+        "Native-only deployment resolves stage-tools head and immutable object list. Invalid module syntax is rejected by the input."
+      ],
+      "check": "Chrome headless, isolated HTTPS fixture"
+    },
+    {
+      "status": "passed",
+      "reviewer": "codex-native:/root/review1551",
+      "evidence": "Rechecked corrected product tree, authentication and gateway boundaries, module input pattern, Git client compatibility, health-ring contrast and shared theme preference.",
+      "check": "Independent read-only review"
+    }
+  ],
+  "screenshots": [
+    {
+      "sha256": "1e19b2bcd489709fc4f0deefffd1efd64219c4b19187f92c00de645b6d3280f8",
+      "path": "data-collection/tianxuan-experience-1551/workspace-light.png"
+    },
+    {
+      "sha256": "8b9b4fea62fde631cfe32d3510214eedc748030fd72299a29e6ad6c8835eb150",
+      "path": "data-collection/tianxuan-experience-1551/workspace-dark-compact.png"
+    },
+    {
+      "sha256": "4cb2dbcea6bcbd6598f5412fd914f81cce29e4ff0006170ecce6683dec0acb77",
+      "path": "data-collection/tianxuan-experience-1551/workspace-native.png"
+    }
+  ],
+  "integration_remaining": [
+    "Production model provider and actual Godot WebView2 site validation.",
+    "Persistent conversations and Yanshi handoff, durable worker-run listing, native module discovery."
+  ]
+}

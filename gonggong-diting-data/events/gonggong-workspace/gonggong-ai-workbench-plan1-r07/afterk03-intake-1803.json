@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-r07",
+  "event_id": "afterk03-intake-1803",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+  "occurred_at": "2026-11-22T13:01:26.321166+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1803,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:01:23Z",
+    "accepted_dependencies": {
+      "1812": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f",
+      "1813": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f",
+      "1814": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f",
+      "1821": "ff6564a95ac7e26be5aedcca5dd3c00146f16256",
+      "1822": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14"
+    },
+    "source_main": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+    "title": "[方案一 R07] 重开后自动恢复已授权任务"
+  },
+  "evidence_refs": [],
+  "sha256": "6f5adecbfcb5535dcee2cbf824ea48c87106ea5a614714e42bee037b966fb625"
+}

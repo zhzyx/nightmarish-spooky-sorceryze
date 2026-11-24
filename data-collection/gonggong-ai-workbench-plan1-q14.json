@@ -1,0 +1,56 @@
+{
+  "issue_number": 1727,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1727",
+  "request_id": "gonggong-ai-workbench-plan1-q14",
+  "source_revision": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "performed_on": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "verified_at": "2026-11-22T12:47:19.134346+00:00",
+  "acceptance": {
+    "editor_sha256": "6379c2986a0e9b62f249d555ee7e5b0fdd48f9ff696a32c2c3c69125cad40d0c",
+    "model_transport": "deterministic HTTP fixture",
+    "model_inputs": [
+      {
+        "paragraph": "步伐：两拍",
+        "instruction": "补充第二拍的落点"
+      }
+    ],
+    "versions": [
+      {
+        "version": 1,
+        "body_md": "目标：保持剪影\n\n步伐：两拍\n\n镜头不动",
+        "author": "usr_fdd0b3fea5a14693a79221d02a9041c2",
+        "created_at": "2026-11-22T12:45:03.341668+00:00"
+      },
+      {
+        "version": 2,
+        "body_md": "目标：保持剪影\n\n步伐：两拍，第二拍落在桥面中心\n\n镜头不动",
+        "author": "usr_fdd0b3fea5a14693a79221d02a9041c2",
+        "created_at": "2026-11-22T12:45:03.594429+00:00"
+      },
+      {
+        "version": 3,
+        "body_md": "目标：保持剪影\n\n步伐：两拍，第二拍落在桥面中心\n\n镜头保持三秒",
+        "author": "usr_fdd0b3fea5a14693a79221d02a9041c2",
+        "created_at": "2026-11-22T12:45:03.872539+00:00"
+      }
+    ],
+    "window": {
+      "diffs": [
+        {
+          "diff": "--- v1\n+++ v2\n@@ -1,5 +1,5 @@\n 目标：保持剪影\n \n-步伐：两拍\n+步伐：两拍，第二拍落在桥面中心\n \n 镜头不动",
+          "from": 1,
+          "row": "修改 · v2 第 2 段　步伐：两拍，第二拍落在桥面中心",
+          "to": 2
+        },
+        {
+          "diff": "--- v2\n+++ v3\n@@ -2,4 +2,4 @@\n \n 步伐：两拍，第二拍落在桥面中心\n \n-镜头不动\n+镜头保持三秒",
+          "from": 2,
+          "row": "修改 · v3 第 3 段　镜头保持三秒",
+          "to": 3
+        }
+      ],
+      "final": "目标：保持剪影\n\n步伐：两拍，第二拍落在桥面中心\n\n镜头保持三秒",
+      "id": "doc_93fcc029dcb3454b983565ed5792f33f"
+    }
+  }
+}

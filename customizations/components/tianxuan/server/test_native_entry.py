@@ -21,6 +21,7 @@ from native_execution_host import EntryConsumer, EntryLedger, SinanProcess
 from native_installation import InstallationManifest, InstalledPlannerRuntime
 from native_requirement_plan import RequirementPlanner, validate_plan
 from native_store import NativeStoreError
+from issue_lifecycle_test_support import accept_current_issue
 from tianxuan_core import NotFound, Tianxuan, TransitionRejected
 
 
@@ -43,6 +44,24 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
                 actor, requirement["id"], call, {"scopes": ["text"]}, credential=self.tokens[actor]
             )
         return key, requirement
+
+    async def test_workspace_requires_installed_confirmation_reader(self):
+        from unittest.mock import patch
+
+        requirement = self.domain.create_requirement(
+            self.actor, "workspace-" + "a" * 64, "Design", "Approved output", "scope", "checks"
+        )
+        with patch.dict(sys.modules, {"workspace_conversations": None}):
+            with self.assertRaisesRegex(NativeStoreError, "approval reader"):
+                with self.ledger.transaction():
+                    self.ledger.enqueue(
+                        self.actor,
+                        requirement["id"],
+                        "direct",
+                        {"scopes": ["text"]},
+                        credential=self.tokens[self.actor],
+                    )
+        self.assertFalse(self.ledger.pending())
 
     async def test_atomic_rollback_and_cross_tenant(self):
         with self.assertRaises(RuntimeError):
@@ -71,6 +90,15 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
             self.ledger.claim(key)
         self.assertEqual(len(self.ledger.pending()), 1)
 
+    async def test_device_grant_revocation_blocks_pending_entry(self):
+        grant = self.domain.login_editor_device("one@example.test", "password")
+        self.tokens[self.actor] = grant["token"]
+        key, _ = self.enqueue()
+        self.assertTrue(self.ledger.authorize(key))
+        self.domain.revoke_editor_device(self.actor, grant["credential_id"])
+        with self.assertRaises(NativeStoreError):
+            self.ledger.claim(key)
+
     async def test_new_increment_reopens_only_aggregate_atomically(self):
         requirement = self.domain.create_requirement(self.actor, "increment", "Title", "Outcome", "Scope", "Acceptance")
         parent, child = self.domain.plan_tickets(
@@ -88,6 +116,8 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
         )
         for issue in (child, parent):
             for state in ("planned", "in-progress", "in-review", "done"):
+                if state == "done":
+                    accept_current_issue(self.domain, self.actor, issue["id"])
                 self.domain.transition_issue(self.actor, issue["id"], state)
         accepted_child = self.domain.get_issue(child["id"])
         self.assertEqual(self.domain.get_doc(requirement["id"])["progress"]["percent"], 100)
@@ -250,7 +280,7 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
         with patch.dict(os.environ, {"TIANXUAN_REQUIRE_KEYS": "1", "TIANXUAN_TENANT_ID": tenant}):
             with self.assertRaisesRegex(NativeStoreError, "tenant/key"):
                 entry.entry_authority(key)
-            access = self.domain.issue_access_key(self.actor, self.actor, "admitted")
+            access = self.domain.issue_access_key(self.actor, self.actor, "admitted", until_revoked=True)
             with self.ledger.transaction():
                 admitted = self.ledger.enqueue(
                     self.actor, requirement["id"], "admitted", {"scopes": ["text"]}, credential=access["key"]
@@ -477,7 +507,10 @@ class RecoveryBoundaryTests(unittest.TestCase):
                 key_file=str(root / "key"),
                 authority_ref="test-authority",
             )
-            template = {"task": {"agent_id": "yanshi", "mode": "single", "steps": [{}]}}
+            template = {
+                "task": {"agent_id": "yanshi", "mode": "single", "steps": [{}]},
+                "profiles": [{"protocol": "chat-completions"}],
+            }
             request = dict(
                 role="yanshi",
                 entry="a" * 64,

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-i13",
+  "event_id": "ind1709-intake-1755",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+  "occurred_at": "2026-11-21T12:11:40.166499+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1755,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:11:37Z",
+    "accepted_dependencies": {
+      "1784": "4ed6bfa2aefdebfe10cf3aa9eb96fbea56e58cd6",
+      "1790": "1cca7579fd007e8625ce8d275abd874fe4be0d33"
+    },
+    "title": "[方案一 I13] 接回天枢在途工单入口"
+  },
+  "evidence_refs": [],
+  "sha256": "a6fd5519622a4c3bda97cc08e150eb97a766fea828e37fc9b8d015311058dd65"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d44d3db3c2879fb76867b05e8c85d21f8e73407b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q12",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7d9a37aff4764910c40419bfbc2d9eb7946f574a18e2e53756e09374a164a487",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2088",
+    "action": "delivery",
+    "detection_head": "e8b40ea7d472868629b62af109acc03e42be7fae",
+    "context_sha256": "2241ac0799f0d2a3b91b4e34c245379efdccffeece6d1dfa157f0020e9543f80",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+    "diagnosis": "The staged changes contained dispatch and validation evidence. The intake-only read was retained by the coordinator but its corresponding request event was missing from the integrated tree.",
+    "next_action": "Archive the original successful intake under its original issue, timestamp and tenant. Run the formal source gate before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T13:49:59.498022+00:00",
+    "attempted": null,
+    "repair_owner": "Current Windows integration owner",
+    "continuable": "Verified editor and service regressions"
+  },
+  "occurred_at": "2026-11-22T13:52:51.324076+00:00",
+  "sha256": "299433842691f02cf9f21716d294ebff59d7d1d272208a65519b5b90743021ef"
+}

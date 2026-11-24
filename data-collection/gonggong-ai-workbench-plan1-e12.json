@@ -1,0 +1,35 @@
+{
+  "issue_number": 1767,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1767",
+  "request_id": "gonggong-ai-workbench-plan1-e12",
+  "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "tested_at": "2026-11-22T13:24:09.334982+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "build": "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no -j8",
+  "editor_sha256": "1459c15c5487cee455eb9cfecd6d403d05eb8221fabf7c09d705fca44a0eb54f",
+  "source_sha256": {
+    "editor/docks/workbench/script_candidate.gd": "a79645ead1e21d80cc2ac429685740aba5f567676e65b03cbcf014c707987a33",
+    "editor/docks/workbench/module_selector.gd": "3e0a9c384cfb7b010d0c4fd2345213df05ce636cfd8bd5dc018de4aaf818f123",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "5dbde6dcd27aa2da8cd6ff0aaf71821ffcef14d7b35c23f12f189822ae37c8c2",
+    "editor/SCsub": "3ba2dc053b0961d95fee2f67bcf1e2e6713031517afdc387010b5d53deea1f43",
+    "editor/script/script_editor_plugin.cpp": "9e2e7e2d9213a46964c36d87138174980cfaaf699a55f361387cac66034ee9d2",
+    "tests/editor/workbench_script_candidate.gd": "3b8acd7242b29daf01aa0f067af540a72ec842c6244e7bcf9a9122e8bbb56fa0",
+    "tests/editor/run_workbench_edit_candidates.py": "87b4d6e115953f5d086d26e101fec427ef806d2508d0896d37a066f96c040447"
+  },
+  "command": "python tests/editor/run_workbench_edit_candidates.py --godot bin/godot.macos.editor.arm64 script",
+  "observation": {
+    "candidate": "6516b39aa221b35835921f67fa8405068116f22386e9748892a6983343e4aadf",
+    "conflict_rejected": true,
+    "diff": "- return score(2)\n+ return score(2, 7)",
+    "display_driver": "macOS",
+    "manual": "5defd81dce18fa502a5f663808eca5be18d1361b0fdd4c1a2bfb980ada22d460",
+    "signature": "static func score(points: int, bonus: int = 3) -> int:",
+    "gdscript_check_only": 0
+  },
+  "mode": "Native macOS editor windows with isolated user/project data",
+  "result": "passed",
+  "model_transport": "Authenticated local Tianxuan service with deterministic model HTTP response",
+  "regression": "python tests/editor/run_workbench_saved_editor_changes.py --godot bin/godot.macos.editor.arm64 --report receipt.json --continuation",
+  "regression_state": "passed",
+  "diagnostics": "Editor shutdown reported renderer RID and ObjectDB leaks after the bounded GUI test; the processes exited 0."
+}

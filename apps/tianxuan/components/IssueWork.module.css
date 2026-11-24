@@ -1,0 +1,17 @@
+.work { max-width: 64rem; width: 100%; overflow-wrap: anywhere; }
+.work fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+.work section, .work details { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1.25rem; }
+.work form { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,14rem),1fr)); gap: 1rem; align-items: end; }
+.work label { display: grid; gap: .3rem; }
+.work input, .work select, .work textarea, .work button { font: inherit; color: inherit; background: var(--ink-3); border: 1px solid var(--line-strong); border-radius: .6rem; padding: .55rem .7rem; min-width: 0; }
+.work button { cursor: pointer; min-height: 2.5rem; color: var(--accent); }
+.work button:disabled { color: var(--paper-56); cursor: default; }
+.work summary { cursor: pointer; }
+.work article { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.work pre { white-space: pre-wrap; }
+.road { display: flex; gap: 2rem; flex-wrap: wrap; padding-inline-start: 1.5rem; }
+.work article img { display: block; max-width: 100%; max-height: 30rem; object-fit: contain; }
+.work article model-viewer { display: block; width: 100%; height: clamp(16rem, 48vh, 32rem); }
+.stage { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin: .5rem 0; }
+.stage label { display: flex; align-items: center; gap: .4rem; }
+.stage input[type="number"] { width: 5rem; }

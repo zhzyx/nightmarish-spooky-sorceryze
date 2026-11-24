@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fc980f0472166c6b5c795e6987ba337dae5fc37f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "wenqu-cloud-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "40cbd137999e72a449b7fe09ef2913f3727767729a874d3cb5fdb6e849f1d1cf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1549",
+    "action": "validation",
+    "detection_head": "225e3a160893e003ca68ef25fe838f98d438b1fc",
+    "context_sha256": "cf1f63bdb972792190c793fe4661659cd2c4fe5858cdcbdb13cbd44cd13a2db2",
+    "operator": "Sail-Li",
+    "worker": "codex-wenqu-cloud-1548",
+    "authority_ref": "user-wenqu-cloud-20261119",
+    "evidence": "Reviewed index tree38066a19d0b0bfe53e49299eeeb074f83047b44c unchanged before/after baseline alignment; formal gate passed against3e4f05e5",
+    "diagnosis": "Gate derives comparison from merge-base of HEAD; uncommitted merge kept old HEAD so already delivered upstream build-impact evidence was rechecked against Wenqu additions. Aligned same reviewed tree to accepted main; retained prior225e3a1 backup. Gate then passed on actual target-relative candidate.",
+    "next_action": "Generate signed successor for1548 with exact main base and run all applicable CI; no historical evidence edits or gate bypass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T08:49:26.072934+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T08:51:53.474691+00:00",
+  "sha256": "633823b20995e4ec65b348120b85508c08946671c6b90287f1551c86e4a652bf"
+}

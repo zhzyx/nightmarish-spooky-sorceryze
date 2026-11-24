@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-k00",
+  "event_id": "wave20-intake-1718",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1718",
+  "occurred_at": "2026-11-21T05:38:29.224299+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1718,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:38:26Z",
+    "accepted_dependencies": {
+      "1827": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+      "1872": "ab02c5451b8e966b0b0408f776e21c836051ac2f",
+      "1719": "4d0944182ed372012044cd0835e0377a198c3a95"
+    },
+    "title": "[方案一 K00] 基础接口与归属已核对"
+  },
+  "evidence_refs": [],
+  "sha256": "4a620dab269849768da32a82f3cbe401baf21298e80a0a3af00caef417a0ae9d"
+}

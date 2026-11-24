@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c95f1b1fc24a63b7d94851d28694e0f904f8da5b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "26d3b6abd34facff432bd348e39887cee9e60004a5b7aa73984120d9c78b87f9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "validation",
+    "detection_head": "dcc0e05aa65c367fdeb074d780ab53b9d8df7942",
+    "context_sha256": "f5e5a8bd9dc76dfac839a40cbd20ddd49aabbfe2edabbd7ec309de2e798ec24b",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:01a20a6b-b56e-74c0-abbc-30a24123dd7b:user-native-submission-and-server-target-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45288645330",
+    "diagnosis": "Static CI failed on Any-return annotation and formatting of three previously hashed CRLF receipts. Added a typing cast at adapter boundary and exact immutable-receipt exclusions using the existing hook convention. Original proof bytes remain unchanged; local mypy and ruff passed.",
+    "next_action": "Publish a new exact candidate with appended build-impact evidence, verify full CI and both delivery receipts before closing Issue 2178.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:32:34.383564+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:33:05.964198+00:00",
+  "sha256": "2d2fbe857942354cdbcdeac272ae83bf8624481d44edfc511069b0bdb4b58d00"
+}

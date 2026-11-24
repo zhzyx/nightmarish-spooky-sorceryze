@@ -2,6 +2,7 @@
 
 import argparse
 import base64
+import copy
 import hashlib
 import importlib
 import json
@@ -67,7 +68,9 @@ def target_graph(model, target):
     for edge in model["edges"]:
         if not isinstance(edge, dict) or not isinstance(edge.get("from"), str) or not isinstance(edge.get("to"), str):
             raise ValueError("invalid edge")
-        if edge["to"] in incoming:
+        # A selected generation iteration or a cached upstream output is an
+        # immutable file input, not a request to regenerate its original node.
+        if edge["to"] in incoming and "artifact" not in edge and "cached_input" not in edge:
             incoming[edge["to"]].append(edge["from"])
     required, pending = set(), [target]
     while pending:
@@ -111,7 +114,7 @@ def compile_graph(model):
                 raise ValueError("input paths/snapshots length mismatch")
             if require_count > 8:
                 raise ValueError("too many input images")
-            if kind == "model_adjust" and field == "source" and len(paths) > 1:
+            if kind in ("model_adjust", "human_shape_adjust", "garment_split") and field == "source" and len(paths) > 1:
                 raise ValueError("one source model required")
             for index in range(require_count):
                 selected_path = paths[index] if index < len(paths) else ""
@@ -134,10 +137,14 @@ def compile_graph(model):
                     elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
                         ext = ".jpg"
                 payload["extension"] = ext
-                image_field = kind != "model_adjust" or field != "source"
+                image_field = kind not in ("model_adjust", "human_shape_adjust", "garment_split") or field != "source"
                 if kind != "copy" and image_field and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
-                if kind == "model_adjust" and field == "source" and ext not in (".glb", ".gltf"):
+                if (
+                    kind in ("model_adjust", "human_shape_adjust", "garment_split")
+                    and field == "source"
+                    and ext not in (".glb", ".gltf")
+                ):
                     raise ValueError("source model required")
                 if ext in (".gltf", ".glb"):
 
@@ -175,27 +182,89 @@ def compile_graph(model):
         if n.get("text"):
             context.append(dict(text=n["text"], role="instruction", scope="node", strength="constraint"))
         links = {}
+        selected_ports = set()
         for edge in model["edges"]:
-            if edge["to"] == n["id"]:
-                port = edge.get("input", "source")
-                if port in links:
-                    raise ValueError("duplicate linked port")
+            if edge["to"] != n["id"]:
+                continue
+            port = edge.get("input", "source")
+            if port in links or port in selected_ports:
+                raise ValueError("duplicate linked port")
+            if "cached_input" in edge:
+                cached = edge["cached_input"]
+                if (
+                    "artifact" in edge
+                    or not isinstance(cached, dict)
+                    or set(cached) != {"reference", "artifacts"}
+                    or not isinstance(cached["reference"], dict)
+                    or set(cached["reference"]) != {"id", "revision"}
+                    or not isinstance(cached["artifacts"], list)
+                    or not cached["artifacts"]
+                ):
+                    raise ValueError("invalid cached input")
+                reference = cached["reference"]
+                for asset in cached["artifacts"]:
+                    if not isinstance(asset, dict) or not isinstance(asset.get("id"), str) or not asset["id"]:
+                        raise ValueError("invalid cached artifact")
+                    existing = next((item for item in assets if item["id"] == asset["id"]), None)
+                    if existing is not None and canonical(existing) != canonical(asset):
+                        raise ValueError("conflicting cached artifact")
+                    if existing is None:
+                        assets.append(copy.deepcopy(asset))
+                inputs[port] = dict(reference)
+                selected_ports.add(port)
+                continue
+            if "artifact" not in edge:
                 links[port] = {"node": edge["from"], "port": edge.get("output", "result")}
                 inputs.pop(port, None)
-        graph.append(
-            dict(
-                id=n["id"],
-                provider=n.get("provider", "local-copy"),
-                request=dict(
-                    node=kind,
-                    version=n.get("version", "1"),
-                    inputs=inputs,
-                    parameters=n["parameters"],
-                    context=context,
-                ),
-                links=links,
-            )
+                continue
+            reference = edge["artifact"]
+            snapshot = edge.get("artifact_snapshot")
+            if (
+                kind not in ("model_adjust", "human_shape_adjust", "garment_split", "copy")
+                or port != "source"
+                or edge.get("output", "result") != "result"
+                or not isinstance(reference, dict)
+                or set(reference) != {"id", "revision"}
+                or not isinstance(snapshot, dict)
+            ):
+                raise ValueError("invalid selected mesh iteration")
+            extension = snapshot.get("extension", "").lower()
+            if extension not in (".glb", ".gltf"):
+                raise ValueError("selected iteration must be a mesh")
+            data = base64.b64decode(snapshot.get("content_base64", ""), validate=True)
+            if not data or hashlib.sha256(data).hexdigest() != snapshot.get("content_sha256"):
+                raise ValueError("selected iteration digest mismatch")
+            if reference["revision"] != snapshot["content_sha256"] or not reference["id"]:
+                raise ValueError("selected iteration identity mismatch")
+            payload = dict(snapshot, extension=extension)
+            if not isinstance(payload.get("provenance", {}), dict):
+                raise ValueError("selected iteration provenance must be an object")
+            asset = dict(id=reference["id"], revision=reference["revision"], type="mesh", payload=payload)
+            existing = next((item for item in assets if item["id"] == asset["id"]), None)
+            if existing is not None and canonical(existing) != canonical(asset):
+                raise ValueError("conflicting selected iteration")
+            if existing is None:
+                assets.append(asset)
+            inputs[port] = dict(reference)
+            selected_ports.add(port)
+        compiled = dict(
+            id=n["id"],
+            provider=n.get("provider", "local-copy"),
+            request=dict(
+                node=kind,
+                version=n.get("version", "1"),
+                inputs=inputs,
+                parameters=n["parameters"],
+                context=context,
+            ),
+            links=links,
         )
+        if "ignore_cache" in n:
+            if not isinstance(n["ignore_cache"], bool):
+                raise ValueError("invalid cache bypass flag")
+            if n["ignore_cache"]:
+                compiled["ignore_cache"] = True
+        graph.append(compiled)
     return graph, dict(schema_version=1, artifacts=assets)
 
 
@@ -213,6 +282,20 @@ def normalize_editor_integers(graph, registry):
         if not isinstance(params, dict):
             raise ValueError("parameters must be object")
         params = dict(params)
+        if request["node"] == "human_shape_adjust" and "height_m" in params:
+            # Migrate legacy workflows without rounding a non-integral centimeter
+            # value. New requests persist only the user-facing height_cm field.
+            if "height_cm" in params:
+                raise ValueError("human shape height specified in both cm and m")
+            legacy_height = params.pop("height_m")
+            if type(legacy_height) in (int, float) and math.isfinite(legacy_height):
+                height_cm = legacy_height * 100.0
+                nearest = round(height_cm)
+                params["height_cm"] = (
+                    int(nearest) if math.isclose(height_cm, nearest, rel_tol=0.0, abs_tol=1e-9) else height_cm
+                )
+            else:
+                params["height_cm"] = legacy_height
         for name, spec in schema.get("properties", {}).items():
             if spec["type"] != "integer" or name not in params:
                 continue
@@ -225,6 +308,18 @@ def normalize_editor_integers(graph, registry):
             else:
                 raise ValueError("editor integer must be a finite JSON safe integer: " + name)
         request["parameters"] = params
+
+
+def mesh_iterations(exported, result_reference):
+    """Return the immutable GLBs produced by each reviewed generation round."""
+    iterations = []
+    for artifact in exported["manifest"]["artifacts"]:
+        if artifact["type"] != "mesh":
+            continue
+        provenance = artifact["payload"].get("provenance", {})
+        if isinstance(provenance, dict) and provenance.get("iteration_of") == result_reference["id"]:
+            iterations.append(artifact)
+    return sorted(iterations, key=lambda artifact: artifact["payload"]["provenance"]["generation_iteration"])
 
 
 def selected(host, request, preview=False):
@@ -251,9 +346,12 @@ def selected(host, request, preview=False):
         # explicit member selection, preview deterministically opens the first.
         ref = chosen or items[0]["artifact"]
     else:
-        if chosen is not None:
-            raise ValueError("selected artifact is not a set member")
         ref = outputs["result"]
+        if chosen is not None and chosen != ref:
+            iterations = mesh_iterations(exported, ref)
+            if not any({key: artifact[key] for key in ("id", "revision")} == chosen for artifact in iterations):
+                raise ValueError("selected artifact is not a generation iteration")
+            ref = chosen
     asset = next(
         a for a in exported["manifest"]["artifacts"] if a["id"] == ref["id"] and a["revision"] == ref["revision"]
     )
@@ -270,6 +368,14 @@ def dispatch(args, request):
         return manage(request)
     if args.command == "service-check":
         return check_service(request.get("service", {}))
+    if args.command == "rigging-review":
+        from rigging_review import review_local_model
+
+        return review_local_model(request)
+    if args.command == "rigging-text-review":
+        from rigging_text_review import review_candidate
+
+        return review_candidate(request)
     registry, providers = NodeRegistry(), {}
     model = None
     runtime_service = None
@@ -280,10 +386,14 @@ def dispatch(args, request):
         safe(model)
         reject_retired_modeling_nodes(model["nodes"])
         check_inputs(model)
-        if service_path:
+        if service_path or any(node.get("type", "copy") == "garment_split" for node in model["nodes"]):
             run_id = uuid.uuid4().hex
             config = load_settings(service_path)
-            registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id)
+            local_runtime = None
+            runtime_path = getattr(args, "local_runtime", None)
+            if runtime_path:
+                local_runtime = json.loads(Path(runtime_path).read_text(encoding="utf-8"))
+            registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id, local_runtime)
             runtime_service["image_batch"] = image_batch_settings(config)
             runtime_service["image_batch"]["database"] = str(Path(args.db).resolve())
             runtime_service["image_batch"]["enabled"] = runtime_service["image_batch"]["enabled"] and any(
@@ -295,7 +405,9 @@ def dispatch(args, request):
                 for n in model["nodes"]
             )
             providers = adapt_image_providers(providers, args.db, runtime_service["image_batch"])
-        elif args.factory == "editor_demo:factory" and any(n.get("type", "copy") != "copy" for n in model["nodes"]):
+        elif args.factory == "editor_demo:factory" and any(
+            n.get("type", "copy") not in ("copy", "garment_split") for n in model["nodes"]
+        ):
             raise ServiceError("service_not_configured")
     elif args.command == "step":
         runtime_service = run_service(args.db, request["run"])
@@ -347,7 +459,12 @@ def dispatch(args, request):
                 except FileExistsError:
                     if path.read_bytes() != data:
                         raise ValueError("preview collision")
-                return dict(path=str(path), token=selected_token, type=selected_asset["type"])
+                return dict(
+                    path=str(path),
+                    token=selected_token,
+                    type=selected_asset["type"],
+                    provenance=copy.deepcopy(selected_asset["payload"].get("provenance", {})),
+                )
 
             result = materialize(asset, token)
             result["artifact"] = {"id": asset["id"], "revision": asset["revision"]}
@@ -360,6 +477,22 @@ def dispatch(args, request):
                     entry = materialize(member, member_token)
                     entry.update(label=item["label"], artifact=item["artifact"])
                     result["images"].append(entry)
+            elif asset["type"] == "mesh":
+                result["iterations"] = []
+                for iteration in mesh_iterations(exported, outputs["result"]):
+                    reference = {key: iteration[key] for key in ("id", "revision")}
+                    _, member, member_token = selected(host, dict(request, artifact=reference), preview=True)
+                    entry = materialize(member, member_token)
+                    provenance = iteration["payload"]["provenance"]
+                    entry.update(
+                        label=str(provenance.get("garment_label", "衣服"))
+                        if provenance.get("artifact_role") == "garment"
+                        else f"第 {provenance['generation_iteration']} 轮",
+                        attempt=provenance["generation_iteration"],
+                        review_passed=provenance.get("visual_review_passed"),
+                        artifact=reference,
+                    )
+                    result["iterations"].append(entry)
             return result
         if args.command == "publish":
             exported, asset, token = selected(host, request)
@@ -397,11 +530,24 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument(
         "command",
-        choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check", "managed-comfy"],
+        choices=[
+            "create",
+            "step",
+            "status",
+            "cancel",
+            "retry",
+            "preview",
+            "publish",
+            "service-check",
+            "managed-comfy",
+            "rigging-review",
+            "rigging-text-review",
+        ],
     )
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")
     p.add_argument("--service-config")
+    p.add_argument("--local-runtime")
     p.add_argument("--spec", required=True)
     p.add_argument("--result", required=True)
     args = p.parse_args()

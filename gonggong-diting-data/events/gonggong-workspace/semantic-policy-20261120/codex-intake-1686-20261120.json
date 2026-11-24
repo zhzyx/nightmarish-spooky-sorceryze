@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1686-20261120",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "semantic-policy-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-20T12:10:35.958552+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1686",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "02181cb2e44b198d6d289b2cba357d2e56d17e5fe73fbe336ddf15c34a138886",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1686,
+    "title": "修正规则语义歧义并精简授权、审查和交付说明",
+    "body": "修正规则语义歧义，减少同一交付被模型误判为需重复审查、固定账号审批或重新授权的情况。\n\n用户明确要求：对相关语义完整审查，在足够精简的基础上避免误解。授权来源：codex:user-request:semantic-policy-20261120。当前执行者 Sail-Li。\n\n范围：当前授权、任务执行、审查、阎罗交付、CI、阻塞与验收规则及其导航；不修改冻结框架、已批准 Agent/Skill 定义或程序门禁，不接管 #1679 / PR #1682。\n\n与已完成 #1683 的区别：该单修复 CI 选择及审查复用实现，本单清理现行文本的重复、歧义和历史状态混用。\n\n验收：\n- 完整审阅上述有效规则链，记录规则归属、保留项与纠正项；直接改现有规则，不增加平行规约。\n- 区分任务授权、实际权限、定义准入、已安装框架校验、独立审查、GitHub approval、签发及业务完成。\n- 明确每个额外步骤的触发条件；保留实际 CI、保护规则、人工保留决定、其他工作者占用和完整验收。\n- 独立工作者核查易误读场景与覆盖，链接/锚点/格式检查通过；统计被修改规范正文的压缩幅度。\n- 按现有流程提交、CI、合入 main、回读、关单并清理本任务临时资源。\n\n设计：design-docs/semantic-policy-20261120.md。单一不可分割的文档一致性修复，无独立子项。\n\n<!-- gonggong-request:semantic-policy-20261120 -->\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-20T12:04:37Z",
+    "authority_ref": "codex:user-request:semantic-policy-20261120",
+    "operator": "Sail-Li",
+    "scope": "Actual authorized Issue readback; not acceptance or delivery receipt."
+  },
+  "evidence_refs": [],
+  "sha256": "9bf39fa0afbff0078d17748cb855eb9bda603aa78d366333138a3f789a64d0b9"
+}

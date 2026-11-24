@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g11",
+  "event_id": "next20-intake-1838",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1838",
+  "occurred_at": "2026-11-21T15:40:39.171710+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1838,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T15:40:36Z",
+    "accepted_dependencies": {
+      "1844": "c855f7699df2ef22bc6c3544b0dc7f96dca180fb"
+    },
+    "title": "[方案一 G11] 提交用户选择的改动"
+  },
+  "evidence_refs": [],
+  "sha256": "d21457fa5e1cd425ce9c4cfefc7200ee039e28aebe73437f7f9762070319bc66"
+}

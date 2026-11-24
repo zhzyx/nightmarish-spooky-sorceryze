@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2211-ai-chat-context-layout-20261124",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-chat-context-layout-20261124",
+  "kind": "request",
+  "occurred_at": "2026-11-24T03:41:21.982139+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2211",
+  "agent": {
+    "id": "codex-ai-chat-context-layout-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "7ab497fb89ac9f6e92f92bc347fc5dc0f9d243caa267637a9357d27d35b4af4e"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 2211,
+    "host_snapshot": "data-collection/ai-chat-context-layout-host-2211.json",
+    "design_path": "design-docs/ai-chat-context-layout-20261124.md",
+    "scope": "Issue 2211 auxiliary chat layout and selected-context correction, isolated verification, source delivery and local installation",
+    "execution_state": "in-progress",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "e48a266f5d40c499d1f69e483fc627c25275795aff3dd28355a27779aecf8d7c"
+}

@@ -9,6 +9,14 @@ var environment_ready := false
 var environment_cleanup_active := false
 var observed_runtime: Dictionary = {}
 
+var duobao_commit_script: Script
+var duobao_commit_button: Button
+var duobao_commit_dialog: AcceptDialog
+var duobao_merge_script: Script
+var duobao_merge_button: Button
+var duobao_merge_dialog: AcceptDialog
+var duobao_branches_script: Script
+var duobao_dialog: AcceptDialog
 var canvas_script: Script
 var spatial_script: Script
 var spatial_workbench: EditorPlugin
@@ -198,6 +206,12 @@ var checking := false
 var offline := false
 var toolbar: HFlowContainer
 var advanced_bar: HFlowContainer
+var inflight_dialog: AcceptDialog
+var duobao_branches_button: Button
+var historical_issue_button: Button
+var historical_issue_dialog: AcceptDialog
+var archive_history_button: Button
+var archive_history_dialog: AcceptDialog
 var advanced_button: Button
 var refresh_button: Button
 var empty_state: CenterContainer
@@ -324,6 +338,14 @@ func _ready() -> void:
 	connection_button.tooltip_text = "工作区连接"
 	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", _manual_refresh)
+	if duobao_commit_script:
+		duobao_commit_button = _button(row, "多宝提交", _open_duobao_commit)
+	if duobao_branches_script:
+		duobao_branches_button = _button(row, "多宝分支", _open_duobao_branches)
+	if duobao_merge_script:
+		duobao_merge_button = _button(row, "多宝合入", _open_duobao_merge)
+	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
+	archive_history_button = _button(row, "多宝历史", _open_archive_history)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
 	advanced_bar = HFlowContainer.new()
 	advanced_bar.hide()
@@ -333,6 +355,7 @@ func _ready() -> void:
 	draft_menu.about_to_popup.connect(_list_drafts)
 	draft_menu.get_popup().id_pressed.connect(_restore_personal)
 	advanced_bar.add_child(draft_menu)
+	_button(advanced_bar, "在途工单", _open_inflight_records)
 	status = OptionButton.new()
 	status.tooltip_text = "按工单状态筛选"
 	status.item_selected.connect(func(_index): _filter_board())
@@ -1431,18 +1454,76 @@ func _opened() -> void:
 			auto_refresh_pending = true
 
 
-func _tianxuan_command(arguments: Array) -> Dictionary:
+func _open_duobao_commit() -> void:
+	if not is_instance_valid(duobao_commit_dialog):
+		duobao_commit_dialog = duobao_commit_script.new()
+		duobao_commit_dialog.set("execute", _workcopy_commit_command)
+		add_child(duobao_commit_dialog)
+		_fill_duobao_repository(duobao_commit_dialog)
+	duobao_commit_dialog.popup_centered()
+	duobao_commit_dialog.call("refresh")
+
+
+func _workcopy_commit_command(arguments: Array, request: Dictionary) -> Dictionary:
+	return await _tianxuan_command(arguments + ["--project", ProjectSettings.globalize_path("res://")], request)
+
+
+func _open_duobao_merge() -> void:
+	if not is_instance_valid(duobao_merge_dialog):
+		duobao_merge_dialog = duobao_merge_script.new()
+		duobao_merge_dialog.set("execute", _duobao_remote_command)
+		add_child(duobao_merge_dialog)
+		_fill_duobao_repository(duobao_merge_dialog)
+	duobao_merge_dialog.popup_centered()
+
+
+func _open_duobao_branches() -> void:
+	if not is_instance_valid(duobao_dialog):
+		duobao_dialog = duobao_branches_script.new()
+		duobao_dialog.set("remote_command", _duobao_remote_command)
+		duobao_dialog.set("local_command", _duobao_workcopy_command)
+		add_child(duobao_dialog)
+		_fill_duobao_repository(duobao_dialog)
+	duobao_dialog.popup_centered()
+	duobao_dialog.call("refresh")
+
+
+func _duobao_workcopy_command(arguments: Array) -> Dictionary:
+	var host := _host_root()
+	var entry := host.path_join("customizations/components/tianxuan/server/branch_workspace.py")
+	if host.is_empty() or not FileAccess.file_exists(entry):
+		return {"ok":false,"error":"未找到已安装的多宝工作副本工具"}
+	var args := PackedStringArray([entry])
+	args.append_array(PackedStringArray(arguments))
+	args.append_array(["--project", ProjectSettings.globalize_path("res://")])
+	return await _host_command(args, "--result", {})
+
+
+func _fill_duobao_repository(dialog: AcceptDialog) -> void:
+	var field: LineEdit = dialog.get("repository")
+	if field.text.is_empty():
+		var route := await _duobao_remote_command(["duobao-route"])
+		if is_instance_valid(field) and field.text.is_empty():
+			if route.get("ok", false):
+				field.text = str(route.data.repository)
+			else:
+				field.placeholder_text = str(route.get("error", "无法读取项目的多宝仓库"))
+				field.tooltip_text = field.placeholder_text
+
+
+func _duobao_remote_command(arguments: Array) -> Dictionary:
+	return await _tianxuan_command(["--workspace", ProjectSettings.globalize_path("res://")] + arguments)
+
+
+func _tianxuan_command(arguments: Array, request: Dictionary = {}) -> Dictionary:
 	var root := _host_root()
 	var bridge := root.path_join("customizations/components/tianxuan/server/tianshu_bridge.py")
 	if root.is_empty() or not FileAccess.file_exists(bridge):
 		return {"ok": false, "error": "未找到天璇桥接脚本"}
-	var api := OS.get_environment("TIANXUAN_API")
-	if api.is_empty():
-		api = "http://127.0.0.1:8000"
 	var tianxuan_actor := OS.get_environment("TIANXUAN_ACTOR")
 	if tianxuan_actor.is_empty():
 		tianxuan_actor = str(actor.get("user_id", ""))
-	var args := PackedStringArray([bridge, "--api", api, "--actor", tianxuan_actor])
+	var args := PackedStringArray([bridge, "--actor", tianxuan_actor])
 	var identity_provider := OS.get_environment("TIANXUAN_IDENTITY_PROVIDER")
 	if not identity_provider.is_empty():
 		args.append_array([
@@ -1451,7 +1532,7 @@ func _tianxuan_command(arguments: Array) -> Dictionary:
 		])
 	for part in arguments:
 		args.append(str(part))
-	return await _host_command(args, "--result", {})
+	return await _host_command(args, "--result", request)
 
 
 func _tianxuan_item() -> Dictionary:
@@ -1476,6 +1557,336 @@ func _open_tianxuan() -> void:
 	_show_tianxuan_dialog(url, result.get("data", {}), item)
 
 
+class ArchiveHistory extends AcceptDialog:
+	var project := LineEdit.new()
+	var file_path := LineEdit.new()
+	var search := Button.new()
+	var more := Button.new()
+	var commits := ItemList.new()
+	var details := TextEdit.new()
+	var source := Button.new()
+	var query := PackedStringArray()
+	var next_offset := -1
+	var mapping := {}
+	var generation := 0
+	var selection_serial := 0
+	var execute: Callable
+
+	func _ready() -> void:
+		title = "多宝历史"
+		ok_button_text = "关闭"
+		var box := VBoxContainer.new()
+		add_child(box)
+		var inputs := HBoxContainer.new()
+		box.add_child(inputs)
+		project.text = "workspace"
+		project.accessibility_name = "归档项目"
+		project.placeholder_text = "归档项目"
+		inputs.add_child(project)
+		file_path.placeholder_text = "仓库内文件路径（可选）"
+		file_path.accessibility_name = "仓库内文件路径"
+		file_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		inputs.add_child(file_path)
+		search.text = "查询提交"
+		search.pressed.connect(_search)
+		inputs.add_child(search)
+		commits.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(commits)
+		commits.item_selected.connect(_select_commit)
+		more.text = "更多提交"
+		more.pressed.connect(_load_page)
+		box.add_child(more)
+		more.hide()
+		details.editable = false
+		details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(details)
+		source.text = "查看原始提交"
+		source.pressed.connect(_show_source)
+		box.add_child(source)
+		source.hide()
+		confirmed.connect(queue_free)
+		close_requested.connect(queue_free)
+
+	func _search() -> void:
+		generation += 1
+		query = PackedStringArray(["archive-history", "--project=" + project.text.strip_edges()])
+		if not file_path.text.is_empty():
+			query.append("--path=" + file_path.text)
+		next_offset = 0
+		commits.clear()
+		details.text = ""
+		source.hide()
+		_load_page()
+
+	func _load_page() -> void:
+		var version := generation
+		var offset := next_offset
+		more.hide()
+		var result: Dictionary = await execute.call(Array(query) + ["--offset=" + str(offset)])
+		if version != generation or is_queued_for_deletion():
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取提交：" + str(result.get("error", "未知错误"))
+			return
+		if offset == 0:
+			query.append("--revision=" + str(result.data.revision))
+		for item in result.data.items:
+			var row := commits.add_item("%s  %s" % [str(item.oid).left(12), item.subject])
+			commits.set_item_metadata(row, item.oid)
+		next_offset = -1 if result.data.next_offset == null else int(result.data.next_offset)
+		more.visible = next_offset >= 0
+		if commits.item_count == 0:
+			details.text = "没有匹配的提交"
+
+	func _select_commit(row: int) -> void:
+		selection_serial += 1
+		var current_selection := selection_serial
+		var oid: String = commits.get_item_metadata(row)
+		var version := generation
+		source.hide()
+		details.text = "正在读取 " + oid
+		var result: Dictionary = await execute.call(Array(query) + ["--commit=" + oid])
+		if version != generation or current_selection != selection_serial or is_queued_for_deletion() or not commits.is_selected(row):
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取修订：" + str(result.get("error", "未知错误"))
+			return
+		mapping = result.data.source
+		source.show()
+		if not result.data.file_error.is_empty():
+			details.text = result.data.file_error
+		elif result.data.file == null:
+			_show_source()
+		else:
+			var file: Dictionary = result.data.file
+			details.text = "%s @ %s\n\n%s" % [file.path, oid, file.text]
+
+	func _show_source() -> void:
+		details.text = "原始提交：%s\n提交者：%s\n提交树：%s\n归档版本：%s" % [
+			mapping.source_id, mapping.committer.name, mapping.tree, mapping.revision]
+
+
+func _open_archive_history() -> void:
+	if is_instance_valid(archive_history_dialog):
+		archive_history_dialog.queue_free()
+	var dialog := ArchiveHistory.new()
+	archive_history_dialog = dialog
+	dialog.execute = _tianxuan_command
+	add_child(dialog)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(680, 500))
+
+
+func _inflight_records(bindings: Dictionary) -> Array[Dictionary]:
+	var records: Array[Dictionary] = []
+	var links: Dictionary = saved.get("linked", {})
+	for row in board.get("issues", []):
+		if not row.get("closed", false) and row.get("status", "") in ["planned", "in-progress", "in-review", "needs-decision", "blocked"]:
+			_add_inflight_record(records, "工单看板", row)
+	for source in links:
+		if links[source] is not Dictionary:
+			continue
+		var link: Dictionary = links[source]
+		if str(source).begins_with("https://") and str(source) != "https://github.com/%s/issues/%d" % [actor.repo, int(link.get("number", 0))]:
+			continue
+		_add_inflight_record(records, "原记录 " + str(source), link)
+	for url in saved.get("direct_started", {}):
+		var request = saved.direct_started[url]
+		# Early worker receipts held only a boolean. Their private link above
+		# carries the request. Never infer an old request from a current board row.
+		if request is String:
+			_add_inflight_record(records, "开工记录", {"url":url, "number":str(url).get_file().to_int(), "request":request})
+	var scope := (_repo() + "|" + str(actor.repo_id) + "|" + str(actor.user_id)).sha256_text()
+	for conversation in bindings:
+		if bindings[conversation] is not Dictionary:
+			continue
+		var entry: Dictionary = bindings[conversation]
+		var raw_number := str(entry.get("issue_number", ""))
+		var number := raw_number.to_int()
+		var request := str(entry.get("request_id", ""))
+		var source := str(entry.get("source", ""))
+		var url := "https://github.com/%s/issues/%d" % [actor.repo, number]
+		if str(number) != raw_number or number <= 0 or request.is_empty() or str(entry.get("issue_url", url)) != url:
+			continue
+		if source != url and not source.begins_with("draft_") and not source.begins_with("spatial_"):
+			continue
+		var link: Dictionary = {}
+		# Early releases sometimes stored the URL in the chat and keyed the
+		# private work receipt by draft ID. Compare both original identities.
+		for key in links:
+			var candidate = links[key]
+			if candidate is not Dictionary or (key != source and (source != url or candidate.get("url") != url)):
+				continue
+			if int(candidate.get("number", 0)) == number and candidate.get("request") == request and candidate.get("url", url) == url:
+				link = candidate
+				break
+		if entry.get("scope", "") != scope:
+			var scoped_start: bool = source == url and saved.get("direct_started", {}).get(url) == request
+			if not str(entry.get("scope", "")).is_empty() or (link.is_empty() and not scoped_start):
+				continue
+		_add_inflight_record(records, "原会话 " + str(conversation), {"url":url, "number":number, "request":request, "status":link.get("status", "")})
+	return records
+
+
+func _add_inflight_record(records: Array[Dictionary], origin: String, binding: Dictionary) -> void:
+	var number := int(binding.get("number", 0))
+	var request := str(binding.get("request", ""))
+	var url := "https://github.com/%s/issues/%d" % [actor.repo, number]
+	if number <= 0 or request.is_empty() or binding.get("url", url) != url:
+		return
+	records.append({"origin":origin, "url":url, "number":number, "request":request, "status":str(binding.get("status", ""))})
+
+
+func _open_inflight_records(conversation_id := "") -> void:
+	if not conversation_id.is_empty() and (actor.is_empty() or picker_scope != _repo()):
+		await refresh()
+	var verified := await _fresh_access()
+	if not verified and conversation_id.is_empty():
+		return
+	if is_instance_valid(inflight_dialog):
+		inflight_dialog.queue_free()
+	var dialog := AcceptDialog.new()
+	inflight_dialog = dialog
+	dialog.title = "天枢 · 在途工单"
+	dialog.ok_button_text = "关闭"
+	var box := VBoxContainer.new()
+	dialog.add_child(box)
+	var choices := OptionButton.new()
+	choices.accessibility_name = "原会话或在途记录"
+	box.add_child(choices)
+	var bindings: Dictionary = EditorInterface.get_editor_settings().get_project_metadata("daqian", "bindings", {})
+	var records: Array[Dictionary] = []
+	if verified:
+		records = _inflight_records(bindings)
+		if not conversation_id.is_empty():
+			records.assign(records.filter(func(record): return record.origin == "原会话 " + conversation_id))
+	for record in records:
+		choices.add_item("#%d · %s" % [record.number, record.origin])
+	var open := Button.new()
+	open.text = "读取原单详情"
+	open.disabled = records.is_empty()
+	box.add_child(open)
+	var details := TextEdit.new()
+	details.editable = false
+	details.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(details)
+	var show_reference := func(index: int):
+		var record := records[index]
+		details.text = "%s\n%s\n需求标识：%s" % [record.origin, record.url, record.request]
+		if not record.status.is_empty():
+			details.text += "\n记录状态：" + record.status
+	choices.item_selected.connect(show_reference)
+	if records.is_empty():
+		details.text = "当前账号在此工作区没有已绑定原单的记录。" if conversation_id.is_empty() else "此会话没有可核实的原单，请核对工作区、账号与来源。"
+		if not verified:
+			details.text = "请先在天枢连接工作区并核实当前账号。"
+	else:
+		show_reference.call(0)
+	var principal := actor.duplicate()
+	var root := _repo()
+	open.pressed.connect(func():
+		var record := records[choices.selected]
+		open.disabled = true
+		choices.disabled = true
+		show_reference.call(choices.selected)
+		var args := _board_entry_args(_host_root().path_join("customizations/components/godot-host/daqian/board.py"))
+		args.append_array(["--repo", root, "--editor-session", editor_session, "--expected-user", str(principal.user_id)])
+		var reply := await _host_command(args, "--result", {"action":"original", "number":record.number, "request":record.request})
+		if not is_instance_valid(dialog) or dialog.is_queued_for_deletion():
+			return
+		if root != _repo() or principal != actor or reply.get("session_changed", false):
+			dialog.queue_free()
+			return
+		open.disabled = false
+		choices.disabled = false
+		var issue: Dictionary = reply.get("original", {})
+		if issue.get("url", "") != record.url:
+			details.text += "\n无法读取已绑定的原单，请核对访问权限和原记录。"
+			return
+		details.text += "\n%s\n原单状态：%s · %s\n\n%s" % [issue.title, issue.state, issue.status, issue.body])
+	if conversation_id.is_empty():
+		add_child(dialog)
+	else:
+		chat.add_child(dialog)
+		choices.hide()
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(640,460))
+	if not conversation_id.is_empty() and not records.is_empty():
+		open.pressed.emit()
+
+
+func _open_historical_issue(original_id := "", parent_dialog: AcceptDialog = null) -> void:
+	if is_instance_valid(historical_issue_dialog):
+		historical_issue_dialog.queue_free()
+	var dialog := AcceptDialog.new()
+	historical_issue_dialog = dialog
+	dialog.title = "天璇 · 历史工单"
+	dialog.ok_button_text = "关闭"
+	var box := VBoxContainer.new()
+	dialog.add_child(box)
+	var project := LineEdit.new()
+	var project_label := Label.new()
+	project_label.text = "归档项目"
+	box.add_child(project_label)
+	project.text = "workspace"
+	project.accessibility_name = project_label.text
+	box.add_child(project)
+	var source := LineEdit.new()
+	var source_label := Label.new()
+	source_label.text = "原始标识或 GitHub 工单链接"
+	box.add_child(source_label)
+	source.accessibility_name = source_label.text
+	source.placeholder_text = "github:owner/repo/issue/123"
+	source.text = original_id
+	box.add_child(source)
+	var details := TextEdit.new()
+	details.editable = false
+	details.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var open := Button.new()
+	open.text = "读取历史工单"
+	box.add_child(open)
+	box.add_child(details)
+	open.pressed.connect(func():
+		var archive := project.text.strip_edges()
+		var identifier := source.text.strip_edges()
+		if archive.is_empty() or identifier.is_empty():
+			details.text = "请输入归档项目和原始标识。"
+			return
+		var reference := "归档项目：%s\n原始标识：%s" % [archive, identifier]
+		details.text = "正在读取…\n" + reference
+		open.disabled = true
+		project.editable = false
+		source.editable = false
+		var principal := actor.duplicate()
+		var root := _repo()
+		var result := await _tianxuan_command(["historical-issue", "--project=" + archive, "--source-id=" + identifier])
+		if not is_instance_valid(dialog) or dialog.is_queued_for_deletion():
+			return
+		open.disabled = false
+		project.editable = true
+		source.editable = true
+		if principal != actor or root != _repo():
+			dialog.queue_free()
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取历史工单，请检查归档项目、原始标识与访问权限。\n" + reference
+			return
+		var issue: Dictionary = result.data
+		details.text = "%s\n%s\n归档状态：%s\n\n%s" % [issue.title, reference, issue.state, issue.body])
+	if parent_dialog:
+		parent_dialog.add_child(dialog)
+	else:
+		add_child(dialog)
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(640, 460))
+
+
 func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> void:
 	var dialog := AcceptDialog.new()
 	dialog.title = "天璇 · Issue #" + str(item.get("number", ""))
@@ -1484,6 +1895,7 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	var box := VBoxContainer.new()
 	box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	dialog.add_child(box)
+	_button(box, "历史工单", _open_historical_issue.bind(url, dialog))
 	var checks: Array = []
 	var requirements: Array = []
 	for doc in data.get("documents", []):
@@ -1877,7 +2289,16 @@ func _save() -> void:
 	notice.text = "个人草稿保存失败"
 
 
+func _enter_tree() -> void:
+	if is_instance_valid(workflow_controller):
+		workflow_controller.closing = false
+
+
 func _exit_tree() -> void:
+	if is_instance_valid(workflow_controller):
+		workflow_controller.quiesce()
+		if is_instance_valid(editor) and is_instance_valid(overview):
+			_save()
 	cancel_startup_model_refresh()
 	_stop_progress_watch()
 	if not picker_scope.is_empty():
@@ -1890,8 +2311,6 @@ func _exit_tree() -> void:
 				args.append_array(["--repo",picker_scope,"--end-session","--editor-session",editor_session])
 				OS.execute(python,args)
 	_stop_debug(false,true)
-	if is_instance_valid(editor) and is_instance_valid(overview):
-		_save()
 
 
 func _capture_before_navigation() -> void:
@@ -2269,10 +2688,19 @@ func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
 	var number := int(item.get("number", 0))
 	var repo := str(board.get("repo", actor.get("repo", "")))
 	var canonical := "https://github.com/%s/issues/%d" % [repo, number]
-	link.uri = canonical if number > 0 and repo.split("/").size() == 2 and item.get("url") == canonical else ""
+	link.tooltip_text = canonical if number > 0 and repo.split("/").size() == 2 and item.get("url") == canonical else ""
 	link.text = "#%d" % number
-	link.tooltip_text = link.uri
-	link.visible = not link.uri.is_empty()
+	link.visible = not link.tooltip_text.is_empty()
+	var open := _open_workbench_issue_link.bind(link)
+	if not link.pressed.is_connected(open):
+		link.pressed.connect(open)
+
+
+func _open_workbench_issue_link(link: LinkButton) -> void:
+	var sidebar := get_tree().root.find_child("AIWorkbenchSidebar", true, false)
+	var detail := sidebar.find_child("WorkbenchIssueDetail", true, false) if sidebar else null
+	if detail and not link.tooltip_text.is_empty():
+		detail.open_issue_link(link.tooltip_text)
 
 
 func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem, line: TreeItem = null) -> TreeItem:
@@ -2608,7 +3036,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child == refresh_button or child == connection_button
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button, duobao_commit_button, duobao_merge_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()
@@ -2648,6 +3076,12 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 
 
 func _forget(reason: String) -> void:
+	if is_instance_valid(archive_history_dialog):
+		archive_history_dialog.queue_free()
+	if is_instance_valid(inflight_dialog):
+		inflight_dialog.queue_free()
+	if is_instance_valid(historical_issue_dialog):
+		historical_issue_dialog.queue_free()
 	_leave_issue_inspector()
 	inspector_sessions.clear()
 	canvas_panel.clear_session()
@@ -2896,6 +3330,8 @@ func cancel_startup_model_refresh() -> void:
 
 func _use_personal_board(auth: Dictionary) -> void:
 	if actor != auth or picker_scope != _repo():
+		if is_instance_valid(inflight_dialog):
+			inflight_dialog.queue_free()
 		_leave_issue_inspector()
 		inspector_sessions.clear()
 		canvas_panel.clear_session()
@@ -4575,6 +5011,7 @@ func _attach_chat() -> void:
 	if chat and chat.has_signal("daqian_issue_bound"):
 		chat.connect("daqian_chat_unmounted", _conversation_unmounted)
 		chat.connect("daqian_issue_bound",_issue_bound)
+		chat.connect("daqian_original_requested", _open_inflight_records)
 		chat.connect("daqian_requirement_phase",_requirement_phase)
 		if chat.has_signal("daqian_execution_finished"):
 			chat.connect("daqian_execution_finished", _execution_finished)

@@ -132,6 +132,10 @@ func run():
 		for i in panel.node_picker_list.item_count: kinds.append(panel.node_picker_list.get_item_metadata(i))
 		check(kinds.has("text_to_mesh") and kinds.has("image_to_mesh") and not kinds.has("text_to_image"), "node search filters generation types by their Chinese names")
 		panel.node_picker.hide()
+	# Existing artifacts must not trigger a full layout that moves the new node away.
+	panel.preview_history["a"] = [{"type": "image", "path": fixture_image, "label": "结果", "token": "context-create", "artifact": {"id": "context-create", "revision": "context-create"}}]
+	panel.rebuild()
+	await settle()
 	# Node creation must use the canvas coordinate under a zoomed/scrolled click.
 	panel.context_menu.hide()
 	panel.graph.zoom = 1.5
@@ -312,6 +316,21 @@ func run():
 		check(preview_index >= 0 and not panel.context_menu.is_item_disabled(preview_index) and menu_has("预览历史"), "successful node enables existing-result and history actions")
 		var history_index = menu_index("预览历史")
 		if history_index >= 0 and not panel.context_menu.is_item_disabled(history_index):
+			if DisplayServer.get_name() != "headless":
+				var host_bounds := Rect2i(root.get_visible_rect()) if panel.context_menu.is_embedded() else Rect2i(root.position, root.size)
+				panel.context_menu.position.x = host_bounds.end.x - panel.context_menu.size.x
+				panel.context_menu.set_focused_item(history_index)
+				var right := InputEventKey.new()
+				right.window_id = root.get_window_id() if panel.context_menu.is_embedded() else panel.context_menu.get_window_id()
+				right.keycode = KEY_RIGHT
+				for pressed in [true, false]:
+					right.pressed = pressed
+					Input.parse_input_event(right.duplicate())
+					Input.flush_buffered_events()
+					await process_frame
+				await settle()
+				var submenu: PopupMenu = panel.context_history_menu
+				check(submenu.visible and host_bounds.encloses(Rect2i(submenu.position, submenu.size)), "history submenu opens within the host at its right edge")
 			panel.context_history_menu.id_pressed.emit(0)
 			panel.context_menu.hide()
 			await settle()
@@ -364,17 +383,41 @@ func run():
 	var keyboard_clone = panel.nodes.back().id
 	panel.graph.delete_nodes_request.emit([StringName(keyboard_clone)])
 	check(panel.nodes.size() == keyboard_copy_count, "GraphEdit delete shortcut removes the requested node using contextual safeguards")
-	# Position clamping is measured against the actual usable popup parent rectangle.
+	if panel.failure_dialog.visible:
+		panel.failure_dialog.get_ok_button().pressed.emit()
+	# Dispatch at the visible canvas edge, even when the parent scrolls the graph.
 	for window_size in [Vector2i(1100, 800), Vector2i(1440, 1000)]:
 		root.size = window_size
 		await settle()
-		popup_at(panel.graph.size - Vector2(2, 2))
+		panel.native_scroll.ensure_control_visible(panel.graph)
 		await settle()
+		var visible_canvas: Rect2 = panel.graph.get_global_rect().intersection(panel.native_scroll.get_global_rect()).intersection(root.get_visible_rect())
+		var target := visible_canvas.end - Vector2(40, 40)
+		var click: Vector2 = panel.graph.get_global_transform_with_canvas().affine_inverse() * target
+		await viewport_click(target, MOUSE_BUTTON_RIGHT)
+		await settle()
+		check(panel.context_menu.visible and panel.context_position.distance_to(click) < 1.0, "visible edge right-click preserves the original graph position at size " + str(window_size))
 		var menu_rect = Rect2i(panel.context_menu.position, panel.context_menu.size)
-		var window_rect = Rect2i(root.position, root.size)
+		var window_rect = Rect2i(root.get_visible_rect()) if panel.context_menu.is_embedded() else Rect2i(root.position, root.size)
 		check(window_rect.encloses(menu_rect), "context menu remains inside the window at size " + str(window_size))
 		panel.context_menu.hide()
 		check(panel.graph.size.y > 300 and panel.native_sections.advanced.size_flags_vertical & Control.SIZE_EXPAND_FILL, "context menus preserve the canvas vertical expansion at size " + str(window_size))
+	# Blank-canvas commands stay reachable even when the selected node has an invalid draft.
+	reset_graph()
+	await settle()
+	panel.nodes[0].type = "garment_split"
+	panel.nodes[0].provider = "garment-split"
+	panel.nodes[0].parameters = {"items": []}
+	panel.rebuild()
+	panel.select_node("a")
+	panel.parameter_form.garment_items_edit.text = "{broken"
+	panel.parameter_form.garment_items_edit.text_changed.emit()
+	var invalid_draft_parameters = panel.nodes[0].parameters.duplicate(true)
+	panel.failure_dialog.hide()
+	popup_at(Vector2(panel.graph.size.x - 30, panel.graph.size.y - 30))
+	check(panel.context_menu.visible and menu_has("保存工作流…") and not panel.failure_dialog.visible, "invalid node draft does not replace the blank-canvas menu with an error dialog")
+	check(panel.nodes[0].parameters == invalid_draft_parameters, "opening the blank-canvas menu does not mutate an invalid node draft")
+	panel.context_menu.hide()
 	check(FileAccess.get_sha256(fixture_image) == image_hash and FileAccess.get_sha256(fixture_mesh) == mesh_hash, "context editing and preview preserve source file bytes")
 	await finish()
 

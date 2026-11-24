@@ -1,0 +1,314 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d13",
+  "issue_number": 1749,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1749",
+  "producer": "wave22_d13",
+  "verified_at": "2026-11-22T01:00:07.987427+00:00",
+  "baseline": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+  "source_revision": "7534d49b130d9f94bc603ce7a4920cefdfc27edfea345473efbe32f187a1d0d6",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d13/dispatch-02dd05364d644b98b5aa97e8d1a05ff2.json",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/workspace_conversations.py": "7b9df9a4903f53e8cc726874ddc32b487436ff25cef87a183cd8e547e6364134",
+    "customizations/components/tianxuan/server/test_workspace_conversations.py": "98ffa57e2b10228fd51cb3ca669126ef976ee7652203b5aa00e6735f94716dc0",
+    "editor/SCsub": "422b6f64f075311a182b8c1aabdbbb8faf0315e827ef0e97b53e8f3fcc0331a8",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "166d2d91f91eee20351a720f95bcd45a6de12f82f4cb65a431b2b5b5f8caeb4f",
+    "editor/docks/workbench/business_session.gd": "8a9bdebd6eacf93f61427112cc022ef078bc854da3b33b9a7684a8ae84d56249",
+    "editor/docks/workbench/module_selector.gd": "cfb8a155f5850f983e19bfbdedc7faa6324a0894705d3ab75bfb1f441de7bfa9",
+    "editor/docks/workbench/design_progress.gd": "ac8fe726b8f48afce447a1e03604194fbda2b9a05dd1879d07432b4f1754d33f",
+    "tests/editor/run_workbench_design_progress.py": "38118ca155cb7b6aa4c87fefe31c1dae413053bd9ef8a168cc298d365f9e931e",
+    "tests/editor/workbench_design_progress.gd": "954dad183cdfe973aeb86c3ff40407322b99e5da49feccbed9ac4d1641c0de9e",
+    "design-docs/gonggong-ai-workbench-d13.md": "592b67d7b52b30fae8592f43add346e9ecd76e78921416eba008baf2b2d7c1b2"
+  },
+  "intake": {
+    "state": "status:in-progress",
+    "predecessor": {
+      "issue": 1858,
+      "state": "CLOSED",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1858#issuecomment-7071689747"
+    },
+    "comments": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1749#issuecomment-7071700132"
+    ],
+    "upstream_macos_observations": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_d13_candidate_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "editor_sha256": "c77b1e80158c2504a46a9e6d52b9b8404cafa45f56a8ab0e39eba7444e76ae2a",
+    "header_sha256": "9f3f46829aced87f79897f271e4e1c674b36a2b51c65fc46fb2b70e704a43835",
+    "observed_invalidation": [
+      "BusinessSession.gen.h",
+      "AIWorkbenchSidebar.cpp",
+      "editor.windows.editor.x86_64.lib",
+      "godot.windows.editor.x86_64.exe"
+    ]
+  },
+  "test_results": {
+    "native_command": "python tests/editor/run_workbench_design_progress.py --godot <candidate> --report <report>",
+    "native_exit_code": 0,
+    "native_report_sha256": "2184efc18612a4bf3241f1858c41db1e63a31f030f3c2470b73935a1bd39e18b",
+    "native": {
+      "state": "passed",
+      "editor_sha256": "c77b1e80158c2504a46a9e6d52b9b8404cafa45f56a8ab0e39eba7444e76ae2a",
+      "native": {
+        "stale": [
+          {
+            "body": "Original direction",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:13.376308+00:00",
+            "notice": "",
+            "revision": "r1 · 待确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：待确认 · r1\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:17.384173+00:00",
+            "notice": "决策请求返回 409，请核对已读回的阶段修订。",
+            "revision": "r2 · 待确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：待确认 · r2\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": false,
+            "event": "退回人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:17.461088+00:00\n退回意见：Include the lever location.",
+            "notice": "",
+            "revision": "r2 · 已退回（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已退回 · r2\n策划：未开始\n详设：未开始"
+          }
+        ],
+        "direction": [
+          {
+            "body": "Lever on path",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:18.248455+00:00",
+            "notice": "",
+            "revision": "r3 · 待确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：待确认 · r3\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": false,
+            "event": "退回人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:17.461088+00:00\n退回意见：Include the lever location.",
+            "notice": "",
+            "revision": "r2 · 已退回（历史）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：待确认 · r3\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Lever on path",
+            "confirm_enabled": false,
+            "event": "确认人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:21.957441+00:00",
+            "notice": "",
+            "revision": "r3 · 已确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：未开始\n详设：未开始"
+          }
+        ],
+        "plan": [
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:22.783049+00:00",
+            "notice": "",
+            "revision": "r4 · 待确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：待确认 · r4\n详设：未开始"
+          },
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": false,
+            "event": "确认人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:25.984638+00:00",
+            "notice": "",
+            "revision": "r4 · 已确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：未开始"
+          }
+        ],
+        "document": [
+          {
+            "body": "",
+            "confirm_enabled": false,
+            "event": "",
+            "notice": "这版文档没有此账号可读取的偃师阶段关联。",
+            "revision": null,
+            "summary": "文档 v2 尚未签认"
+          },
+          {
+            "body": "Lever on path",
+            "confirm_enabled": false,
+            "event": "确认人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:21.957441+00:00",
+            "notice": "",
+            "revision": "r3 · 已确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:26.661706+00:00\n验收条件：One pull."
+          },
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": false,
+            "event": "确认人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:25.984638+00:00",
+            "notice": "",
+            "revision": "r4 · 已确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:26.661706+00:00\n验收条件：One pull."
+          },
+          {
+            "body": "Bridge\n\nOpen within a second\n\n验收条件：One pull.",
+            "confirm_enabled": false,
+            "event": "确认人 usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:26.643195+00:00",
+            "notice": "",
+            "revision": "r5 · 已确认（当前）",
+            "summary": "来源会话 c9587ae8-af00-4bdf-834e-aa523febbfd0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_ac4064717a2c4d76bb72242bd36d4ff9 · 2026-11-22T00:59:26.661706+00:00\n验收条件：One pull."
+          }
+        ]
+      },
+      "native_decisions": [
+        {
+          "path": "/api/v1/workspace/conversations/c9587ae8-af00-4bdf-834e-aa523febbfd0/design/direction/confirm",
+          "payload": {
+            "expected_version": 3,
+            "revision": 1
+          },
+          "status": 409
+        },
+        {
+          "path": "/api/v1/workspace/conversations/c9587ae8-af00-4bdf-834e-aa523febbfd0/design/direction/return",
+          "payload": {
+            "expected_version": 4,
+            "reason": "Include the lever location.",
+            "revision": 2
+          },
+          "status": 200
+        },
+        {
+          "path": "/api/v1/workspace/conversations/c9587ae8-af00-4bdf-834e-aa523febbfd0/design/direction/confirm",
+          "payload": {
+            "expected_version": 6,
+            "revision": 3
+          },
+          "status": 200
+        },
+        {
+          "path": "/api/v1/workspace/conversations/c9587ae8-af00-4bdf-834e-aa523febbfd0/design/plan/confirm",
+          "payload": {
+            "expected_version": 8,
+            "revision": 4
+          },
+          "status": 200
+        }
+      ],
+      "signed_document": {
+        "document_id": "doc_e1625690216a4896a21682551d30f78d",
+        "version": 1,
+        "confirmed_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+        "confirmed_at": "2026-11-22T00:59:26.661706+00:00",
+        "acceptance": "One pull."
+      },
+      "stage_revisions": [
+        {
+          "revision": 1,
+          "stage": "direction",
+          "created_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "body": "Original direction",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T00:59:13.376308+00:00",
+          "confirmed_at": null,
+          "confirmed_by": null
+        },
+        {
+          "revision": 2,
+          "stage": "direction",
+          "created_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "body": "Replacement direction",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T00:59:17.384173+00:00",
+          "confirmed_at": null,
+          "confirmed_by": null,
+          "returned_at": "2026-11-22T00:59:17.461088+00:00",
+          "returned_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "return_reason": "Include the lever location."
+        },
+        {
+          "revision": 3,
+          "stage": "direction",
+          "created_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "body": "Lever on path",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T00:59:18.248455+00:00",
+          "confirmed_at": "2026-11-22T00:59:21.957441+00:00",
+          "confirmed_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9"
+        },
+        {
+          "revision": 4,
+          "stage": "plan",
+          "created_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "body": "Pull the lever",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T00:59:22.783049+00:00",
+          "confirmed_at": "2026-11-22T00:59:25.984638+00:00",
+          "confirmed_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9"
+        },
+        {
+          "revision": 5,
+          "stage": "design",
+          "created_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9",
+          "body": "Open within a second",
+          "title": "Bridge",
+          "acceptance": "One pull.",
+          "created_at": "2026-11-22T00:59:26.634197+00:00",
+          "confirmed_at": "2026-11-22T00:59:26.643195+00:00",
+          "confirmed_by": "usr_ac4064717a2c4d76bb72242bd36d4ff9"
+        }
+      ],
+      "separate_approvals": {
+        "direction": 3,
+        "plan": 4,
+        "design": 5
+      },
+      "created_issues": 0
+    },
+    "service": [
+      {
+        "files": [
+          "test_workspace_conversations.py",
+          "test_design_signoff.py"
+        ],
+        "exit_code": 0,
+        "passed": 8
+      },
+      {
+        "files": [
+          "test_api_versions.py",
+          "test_api_sharing.py"
+        ],
+        "exit_code": 0,
+        "passed": 7
+      }
+    ],
+    "adjacent": [
+      {
+        "runner": "tests/editor/run_workbench_design_signoff.py",
+        "exit_code": 0,
+        "state": "passed",
+        "database_row_count": 2,
+        "report_sha256": "2e6f1f3f691c43e1c71de8fa183cfab1edcffbcff83483967cf05cf6dd0993f0"
+      },
+      {
+        "runner": "tests/editor/run_workbench_consultation_design.py",
+        "exit_code": 0,
+        "state": "passed",
+        "display": "headless",
+        "report_sha256": "06340b3aebe6c38bc6018d4f5cffd7d1704fa582fcfb773dae1dd5491e06ff85"
+      }
+    ]
+  },
+  "handoff": {
+    "receiver": "Parent Codex session for independent candidate acceptance, main delivery and issue readback",
+    "method": "editor-dependency-handoff/bind-consumer-release",
+    "state": "Windows candidate verified locally; parent receipt pending"
+  }
+}

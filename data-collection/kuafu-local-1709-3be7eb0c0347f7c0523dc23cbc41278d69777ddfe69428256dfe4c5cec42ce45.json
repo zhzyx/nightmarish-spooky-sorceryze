@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "issue_number": 2009,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+  "original_issue": 1709,
+  "source_revision": "048a875ecd5f87c27471ffb8846a7b8a2d919396cc1417a3650bc07c556c702a",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45/wave22-b2009-source.json",
+  "recorded_at": "2026-11-21T23:35:58.262755+00:00",
+  "design": "design-docs/issue-2009-requirements-bridge.md",
+  "original_failure": {
+    "run": 44959229481,
+    "artifact": 14729710966,
+    "editor_sha256": "d8ac3bc7a2d2fd5f6592a6fcee0df609218620e9012ca839654d1de6554976c8",
+    "observed": "requirements bridge did not return a valid result",
+    "exit_code": null,
+    "receipt_status": null,
+    "child_failure_cause": null,
+    "prior_successful_replay": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009#issuecomment-7070815996"
+  },
+  "reproduced_defect": "Issue-guide polling discarded the raw result without capturing the child exit code or a typed receipt diagnosis. The failure collector inspected chat receipts only.",
+  "source_base": "42eb64e29556f7405d037935612e90edfa4ccd48",
+  "candidate_git_blobs": {
+    "editor/docks/ai_chat_dock.h": "00374521812c07bb68c94defd54ebbc66264d414",
+    "editor/docks/ai_chat_gonggong.cpp": "28329ead44f3fb14e59c2ac18caa75933b25753a",
+    "editor/docks/ai_chat_receipt.h": "664fa7b8f27280c8df1286a5cd179c20c6edb80e",
+    "tests/editor/receipt_diagnostics.py": "b227feb3114f2042094a99cd681086497ff2f373",
+    "tests/editor/requirements_intake.gd": "0322ff54485bdf6f03b8108788cb8dfa1ae1ed36",
+    "tests/editor/run_requirements_intake.py": "61e4c7bfd5496d31b8914de8200b2e818996bb0a",
+    "tests/editor/test_receipt_diagnostics.py": "086d7d7e200cf8c92d7c4066496292d6c27ab318",
+    "design-docs/issue-2009-requirements-bridge.md": "eaac16a5f02ed1d7ad3b8cf1efdb639e686f01a5"
+  },
+  "platform": "Windows x86_64",
+  "build": {
+    "scons": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "initial_exit_code": 0,
+    "final_exit_code": 0,
+    "final_log_sha256": "378168fa785706a2b3ad281a5ac4818e124f6c5c763fad293cb54d5a1ffb66e4",
+    "editor_sha256": "e2300b2603838871fb1dab140dcec2f218dbf1533db99142be985b1c3b2a96a4"
+  },
+  "checks": {
+    "runner": "tests/editor/run_requirements_intake.py",
+    "isolated_faults": [
+      {
+        "bridge_fault": "missing",
+        "python": "3.14",
+        "before": {
+          "runner_exit_code": 1,
+          "child_started": true,
+          "issue_guide_diagnostics": 0
+        },
+        "after": {
+          "runner_exit_code": 0,
+          "child_starts": 1,
+          "model_calls": 0,
+          "issues_created": 0,
+          "request_files_after": 0,
+          "result_files_after": 0,
+          "ui_rejected": true,
+          "native_status": "missing",
+          "exit_code": 7,
+          "read_attempts": 1,
+          "io_error": 7,
+          "parse_line": -1,
+          "temporary_present": false,
+          "sha256": "ae2f3452147da1dd290293c94e51ac7fb2d3a3cd22f7ba3d9824c58ec48d0b30"
+        }
+      },
+      {
+        "bridge_fault": "parse_failed",
+        "python": "3.14",
+        "before": {
+          "runner_exit_code": 1,
+          "child_started": true,
+          "issue_guide_diagnostics": 0
+        },
+        "after": {
+          "runner_exit_code": 0,
+          "child_starts": 1,
+          "model_calls": 0,
+          "issues_created": 0,
+          "request_files_after": 0,
+          "result_files_after": 0,
+          "ui_rejected": true,
+          "native_status": "parse_failed",
+          "exit_code": 0,
+          "read_attempts": 1,
+          "io_error": 0,
+          "parse_line": 0,
+          "temporary_present": false,
+          "sha256": "6c1adb124398ba8b3f43df9d54e8e5edf1940cddd8638534554cc8324e49d4b3"
+        }
+      },
+      {
+        "bridge_fault": "process_failed",
+        "python": "3.14",
+        "before": {
+          "runner_exit_code": 1,
+          "child_started": true,
+          "issue_guide_diagnostics": 0
+        },
+        "after": {
+          "runner_exit_code": 0,
+          "child_starts": 1,
+          "model_calls": 0,
+          "issues_created": 0,
+          "request_files_after": 0,
+          "result_files_after": 0,
+          "ui_rejected": true,
+          "native_status": "valid",
+          "exit_code": 7,
+          "read_attempts": 1,
+          "io_error": 0,
+          "parse_line": -1,
+          "temporary_present": false,
+          "sha256": "4602f39ed8def17d403bf8b31c482c277309bea40e2e5b541c8621ecf847b5c0"
+        }
+      }
+    ],
+    "full_runtime_setup_resume": {
+      "python": "3.15.2",
+      "runner_exit_code": 0,
+      "runtime_setup_explicit_paths_verified": true,
+      "runtime_setup_provider_invoked": false,
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "actual_native_read_tool_roundtrips": 1,
+      "events": 71,
+      "windows_owned_process_cleanup": "verified Job empty",
+      "success": {
+        "native_status": "valid",
+        "exit_code": 0
+      },
+      "application_refusals": [
+        {
+          "native_status": "valid",
+          "exit_code": 1,
+          "read_attempts": 1
+        },
+        {
+          "native_status": "valid",
+          "exit_code": 1,
+          "read_attempts": 1
+        }
+      ],
+      "cancelled": {
+        "model_received_before_cancel": true,
+        "response_attempted_after_cancel": true,
+        "guide_stayed_cancelled": true,
+        "new_terminal_diagnostic": false
+      },
+      "report_sha256": "778b6100d7730860d580fd9da83c5b7d8105e09c9aa607cf89363f00bfb287af"
+    },
+    "unit": {
+      "collector": 5,
+      "requirements_agent": 42,
+      "native_receipt_cases": 4,
+      "native_receipt_assertions": 48,
+      "native_receipt_log_sha256": "e7f858c70888b927a937dc5d18cff685fe1de777fa626b1457ea6e56260ef2a6",
+      "exit_codes": [
+        0,
+        0,
+        0
+      ]
+    },
+    "static": {
+      "ruff_check": 0,
+      "ruff_format_check": 0,
+      "clang_format_check": 0,
+      "git_diff_check": 0
+    }
+  }
+}

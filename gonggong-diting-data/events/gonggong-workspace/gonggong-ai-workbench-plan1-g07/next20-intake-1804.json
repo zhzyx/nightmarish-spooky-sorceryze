@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g07",
+  "event_id": "next20-intake-1804",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804",
+  "occurred_at": "2026-11-21T12:09:00.249357+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1804,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:08:57Z",
+    "accepted_dependencies": {
+      "1846": "559c54fa8242f2ec48c21269073d92c3ff437071",
+      "1823": "d316510f4e4bd469e8ef16eb0607755f3812cbc9",
+      "1824": "a057b561d7d1c67a210f177bd2e6e920374c7187"
+    },
+    "title": "[方案一 G07] 生成逐引用和对象完整性报告"
+  },
+  "evidence_refs": [],
+  "sha256": "a9dbd258735be58b24becb62978e8de4fdbc6d97bfce04ff6b0c05597a9d9a85"
+}

@@ -1,0 +1,660 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-r07",
+  "issue_number": 1803,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+  "producer": "afterk03_r07",
+  "authority": "codex-user:20261122-plan1-afterk03-r07",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-r07/dispatch-33e18dc4083f43628495629fa9ae87bf.json",
+  "baseline": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+  "checked_at": "2026-11-22T13:31:13.749823+00:00",
+  "source_revision": "0bbc18463ac56698fb6f34d6041257a945ce775c4c810c84efe5ae156986c8af",
+  "intake_gate": "intake-only passed, in-progress",
+  "predecessors": {
+    "R05": 1821,
+    "R06": 1822,
+    "S05": 1812,
+    "S09": 1813,
+    "S10": 1814
+  },
+  "predecessor_state": "All five were re-read CLOSED; R06 macOS receiver test recorded at data-collection/gonggong-ai-workbench-plan1-r06.json. Issue 1803 had one Windows owner comment on intake.",
+  "candidate_files": {
+    "customizations/components/tianxuan/server/native_api.py": {
+      "sha256": "fb9afa8558831b518e767c1dda12210dfcb368827a93ef617dd0fddca6cb7d34",
+      "git_blob": "634602185c7669ab758ac322ff3c52ef5bc353d3"
+    },
+    "customizations/components/tianxuan/server/native_checkpoint.py": {
+      "sha256": "d261e537034118fcd52d60c3774c2476f00c1041111bdf2f8fb239537feeea6d",
+      "git_blob": "7401e6db7f497f70e1d1c5311a05ab0f484771ed"
+    },
+    "customizations/components/tianxuan/server/native_entry_factory.py": {
+      "sha256": "21b595fe06ac30489bb08c5107eef7fc47410bc87686c49258ade14d938cada4",
+      "git_blob": "8544924df223fdd527a31550a3a405ebc52de72f"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_project_reopen.py": {
+      "sha256": "95d4aa93543af562204a97503f763272f1b392ccedd7fa6235fbe8afb553d116",
+      "git_blob": "d767fe8d5c641c248e9d54e3c137701b38f87e5f"
+    },
+    "tests/editor/run_workbench_k03_stage_acceptance.py": {
+      "sha256": "b456a9171040ecfc33f602db8a9ec4e15d243ef7c01f19957a1bb9fdc2894e5e",
+      "git_blob": "a120a7af8f760c5a2db54fd36596328d11cfe2ba"
+    },
+    "tests/editor/run_workbench_project_reopen.py": {
+      "sha256": "12ce1bc501db967b572036c2da1878678d1fd855f21caa4fe0e7d20614a8f39e",
+      "git_blob": "3d720e7292c4b4575ccf67a636cbc5e119a80e07"
+    },
+    "tests/editor/run_workbench_task_controls.py": {
+      "sha256": "cc16c613665dab813fe6cbfb9d80dc5860608d8ff751b1c159d9e776292cc613",
+      "git_blob": "0155b0a80d080298b108d1e60b335c54cbb75624"
+    },
+    "editor/docks/workbench/business_session.gd": {
+      "sha256": "c64f5d0a0f9a20f1e9c7befc71ded863d06d4123ab1c8ffb313f6933b433575b",
+      "git_blob": "28f36c903ffffc7159ea6271de1eb6374e76e724"
+    },
+    "design-docs/gonggong-ai-workbench-r07.md": {
+      "sha256": "ad2d589f2fe566ce47793c900fa8486ce65f332a4062578fc0343180d16a46a9",
+      "git_blob": "95ba51e9ba36f7c17417ec13cac3b98024dd4b7d"
+    }
+  },
+  "build": {
+    "platform": "Windows x86_64, Visual Studio 14.5, SDK 10.0.26100.0",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j6",
+    "exit": 0,
+    "generated_header": "editor/docks/workbench/BusinessSession.gen.h",
+    "header_sha256": "87504f999d24266fad166f73117df3fc93fe4ae95b409a30c08042e2a3048005",
+    "native_consumer": "AIWorkbenchSidebar.cpp compiled; Windows editor and console executables linked",
+    "package_sha256": {
+      "godot.windows.editor.x86_64.console.exe": "ff19e4f27e86f47f51f3f77723cd596283593ee9c293ea5568b680798b3af76d",
+      "godot.windows.editor.x86_64.exe": "25799dfeeefae1f93d2ec92d5780d9a89204c6e5855e2a6b263269f7f030cf42",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "editor": {
+    "passed": true,
+    "mode": "compiled headless editor / authenticated loopback / installed deterministic processes",
+    "editor_sha256": "25799dfeeefae1f93d2ec92d5780d9a89204c6e5855e2a6b263269f7f030cf42",
+    "initial_editor": {
+      "pid": 127600,
+      "exit": 0,
+      "result": {
+        "after": [
+          {
+            "issue": "#1 Program",
+            "label": "preview · 已确认启动\npreview.svg shows one blue circle of radius 12\n确认人：usr_2a6daf7f62a04a75b275ccb092be58e0",
+            "selected": true
+          },
+          {
+            "issue": "#2 Animate",
+            "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+            "selected": false
+          }
+        ],
+        "before": [
+          {
+            "issue": "#1 Program",
+            "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+            "selected": false
+          },
+          {
+            "issue": "#2 Animate",
+            "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+            "selected": false
+          }
+        ],
+        "feedback": "已从天璇回读 #1 的记录。",
+        "rects": [
+          [
+            "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+            "[P: (9.0, 97.0), S: (460.0, 33.0)]"
+          ]
+        ],
+        "selected": [
+          "#1 Program"
+        ],
+        "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+      }
+    },
+    "reopened_editors": [
+      {
+        "pid": 94432,
+        "exit": 0,
+        "result": {
+          "identity": {
+            "id": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+            "name": "native",
+            "project": "studio",
+            "role": "admin"
+          },
+          "pid": 94432
+        },
+        "startup_writes": [
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      },
+      {
+        "pid": 114384,
+        "exit": 0,
+        "result": {
+          "identity": {
+            "id": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+            "name": "native",
+            "project": "studio",
+            "role": "admin"
+          },
+          "pid": 114384
+        },
+        "startup_writes": [
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      }
+    ],
+    "original_confirmation": {
+      "issue_id": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+      "document_id": "doc_b3481095955f422db5f747758f08babe",
+      "version": 1,
+      "stage": "preview",
+      "target_revision": 1,
+      "issue_revision": "346946902430b1c8cdf1ee946d874f65e0fa8c079a54497cd6b723af9c6bf6f4",
+      "revision": 1,
+      "status": "confirmed",
+      "responsible_user": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+      "confirmed_by": "usr_2a6daf7f62a04a75b275ccb092be58e0"
+    },
+    "initial_confirmation_requests": 1,
+    "before_processes": {
+      "workers": [
+        135744
+      ],
+      "checkers": []
+    },
+    "before": {
+      "task": "8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac",
+      "issue": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+        "mandate": "installed-test-plan",
+        "source_revision": "69df57a013acf8dada4c5c811c986626bd80a3c369f6d88f538dffe8929ff6c7",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_b3481095955f422db5f747758f08babe",
+          "issue_id": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+          "issue_revision": "346946902430b1c8cdf1ee946d874f65e0fa8c079a54497cd6b723af9c6bf6f4",
+          "responsible_user": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "produced",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": {
+        "kind": "stage-check",
+        "task": "8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac"
+      }
+    },
+    "after": {
+      "task": "8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac",
+      "issue": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+        "mandate": "installed-test-plan",
+        "source_revision": "69df57a013acf8dada4c5c811c986626bd80a3c369f6d88f538dffe8929ff6c7",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_b3481095955f422db5f747758f08babe",
+          "issue_id": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+          "issue_revision": "346946902430b1c8cdf1ee946d874f65e0fa8c079a54497cd6b723af9c6bf6f4",
+          "responsible_user": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_b3481095955f422db5f747758f08babe",
+          "issue_id": "iss_04bc78a45dfb42528db19b8bdb8b5a4c",
+          "issue_revision": "346946902430b1c8cdf1ee946d874f65e0fa8c079a54497cd6b723af9c6bf6f4",
+          "responsible_user": "usr_2a6daf7f62a04a75b275ccb092be58e0",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "7889384000fc2afdb3d8b6e4082ffc6ea7b4ec91946a1ad5e4259f8935b8ae00",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "8ae4d9a4c3afe69af62cc3c6e0d38f7521f4347aecd3dfeb69ca7c3b1aca50ac"
+      }
+    },
+    "processes": {
+      "workers": [
+        135744
+      ],
+      "checkers": [
+        134152
+      ]
+    },
+    "physical_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checker_exit": 0,
+    "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+  },
+  "directed_tests": {
+    "cases": {
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen": [
+        "test_continue_from_each_confirmed_boundary[ready]",
+        "test_continue_from_each_confirmed_boundary[reserved]",
+        "test_continue_from_each_confirmed_boundary[produced]",
+        "test_reopen_respects_current_scope_and_controls[pause]",
+        "test_reopen_respects_current_scope_and_controls[cancel]",
+        "test_reopen_respects_current_scope_and_controls[revoke]",
+        "test_reopen_settles_ordinary_pinned_publication",
+        "test_unmet_stage_stops_and_is_not_retried"
+      ],
+      "customizations.components.tianxuan.sinan-workorders.test_native_recovery_list": [
+        "test_reopen_four_states_and_isolate_owner",
+        "test_visible_ready_task_with_withdrawn_execution_is_not_resumable"
+      ],
+      "customizations.components.tianxuan.sinan-workorders.test_native_checkpoint": [
+        "test_rebuild_and_partial_commit_frame"
+      ],
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop": [
+        "test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+        "test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+        "test_unbound_and_mismatched_criteria",
+        "test_revocation_during_stage_check",
+        "test_revoked_evidence_and_contribution_never_release",
+        "test_simultaneous_settlement_reuses_exact_check"
+      ],
+      "customizations.components.tianxuan.sinan-workorders.test_native_successor_events": [
+        "test_signed_successor_replays_exact_completion[False]",
+        "test_signed_successor_replays_exact_completion[True]",
+        "test_other_prerequisite_and_old_source",
+        "test_custom_flow_retains_ownership"
+      ],
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls": [
+        "test_pause_before_process_or_reservation_and_restart[False]",
+        "test_pause_before_process_or_reservation_and_restart[True]",
+        "test_signed_pause_rejects_revoked_confirmation_and_wrong_project",
+        "test_resume_rejects_changed_worker_terminal",
+        "test_sinan_observes_requested_stop_and_continues_review_without_relaunch[pause]",
+        "test_sinan_observes_requested_stop_and_continues_review_without_relaunch[cancel]"
+      ],
+      "customizations.components.tianxuan.server.test_native_entry_normal.NormalEntryTests": [
+        "test_main_two_users"
+      ]
+    },
+    "totals": {
+      "tests": "28",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "time": "75.301"
+    },
+    "replay_observations": [
+      {
+        "processes": {
+          "workers": [
+            127916
+          ],
+          "checkers": [
+            127348
+          ]
+        },
+        "physical_closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "checker_exit": 0,
+        "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "start": "ready",
+        "end": "stage-reached",
+        "original_key": "bbbfd450f7f7aa987c4c21628e2b56e22f2d72ea4a28d74414402e7ba66c55af",
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_bbe5af0b216f4c689b729a3318792bc9",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_ed8e36cbf9dc49eb8d30f7f70160dd03",
+            "issue_id": "iss_219be1e5bbf54da2ac138772c4d6b01e",
+            "issue_revision": "0cfb58a68735d6427b8db58ec49de3cdf7830d259d0e633a476d78f01a5f2a44",
+            "responsible_user": "usr_bbe5af0b216f4c689b729a3318792bc9",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "ca187be24f6d74b9713ada0f79f1a074ed757e27d423cb78f75ccbf9cdd68eb7",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "bbbfd450f7f7aa987c4c21628e2b56e22f2d72ea4a28d74414402e7ba66c55af"
+        },
+        "before_steps": [
+          "authorized"
+        ],
+        "after_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ]
+      },
+      {
+        "processes": {
+          "workers": [
+            114728
+          ],
+          "checkers": [
+            122080
+          ]
+        },
+        "physical_closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "checker_exit": 0,
+        "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "start": "reserved",
+        "end": "stage-reached",
+        "original_key": "c2e96b39c0009c64e757b30bf532ec3de54331f00665c5638d8185f8842dd51c",
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_f6c11b0f9cd3471e869b8ea5a7d2c5a6",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_119084c4a1254a35bb36b1fb72b3111c",
+            "issue_id": "iss_54ac139061414da8b0084b2736e569a8",
+            "issue_revision": "44f6926922d78182630d961d993e46046ece55020e8e7cce63202a1d055f64ac",
+            "responsible_user": "usr_f6c11b0f9cd3471e869b8ea5a7d2c5a6",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "aa5442a4929964ca8741b63588c98a59b2ba1b5197721b5e7db7546261d83da3",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "c2e96b39c0009c64e757b30bf532ec3de54331f00665c5638d8185f8842dd51c"
+        },
+        "before_steps": [
+          "authorized",
+          "reserved"
+        ],
+        "after_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ]
+      },
+      {
+        "processes": {
+          "workers": [
+            135152
+          ],
+          "checkers": [
+            134228
+          ]
+        },
+        "physical_closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "checker_exit": 0,
+        "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "start": "produced",
+        "end": "stage-reached",
+        "original_key": "dea8376fdf330d8787d51b5e8ca5c0929727659987f11a706a76c81de0a4922a",
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_25f250cded9246d19bf86cd711706e0e",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_3f0f83f82313400ca7e7540d9400f25a",
+            "issue_id": "iss_b1095dbd22e34f70b8d4eb485a4aa964",
+            "issue_revision": "891d68a3902f931769464a415fa4cd4157b4dc8cec61c6110d805fcbb24233bc",
+            "responsible_user": "usr_25f250cded9246d19bf86cd711706e0e",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "f244adf7695d736de37b613f09e1d9fd26d36d96e34be9b24a0334944be8284d",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "dea8376fdf330d8787d51b5e8ca5c0929727659987f11a706a76c81de0a4922a"
+        },
+        "before_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal"
+        ],
+        "after_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ]
+      }
+    ],
+    "mode": "Authenticated ASGI + actual deterministic child processes, Node dispatch and normal native service regressions; no external model invoked."
+  },
+  "predecessor_editor_regressions": {
+    "K03": {
+      "passed": true,
+      "dispatch_calls": {
+        "advance": 5,
+        "inspect": 6,
+        "revalidate": 2,
+        "reserve": 2,
+        "start": 2,
+        "execute": 2,
+        "verify-stage": 2,
+        "ack": 2,
+        "record": 2
+      },
+      "replay_calls": {
+        "advance": 1,
+        "inspect": 1
+      },
+      "physical_starts": 2,
+      "editor_sha256": "25799dfeeefae1f93d2ec92d5780d9a89204c6e5855e2a6b263269f7f030cf42"
+    },
+    "S10": {
+      "passed": true,
+      "runs": [
+        "4f4ad95e0f379e8675ca05fe93f09866c0ec2fc3a62ec46d3048f232dd38904c",
+        "80403677394bfbc9e4bbf4f963d2d0b6b7159087f6d2162dcc4a9d815a99838e",
+        "656316e8e359dde2e30340ba11743897ee5266770bce08a83867146c26b666a0"
+      ],
+      "starts": [
+        {
+          "key": "4f4ad95e0f379e8675ca05fe93f09866c0ec2fc3a62ec46d3048f232dd38904c",
+          "pid": 136752
+        },
+        {
+          "key": "80403677394bfbc9e4bbf4f963d2d0b6b7159087f6d2162dcc4a9d815a99838e",
+          "pid": 136948
+        },
+        {
+          "key": "656316e8e359dde2e30340ba11743897ee5266770bce08a83867146c26b666a0",
+          "pid": 127512
+        }
+      ],
+      "closures": {
+        "4f4ad95e0f379e8675ca05fe93f09866c0ec2fc3a62ec46d3048f232dd38904c": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "80403677394bfbc9e4bbf4f963d2d0b6b7159087f6d2162dcc4a9d815a99838e": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "656316e8e359dde2e30340ba11743897ee5266770bce08a83867146c26b666a0": {
+          "exit_code": null,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "cancelled_replay_starts": 0,
+      "http_control_requests": [
+        {
+          "operation": "cancel",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "pause",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 403,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 409,
+          "count": 1
+        }
+      ],
+      "editor_sha256": "25799dfeeefae1f93d2ec92d5780d9a89204c6e5855e2a6b263269f7f030cf42"
+    }
+  },
+  "fixture_corrections": [
+    "K03 initially observed only one of two tickets at its explicit Node dispatch because the intervening editor reopen had consumed one. Create both tickets after the two separate UI confirmations. Target and count assertions retained.",
+    "S10 initially denied duplicate reserve of its third already recovered ticket. Sign that cancellation ticket when its case begins, after the pause/resume editor opens. Original control and physical exit assertions retained."
+  ],
+  "reproduce": [
+    "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_project_reopen.py customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py customizations/components/tianxuan/server/test_native_entry_normal.py",
+    "python tests/editor/run_workbench_project_reopen.py --godot bin/godot.windows.editor.x86_64.exe --report <temp-output.json>",
+    "python tests/editor/run_workbench_task_controls.py --godot bin/godot.windows.editor.x86_64.exe --report <temp-output.json>",
+    "python tests/editor/run_workbench_k03_stage_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --report <temp-output.json>"
+  ],
+  "cleanup": "All native editor sessions exited. Their isolated application copies, project settings and process workspaces were automatically removed. The candidate worktree and compiled package remain available for independent acceptance by the parent."
+}

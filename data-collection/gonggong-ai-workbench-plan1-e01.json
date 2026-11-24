@@ -1,0 +1,129 @@
+{
+  "issue_number": 1834,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1834",
+  "request_id": "gonggong-ai-workbench-plan1-e01",
+  "baseline": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/native_api.py": "f0f0367f46249bcdf92b5502fb0636605930b106f722a965af91ba3f177e36ba",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "3ecb01622245aca38aa54d4d01d453db5979ff3a62597bec9d45963546189d3a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "fca3dcec613f625877cf7d8514e6ea5ae2489a04b60df4f9b53ebefe4fcd939c"
+  },
+  "dependency": 1855,
+  "verified_at": "2026-11-22T06:23:03.934663+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "contract": "原生任务的授权事务固定工程及业务模块。目标文件取自任务的写入范围，文件摘要由授权时固定的不可变模块修订得出。认证工作流的 edit-baseline 读回指定目标的初始与当前修订和 SHA-256。路径删除后仍能读回起始摘要。历史任务缺少可核实的业务归属时返回空值。",
+  "regression": {
+    "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+    "passed": 27
+  },
+  "macos_http": {
+    "transport": "Uvicorn on loopback, authenticated HTTP, independent SQLite service and native object store",
+    "events": [
+      {
+        "path": "/api/v1/issues/iss_e55711cf70534f3f8d49ab9f6eb02bb2/task-target",
+        "method": "PUT",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/issues/by-number/1/detail",
+        "method": "GET",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/issues/iss_e55711cf70534f3f8d49ab9f6eb02bb2/task-confirmation",
+        "method": "PUT",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/native/workflow/authorize",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/native/workflow/edit-baseline",
+        "method": "POST",
+        "status": 200,
+        "result": {
+          "task": "3afb809b154b7813f9f77c7c9ea9944af07b4aa2be6080486205382de8dc581a",
+          "project": "studio",
+          "business_module": "default",
+          "module": "a",
+          "path": "output",
+          "initial": {
+            "revision": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "sha256": "ac1b5c0961a7269b6a053ee64276ed0e20a7f48aefb9f67519539d23aaf10149"
+          },
+          "latest": {
+            "revision": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "sha256": "ac1b5c0961a7269b6a053ee64276ed0e20a7f48aefb9f67519539d23aaf10149"
+          }
+        }
+      },
+      {
+        "path": "/api/v1/native/batches",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/native/workflow/edit-baseline",
+        "method": "POST",
+        "status": 200,
+        "result": {
+          "task": "3afb809b154b7813f9f77c7c9ea9944af07b4aa2be6080486205382de8dc581a",
+          "project": "studio",
+          "business_module": "default",
+          "module": "a",
+          "path": "output",
+          "initial": {
+            "revision": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "sha256": "ac1b5c0961a7269b6a053ee64276ed0e20a7f48aefb9f67519539d23aaf10149"
+          },
+          "latest": {
+            "revision": "2b714a6be65726bef55c535d592f8cbaa05667593ffb1d768aa38c8e1e777ce7",
+            "sha256": "b692f4c298ad52d7651ff9ea0119868d858cd0a8098eaacec65dd27b262d5ee6"
+          }
+        }
+      },
+      {
+        "path": "/api/v1/native/workflow/authorize",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/native/batches",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/native/workflow/edit-baseline",
+        "method": "POST",
+        "status": 200,
+        "result": {
+          "task": "3afb809b154b7813f9f77c7c9ea9944af07b4aa2be6080486205382de8dc581a",
+          "project": "studio",
+          "business_module": "default",
+          "module": "a",
+          "path": "output",
+          "initial": {
+            "revision": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "sha256": "ac1b5c0961a7269b6a053ee64276ed0e20a7f48aefb9f67519539d23aaf10149"
+          },
+          "latest": {
+            "revision": "a0247cb78021a0e80a2d0019c33ccd5603afbe17c3c86d2727b36b51706ff3a5",
+            "sha256": null
+          }
+        }
+      },
+      {
+        "path": "/api/v1/native/workflow/edit-baseline",
+        "method": "POST",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/native/workflow/edit-baseline",
+        "method": "POST",
+        "status": 409
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-d03",
+  "event_id": "mac-delivery-010923-intake-1860",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860",
+  "occurred_at": "2026-11-21T17:24:26.042438+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1860,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T17:18:42Z",
+    "scope": "Extend authored design drafts from consultation history while retaining the source conversation and exact human edits"
+  },
+  "evidence_refs": [],
+  "sha256": "755bcdc9b336c140ed0eb568a4a23ae5e4086359b2c69cbc9dd041970baf2698"
+}

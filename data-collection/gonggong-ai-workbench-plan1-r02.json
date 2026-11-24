@@ -1,0 +1,70 @@
+{
+  "issue_number": 1802,
+  "request_id": "gonggong-ai-workbench-plan1-r02",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1802",
+  "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "environment": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "commands": [
+    "python -m SCons -j6 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+    "python tests/editor/run_daqian_graph.py --godot bin/godot.macos.editor.arm64 --scenario shutdown --report r02-editor.json",
+    "godot --headless --path <temporary project containing controller> --script res://probe.gd (tests/editor/daqian_workflow_controller.gd)",
+    "node --test tests/editor/test_parallel_work_orders.mjs"
+  ],
+  "candidate_blobs": {
+    "editor/docks/ai_chat_dock.cpp": "55696a7e919b1428d36fa40448f1cdecc2516b5c",
+    "editor/docks/ai_chat_dock.h": "5f03c59e686e925c5f2e1ac9b96765e3f776b2d4",
+    "editor/docks/ai_chat_sub_agents.cpp": "cd9bdb775bf7c16a0b6bb67bb59b330bb69d65fd",
+    "editor/docks/daqian/workflow_controller.gd": "6681aa9546bd6b1fc75003c17d17eaa7da3a478c",
+    "editor/docks/daqian/workspace.gd": "af10355a17fa6ac1218bb22fccee0bbec5459a4c",
+    "tests/editor/daqian_workflow_controller.gd": "afb29e6aaa715b809aaa6677184d3ad194efee1b",
+    "tests/editor/run_daqian_graph.py": "c371132a4101d75724cd5f5cdaa54ff39864f239",
+    "tests/editor/test_parallel_work_orders.mjs": "a2e9b80a25be16ed7913cc6af09cb76eccbed125",
+    "tools/godot_parallel/runner.mjs": "b7e94a5b13ee8b60812601dc4f0db23c9838996a",
+    "tests/editor/daqian_shutdown.gd": "8138b61219160821c68ea5887a51c99b4828f8a3"
+  },
+  "native": {
+    "state": "passed",
+    "editor_sha256": "fe864abb3ca56b5f67d071d38ba13e97d189ee510576dfafd7889e09db4992b8",
+    "scenario": "shutdown",
+    "scope": "native editor exit and durable controller checkpoint",
+    "observation": {
+      "checkpoint": {
+        "last_terminal": {},
+        "runs": [
+          {
+            "generation": 1,
+            "issue": "fixture/1802",
+            "request": "r02",
+            "request_id": "2bc251c5ab5525944a5d7e69d1e6ca0c",
+            "run_id": "ai/9223373743013835712/1",
+            "sequence": 1,
+            "state": "running",
+            "workflow": "tianshu.execution"
+          }
+        ],
+        "workers": {}
+      },
+      "dispatches_after_close": 0
+    }
+  },
+  "terminal_first": {
+    "last_terminal": {
+      "generation": 14,
+      "issue": "https://github.com/fixture/repo/issues/1086",
+      "request": "ai-unified-framework",
+      "request_id": "f751e6fed61cd5519ad8ec71d4713f2a",
+      "run_id": "ai/9223372064956614165/14",
+      "sequence": 2,
+      "state": "succeeded",
+      "workflow": "tianshu.execution"
+    },
+    "runs": [],
+    "workers": {}
+  },
+  "runner_tests": 68,
+  "runner_failures": 0,
+  "runner_critical_windows": {
+    "after_registration_before_spawn": "zero worker PIDs",
+    "after_spawn_before_prompt": "child exited, zero business prompts"
+  }
+}

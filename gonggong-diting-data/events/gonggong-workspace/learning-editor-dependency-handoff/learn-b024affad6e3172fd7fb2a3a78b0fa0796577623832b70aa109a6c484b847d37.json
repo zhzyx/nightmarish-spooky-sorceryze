@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-b024affad6e3172fd7fb2a3a78b0fa0796577623832b70aa109a6c484b847d37",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2162",
+  "occurred_at": "2026-11-23T19:19:37.275537+00:00",
+  "evidence_refs": [
+    "dispatch-7a05d038e0414ce68f96fd58c3d2b7b0",
+    "learn-8749b1667a1a327645e72ef2fc7235d676c374949cd3a0f9adf4e77f4e4d2c76"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 43,
+    "previous": "2df4c467e1aa064cf6f33be14f3ec6322ef0deb232aafd569fa8142cf942cfc5",
+    "action": "applied",
+    "details": {
+      "task": "Requester-authorized exact Git delivery and editor readback",
+      "observed": "The independent reader produced a delivery marker with the old queue release, then reopened it under the candidate. The replay succeeded after the consumer recognized the prior atomic write. A higher approval threshold and a new required check still allowed recovering the original target SHA and exactly one work-order comment"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/duobao-requester-delivery-20261124.json",
+        "sha256": "01db9b6e6734acf36712ce61b8a148adc811d296966c6e67be6965442e6e1435"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/duobao-requester-delivery-20261124/dispatch-7a05d038e0414ce68f96fd58c3d2b7b0.json",
+      "sha256": "95cd36b683bb7c29bed1166fde3ed468641e91133661458605893fb368256808"
+    }
+  },
+  "sha256": "649c1ddc44a400d36a8073660f35d1b7747254fe8de395865e8f177412ebab7a"
+}

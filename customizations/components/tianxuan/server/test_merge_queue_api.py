@@ -206,3 +206,100 @@ def test_queue_binding_and_creator_permissions(monkeypatch: pytest.MonkeyPatch, 
     ).json()
     assert client.post(f"/api/v1/merge-queue/{second['id']}/cancel", headers=headers).status_code == 200
     assert client.post(f"/api/v1/merge-queue/{second['id']}/retry", headers=headers).status_code == 200
+
+
+def test_exact_request_requires_session_and_is_readable_by_tenant_reviewer(monkeypatch, tmp_path):
+    client, legacy, queue = _setup(monkeypatch, tmp_path)
+    store = client.app.state.store
+    admin = {"Authorization": "Bearer " + store.issue_session(legacy["X-Actor"])}
+    reviewer = _add_editor(client, legacy, "reviewer@example.invalid")
+    reader = {"Authorization": "Bearer " + store.issue_session(reviewer["X-Actor"])}
+    repo = tmp_path / "docs.git"
+    source = GitService().branch_tip(repo, "feature")
+    body = {"source": "feature", "target": "main", "candidate": source}
+    path = "/api/v1/git/repos/docs.git/merge-requests"
+    assert client.post(path, headers=legacy, json=body).status_code == 401
+    assert client.post(path, headers=admin, json={**body, "candidate": source[:12]}).status_code == 422
+    created = client.post(path, headers=admin, json=body)
+    assert created.status_code == 200
+    item = created.json()
+    assert item["check_state"] == "queued"
+    assert client.get(path + "/" + item["id"], headers=reader).json() == item
+    assert client.get(path.replace("docs.git", "wrong.git") + "/" + item["id"], headers=reader).status_code == 404
+    other = store.register("其他租户", "other@example.invalid", "secret-pass")
+    outsider = {"Authorization": "Bearer " + store.issue_session(other["user_id"])}
+    assert client.get(path + "/" + item["id"], headers=outsider).status_code == 404
+    assert queue.count_items() == 1
+
+
+@pytest.mark.parametrize("required_approvals", [0, 1, 2])
+def test_requester_can_deliver_under_project_approval_policy(monkeypatch, tmp_path, required_approvals):
+    client, legacy, queue = _setup(monkeypatch, tmp_path)
+    store = client.app.state.store
+    actor = legacy["X-Actor"]
+    owner = {"Authorization": "Bearer " + store.issue_session(actor)}
+    client.app.state.required_approvals = required_approvals
+    issue = store.create_issue(actor, "Requester delivery")["id"]
+    repo = tmp_path / "docs.git"
+    candidate = queue.git.branch_tip(repo, "feature")
+    root = "/api/v1/git/repos/docs.git/merge-requests"
+    created = client.post(
+        root, headers=owner, json={"source": "feature", "target": "main", "candidate": candidate, "issue_id": issue}
+    )
+    assert created.status_code == 200
+    route = root + "/" + created.json()["id"]
+    assert client.post(route + "/deliver", headers=owner).status_code == 409
+    assert queue.process_next()["status"] == "checked"
+    approval = {"decision": "APPROVED"}
+    if required_approvals:
+        assert client.post(route + "/deliver", headers=owner).status_code == 403
+        assert client.post(route + "/review", headers=owner, json=approval).json()["reviews"] == {actor: "APPROVED"}
+    if required_approvals == 2:
+        assert client.post(route + "/review", headers=owner, json=approval).status_code == 200
+        assert client.post(route + "/deliver", headers=owner).status_code == 403
+        peer_id = _add_editor(client, legacy, "policy-reviewer@example.invalid")["X-Actor"]
+        peer = {"Authorization": "Bearer " + store.issue_session(peer_id)}
+        assert client.post(route + "/review", headers=peer, json=approval).status_code == 200
+        assert client.post(route + "/deliver", headers=peer).status_code == 403
+    result = client.post(route + "/deliver", headers=owner)
+    assert result.status_code == 200
+    assert result.json()["target_tip"] == queue.git.branch_tip(repo, "main") == candidate
+    assert client.post(route + "/deliver", headers=owner).json()["comment_id"] == result.json()["comment_id"]
+    assert len(store.list_issue_comments(actor, issue)) == 1
+
+
+def test_delivery_recovers_lost_work_order_write_and_refuses_retracted_target(monkeypatch, tmp_path):
+    from exact_integration import git
+
+    client, legacy, queue = _setup(monkeypatch, tmp_path)
+    store = client.app.state.store
+    author = legacy["X-Actor"]
+    owner = {"Authorization": "Bearer " + store.issue_session(author)}
+    reviewer = _add_editor(client, legacy, "peer@example.invalid")["X-Actor"]
+    peer = {"Authorization": "Bearer " + store.issue_session(reviewer)}
+    issue = store.create_issue(author, "Read back the checked target")["id"]
+    repo = tmp_path / "docs.git"
+    service = queue.git
+    base, candidate = (service.branch_tip(repo, name) for name in ("main", "feature"))
+    root = "/api/v1/git/repos/docs.git/merge-requests"
+    create = client.post(
+        root, headers=owner, json={"source": "feature", "target": "main", "candidate": candidate, "issue_id": issue}
+    )
+    assert create.status_code == 200
+    ident = create.json()["id"]
+    route = root + "/" + ident
+    assert queue.process_next()["status"] == "checked"
+    assert client.post(route + "/review", headers=peer, json={"decision": "APPROVED"}).status_code == 200
+    # Exact Git apply completed, then the service stopped before writing to Tianxuan.
+    applied = queue.reviewed_delivery(ident, author)["evidence"]["merge_sha"]
+    assert applied == candidate and store.list_issue_comments(author, issue) == []
+    client.app.state.required_approvals = 2
+    client.app.state.required_checks = ("new-project-check",)
+    git(service.git_executable, repo, "update-ref", "refs/heads/main", base, applied)
+    assert client.post(route + "/deliver", headers=owner).status_code == 409
+    assert store.list_issue_comments(author, issue) == []
+    git(service.git_executable, repo, "update-ref", "refs/heads/main", applied, base)
+    accepted = client.post(route + "/deliver", headers=owner)
+    assert accepted.status_code == 200 and accepted.json()["target_tip"] == candidate
+    assert client.post(route + "/deliver", headers=owner).json()["comment_id"] == accepted.json()["comment_id"]
+    assert len(store.list_issue_comments(author, issue)) == 1

@@ -201,6 +201,12 @@ class InstallationManifest:
             require(not self._closed, "Installation admission closed")
             return self._verify()
 
+    def verify_manifest(self):
+        """Validate installed policy identity for a read without admitting executable use."""
+        with self._lock:
+            require(not self._closed, "Installation admission closed")
+            _verified_source(self.path, self.sha256)
+
     def _verify(self):
         # Parse the exact bytes hashed, and never expose cached trusted dictionaries.
         spec = json.loads(_verified_source(self.path, self.sha256, collect=True).decode("utf-8"))
@@ -235,8 +241,14 @@ class InstallationManifest:
             and set(commands) == {"planner", "producer", "checker", "reviewer", "dispatcher"},
             "Complete installed command set required",
         )
-        for command in commands.values():
-            require(isinstance(command, dict) and set(command) == {"argv", "env"}, "Fixed command required")
+        for role, command in commands.items():
+            expected = {"argv", "env"}
+            # A replay guarantee is part of the signed local producer installation.
+            # Network role clients cannot vouch for effects on the remote service.
+            if role == "producer" and spec.get("mode") == "deterministic-test" and isinstance(command, dict):
+                if command.get("restart_checkpoint") == "immutable-inputs":
+                    expected.add("restart_checkpoint")
+            require(isinstance(command, dict) and set(command) == expected, "Fixed command required")
             argv = command["argv"]
             require(
                 isinstance(argv, list) and argv and all(isinstance(v, str) and v for v in argv), "Fixed argv required"
@@ -308,11 +320,12 @@ class InstalledPlannerRuntime:
     timeout, lost stdout, configuration withdrawal or process-tree failure.
     """
 
-    def __init__(self, installation, authorize, role="planner"):
+    def __init__(self, installation, authorize, role="planner", observe=None):
         from native_check_runner import _process_helper
 
         self.installation, self.authorize, self.role = installation, authorize, role
         self.helper = _process_helper()
+        self.observe = observe
 
     async def __call__(self, request):
         return await asyncio.to_thread(self.run, request)
@@ -327,7 +340,10 @@ class InstalledPlannerRuntime:
         command = self.installation.command(self.role)
         argv = list(command["argv"])
         if recover:
-            require(self.installation.spec.get("mode") == "production", "Recovery requires admitted production broker")
+            require(
+                self.installation.spec.get("mode") in {"production", "local-signed-validation"},
+                "Recovery requires admitted production broker",
+            )
             argv.append("--recover")
         # JSON output and stderr are separately bounded and fully drained by the
         # same process-tree helper already used by native worker/check execution.
@@ -355,10 +371,36 @@ class InstalledPlannerRuntime:
         require(self.authorize(request) is True, "Planning credential withdrawn while waiting")
         receipt = json.loads(output)
         require(
-            set(receipt) == {"input_digest", "source", "proposal", "runtime_state"}, "Closed runtime receipt required"
+            set(receipt) - {"model_calls"} == {"input_digest", "source", "proposal", "runtime_state"},
+            "Closed runtime receipt required",
         )
         require(
             receipt["input_digest"] == _digest(encoded) and receipt["source"] == request["source"],
             "Planner receipt source/input mismatch",
         )
+        if "model_calls" in receipt:
+            from native_observations import model_observation, public_model_name
+
+            calls = receipt["model_calls"]
+            require(
+                self.installation.spec.get("mode") in {"production", "local-signed-validation"}
+                and isinstance(calls, list)
+                and len(calls) <= 100,
+                "Unexpected broker observations",
+            )
+            for call in calls:
+                require(
+                    isinstance(call, dict)
+                    and set(call) == {"requested_model", "provider_model", "usage"}
+                    and isinstance(call["requested_model"], str)
+                    and model_observation(call["provider_model"], call["usage"])
+                    == {k: call[k] for k in ("provider_model", "usage")},
+                    "Invalid broker observation",
+                )
+            if self.observe is not None:
+                self.observe(
+                    request,
+                    receipt["input_digest"],
+                    [{**call, "requested_model": public_model_name(call["requested_model"])} for call in calls],
+                )
         return receipt["proposal"]

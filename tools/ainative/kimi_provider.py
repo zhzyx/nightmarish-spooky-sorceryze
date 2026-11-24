@@ -7,6 +7,7 @@ Direct 3D jobs delegate agent-gw authentication to the configured Kimi Work tool
 """
 
 import base64
+import copy
 import hashlib
 import json
 import os
@@ -487,6 +488,7 @@ MODEL3D_GATEWAY_VERSION = "v1"
 MODEL3D_GENERATE_MODELS = frozenset(("v3.1", "v3.0", "v2.5", "p1", "p2"))
 MODEL3D_TEXTURE_MODELS = frozenset(("v3.5", "v3.0", "v2.5"))
 MODEL3D_TEXTURE_QUALITIES = frozenset(("fast", "standard", "detailed", "extreme"))
+LOCAL_GEOMETRY_OPERATIONS = frozenset(("align_neck", "reshape_crown", "reshape_humanoid"))
 MODEL3D_TIMEOUT = 1500
 MAX_MODEL3D_BYTES = 64 * 1024 * 1024
 MAX_MODEL3D_SOURCE_BYTES = 32 * 1024 * 1024
@@ -505,12 +507,38 @@ MODEL3D_MESSAGES = dict(
     model3d_sheet_unsupported="三视图裁切需要 Pillow 支持的 PNG/JPEG 图片，且宽高必须足够。",
     unsupported_image_text_constraints="Tripo API 的直接图片／多视图生成不接受额外文字约束；请只保留三视图标记或留空。",
     model_adjust_source_missing="模型调整节点必须提供一个已生成的 GLB 或内嵌 glTF 模型。",
+    human_shape_source_invalid="人形体态调整需要一份静态、未绑骨的 GLB；默认由 AINative 自动拟合源绑定的人体关键点。",
+    human_shape_auto_fit_output_invalid="AINative 自动拟合返回的人体姿态或关键点不完整，未执行体态调整。",
+    human_shape_auto_fit_front_required="AINative 自动朝向恢复后仍无法确认解剖正面；未猜测关键点或修改源模型。",
+    human_shape_auto_fit_low_confidence="AINative 对姿态或关键点拟合置信度不足，已停止且未修改源模型。",
+    human_shape_auto_fit_geometry_mismatch="AINative 拟合的关键点偏离源网格过多，已停止且未执行体态调整。",
+    human_shape_auto_fit_geometry_invalid="源 GLB 缺少可用于自动拟合的有效静态网格。",
+    human_shape_auto_fit_output_exists="自动拟合回执目录已存在，未覆盖旧证据。",
+    geometry_repair_confirmation_required="请先预览并确认局部几何修复参数。",
+    geometry_repair_reference_pose_invalid="AINative 无法确认参考姿态；请将 reference_pose 设为 T 或 A。",
+    geometry_repair_landmarks_invalid="人体关键点不完整或格式无效；请提供头顶、下巴、颈根及双侧肩肘腕、髋膝踝坐标。",
+    geometry_repair_landmark_source_mismatch="人体关键点属于另一份源模型；几何变化后必须重新确认标记。",
+    geometry_repair_landmark_mismatch="人体关键点的左右侧、上下顺序或头顶高度不一致，请修正后再调整。",
+    geometry_repair_parameters_invalid="体态参数超出支持范围；身高、头身比、臂长、腿长和胖瘦必须使用有限数值。",
+    geometry_repair_proportion_limit_exceeded="目标头身比需要超出安全范围的头部缩放，已停止且未覆盖源模型。",
+    geometry_repair_rigged_source_unsupported="人形体态调整只接受最终绑骨前的静态 Mesh；已绑骨模型请重新从静态源派生。",
+    geometry_repair_transform_unsupported="当前 V1 只支持无节点变换且 POSITION accessor 不共享的静态 GLB，请先规范化源模型。",
+    model3d_geometry_edit_unsupported="当前缺陷缺少已确认的局部几何修复参数，且不能只靠材质调整解决；已停止，未偷偷改为全量重生成。",
     model_adjust_guidance_invalid="模型调整引导方式无效：文字+风格图必须有文字；四图引导必须包含 front/left/back/right 全部视角。",
     prompt_required="请填写文字建模描述，或提供参考图。",
     invalid_input="输入图片、文字或三维生成参数无效。",
     unsupported_multiple_image_constraints="Tripo API 直接生成最多支持四张独立视角图片。",
     unsupported_context_semantics="当前直接三维生成支持节点级文字说明和参考图。",
+    api_key_missing="Kimi 视觉理解与复核缺少 KIMI_API_KEY。请将该变量加入引擎启动环境并重启编辑器；本次未提交生成，也不会自动重发。",
     worker_failed="Tripo API 工作进程失败；私有回执已保留，未自动重复生成。",
+    model3d_review_not_configured="视觉理解与复核需要 Kimi 视觉模型、Godot 和 mesh_review.gd，请检查本机配置。",
+    vision_request_too_large="视觉分析图片总量过大；未提交生成，请减少单图分辨率后重试。",
+    vision_request_failed="Kimi 视觉理解或复核请求失败；私有回执已保留，未自动重发。",
+    vision_output_invalid="Kimi 视觉理解或复核结果不完整，未提交或发布模型。",
+    model3d_review_incomplete="同一模型的复核报告仍缺少必要视图；未重新生成或调整模型，请保留记录后重试复核。",
+    vision_subject_incoherent="输入图片未形成一致的建模主体，请先检查图片内容。",
+    vision_no_full_subject="输入中没有可用于三维生成的完整主体图；细节特写已用于理解，但不会冒充完整视角。",
+    review_render_failed="生成模型的多视角复核渲染失败；该结果不会发布，也不会盲目重发。",
 )
 
 
@@ -604,18 +632,26 @@ def _turnaround_requested(prompt):
 
 class KimiNativeDirectProvider(ModelingProvider):
     CONFIG_KEYS = frozenset(("tool_path", "pythonw_path", "storage", "model"))
+    REVIEW_KEYS = frozenset(("planner", "review_godot_path", "review_script_path"))
     DATABASE_NAME = "kimi-native-3d-jobs.sqlite"
     MESSAGES = MODEL3D_MESSAGES
 
     def __init__(self, config):
+        allowed = self.CONFIG_KEYS | self.REVIEW_KEYS | {"texture_model"}
         require(
             isinstance(config, dict)
-            and set(config) in (self.CONFIG_KEYS, self.CONFIG_KEYS | {"texture_model"})
+            and self.CONFIG_KEYS <= set(config) <= allowed
             and config.get("model") in MODEL3D_GENERATE_MODELS
             and config.get("texture_model", "v3.5") in MODEL3D_TEXTURE_MODELS
-            and all(isinstance(value, str) for value in config.values()),
+            and all(isinstance(value, str) for key, value in config.items() if key != "planner"),
             "model3d_tool_invalid",
         )
+        review_keys = self.REVIEW_KEYS & set(config)
+        require(not review_keys or review_keys == self.REVIEW_KEYS, "model3d_review_not_configured")
+        if "planner" in config:
+            from api_planner import validate_config
+
+            validate_config(config["planner"])
         self.config = json.loads(canonical(config))
         self.storage = Path(config["storage"]).expanduser().resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
@@ -625,7 +661,16 @@ class KimiNativeDirectProvider(ModelingProvider):
         self.fingerprint = digest([
             self.config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("geometry_repair.py").read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("human_shape_landmarks.py").read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("rigging_review.py").read_bytes()).hexdigest(),
             implementation_fingerprint(),
+            hashlib.sha256(Path(__file__).with_name("mesh_vision.py").read_bytes()).hexdigest()
+            if review_keys
+            else None,
+            hashlib.sha256(Path(config["review_script_path"]).read_bytes()).hexdigest()
+            if review_keys and Path(config["review_script_path"]).is_file()
+            else None,
         ])
 
     def describe(self):
@@ -634,10 +679,15 @@ class KimiNativeDirectProvider(ModelingProvider):
             version=VERSION,
             model="Tripo API generate_3d_model " + MODEL3D_GATEWAY_VERSION + " (" + self.config["model"] + ")",
             model_version=self.fingerprint,
-            capabilities=["text_to_mesh", "image_to_mesh", "model_adjust"],
+            capabilities=["text_to_mesh", "image_to_mesh", "model_adjust", "human_shape_adjust"],
             context_types=["text", "image"],
             available=True,
         )
+
+    def public_failure_message(self, snapshot):
+        """Expose only our reviewed Chinese summaries, never raw service responses."""
+        message = snapshot.get("error")
+        return message if message in set(self.MESSAGES.values()) else self.MESSAGES["model3d_result_unknown"]
 
     def finish(self, key, state, code=None, result=None):
         outputs = {"result": {k: result["artifacts"][-1][k] for k in ("id", "revision")}} if result else None
@@ -648,7 +698,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         return self.write(key, **values)["terminal"]
 
     def plan(self, request, manifest):
-        if request["node"] == "model_adjust":
+        if request["node"] in ("model_adjust", "human_shape_adjust"):
             return self._adjust_plan(request, manifest)
         kind = request["node"]
         require(kind in ("text_to_mesh", "image_to_mesh"), "invalid_input")
@@ -720,6 +770,10 @@ class KimiNativeDirectProvider(ModelingProvider):
         view_order = ["front", "right", "back"] if sheet else ["front", "back", "left", "right"][: len(sources)]
         if len(sources) > 2:
             view_order = ["front", "right", "back", "left"][: len(sources)]
+        analyzed_order = [source["payload"].get("provenance", {}).get("analyzed_view") for source in sources]
+        if len(sources) > 1 and all(view in {"front", "left", "right", "back"} for view in analyzed_order):
+            require(len(set(analyzed_order)) == len(analyzed_order), "invalid_input")
+            view_order = analyzed_order
         return dict(
             prompt=prompt,
             context=json.loads(canonical(request["context"])),
@@ -732,11 +786,13 @@ class KimiNativeDirectProvider(ModelingProvider):
         )
 
     def _adjust_plan(self, request, manifest):
-        require(request["node"] == "model_adjust", "invalid_input")
+        require(request["node"] in ("model_adjust", "human_shape_adjust"), "invalid_input")
+        human_shape = request["node"] == "human_shape_adjust"
+        source_error = "human_shape_source_invalid" if human_shape else "model_adjust_source_missing"
         reference = request["inputs"].get("source")
         require(
             isinstance(reference, dict) and reference.get("id") and reference.get("revision"),
-            "model_adjust_source_missing",
+            source_error,
         )
         source_model = next(
             (
@@ -746,14 +802,16 @@ class KimiNativeDirectProvider(ModelingProvider):
             ),
             None,
         )
-        require(source_model is not None and source_model["type"] == "mesh", "model_adjust_source_missing")
+        require(source_model is not None and source_model["type"] == "mesh", source_error)
         payload = source_model["payload"]
         extension = payload["extension"].lower()
-        require(extension in (".glb", ".gltf"), "model_adjust_source_missing")
+        require(extension in (".glb", ".gltf"), source_error)
+        if human_shape:
+            require(extension == ".glb", "human_shape_source_invalid")
         data = base64.b64decode(payload["content_base64"], validate=True)
         require(
             0 < len(data) <= MAX_MODEL3D_BYTES and hashlib.sha256(data).hexdigest() == payload["content_sha256"],
-            "model_adjust_source_missing",
+            source_error,
         )
         source_geometry = validate_mesh(data) if extension == ".glb" else None
         if extension == ".gltf":
@@ -780,6 +838,46 @@ class KimiNativeDirectProvider(ModelingProvider):
                 "model_adjust_source_missing",
             )
             embedded(document)
+        operation = "reshape_humanoid" if human_shape else request["parameters"].get("operation")
+        if operation in LOCAL_GEOMETRY_OPERATIONS:
+            require(not request["context"] and not request["parameters"].get("prompt"), "invalid_input")
+            if human_shape:
+                names = ("height_cm", "head_ratio", "arm_length_scale", "leg_length_scale", "build")
+                require(all(name in request["parameters"] for name in names), "invalid_input")
+                values = {name: copy.deepcopy(request["parameters"][name]) for name in names}
+                height_cm = values["height_cm"]
+                require(type(height_cm) is int and 20 <= height_cm <= 400 and height_cm % 10 == 0, "invalid_input")
+                repair = dict(
+                    reference_pose=None,
+                    landmarks=None,
+                    target_height_m=height_cm / 100.0,
+                    target_head_ratio=values["head_ratio"],
+                    arm_length_scale=values["arm_length_scale"],
+                    leg_length_scale=values["leg_length_scale"],
+                    build=values["build"],
+                )
+                # Default is AINative fitting. Explicit developer JSON remains a
+                # bounded override and follows the same source/anatomy checks.
+                override = request["parameters"].get("landmarks")
+                empty_legacy_placeholder = override is None or (
+                    isinstance(override, dict)
+                    and (not override or set(override) == {"source_sha256"} and not override["source_sha256"])
+                )
+                if not empty_legacy_placeholder:
+                    require(request["parameters"].get("reference_pose") in ("T", "A"), "invalid_input")
+                    repair["landmarks"] = copy.deepcopy(override)
+                    repair["reference_pose"] = request["parameters"]["reference_pose"]
+            else:
+                repair = request["parameters"].get("repair")
+                require(isinstance(repair, dict), "invalid_input")
+            return dict(
+                operation=operation,
+                source_model=source_model,
+                source_geometry=source_geometry,
+                repair=copy.deepcopy(repair),
+                parameters=dict(model=operation),
+                original_parameters=json.loads(canonical(request["parameters"])),
+            )
         source_provenance = payload.get("provenance", {})
         require(isinstance(source_provenance, dict), "invalid_input")
         source_task_id = source_provenance.get("task_id")
@@ -1183,8 +1281,121 @@ class KimiNativeDirectProvider(ModelingProvider):
             ),
         )
 
+    def _repair_geometry(self, key, plan, directory):
+        import geometry_repair
+
+        if not self._active(key, "local_geometry_repair"):
+            return None
+        operation = plan["operation"]
+        require(operation in LOCAL_GEOMETRY_OPERATIONS, "model3d_geometry_edit_unsupported")
+        source_payload = plan["source_model"]["payload"]
+        source = directory / "previous-model.glb"
+        with source.open("xb") as stream:
+            stream.write(base64.b64decode(source_payload["content_base64"], validate=True))
+        output = directory / "generated.glb"
+        repair = copy.deepcopy(plan["repair"])
+        automatic = None
+        if operation == "reshape_humanoid" and repair.get("landmarks") is None:
+            import human_shape_landmarks
+
+            automatic = human_shape_landmarks.fit_landmarks(
+                source,
+                directory / "automatic-landmarks",
+                self.config.get("review_godot_path", ""),
+                self.config.get("review_script_path", ""),
+                self.config["planner"],
+            )
+            repair["landmarks"] = automatic["landmarks"]
+            repair["reference_pose"] = automatic["reference_pose"]
+        request = dict(
+            schema_version=1,
+            source=str(source),
+            source_sha256=source_payload["content_sha256"],
+            output=str(output),
+            operation=operation,
+        )
+        request.update(repair)
+        result = geometry_repair.repair(request)
+        if automatic is not None:
+            result["automatic_landmarks"] = automatic
+        data = output.read_bytes()
+        sha = hashlib.sha256(data).hexdigest()
+        require(sha == result["output_sha256"], "model3d_output_invalid")
+        implementation_paths = [Path(geometry_repair.__file__)]
+        if automatic is not None:
+            implementation_paths.append(Path(human_shape_landmarks.__file__))
+        fingerprint = digest([hashlib.sha256(path.read_bytes()).hexdigest() for path in implementation_paths])
+        receipt = dict(
+            operation=operation,
+            output_path=str(output),
+            output_sha256=sha,
+            source_model_sha256=source_payload["content_sha256"],
+            source_geometry=plan["source_geometry"],
+            geometry=dict(vertices=result["vertices"], triangles=result["triangles"], bytes=result["bytes"]),
+            geometry_repair=result,
+            generation_version="1",
+            generation_model=operation,
+            view_sources=[],
+            task_id=None,
+            preview_sha256=None,
+            tool_fingerprint=fingerprint,
+        )
+        if operation == "reshape_humanoid":
+            receipt["height_cm"] = plan["original_parameters"]["height_cm"]
+        self.write(key, model3d_receipt=receipt)
+        provenance = dict(
+            provider="local_geometry_repair",
+            service="deterministic_glb_operator",
+            operation=operation,
+            generation_version="1",
+            generation_model=operation,
+            auth_mode="kimi_work_sdk_credentials" if automatic is not None else "local",
+            origin="new_glb_from_previous_model_geometry_repair",
+            task_id=None,
+            source_model_sha256=source_payload["content_sha256"],
+            source_artifact_id=plan["source_model"]["id"],
+            source_artifact_revision=plan["source_model"]["revision"],
+            source_geometry=plan["source_geometry"],
+            geometry=receipt["geometry"],
+            geometry_repair=result,
+            automatic_landmarks=automatic,
+            landmark_estimation=(
+                "ainative_ai_geometry_checked"
+                if automatic is not None
+                else "explicit_source_bound_override"
+                if operation == "reshape_humanoid"
+                else "not_applicable"
+            ),
+            input_mode="previous_model_human_shape_ainative_auto"
+            if automatic is not None
+            else "previous_model_" + operation,
+            view_sources=[],
+            original_model_not_overwritten=True,
+            tool_fingerprint=fingerprint,
+            receipt_sha256=digest(receipt),
+            fallback_used=False,
+            blender_used=False,
+            generated_code_executed=False,
+        )
+        if operation == "reshape_humanoid":
+            provenance["height_cm"] = plan["original_parameters"]["height_cm"]
+        return dict(
+            id="kimi-native-repair-" + key,
+            revision=sha,
+            type="mesh",
+            payload=dict(
+                content_base64=base64.b64encode(data).decode(),
+                content_sha256=sha,
+                extension=".glb",
+                bytes=len(data),
+                provenance=provenance,
+            ),
+        )
+
     @owned_scope
     def _cli(self, key, plan, directory):
+        if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS:
+            return self._repair_geometry(key, plan, directory)
         if plan.get("operation") == "texture_3d_model":
             return self._adjust(key, plan, directory)
         record = self.read(key)
@@ -1371,6 +1582,79 @@ class KimiNativeDirectProvider(ModelingProvider):
             ),
         )
 
+    def submit_reviewed(self, request, manifest, idempotency_key):
+        """Persist one reviewed intent before any vision, upload, or generation call."""
+        from api_planner import check_configuration
+        from extensions import NodeRegistry, validate_invocation
+        from multi_image_provider import register_images
+
+        registry = NodeRegistry()
+        register_images(registry)
+        description = self.describe()
+        description["context_types"] = sorted(set(description["context_types"]) | {"image_set"})
+        validate_invocation(registry, request, manifest, description)
+        key = idempotency_key
+        require(isinstance(key, str) and re.fullmatch(r"[a-f0-9]{64}", key), "invalid idempotency key")
+        record = dict(
+            request=request,
+            manifest=manifest,
+            fingerprint=self.fingerprint,
+            created=time.time(),
+            heartbeat=time.time(),
+            stage="intent",
+            reviewed=True,
+        )
+        with self.db() as db:
+            inserted = db.execute("INSERT OR IGNORE INTO jobs VALUES (?,?)", (key, canonical(record))).rowcount
+        if not inserted:
+            previous = self.read(key)
+            require(
+                previous["request"] == request
+                and previous["manifest"] == manifest
+                and previous["fingerprint"] == self.fingerprint,
+                "idempotency conflict",
+            )
+            return self.poll(key)
+        try:
+            require(self.REVIEW_KEYS <= set(self.config), "model3d_review_not_configured")
+            report = check_model3d_tool(self.config["tool_path"], self.config["pythonw_path"])
+            require(report["connected"], report["code"])
+            vision_report = check_configuration(self.config["planner"])
+            require(vision_report["connected"], vision_report["code"])
+            require(
+                Path(self.config["review_godot_path"]).is_file() and Path(self.config["review_script_path"]).is_file(),
+                "model3d_review_not_configured",
+            )
+            directory = self.storage / key
+            directory.mkdir(exist_ok=False)
+            (directory / "config.json").write_text(canonical(self.config), encoding="utf-8")
+            (directory / "runtime").mkdir()
+            self.write(key, model3d_report=report, stage="queued")
+            with (directory / "worker.log").open("xb") as log:
+                worker = subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-X",
+                        "utf8",
+                        str(Path(__file__).resolve()),
+                        "--worker",
+                        str(directory / "config.json"),
+                        key,
+                    ],
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=log,
+                    env=self._environment(directory),
+                    creationflags=_creationflags(),
+                    start_new_session=os.name != "nt",
+                )
+            _MODEL3D_WORKERS[:] = [process for process in _MODEL3D_WORKERS if process.poll() is None]
+            _MODEL3D_WORKERS.append(worker)
+            return self.poll(key)
+        except (ValueError, OSError, KeyError, TypeError) as error:
+            code = str(error) if str(error) in self.MESSAGES else "worker_failed"
+            return self.finish(key, "failed", code)
+
     def submit(self, request, manifest, idempotency_key):
         from extensions import NodeRegistry, validate_invocation
 
@@ -1402,6 +1686,12 @@ class KimiNativeDirectProvider(ModelingProvider):
             plan = self.plan(request, manifest)
             report = check_model3d_tool(self.config["tool_path"], self.config["pythonw_path"])
             require(report["connected"], report["code"])
+            # The host CLI may use a minimal Python without NumPy. Local GLB
+            # operators use the already configured/validated model runtime;
+            # remote generation keeps its existing interpreter behavior.
+            worker_python = (
+                self.config["pythonw_path"] if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS else sys.executable
+            )
             directory = self.storage / key
             directory.mkdir(exist_ok=False)
             (directory / "config.json").write_text(canonical(self.config), encoding="utf-8")
@@ -1410,7 +1700,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             with (directory / "worker.log").open("xb") as log:
                 worker = subprocess.Popen(
                     [
-                        sys.executable,
+                        worker_python,
                         "-X",
                         "utf8",
                         str(Path(__file__).resolve()),
@@ -1432,25 +1722,379 @@ class KimiNativeDirectProvider(ModelingProvider):
             code = str(error) if str(error) in self.MESSAGES else "worker_failed"
             return self.finish(key, "failed", code)
 
+    def _reviewed_result(self, model, attempt_models):
+        """Publish every reviewed GLB without changing the final result port."""
+        require(attempt_models, "model3d_result_unknown")
+        final_id = model["id"]
+        artifacts = []
+        count = len(attempt_models)
+        for number, generated in enumerate(attempt_models, 1):
+            iteration = copy.deepcopy(generated)
+            iteration["id"] = final_id + "-iteration-" + str(number).zfill(3)
+            provenance = iteration["payload"].setdefault("provenance", {})
+            provenance.update(
+                iteration_of=final_id,
+                generation_iteration=number,
+                generation_iteration_count=count,
+            )
+            artifacts.append(iteration)
+        artifacts.append(model)
+        return dict(schema_version=1, artifacts=artifacts)
+
+    def _succeed_capability_limited(self, key, analysis, sources, attempts, previous_model):
+        import mesh_vision
+
+        latest = attempts[-1]
+        review = latest["review"]
+        require(
+            previous_model.get("revision") == latest.get("model_sha256") and review.get("passed") is False,
+            "model3d_result_unknown",
+        )
+        attempt_models = list(self.read(key).get("review_models", []))
+        require(len(attempt_models) == len(attempts), "model3d_result_unknown")
+        model = mesh_vision.attach_capability_review(previous_model, review)
+        provenance = model["payload"]["provenance"]
+        provenance.update(
+            visual_analysis=analysis,
+            visual_review=review,
+            visual_review_passed=False,
+            capability_limited=True,
+            delivery_acceptance="capability_limited_with_unresolved_issues",
+            capability_stop_reason="model3d_geometry_edit_unsupported",
+            unresolved_issues=copy.deepcopy(review["issues"]),
+            review_attempts=attempts,
+            reference_ids_analyzed=[source["asset"]["id"] for source in sources],
+            generation_reference_ids=latest.get("generation_reference_ids", []),
+            prompt_application="reference_analysis_and_generated_mesh_review",
+            visual_review_plan=mesh_vision.get_review_plan(analysis),
+            review_policy="reference_driven_dynamic_review_plan_v1",
+        )
+        self.write(
+            key,
+            model3d_stage=model,
+            stages=[dict(stage="capability_limited_review_delivery", artifact_sha256=model["revision"])],
+        )
+        return self.finish(key, "succeeded", result=self._reviewed_result(model, attempt_models))
+
+    def _review_with_orientation(
+        self,
+        key,
+        analysis,
+        original,
+        generated,
+        previous_issues,
+        model_path,
+        render_directory,
+        review_directory,
+        review_document=None,
+    ):
+        import mesh_vision
+
+        review = mesh_vision.complete_review(
+            self,
+            key,
+            analysis,
+            original,
+            generated,
+            previous_issues,
+            review_directory,
+            document=review_document,
+        )
+        if review is None:
+            return None, None
+        correction = mesh_vision.review_yaw_correction(review)
+        if correction is None:
+            return generated, review
+        yaw = mesh_vision.corrected_review_yaw(render_directory, review)
+        corrected_render = render_directory.with_name(render_directory.name + "-orientation-corrected")
+        corrected_request = review_directory.with_name(review_directory.name + "-orientation-corrected")
+        corrected = mesh_vision.render_corrected_review_views(
+            self, key, model_path, corrected_render, yaw, mesh_vision.get_review_plan(analysis)
+        )
+        if corrected is None:
+            return None, None
+        corrected_review = mesh_vision.complete_review(
+            self,
+            key,
+            analysis,
+            original,
+            corrected,
+            list(previous_issues) + list(review["issues"]),
+            corrected_request,
+        )
+        if corrected_review is None:
+            return None, None
+        corrected_review["orientation_recovery"] = dict(
+            model_sha256=hashlib.sha256(Path(model_path).read_bytes()).hexdigest(),
+            previous_yaw_degrees=(yaw - correction + 180.0) % 360.0 - 180.0,
+            correction_degrees=correction,
+            yaw_degrees=yaw,
+            geometry_changed=False,
+        )
+        return corrected, corrected_review
+
+    def _work_reviewed(self, key):
+        import mesh_vision
+
+        record = self.read(key)
+        sources = mesh_vision.flatten_sources(record["request"], record["manifest"])
+        if "visual_analysis" in record:
+            analysis = record["visual_analysis"]
+            analyzed = dict(
+                document=analysis,
+                entries=mesh_vision.existing_source_images(sources, self.storage / key / "analysis" / "sources"),
+            )
+        else:
+            analyzed = mesh_vision.analyze(self, key, record["request"], sources, self.storage / key / "analysis")
+            if analyzed is None:
+                return
+            analysis = analyzed["document"]
+            review_plan = mesh_vision.get_review_plan(analysis)
+            self.write(key, visual_analysis=analysis, visual_review_plan=review_plan)
+        review_plan = mesh_vision.get_review_plan(analysis)
+        if not self._active(key, "reference_analyzed"):
+            return
+        attempts = list(record.get("review_attempts", []))
+        attempt_models = list(record.get("review_models", []))
+        require(len(attempt_models) == len(attempts), "model3d_result_unknown")
+        while self._active(key, "review_attempt"):
+            previous_issues = [issue for attempt in attempts for issue in attempt["review"]["issues"]][-12:]
+            previous_model = None
+            if attempts:
+                previous_model = self.read(key).get("model3d_stage")
+                try:
+                    child, selected = mesh_vision.select_retry_adjust_request(
+                        record["request"], analysis, previous_model, attempts[-1]["review"]
+                    )
+                except ValueError as error:
+                    if str(error) != "model3d_geometry_edit_unsupported" or previous_model is None:
+                        raise
+                    self._succeed_capability_limited(key, analysis, sources, attempts, previous_model)
+                    return
+            else:
+                child, selected = mesh_vision.select_generation_request(record["request"], sources, analysis)
+            attempt_manifest = copy.deepcopy(record["manifest"])
+            if previous_model is not None:
+                attempt_manifest["artifacts"].append(copy.deepcopy(previous_model))
+            selected_by_id = {asset["id"]: asset for asset in selected}
+            for index, asset in enumerate(attempt_manifest["artifacts"]):
+                if asset["id"] in selected_by_id:
+                    attempt_manifest["artifacts"][index] = selected_by_id[asset["id"]]
+            plan = self.plan(child, attempt_manifest)
+            model_filename = "adjusted.glb" if plan.get("operation") == "texture_3d_model" else "generated.glb"
+            number = len(attempts) + 1
+            directory = self.storage / key / "attempts" / str(number).zfill(3)
+            while directory.exists() and not (directory / model_filename).is_file():
+                # Skip only confirmed upload failures or rejected overlong prompts.
+                rejected_before_output = not (directory / "launch.log").exists() or any(
+                    "prompt too long" in path.read_text(encoding="utf-8", errors="replace")
+                    for path in directory.glob("runtime/*/worker.log")
+                )
+                require(rejected_before_output, "model3d_result_unknown")
+                number += 1
+                directory = self.storage / key / "attempts" / str(number).zfill(3)
+            model_path = directory / model_filename
+            if directory.exists():
+                # Recover a saved API or explicitly reviewed response, never the Tripo generation.
+                api_review = directory / "review-request" / "api-plan.json"
+                manual_review = directory / "review-request" / "manual-review.json"
+                review_path = api_review if api_review.is_file() else manual_review
+                require(model_path.is_file() and review_path.is_file(), "model3d_result_unknown")
+                generated = mesh_vision.load_review_views(model_path, directory / "review-render", review_plan)
+                saved_review = json.loads(review_path.read_text(encoding="utf-8"))
+                # Legacy evidence must be reviewed again under the current V2
+                # contract on the same GLB and renders; missing orientation
+                # decisions are re-requested, never invented from old text.
+                review_directory = directory / "review-request"
+                review_document = saved_review
+                if saved_review.get("schema_version") == 2:
+                    if "rendered_front_view" in saved_review:
+                        review_document = mesh_vision.validate_review(saved_review, generated)
+                    else:
+                        review_document = None
+                        review_directory = directory / "review-request-orientation-v2"
+                generated, review = self._review_with_orientation(
+                    key,
+                    analysis,
+                    analyzed["entries"],
+                    generated,
+                    previous_issues,
+                    model_path,
+                    directory / "review-render",
+                    review_directory,
+                    review_document=review_document,
+                )
+                if review is None:
+                    return
+                data = model_path.read_bytes()
+                receipt = self.read(key)["model3d_receipt"]
+                sha = hashlib.sha256(data).hexdigest()
+                require(receipt["output_sha256"] == sha, "model3d_output_invalid")
+                provenance = dict(
+                    provider="kimi_native",
+                    service="Tripo API",
+                    generation_version=receipt["generation_version"],
+                    generation_model=receipt["generation_model"],
+                    auth_mode="kimi_work_sdk_credentials",
+                    origin="recovered_glb_from_saved_review_response",
+                    task_id=receipt.get("task_id"),
+                    view_sources=receipt.get("view_sources", []),
+                    output_sha256=sha,
+                    preview_sha256=receipt.get("preview_sha256"),
+                    geometry=receipt["geometry"],
+                    tool_fingerprint=receipt["tool_fingerprint"],
+                    receipt_sha256=digest(receipt),
+                    fallback_used=False,
+                    blender_used=False,
+                    generated_code_executed=False,
+                )
+                if receipt.get("operation") in LOCAL_GEOMETRY_OPERATIONS:
+                    provenance.update(
+                        provider="local_geometry_repair",
+                        service="deterministic_glb_operator",
+                        operation=receipt["operation"],
+                        auth_mode="local",
+                        source_model_sha256=receipt["source_model_sha256"],
+                        source_artifact_id=plan["source_model"]["id"],
+                        source_artifact_revision=plan["source_model"]["revision"],
+                        source_geometry=receipt.get("source_geometry"),
+                        geometry_repair=receipt.get("geometry_repair"),
+                        input_mode="previous_model_" + receipt["operation"],
+                        original_model_not_overwritten=True,
+                    )
+                elif receipt.get("operation") == "texture_3d_model":
+                    provenance.update(
+                        operation="texture_3d_model",
+                        source_task_id=receipt.get("source_task_id"),
+                        source_model_sha256=receipt["source_model_sha256"],
+                        source_model_url_sha256=receipt.get("source_model_url_sha256"),
+                        source_artifact_id=plan["source_model"]["id"],
+                        source_artifact_revision=plan["source_model"]["revision"],
+                        source_geometry=receipt.get("source_geometry"),
+                        guidance_mode=receipt.get("guidance_mode"),
+                        input_mode="model_adjust:" + str(receipt.get("guidance_mode", "none")),
+                        original_model_not_overwritten=True,
+                    )
+                else:
+                    source_shas = receipt["source_sha256_ordered"]
+                    provenance.update(
+                        operation="generate_3d_model",
+                        source_sha256=source_shas[0] if source_shas else None,
+                        source_sha256_ordered=source_shas,
+                        input_mode=receipt["input_mode"],
+                    )
+                model = dict(
+                    id="kimi-native-3d-" + key,
+                    revision=sha,
+                    type="mesh",
+                    payload=dict(
+                        content_base64=base64.b64encode(data).decode(),
+                        content_sha256=sha,
+                        extension=".glb",
+                        bytes=len(data),
+                        provenance=provenance,
+                    ),
+                )
+            else:
+                directory.mkdir(parents=True, exist_ok=False)
+                (directory / "runtime").mkdir()
+                self.write(key, stage="generation_attempt_" + str(number))
+                model = self._cli(key, plan, directory)
+                if model is None:
+                    return
+                self.write(key, model3d_stage=model)
+                generated = mesh_vision.render_review_views(
+                    self, key, model_path, directory / "review-render", review_plan=review_plan
+                )
+                if generated is None:
+                    return
+                generated, review = self._review_with_orientation(
+                    key,
+                    analysis,
+                    analyzed["entries"],
+                    generated,
+                    previous_issues,
+                    model_path,
+                    directory / "review-render",
+                    directory / "review-request",
+                )
+                if review is None:
+                    return
+            if not self._active(key, "generated_attempt_" + str(number)):
+                return
+            if review["passed"]:
+                model = mesh_vision.attach_head_review(model, review, analysis)
+            provenance = model["payload"]["provenance"]
+            attempts.append(
+                dict(
+                    attempt=number,
+                    iteration_mode=(
+                        "local_geometry_repair"
+                        if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS
+                        else "incremental_model_adjust"
+                        if attempts
+                        else "initial_reference_generation"
+                    ),
+                    parent_model_sha256=previous_model["revision"] if previous_model is not None else None,
+                    task_id=provenance.get("task_id"),
+                    model_sha256=model["revision"],
+                    geometry_sha256=provenance.get("geometry_sha256", model["revision"]),
+                    generation_reference_ids=[asset["id"] for asset in selected],
+                    review_plan=review_plan,
+                    review=review,
+                )
+            )
+            iteration_model = copy.deepcopy(model)
+            iteration_model["payload"]["provenance"]["visual_review_passed"] = review["passed"]
+            attempt_models.append(iteration_model)
+            self.write(
+                key,
+                review_attempts=attempts,
+                review_models=attempt_models,
+                stage="reviewed_attempt_" + str(number),
+            )
+            if not review["passed"]:
+                continue
+            provenance.update(
+                visual_analysis=analysis,
+                visual_review=review,
+                review_attempts=attempts,
+                reference_ids_analyzed=[source["asset"]["id"] for source in sources],
+                generation_reference_ids=[asset["id"] for asset in selected],
+                prompt_application="reference_analysis_and_generated_mesh_review",
+                visual_review_plan=review_plan,
+                review_policy="reference_driven_dynamic_review_plan_v1",
+            )
+            self.write(
+                key,
+                model3d_stage=model,
+                stages=[dict(stage="vision_guided_generate_and_review", artifact_sha256=model["revision"])],
+            )
+            self.finish(key, "succeeded", result=self._reviewed_result(model, attempt_models))
+            return
+
     def work(self, key):
         record = self.read(key)
         if "terminal" in record:
             return
         require(record["fingerprint"] == self.fingerprint, "model3d_result_unknown")
+        if record.get("reviewed"):
+            return self._work_reviewed(key)
         model = self._cli(key, record["plan"], self.storage / key)
         if model is None or not self._active(key):
             return
+        operation = record["plan"].get("operation")
+        stage = (
+            "local_geometry_repair"
+            if operation in LOCAL_GEOMETRY_OPERATIONS
+            else "tripo_texture_3d_model"
+            if operation == "texture_3d_model"
+            else "tripo_generate_3d_model"
+        )
         self.write(
             key,
             model3d_stage=model,
-            stages=[
-                dict(
-                    stage="tripo_texture_3d_model"
-                    if record["plan"].get("operation") == "texture_3d_model"
-                    else "tripo_generate_3d_model",
-                    artifact_sha256=model["revision"],
-                )
-            ],
+            stages=[dict(stage=stage, artifact_sha256=model["revision"])],
         )
         self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[model]))
 

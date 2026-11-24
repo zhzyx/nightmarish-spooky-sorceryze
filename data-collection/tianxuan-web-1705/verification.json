@@ -1,0 +1,61 @@
+{
+  "issue": 1705,
+  "app_tree": "6cb684f471038fbbbdfe024085f4bd1954e8fe7d",
+  "environment": "Local Chrome, loopback HTTPS, actual Next development server and FastAPI, isolated native and identity SQLite databases with personal key authentication. Synthetic user, document and work order.",
+  "build": "Next.js 14.2.35 production build succeeded, type check passed and 15/15 generated. Build inputs matched the staged frontend.",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "theme": "light"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "theme": "dark"
+    }
+  },
+  "routes": [
+    "/",
+    "/login",
+    "/docs",
+    "/docs/[id]",
+    "/issues",
+    "/issues/[id]",
+    "/issues/roadmap",
+    "/repos",
+    "/requirements",
+    "/game-config",
+    "/accounts",
+    "/settings",
+    "/migration",
+    "/search?q=渲染"
+  ],
+  "route_results": {
+    "successful_http_responses": 28,
+    "document_wider_than_viewport": 0,
+    "uncaught_page_errors": []
+  },
+  "interactions": [
+    "Sign in with a local disposable personal key and open documents",
+    "Switch work order lane and expand a real issue",
+    "Populate composer from a starter",
+    "Focus search via Ctrl+K, submit and read matching document",
+    "Create document, edit markdown, save and reload the persisted body",
+    "Switch explicit appearance and reload, change system color scheme",
+    "Switch English/Chinese and read persisted locale after reload",
+    "Open narrow navigation, Escape restores menu-button focus, navigate to issues"
+  ],
+  "runs": {
+    "http_status": 200,
+    "available": false,
+    "expected_ui": "尚未配置执行服务。"
+  },
+  "screenshots": {
+    "desktop.png": "d0b4400b971f7fb06caabef4b78ce745b2bca798122ba85ed140f2ba41a13ce4",
+    "mobile.png": "abfc1be18a1d7ebaddda30763af49d3792d49a91c44939ea70a6bf72457948ff"
+  },
+  "limits": "No production data, model calls, native execution worker or Godot/WebView integration exercised.",
+  "request_id": "tianxuan-web-interaction-20261121",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705"
+}

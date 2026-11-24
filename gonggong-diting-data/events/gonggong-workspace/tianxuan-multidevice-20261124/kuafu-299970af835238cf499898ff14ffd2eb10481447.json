@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-299970af835238cf499898ff14ffd2eb10481447",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "19ebc6e89df269362476bd11bd1f356ed3fe9c270c518bc00ae72d035673d32d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "delivery",
+    "detection_head": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "data-collection/receipts/multidevice/writer-persistent.log",
+    "diagnosis": "提交前Git读取远端连接被重置；HEAD仍为39baf，尚未创建本轮提交或PR。GitHub API仍可读。",
+    "next_action": "通过显式HTTP/1.1读取远端确认恢复后，从同一暂存候选重走正式签发；不重复发布未知回执。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T01:08:42.078044+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T01:09:53.917918+00:00",
+  "sha256": "0432dcc025f7f570749c833ce74854f478c698f3dc24a537f82ce02ad88daa3f"
+}

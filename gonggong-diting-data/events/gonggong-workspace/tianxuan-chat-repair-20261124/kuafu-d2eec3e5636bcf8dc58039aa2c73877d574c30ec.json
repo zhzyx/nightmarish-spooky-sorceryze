@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d2eec3e5636bcf8dc58039aa2c73877d574c30ec",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "adff6fe2afebf710341c926b26ec6375c3bfc47f7ffda911a1ae297a0088e12b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "user-report",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "ba53fc1188ea989e40707cfad051a362c4ea2f5237ed3d56ff9f6bb026c6b0c2",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-resume-layout",
+    "authority_ref": "issue:2180; user authorized repair of historical request and conversation layout",
+    "evidence": "issue:2180; native semantic geometry history=36px composer=260px; source recovery contract 42 checks passed",
+    "diagnosis": "The prior provider-routing repair did not cover recovery of a saved unanswered request or vertical layout. Fixed-height composer, empty auxiliary rows and accumulated spacing compressed the history; the historical notice lacked an action. Current host owns the focused repair in an isolated main-based candidate; independent review will remain separate.",
+    "next_action": "Add explicit durable recovery, responsive vertical conversation layout and truthful local waiting/elapsed state; verify historical request-to-design continuation, short-height/high-DPI geometry, real CLI recovery, then deliver and install the exact candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:51:38.150994+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:54:46.799022+00:00",
+  "sha256": "d272e16d40e3a61f7c32ecb304fbc8f7fed00e26fdad865014a42696811d6039"
+}

@@ -1,0 +1,1887 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "ed8935915ee9f6fa403b10e6cadbc6837090acc6",
+  "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "cc97fb4fac888a60d94c7828bd20f85a61e924d2",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "c1b24c699faa8cf17eea7108a35fc936f194fd8f",
+    "customizations/components/tianxuan/server/native_execution_host.py": "65fa1deeab25b32f73b35e8034419f6f7531de44",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "53b6f2cbf71f09c33cc0d0ee03176b23e1f61577",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "1ab4439be2f1d643c9c500c6489ab50d6152fc91",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "c3d9f384a50744d2e069924e59610732fab9b5a0",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "264a2e2fc404fa322a641dcadce2c742750f7de7",
+    "customizations/components/tianxuan/sinan-workorders/test_native_control_recovery.py": "29f81ae57c2447d4e3bb03a21cb77507995d0048",
+    "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py": "ba4d48a90a55579d9409cc3c38f411004ac28e54",
+    "customizations/components/tianxuan/sinan-workorders/test_native_output_settlement.py": "855c6561516b0179118f44cf58b4142102af7dc7",
+    "customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py": "84f433b87f1e88f786a9bb15f47a0da23f53377e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": "b4ad2414340ccbcc6290b39845a32fe595f18974",
+    "customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py": "bc3f1dbd44dfc079be97b8f9b61d5609a3d68f0c",
+    "editor/docks/workbench/business_session.gd": "572a5c79b7ae6a74d775138f51ca2b3185d87725",
+    "editor/docks/workbench/issue_actions/issue_run_control.gd": "76980dde7399332c13918e9268347c8c68785373",
+    "editor/docks/workbench/issue_actions/issue_task_progress.gd": "fc4943b1dd6c158b754648144537a0aaa97f0a5c",
+    "editor/docks/workbench/module_selector.gd": "cb2b7cc6e038620107b754d97d8e85abef90019f",
+    "tests/editor/run_workbench_task_controls.py": "aba5cd9452597573992b21344446498e881754ca",
+    "tests/editor/run_workbench_task_progress.py": "903012c113db700e81e9d3ae987fc56c5b2b6fc1",
+    "tests/editor/workbench_task_controls.gd": "29a03769d85db73e237500df7b6e0f0db3b76e98",
+    "tests/editor/workbench_task_progress.gd": "3bc4bcb263915ba3e5a6cc9a8b84847f573a5b3c"
+  },
+  "checks": {
+    "s05": "eecd13d15bc812255b5dc653aa204a25093fb24012ec4294c56ed764a7230bb2",
+    "s06": "4b3bc66a681594077b30c4212d0be86b71452f9a04990f9ff73c3515d3028b6e",
+    "s09": "a9fb32b6228b77d913d6d9ee482d931ba92b338e2e73471808940aacbff0f99e",
+    "s03": "8f5dfe2a9cdb4d21347f9c845f16e438ff28c10584ada34a019cf8441f17c28b",
+    "s07": "a42d08d0628e9f52b7930ba6461b6eadb7883de87f93736407da20bdee1064f9",
+    "s10": "7b1fccdea8a841ef6550368da433f8ae2ced7f4fd8849ed067f2b80826533387",
+    "saved-document": "04e6110fa4029a48a884a4cbeee8d85e8c02e16ca83a8ed6060b64ffdc056d6c",
+    "native-page-reference": "7d121820a3aa634be31605e5ae1e6a230f2647b5f192a81999dae3662efa98ae"
+  },
+  "issues": {
+    "s05": 1812,
+    "s06": 1833,
+    "s07": 1763,
+    "s09": 1813,
+    "s10": 1814
+  },
+  "observed": "2026-11-22T10:44:11.479074+00:00",
+  "verified_windows_build": {
+    "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+      "godot.windows.editor.x86_64.console.exe": "3498046ba859f1d97b60529929b8538de99ba05e94cc0de9ebccc78eba65bdd9",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": [
+      "editor/SCsub",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp",
+      "editor/docks/workbench/business_session.gd",
+      "editor/docks/workbench/document_collaboration.gd",
+      "editor/docks/workbench/document_history.gd",
+      "editor/docks/workbench/issue_actions/creative_judgments.gd",
+      "editor/docks/workbench/module_selector.gd",
+      "editor/docks/workbench/paragraph_suggestion.gd",
+      "editor/docks/workbench/saved_editor_changes.gd"
+    ]
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_run_controls.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_validation.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py"
+    ],
+    "passed": 144,
+    "summary": "144 passed, 1 warning in 182.70s (0:03:02)",
+    "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9"
+  },
+  "cross_card_regression": {
+    "files": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_control_recovery.py"
+    ],
+    "passed": 3,
+    "summary": "3 passed, 1 warning in 4.04s",
+    "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+    "observations": {
+      "test_run_receipt_is_stable_while_actions_follow_owner[viewer]": {
+        "execution": "bc1acacac25b3e557b8dd6799345d0f8165f5e52ebe01460097daf90c9411fd2",
+        "reader_role": "viewer",
+        "owner_actions": [
+          "pause",
+          "cancel"
+        ],
+        "reader_actions": []
+      },
+      "test_run_receipt_is_stable_while_actions_follow_owner[editor]": {
+        "execution": "4705f565fc49eefcfa3cc75b04e53789bfb8e7f085f5b68cbd7d06d90a7f56e9",
+        "reader_role": "editor",
+        "owner_actions": [
+          "pause",
+          "cancel"
+        ],
+        "reader_actions": []
+      },
+      "test_lost_paused_reply_preserves_original_output": {
+        "execution": "7edd4f2d263539bb06e397273d0a5578e39ded59988ddc09595a80187fc62478",
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "starts": [
+          {
+            "execution": "7edd4f2d263539bb06e397273d0a5578e39ded59988ddc09595a80187fc62478",
+            "grant": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_f816459abdf944ec9ce5f03e10fb1e2b",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_08c2c6b1bc9e4d779d8516f2461abe01",
+              "issue_id": "iss_86e6a05567cc4422b84b4a7bab67b327",
+              "issue_revision": "38d7d6e88cb622abc6f5fbfe47965cc5e2a672fac392b14d7c93368347e3e3b3",
+              "responsible_user": "usr_f816459abdf944ec9ce5f03e10fb1e2b",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "installed_service_rechecks": {
+    "base": "ed8935915ee9f6fa403b10e6cadbc6837090acc6",
+    "tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+    "files": [
+      "customizations/components/tianxuan/server/test_native_entry_normal.py",
+      "customizations/components/tianxuan/server/test_native_api.py"
+    ],
+    "passed": 18,
+    "summary": "18 passed, 1 warning in 27.59s",
+    "observed": "2026-11-22T10:32:04.260799+00:00"
+  },
+  "upstream_platform_evidence": {
+    "state": "unavailable_on_windows_host",
+    "reason": "WinError 1314 raised during setup before the upstream saved-editor fixture could run",
+    "original_log_sha256": "042e7711e79b6d3cb9b8eb5e9bb5e988fa9886ac6106955c67821d502b44a00b",
+    "unchanged_inputs": {
+      "tests/editor/run_workbench_saved_editor_changes.py": "e2ab896ada3519a719b350b1c7c4e19f395c520a",
+      "editor/docks/workbench/saved_editor_changes.gd": "46d6995bb29d08fdfb2b38eb270fc7ccce9cb76f",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "d95d3b992d4e2115a7517773d3be1cd5cb52cf4b"
+    },
+    "receiving_method_diff_sha256": "6fc437bf10a22f0bcb34fd0ebfe1351b08a1522da434816e35f54187682d43c0",
+    "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+    "main": "ed8935915ee9f6fa403b10e6cadbc6837090acc6",
+    "remote_receipts": [
+      {
+        "issue": 1817,
+        "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1817#issuecomment-7077404979",
+        "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2053",
+        "merge": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb"
+      },
+      {
+        "issue": 1794,
+        "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1794#issuecomment-7077715413",
+        "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2062",
+        "merge": "ed8935915ee9f6fa403b10e6cadbc6837090acc6"
+      }
+    ],
+    "observed": "2026-11-22T10:37:48.264050+00:00",
+    "incident": {
+      "issue": 2063,
+      "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-1337e7a382eaf24f3786e6d2b3c1e2fa278f6dc5.json",
+      "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7077943361"
+    }
+  },
+  "concurrent_main_integration": {
+    "base": "fcbcd42d73ba43fea28a34c8d13e470f50ad9444",
+    "main": "ed8935915ee9f6fa403b10e6cadbc6837090acc6",
+    "stage_tree": "41e7593c02367666ac1fcaeb78156750dc309e25",
+    "files": {
+      "customizations/components/tianxuan/server/native_api.py": {
+        "inputs": {
+          "main": "9e32a79c2633a8a24732ec02daa3e116afc52d79",
+          "base": "72e6eba763fd3efc2a8434593a2b5dd2ab3a3aa5",
+          "staged": "b733f4064978d3195ef9334b31b78a370fdd4ef4"
+        },
+        "merged": "cc97fb4fac888a60d94c7828bd20f85a61e924d2"
+      },
+      "editor/docks/workbench/business_session.gd": {
+        "inputs": {
+          "main": "76db5762751bc40575b67c5350f0d10a08e4f842",
+          "base": "b90e96833bf94b5782f61749acd7d28f471f4db3",
+          "staged": "21adeb445de1aaf5c6f78c6cf803908b61d8f6ff"
+        },
+        "merged": "572a5c79b7ae6a74d775138f51ca2b3185d87725"
+      },
+      "editor/docks/workbench/module_selector.gd": {
+        "inputs": {
+          "main": "f806cd2b695d5b96c97fdaa59acdbd42f7ceb9d3",
+          "base": "5265dd5f6eceeea4645b86b3a8f8ef5325c35a99",
+          "staged": "f13598e03d39e5af69705a81324b639807270952"
+        },
+        "merged": "cb2b7cc6e038620107b754d97d8e85abef90019f"
+      }
+    },
+    "observed": "2026-11-22T10:39:14.303778+00:00"
+  },
+  "s06_readback_correction": {
+    "issue": 2059,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s06/kuafu-0bb693315b0d7f669d20dcf325533346ef613a2e.json",
+    "sha256": "0421d6e3522f4845bfdc3f5b64d0d2c28257ace46e17a032b7f1c195d6b89ea2",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833#issuecomment-7077416042",
+    "test_report": "4b3bc66a681594077b30c4212d0be86b71452f9a04990f9ff73c3515d3028b6e"
+  },
+  "retained_worker_fixtures": {
+    "issue": 2063,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-80714827d3aa58818935eef0bcee6085b9a788b8.json",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7077603206",
+    "workers": [
+      "s05",
+      "s06"
+    ],
+    "status": "awaiting_host_cleanup_permission"
+  },
+  "s10_history_correction": {
+    "issue": 2064,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s10/kuafu-5098a18e064f753294b43a7727170cbc58d11b1c.json",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814#issuecomment-7077768007",
+    "source_tree": "4f45dc1a7f00dd77b494777e7ab75ee8e1045a45",
+    "original_cases": [
+      "original",
+      "ancestor",
+      "selected"
+    ],
+    "primary_regression": {
+      "files": [
+        "customizations/components/tianxuan/sinan-workorders/test_native_control_recovery.py"
+      ],
+      "passed": 3,
+      "summary": "3 passed, 1 warning in 4.04s",
+      "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+      "observations": {
+        "test_run_receipt_is_stable_while_actions_follow_owner[viewer]": {
+          "execution": "bc1acacac25b3e557b8dd6799345d0f8165f5e52ebe01460097daf90c9411fd2",
+          "reader_role": "viewer",
+          "owner_actions": [
+            "pause",
+            "cancel"
+          ],
+          "reader_actions": []
+        },
+        "test_run_receipt_is_stable_while_actions_follow_owner[editor]": {
+          "execution": "4705f565fc49eefcfa3cc75b04e53789bfb8e7f085f5b68cbd7d06d90a7f56e9",
+          "reader_role": "editor",
+          "owner_actions": [
+            "pause",
+            "cancel"
+          ],
+          "reader_actions": []
+        },
+        "test_lost_paused_reply_preserves_original_output": {
+          "execution": "7edd4f2d263539bb06e397273d0a5578e39ded59988ddc09595a80187fc62478",
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "starts": [
+            {
+              "execution": "7edd4f2d263539bb06e397273d0a5578e39ded59988ddc09595a80187fc62478",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_f816459abdf944ec9ce5f03e10fb1e2b",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_08c2c6b1bc9e4d779d8516f2461abe01",
+                "issue_id": "iss_86e6a05567cc4422b84b4a7bab67b327",
+                "issue_revision": "38d7d6e88cb622abc6f5fbfe47965cc5e2a672fac392b14d7c93368347e3e3b3",
+                "responsible_user": "usr_f816459abdf944ec9ce5f03e10fb1e2b",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "historical_method_evidence": [
+    {
+      "card": "s09",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-89021ca463077ca6f724efb39897d29eec6853e922834465b77d89a3f804878f",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1813",
+        "occurred_at": "2026-11-22T09:31:14.905183+00:00",
+        "evidence_refs": [
+          "dispatch-798d6ae930ad4ade869a7fa2bb3ebc80",
+          "learn-cc48662713ec17979690f7923f7b3b4f6a6d761ee92ca7698e57732bae553f48"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "reconstruct-worker-outcomes",
+          "revision": 4,
+          "previous": "65e9a39353dd16edf660e35289c414c0d451fe2f10ec154f2651cb89fbe422ac",
+          "action": "applied",
+          "details": {
+            "task": "S09 #1813 signed local stage: persist process closure, candidate and terminal before stage check",
+            "observed": "Three SQLite write-failure injections saw one actual process each. Candidate intake or terminal failure recovered the immutable SVG from the closed spool. Missing spool stayed unresolved despite a changed workspace and repaired database."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s09.json",
+              "sha256": "bf99f95be19b34a52e7cbbb60fd36d1f16339c2cae6dcab44fee5b2a7793746f"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s09/dispatch-798d6ae930ad4ade869a7fa2bb3ebc80.json",
+            "sha256": "01b1bbc06034246f9ccd33f11b174c3bbf8eea419e2c9cc3277a72048fb81cd2"
+          }
+        },
+        "sha256": "2d73b1d388003fdaa39cc39b39d5b5e2d8514597294b90b7279919927cdf947d"
+      },
+      "admitted_event": "2d73b1d388003fdaa39cc39b39d5b5e2d8514597294b90b7279919927cdf947d",
+      "admitted_revision": 4,
+      "source_tree": "9f66e59c3f87016c327d5516e7d620b7c0d28165",
+      "normalizations": []
+    },
+    {
+      "card": "s05",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-617779cd9325d45c2fbab88bb060e6c0a6b05ed216329808618c12249cbee19f",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812",
+        "occurred_at": "2026-11-22T09:40:58.637735+00:00",
+        "evidence_refs": [
+          "dispatch-726b64de3f944438b7dd9305897fd7e4",
+          "learn-400a0fd7676e428a32d035765af90540276246b628fadb2913301e8b7efb002a"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "bind-consumer-release",
+          "revision": 37,
+          "previous": "d3a00ca1f2e727f965fe73afe305d09c001f5dd296af9dc9e4f1ac24d632ca00",
+          "action": "applied",
+          "details": {
+            "task": "S05 #1812 feeds the same observed producer completion to three fresh dispatchers with and without exact independent acceptance.",
+            "observed": "The signed successor wrote one physical start and reached its checked target with acceptance, and zero starts without it. A different ticket, replaced upstream, inaccessible successor and unrelated entry did not release the branch."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s05.json",
+              "sha256": "b976407f27022732b8bd33876b4d1eb1367a2e857ebda01fea7e6f54411241a4"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s05/dispatch-726b64de3f944438b7dd9305897fd7e4.json",
+            "sha256": "04e58ed72112bb3e6fbca094130e72f12d8116c004f97c9431ffbc08b6d53b6a"
+          }
+        },
+        "sha256": "dfb65e7b0c8bd4b518b75cd8b7acb380363e8b33b8d87ad68bb56ce6051d4f9c"
+      },
+      "admitted_event": "dfb65e7b0c8bd4b518b75cd8b7acb380363e8b33b8d87ad68bb56ce6051d4f9c",
+      "admitted_revision": 37,
+      "source_tree": "acca165d431255a03d9dae0f46d5984182b5efaa",
+      "normalizations": []
+    },
+    {
+      "card": "s07",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-godot-build-placement",
+        "event_id": "learn-69de652f864cbbdd00d2036b947abc87594ea19e3a9de9e1de51301fafffc20a",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+        "occurred_at": "2026-11-22T09:42:45.385446+00:00",
+        "evidence_refs": [
+          "dispatch-f852d96ed50e4da69ab15a4613c26801",
+          "learn-0ada6d037959eaa6e9ffa37e4757f9031ae4b7010f3a302fa7cb81f62970e859"
+        ],
+        "payload": {
+          "scope": "godot-build-placement",
+          "lesson": "trace-native-consumer",
+          "revision": 55,
+          "previous": "a6bc6ed0bf7cfc206fccf6cdf7bd7b77c83fca42cb1b5fd4fc071d0bb2ee6d9c",
+          "action": "applied",
+          "details": {
+            "task": "S07 #1763",
+            "observed": "原生编辑器通过三个嵌入脚本生成头文件。#2042 旧二进制缺少运行进度控件，S07 独立重建后的候选通过模块、工单和展开视图的同运行最新回执、进程失败与只读账号实测。"
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s07.json",
+              "sha256": "db3312015136f4afe8ae1d9c9e6ab48b58734809584c3418b59308b5315f4398"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/dispatch-f852d96ed50e4da69ab15a4613c26801.json",
+            "sha256": "7ac2757a91cb262aa2f94f82f048147bf4c50a452999dc2a76a3265c6dfe520b"
+          }
+        },
+        "sha256": "4fc89c61207e356cad28f66a5111b4e42a175223dcd381812f5bc47227b19e03"
+      },
+      "admitted_event": "4fc89c61207e356cad28f66a5111b4e42a175223dcd381812f5bc47227b19e03",
+      "admitted_revision": 55,
+      "source_tree": "c8f20f4e0f470bbb82434c6679f82bbb5e8ffc67",
+      "normalizations": []
+    },
+    {
+      "card": "s06",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-native-acceptance",
+        "event_id": "learn-6c59f5df64281c09c377aae8a6dbcf3b2b574f43a30d7b72e301aba756f156a4",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+        "occurred_at": "2026-11-22T10:04:56.954529+00:00",
+        "evidence_refs": [
+          "dispatch-b00286d5cab943f7a247d541e3e65984",
+          "learn-e2d661d1e9362bae904e8d9fa2668b38ff529e8f687234315dd52441e151aff4"
+        ],
+        "payload": {
+          "scope": "editor-native-acceptance",
+          "lesson": "assert-async-operation-started",
+          "revision": 12,
+          "previous": "568a636d79c804500fd51b6ff6fd6d126031453653819762916d65ee31f862df",
+          "action": "applied",
+          "details": {
+            "task": "S06 #1833: drop the execute reply following a confirmed real producer start; recover the exact durable terminal on HTTP and actor-scoped shared Node pipe.",
+            "observed": "Each deliberately lost post-launch reply was armed only after a successful execute response from the server; verified the producer log, same run ID, exit code and candidate. Before-launch exhaustion asserted zero starts."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s06.json",
+              "sha256": "4502b6b113eb61c6997311243e555984dab44f7448f1656efe903175508907a9"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s06/dispatch-b00286d5cab943f7a247d541e3e65984.json",
+            "sha256": "85e8dbab457432a62327b42d7135567581d154ecd225e0fbd1cc3da492bd0a25"
+          }
+        },
+        "sha256": "8f4885c8598f7d4e3ef59a7b181012620a74cd52882badda7f57a7e8a3ddf20e"
+      },
+      "admitted_event": "8f4885c8598f7d4e3ef59a7b181012620a74cd52882badda7f57a7e8a3ddf20e",
+      "admitted_revision": 12,
+      "source_tree": "1d966a55209d6ae4e19ac97f1ac3500c85d6c0e8",
+      "normalizations": []
+    },
+    {
+      "card": "s10",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-89021ca463077ca6f724efb39897d29eec6853e922834465b77d89a3f804878f",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+        "occurred_at": "2026-11-22T10:08:03.580222+00:00",
+        "evidence_refs": [
+          "dispatch-c86959ea9c7946f38be8d1ff1e922a4e",
+          "learn-cc48662713ec17979690f7923f7b3b4f6a6d761ee92ca7698e57732bae553f48"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "reconstruct-worker-outcomes",
+          "revision": 4,
+          "previous": "65e9a39353dd16edf660e35289c414c0d451fe2f10ec154f2651cb89fbe422ac",
+          "action": "applied",
+          "details": {
+            "task": "S10 local run controls #1814",
+            "observed": "Three independently signed native runs started once each. After request replay, pause retained an exact worker checkpoint, resume reached the same candidate, the peer finished and the cancelled run stayed closed on editor reopen. A changed worker terminal and an unknown prior intent both prevented resume."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s10.json",
+              "sha256": "103cda928b0bbc6c131ac56c9a4eb82506eff57bee72a0584415a0bc6c2316d5"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s10/dispatch-c86959ea9c7946f38be8d1ff1e922a4e.json",
+            "sha256": "503b79d08bf976649b2837d187cd081042a548e32eaebd9cd050858971a7651b"
+          }
+        },
+        "sha256": "cc68c84493de7c6588227a25b8f1fad414c981557e5e48e43a9db1b59e633e3b"
+      },
+      "admitted_event": "7686232ad29ecdf3afa734adf5a9be2c4233d59f05eb50f37c5dd73a132c04dd",
+      "admitted_revision": 5,
+      "source_tree": "c201a0a91456d2b60e38bec3e651622b0fb513fc",
+      "normalizations": []
+    }
+  ],
+  "validation_scripts": {
+    "s03": [
+      "run_workbench_confirmed_native_stage.py"
+    ],
+    "s07": [
+      "run_workbench_task_progress.py"
+    ],
+    "s10": [
+      "run_workbench_task_controls.py"
+    ]
+  },
+  "card_service_tests": {
+    "s05": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py"
+    ],
+    "s06": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py"
+    ],
+    "s09": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_output_settlement.py"
+    ]
+  },
+  "worker_sources": {
+    "s05": "acca165d431255a03d9dae0f46d5984182b5efaa",
+    "s06": "1d966a55209d6ae4e19ac97f1ac3500c85d6c0e8",
+    "s07": "c8f20f4e0f470bbb82434c6679f82bbb5e8ffc67",
+    "s09": "9f66e59c3f87016c327d5516e7d620b7c0d28165",
+    "s10": "c201a0a91456d2b60e38bec3e651622b0fb513fc"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+  "linked_incident": {
+    "issue": 2055,
+    "incident": "2073d509dc4eb94892df7d5e0de9c8144c948211fd8f869340b437cac8889270",
+    "source": 1763,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/kuafu-c608b927468b496f021b4eae4b5fccc7cc9b9dcf.json",
+    "event_sha256": "d63a9aca32c087938d6ce4fd25cbf8d5eef2db298e2923765b9ffe3536a81d5d",
+    "sha256": "bb990a3a5d0dec514237476f14dda1a2afbfac80163582a6b4b9ae0573512728",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763#issuecomment-7077308837"
+  },
+  "results": {
+    "s05": {
+      "state": "passed",
+      "issue": 1812,
+      "request_id": "gonggong-ai-workbench-plan1-s05",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py"
+        ],
+        "passed": 4,
+        "summary": "4 passed, 1 warning in 8.03s",
+        "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+        "observations": {
+          "test_signed_successor_replays_exact_completion[False]": {
+            "event": {
+              "type": "execution.finished",
+              "reference": "ab781a919d417206263854f7175963eb8f2eb5cce58a2154fcdeab76a88c537c"
+            },
+            "upstream_candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+            "release": null,
+            "cumulative_starts": [
+              0,
+              0,
+              0
+            ],
+            "consumed": 0,
+            "physical_exits": {
+              "ab781a919d417206263854f7175963eb8f2eb5cce58a2154fcdeab76a88c537c": 0
+            },
+            "successor": null,
+            "unsigned_sibling_starts": 0,
+            "stage_result": null
+          },
+          "test_signed_successor_replays_exact_completion[True]": {
+            "event": {
+              "type": "execution.finished",
+              "reference": "6ccb901cf56bd93a0655e15e45445c4c6af464f0270b925ffc735aedcb152b59"
+            },
+            "upstream_candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+            "release": "8b33075751c3b6589064ff22c2ef2b6078e974aa6f2c508745157392be9258d1",
+            "cumulative_starts": [
+              1,
+              1,
+              1
+            ],
+            "consumed": 1,
+            "physical_exits": {
+              "6ccb901cf56bd93a0655e15e45445c4c6af464f0270b925ffc735aedcb152b59": 0,
+              "213ff075c7a337e9ea227a44d60b5b0f722b5d7e26178bb4bbfaa75f43211658": 0
+            },
+            "successor": {
+              "control": {
+                "state": "stage-reached",
+                "summary": "stage-reached",
+                "revision": 9,
+                "actions": []
+              },
+              "id": "213ff075c7a337e9ea227a44d60b5b0f722b5d7e26178bb4bbfaa75f43211658",
+              "worker_ref": "native-worker:213ff075c7a337e9ea227a44d60b5b0f722b5d7e26178bb4bbfaa75f43211658",
+              "issue": "iss_34865ca9ffc4458999620c1951a14bcb",
+              "source_revision": "d62a112ce14100d22de6ca4124d6ec9d1a93eb7204d95868ae6d5db557eb2bbc",
+              "stage": "preview",
+              "state": "stage-reached",
+              "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+              "provider_model": null,
+              "usage": null,
+              "events": [
+                {
+                  "sequence": 1,
+                  "recorded_at": "2026-11-22T10:42:42.558Z",
+                  "state": "ready",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 2,
+                  "recorded_at": "2026-11-22T10:42:42.588Z",
+                  "state": "reserved",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 3,
+                  "recorded_at": "2026-11-22T10:42:42.603Z",
+                  "state": "running",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 4,
+                  "recorded_at": "2026-11-22T10:42:42.634Z",
+                  "state": "running",
+                  "step": "workspace.materialize",
+                  "details": {
+                    "modules": {
+                      "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+                      "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                    }
+                  }
+                },
+                {
+                  "sequence": 5,
+                  "recorded_at": "2026-11-22T10:42:42.794Z",
+                  "state": "running",
+                  "step": "process.closed",
+                  "details": {
+                    "exit_code": 0,
+                    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  }
+                },
+                {
+                  "sequence": 6,
+                  "recorded_at": "2026-11-22T10:42:42.813Z",
+                  "state": "running",
+                  "step": "workspace.collect",
+                  "details": {
+                    "changed_modules": [
+                      "a"
+                    ]
+                  }
+                },
+                {
+                  "sequence": 7,
+                  "recorded_at": "2026-11-22T10:42:42.860Z",
+                  "state": "running",
+                  "step": "candidate.compose",
+                  "details": {
+                    "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                    "modules": {
+                      "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                      "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                    }
+                  }
+                },
+                {
+                  "sequence": 8,
+                  "recorded_at": "2026-11-22T10:42:42.861Z",
+                  "state": "produced",
+                  "step": "state",
+                  "details": {
+                    "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                    "modules": {
+                      "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                      "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                    }
+                  }
+                },
+                {
+                  "sequence": 9,
+                  "recorded_at": "2026-11-22T10:42:43.121Z",
+                  "state": "stage-reached",
+                  "step": "state",
+                  "details": {
+                    "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                    "modules": {
+                      "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                      "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                    }
+                  }
+                }
+              ]
+            },
+            "unsigned_sibling_starts": 0,
+            "stage_result": {
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_ff1bbbb3ca864b3fb38739788d2c7a4e",
+                "criteria": "a/output contains a produced and b/output contains b produced",
+                "document_id": "doc_a1ace33c77954baf948b5953ae517eb6",
+                "issue_id": "iss_34865ca9ffc4458999620c1951a14bcb",
+                "issue_revision": "e1bb49f6a94bb0b5a74cad194782470b52ecb535f722ce95de4faf0cc1119e40",
+                "responsible_user": "usr_ff1bbbb3ca864b3fb38739788d2c7a4e",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+              "checks": {
+                "check": {
+                  "evidence": "c5fedf8cec531af00d5a522f98c19004578d3c76ddd0c527bfc839172fac76f6",
+                  "outcome": "passed"
+                }
+              },
+              "modules": {
+                "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+              },
+              "reason": "authorized_stage_criteria_met",
+              "state": "stage-reached",
+              "task": "213ff075c7a337e9ea227a44d60b5b0f722b5d7e26178bb4bbfaa75f43211658"
+            }
+          }
+        }
+      }
+    },
+    "s06": {
+      "state": "passed",
+      "issue": 1833,
+      "request_id": "gonggong-ai-workbench-plan1-s06",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py"
+        ],
+        "passed": 8,
+        "summary": "8 passed, 1 warning in 9.81s",
+        "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+        "observations": {
+          "test_busy_storage_retries_only_the_original_reservation": {
+            "calls": [
+              "5f74f417e4ca497b6bb8c33a103299a3474eafe56f8560be8ecd67c125bddabe",
+              "5f74f417e4ca497b6bb8c33a103299a3474eafe56f8560be8ecd67c125bddabe"
+            ],
+            "starts": [
+              {
+                "execution": "5f74f417e4ca497b6bb8c33a103299a3474eafe56f8560be8ecd67c125bddabe",
+                "grant": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_7253f7d9799d47ea9928995911af1ff9",
+                  "criteria": "preview.svg shows one blue circle of radius 12",
+                  "document_id": "doc_ca7d1db6e6414da69e704fc03e39e8f8",
+                  "issue_id": "iss_64b36c5d340a481ea2b7f181f756ae8e",
+                  "issue_revision": "9b11c89236e41c5adc4fbe8918dfcd8353a1ae59e34a2e2f8110aad87ae5d464",
+                  "responsible_user": "usr_7253f7d9799d47ea9928995911af1ff9",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                }
+              }
+            ],
+            "recovery": {
+              "id": "5f74f417e4ca497b6bb8c33a103299a3474eafe56f8560be8ecd67c125bddabe",
+              "worker_ref": "native-worker:5f74f417e4ca497b6bb8c33a103299a3474eafe56f8560be8ecd67c125bddabe",
+              "operation": "execute",
+              "reason": "storage-busy",
+              "state": "reserved",
+              "known_effects": {
+                "reservation_recorded": true,
+                "exit_code": null,
+                "candidate": null
+              },
+              "next_action": "retry-same-execution",
+              "recovery_condition": "The original reservation is current and the execution intent has not started."
+            }
+          },
+          "test_lost_execute_response_reads_original_before_any_further_effect": {
+            "operations": [
+              "advance",
+              "inspect",
+              "inspect",
+              "revalidate",
+              "reserve",
+              "start",
+              "execute",
+              "execution-readback",
+              "record-execution-fault",
+              "await-terminal",
+              "advance",
+              "inspect",
+              "verify-stage",
+              "ack",
+              "record",
+              "advance",
+              "inspect"
+            ],
+            "starts": [
+              {
+                "execution": "d1d6b8540fc262d403e46e373e2822e36448346b0a693e93d5d780f78eec6ce4",
+                "grant": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_553cc9a6964d4652ac9e24d957e86f17",
+                  "criteria": "preview.svg shows one blue circle of radius 12",
+                  "document_id": "doc_366772fbe45349659ab329bd363d3a62",
+                  "issue_id": "iss_2d959e56de534df2baedd5ef91558cd5",
+                  "issue_revision": "94ed8c255771b8bdf574f411da3d75ac27f22b294e07767998924566f4767c58",
+                  "responsible_user": "usr_553cc9a6964d4652ac9e24d957e86f17",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                }
+              }
+            ],
+            "recovery": {
+              "id": "d1d6b8540fc262d403e46e373e2822e36448346b0a693e93d5d780f78eec6ce4",
+              "worker_ref": "native-worker:d1d6b8540fc262d403e46e373e2822e36448346b0a693e93d5d780f78eec6ce4",
+              "operation": "execute",
+              "reason": "response-unknown",
+              "state": "produced",
+              "known_effects": {
+                "reservation_recorded": true,
+                "exit_code": 0,
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+              },
+              "next_action": "read-original-receipt",
+              "recovery_condition": "The original execution has a recorded terminal receipt."
+            }
+          },
+          "test_busy_before_launch_stops_after_one_retry[False]": {
+            "calls": [
+              "69847455145006ab4420cb324cd4cdd76ddb720a0d7dd85673c9a118e174ea54",
+              "69847455145006ab4420cb324cd4cdd76ddb720a0d7dd85673c9a118e174ea54"
+            ],
+            "offers": [],
+            "starts": [],
+            "actions": [
+              "retry-same-execution",
+              "read-original-receipt"
+            ]
+          },
+          "test_busy_before_launch_stops_after_one_retry[True]": {
+            "calls": [
+              "cb3684c1c25232b19ce7460f53043f1c6e99b1fbc96a693f6e80470b27a6ad61"
+            ],
+            "offers": [
+              "cb3684c1c25232b19ce7460f53043f1c6e99b1fbc96a693f6e80470b27a6ad61"
+            ],
+            "starts": [],
+            "actions": [
+              "read-original-receipt"
+            ]
+          },
+          "test_installed_pipe_recovers_only_its_own_execution": {
+            "calls": [
+              "advance",
+              "inspect",
+              "inspect",
+              "revalidate",
+              "reserve",
+              "start",
+              "execute",
+              "execution-readback",
+              "record-execution-fault",
+              "await-terminal",
+              "advance",
+              "inspect",
+              "verify-stage",
+              "ack",
+              "record",
+              "advance",
+              "inspect"
+            ],
+            "recovery": {
+              "id": "612273deed38441e874b5ed6614927e7855a37455cb9a07f4bf10077201656d8",
+              "known_effects": {
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                "exit_code": 0,
+                "reservation_recorded": true
+              },
+              "next_action": "read-original-receipt",
+              "operation": "execute",
+              "reason": "response-unknown",
+              "recovery_condition": "The original execution has a recorded terminal receipt.",
+              "state": "produced",
+              "worker_ref": "native-worker:612273deed38441e874b5ed6614927e7855a37455cb9a07f4bf10077201656d8"
+            },
+            "starts": [
+              {
+                "execution": "612273deed38441e874b5ed6614927e7855a37455cb9a07f4bf10077201656d8",
+                "grant": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_aac4eb39de564cf29eeeb40c0aa79fc8",
+                  "criteria": "preview.svg shows one blue circle of radius 12",
+                  "document_id": "doc_0e2e43497fcb4f2380fc9d7ff9967233",
+                  "issue_id": "iss_7002fef604804937ae1ff2405aedcae1",
+                  "issue_revision": "6017322c449be9de7eb17a425fe4b16177cf4d679e63db47c18e4ef5c92d22d2",
+                  "responsible_user": "usr_aac4eb39de564cf29eeeb40c0aa79fc8",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                }
+              }
+            ],
+            "closure": {
+              "started": true,
+              "pid": 131120,
+              "exit_code": 0,
+              "physical_terminal": true,
+              "failure": null
+            }
+          },
+          "test_readback_while_storage_is_busy": {
+            "readback": {
+              "id": "70bbde331ad590ececd5c9a87bf9857e55b31739faccf869e7850b73fedad095",
+              "worker_ref": "native-worker:70bbde331ad590ececd5c9a87bf9857e55b31739faccf869e7850b73fedad095",
+              "operation": "execute",
+              "reason": "response-unknown",
+              "state": "produced",
+              "known_effects": {
+                "reservation_recorded": true,
+                "exit_code": 0,
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+              },
+              "next_action": "read-original-receipt",
+              "recovery_condition": "The original execution has a recorded terminal receipt."
+            },
+            "starts": [
+              {
+                "execution": "70bbde331ad590ececd5c9a87bf9857e55b31739faccf869e7850b73fedad095",
+                "grant": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_cde60fa60d9644d09a0c52b8dc1ef369",
+                  "criteria": "preview.svg shows one blue circle of radius 12",
+                  "document_id": "doc_68d99c0c7a0c4fcaad24716bc1265e06",
+                  "issue_id": "iss_a2c4fa0212464a63ad4273a139fc06a1",
+                  "issue_revision": "10e68b5ae715833adacce03bbb69dc30a29209de6edd164ad954fcd5d5aacf30",
+                  "responsible_user": "usr_cde60fa60d9644d09a0c52b8dc1ef369",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                }
+              }
+            ],
+            "audit_status": 503,
+            "retry_after": "1",
+            "terminal": "produced"
+          },
+          "test_busy_after_durable_launch_observes_original_worker": {
+            "starts": [
+              {
+                "execution": "4697450b1e000d5c72376f34f3627305f51a32cc40fa59cb64a75ef44b5ae11a",
+                "grant": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_1286849848ce45cab81aa45f2d6c27b0",
+                  "criteria": "preview.svg shows one blue circle of radius 12",
+                  "document_id": "doc_85bb4438277f4c2395d89a56c2363da6",
+                  "issue_id": "iss_6c5a7827aec648bcaa286d1f0f427c53",
+                  "issue_revision": "7de86f22fc7d0889ce79c82991de22f6c327f873b28ae85f786b23bbe60f5c2b",
+                  "responsible_user": "usr_1286849848ce45cab81aa45f2d6c27b0",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                }
+              }
+            ],
+            "busy": {
+              "id": "4697450b1e000d5c72376f34f3627305f51a32cc40fa59cb64a75ef44b5ae11a",
+              "worker_ref": "native-worker:4697450b1e000d5c72376f34f3627305f51a32cc40fa59cb64a75ef44b5ae11a",
+              "operation": "execute",
+              "reason": "storage-busy",
+              "state": "produced",
+              "known_effects": {
+                "reservation_recorded": true,
+                "exit_code": 0,
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+              },
+              "next_action": "read-original-receipt",
+              "recovery_condition": "The original execution has a recorded terminal receipt."
+            },
+            "stage": "stage-reached"
+          }
+        }
+      }
+    },
+    "s07": {
+      "passed": true,
+      "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+      "scenarios": {
+        "produced": {
+          "issue": "iss_ff552f3cc2914408b15b72d93b5450aa",
+          "reader_role": "admin",
+          "status_with_project": 422,
+          "number": 1,
+          "run": "d22bb55dcc8ff8ca3dd9dbdbfbd81c8f069b74827a84d699d407980c9c90960f",
+          "running": {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T10:43:16.819Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          "final": {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T10:43:21.659Z",
+            "state": "produced",
+            "step": "state",
+            "details": {
+              "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+              "modules": {
+                "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+              }
+            }
+          },
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+          "persisted_events": 8,
+          "physical_starts": 1,
+          "views": {
+            "final_issue": "运行号　d22bb55dcc8ff8ca3dd9dbdbfbd81c8f069b74827a84d699d407980c9c90960f\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　stage_criteria_check_unbound\n\n运行回执（从新到旧）\n#8　2026-11-22T10:43:21.659Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T10:43:21.658Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T10:43:21.614Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T10:43:21.604Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:16.819Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:16.793Z　state　running\n#2　2026-11-22T10:43:16.785Z　state　reserved\n#1　2026-11-22T10:43:16.774Z　state　ready",
+            "final_module": "运行号　d22bb55dcc8ff8ca3dd9dbdbfbd81c8f069b74827a84d699d407980c9c90960f\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　stage_criteria_check_unbound\n\n运行回执（从新到旧）\n#8　2026-11-22T10:43:21.659Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T10:43:21.658Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T10:43:21.614Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T10:43:21.604Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:16.819Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:16.793Z　state　running\n#2　2026-11-22T10:43:16.785Z　state　reserved\n#1　2026-11-22T10:43:16.774Z　state　ready",
+            "running_issue": "运行号　d22bb55dcc8ff8ca3dd9dbdbfbd81c8f069b74827a84d699d407980c9c90960f\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:16.819Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:16.793Z　state　running\n#2　2026-11-22T10:43:16.785Z　state　reserved\n#1　2026-11-22T10:43:16.774Z　state　ready",
+            "running_module": "运行号　d22bb55dcc8ff8ca3dd9dbdbfbd81c8f069b74827a84d699d407980c9c90960f\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:16.819Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:16.793Z　state　running\n#2　2026-11-22T10:43:16.785Z　state　reserved\n#1　2026-11-22T10:43:16.774Z　state　ready",
+            "sibling": "当前没有可读取的运行记录"
+          }
+        },
+        "failed": {
+          "issue": "iss_7aeb1643494e4e148c1d2a9dd74e2e37",
+          "reader_role": "admin",
+          "status_with_project": 422,
+          "number": 1,
+          "run": "374e22ba191e189a061ded21dcb7ca83d9dc7c7e49e0d6f06cb329114869f134",
+          "running": {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T10:43:23.659Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          "final": {
+            "sequence": 6,
+            "recorded_at": "2026-11-22T10:43:27.695Z",
+            "state": "failed",
+            "step": "state",
+            "details": {}
+          },
+          "candidate": null,
+          "persisted_events": 6,
+          "physical_starts": 1,
+          "views": {
+            "final_issue": "运行号　374e22ba191e189a061ded21dcb7ca83d9dc7c7e49e0d6f06cb329114869f134\n目标阶段　原型\n运行状态　执行失败\n进程退出码　7\n\n运行回执（从新到旧）\n#6　2026-11-22T10:43:27.695Z　state　failed\n#5　2026-11-22T10:43:27.671Z　process.closed　running\n{\"exit_code\":7.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:23.659Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:23.638Z　state　running\n#2　2026-11-22T10:43:23.629Z　state　reserved\n#1　2026-11-22T10:43:23.618Z　state　ready",
+            "final_module": "运行号　374e22ba191e189a061ded21dcb7ca83d9dc7c7e49e0d6f06cb329114869f134\n目标阶段　原型\n运行状态　执行失败\n进程退出码　7\n\n运行回执（从新到旧）\n#6　2026-11-22T10:43:27.695Z　state　failed\n#5　2026-11-22T10:43:27.671Z　process.closed　running\n{\"exit_code\":7.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:23.659Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:23.638Z　state　running\n#2　2026-11-22T10:43:23.629Z　state　reserved\n#1　2026-11-22T10:43:23.618Z　state　ready",
+            "running_issue": "运行号　374e22ba191e189a061ded21dcb7ca83d9dc7c7e49e0d6f06cb329114869f134\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:23.659Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:23.638Z　state　running\n#2　2026-11-22T10:43:23.629Z　state　reserved\n#1　2026-11-22T10:43:23.618Z　state　ready",
+            "running_module": "运行号　374e22ba191e189a061ded21dcb7ca83d9dc7c7e49e0d6f06cb329114869f134\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:23.659Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:23.638Z　state　running\n#2　2026-11-22T10:43:23.629Z　state　reserved\n#1　2026-11-22T10:43:23.618Z　state　ready",
+            "sibling": "当前没有可读取的运行记录"
+          }
+        },
+        "viewer": {
+          "issue": "iss_58a3c18324694316b904aafc58d0d032",
+          "reader_role": "viewer",
+          "status_with_project": 422,
+          "number": 1,
+          "run": "fa2c88696cd6a2e941db54061dbd98764fe3d8d1046f5d43b1dcfc7e78bd8fe6",
+          "running": {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T10:43:29.681Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          "final": {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T10:43:33.600Z",
+            "state": "produced",
+            "step": "state",
+            "details": {
+              "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+              "modules": {
+                "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+              }
+            }
+          },
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+          "persisted_events": 8,
+          "physical_starts": 1,
+          "views": {
+            "final_issue": "运行号　fa2c88696cd6a2e941db54061dbd98764fe3d8d1046f5d43b1dcfc7e78bd8fe6\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n\n运行回执（从新到旧）\n#8　2026-11-22T10:43:33.600Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T10:43:33.599Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T10:43:33.551Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T10:43:33.540Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:29.681Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:29.660Z　state　running\n#2　2026-11-22T10:43:29.651Z　state　reserved\n#1　2026-11-22T10:43:29.640Z　state　ready",
+            "final_module": "运行号　fa2c88696cd6a2e941db54061dbd98764fe3d8d1046f5d43b1dcfc7e78bd8fe6\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n\n运行回执（从新到旧）\n#8　2026-11-22T10:43:33.600Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T10:43:33.599Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T10:43:33.551Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T10:43:33.540Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T10:43:29.681Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:29.660Z　state　running\n#2　2026-11-22T10:43:29.651Z　state　reserved\n#1　2026-11-22T10:43:29.640Z　state　ready",
+            "running_issue": "运行号　fa2c88696cd6a2e941db54061dbd98764fe3d8d1046f5d43b1dcfc7e78bd8fe6\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:29.681Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:29.660Z　state　running\n#2　2026-11-22T10:43:29.651Z　state　reserved\n#1　2026-11-22T10:43:29.640Z　state　ready",
+            "running_module": "运行号　fa2c88696cd6a2e941db54061dbd98764fe3d8d1046f5d43b1dcfc7e78bd8fe6\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T10:43:29.681Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T10:43:29.660Z　state　running\n#2　2026-11-22T10:43:29.651Z　state　reserved\n#1　2026-11-22T10:43:29.640Z　state　ready",
+            "sibling": "当前没有可读取的运行记录"
+          }
+        }
+      }
+    },
+    "s09": {
+      "state": "passed",
+      "issue": 1813,
+      "request_id": "gonggong-ai-workbench-plan1-s09",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_output_settlement.py"
+        ],
+        "passed": 3,
+        "summary": "3 passed, 1 warning in 4.68s",
+        "source_tree": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+        "observations": {
+          "test_stage_waits_for_durable_output[native_candidate_receipts]": {
+            "execution": "2b15a7789a23aa0be465a2df145735977532806de17e1288ef50170b9d85db11",
+            "failed_table": "native_candidate_receipts",
+            "execute_status": 409,
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "output_spool_sha256": "4718c9ace062691d60bc92fa48b66717d62871711658c1c7ac8fdac1665b1f71",
+            "pending_state": "closed-unresolved",
+            "pending_candidate": null,
+            "await_detail": "Worker process closed; output receipt unresolved",
+            "recovery_state": "produced",
+            "intake": "288121b7bdfb9e2f965855afc64e5bb0815cf3ebb879e6ff8d43aa3cf0ecdd6a",
+            "stage": {
+              "task": "2b15a7789a23aa0be465a2df145735977532806de17e1288ef50170b9d85db11",
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_99fbc6aa60fe4d759a6cfaee23532254",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_27fdc4fdda0a4c49819137b5d0dc3d26",
+                "issue_id": "iss_be38f1fd674d4fccb4596c5184c38360",
+                "issue_revision": "aac4e1db022a2cb4ee4f9985eeb5e57fbb1d80ec582d77451a6da36db40b6958",
+                "responsible_user": "usr_99fbc6aa60fe4d759a6cfaee23532254",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "modules": {
+                "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+              },
+              "checks": {
+                "check": {
+                  "evidence": "c20a673eca46be79ae8925f3a6557b55ec089e17d125f4509124f8944c3f04fb",
+                  "outcome": "passed"
+                }
+              },
+              "state": "stage-reached",
+              "reason": "authorized_stage_criteria_met"
+            },
+            "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "launch_count": 1,
+            "steps": [
+              {
+                "sequence": 1,
+                "recorded_at": "2026-11-22T10:42:59.528Z",
+                "state": "ready",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 2,
+                "recorded_at": "2026-11-22T10:42:59.539Z",
+                "state": "reserved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 3,
+                "recorded_at": "2026-11-22T10:42:59.556Z",
+                "state": "running",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 4,
+                "recorded_at": "2026-11-22T10:42:59.577Z",
+                "state": "running",
+                "step": "workspace.materialize",
+                "details": {
+                  "modules": {
+                    "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                  }
+                }
+              },
+              {
+                "sequence": 5,
+                "recorded_at": "2026-11-22T10:42:59.731Z",
+                "state": "running",
+                "step": "process.closed",
+                "details": {
+                  "exit_code": 0,
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              {
+                "sequence": 6,
+                "recorded_at": "2026-11-22T10:42:59.743Z",
+                "state": "running",
+                "step": "workspace.collect",
+                "details": {
+                  "changed_modules": [
+                    "a"
+                  ]
+                }
+              },
+              {
+                "sequence": 7,
+                "recorded_at": "2026-11-22T10:42:59.760Z",
+                "state": "held",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 8,
+                "recorded_at": "2026-11-22T10:42:59.773Z",
+                "state": "closed-unresolved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 9,
+                "recorded_at": "2026-11-22T10:42:59.846Z",
+                "state": "closed-unresolved",
+                "step": "candidate.compose",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              },
+              {
+                "sequence": 10,
+                "recorded_at": "2026-11-22T10:42:59.846Z",
+                "state": "produced",
+                "step": "state",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              },
+              {
+                "sequence": 11,
+                "recorded_at": "2026-11-22T10:43:00.081Z",
+                "state": "stage-reached",
+                "step": "state",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              }
+            ]
+          },
+          "test_stage_waits_for_durable_output[native_worker_terminals_v2]": {
+            "execution": "e7a441eaa3b29dfd38488a0b25dc379e35981e25bbc12117a3d4e5b61571885d",
+            "failed_table": "native_worker_terminals_v2",
+            "execute_status": 409,
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "output_spool_sha256": "4718c9ace062691d60bc92fa48b66717d62871711658c1c7ac8fdac1665b1f71",
+            "pending_state": "closed-unresolved",
+            "pending_candidate": null,
+            "await_detail": "Worker process closed; output receipt unresolved",
+            "recovery_state": "produced",
+            "intake": "2ddeead2d2ce749e664f1ba80c124c7ffc68e192ef85c3d226e3661d2442577f",
+            "stage": {
+              "task": "e7a441eaa3b29dfd38488a0b25dc379e35981e25bbc12117a3d4e5b61571885d",
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_84614f69e3214032a4bda52a859263ea",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_6b53b40f380e4af1922ab15403af1eb3",
+                "issue_id": "iss_d4dc423f1adf40e3a57b3fcc1702cec5",
+                "issue_revision": "0d48392a765fc4ee360b1fd7fe05523d942df09ec43869fcac65febd92b440af",
+                "responsible_user": "usr_84614f69e3214032a4bda52a859263ea",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "modules": {
+                "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+              },
+              "checks": {
+                "check": {
+                  "evidence": "44483c12193d9e8b94e85b35c5d94c449b49d750f414ac96101ece71c095701b",
+                  "outcome": "passed"
+                }
+              },
+              "state": "stage-reached",
+              "reason": "authorized_stage_criteria_met"
+            },
+            "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "launch_count": 1,
+            "steps": [
+              {
+                "sequence": 1,
+                "recorded_at": "2026-11-22T10:43:00.801Z",
+                "state": "ready",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 2,
+                "recorded_at": "2026-11-22T10:43:00.815Z",
+                "state": "reserved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 3,
+                "recorded_at": "2026-11-22T10:43:00.835Z",
+                "state": "running",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 4,
+                "recorded_at": "2026-11-22T10:43:00.857Z",
+                "state": "running",
+                "step": "workspace.materialize",
+                "details": {
+                  "modules": {
+                    "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                  }
+                }
+              },
+              {
+                "sequence": 5,
+                "recorded_at": "2026-11-22T10:43:01.042Z",
+                "state": "running",
+                "step": "process.closed",
+                "details": {
+                  "exit_code": 0,
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              {
+                "sequence": 6,
+                "recorded_at": "2026-11-22T10:43:01.054Z",
+                "state": "running",
+                "step": "workspace.collect",
+                "details": {
+                  "changed_modules": [
+                    "a"
+                  ]
+                }
+              },
+              {
+                "sequence": 7,
+                "recorded_at": "2026-11-22T10:43:01.099Z",
+                "state": "held",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 8,
+                "recorded_at": "2026-11-22T10:43:01.120Z",
+                "state": "closed-unresolved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 9,
+                "recorded_at": "2026-11-22T10:43:01.193Z",
+                "state": "closed-unresolved",
+                "step": "candidate.compose",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              },
+              {
+                "sequence": 10,
+                "recorded_at": "2026-11-22T10:43:01.193Z",
+                "state": "produced",
+                "step": "state",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              },
+              {
+                "sequence": 11,
+                "recorded_at": "2026-11-22T10:43:01.453Z",
+                "state": "stage-reached",
+                "step": "state",
+                "details": {
+                  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                  "modules": {
+                    "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+                  }
+                }
+              }
+            ]
+          },
+          "test_stage_waits_for_durable_output[native_worker_closed]": {
+            "execution": "e889df8715d53d199ae878e9c9215f156290fa17b2d3142c5de25d61d065aadc",
+            "failed_table": "native_worker_closed",
+            "execute_status": 409,
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "output_spool_sha256": null,
+            "pending_state": "closed-unresolved",
+            "pending_candidate": null,
+            "await_detail": "Worker process closed; output receipt unresolved",
+            "recovery_state": "closed-unresolved",
+            "launch_count": 1,
+            "steps": [
+              {
+                "sequence": 1,
+                "recorded_at": "2026-11-22T10:43:02.260Z",
+                "state": "ready",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 2,
+                "recorded_at": "2026-11-22T10:43:02.270Z",
+                "state": "reserved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 3,
+                "recorded_at": "2026-11-22T10:43:02.290Z",
+                "state": "running",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 4,
+                "recorded_at": "2026-11-22T10:43:02.315Z",
+                "state": "running",
+                "step": "workspace.materialize",
+                "details": {
+                  "modules": {
+                    "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                  }
+                }
+              },
+              {
+                "sequence": 5,
+                "recorded_at": "2026-11-22T10:43:02.471Z",
+                "state": "running",
+                "step": "process.closed",
+                "details": {
+                  "exit_code": 0,
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              {
+                "sequence": 6,
+                "recorded_at": "2026-11-22T10:43:02.485Z",
+                "state": "running",
+                "step": "workspace.collect",
+                "details": {
+                  "changed_modules": [
+                    "a"
+                  ]
+                }
+              },
+              {
+                "sequence": 7,
+                "recorded_at": "2026-11-22T10:43:02.493Z",
+                "state": "held",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 8,
+                "recorded_at": "2026-11-22T10:43:02.507Z",
+                "state": "closed-unresolved",
+                "step": "state",
+                "details": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "s10": {
+      "passed": true,
+      "runs": [
+        "0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36",
+        "4656d85a709bd13781ad17e969c9e9ab85a9042141163eb4e347b716c1df61ae",
+        "7970de8eb9a620975834362cac222fbeba65da8d326addd8445e8f98d0c7445f"
+      ],
+      "starts": [
+        {
+          "key": "0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36",
+          "pid": 114068
+        },
+        {
+          "key": "4656d85a709bd13781ad17e969c9e9ab85a9042141163eb4e347b716c1df61ae",
+          "pid": 133628
+        },
+        {
+          "key": "7970de8eb9a620975834362cac222fbeba65da8d326addd8445e8f98d0c7445f",
+          "pid": 134740
+        }
+      ],
+      "closures": {
+        "0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "4656d85a709bd13781ad17e969c9e9ab85a9042141163eb4e347b716c1df61ae": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "7970de8eb9a620975834362cac222fbeba65da8d326addd8445e8f98d0c7445f": {
+          "exit_code": null,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "pause": {
+        "expected": 4,
+        "readback": {
+          "actions": [
+            "cancel"
+          ],
+          "revision": 5.0,
+          "state": "pausing",
+          "summary": "暂停已接收，等待当前工具完成"
+        },
+        "replayed_sequence": 5
+      },
+      "resume": {
+        "expected": 9,
+        "readback": {
+          "actions": [],
+          "revision": 11.0,
+          "state": "produced",
+          "summary": "produced"
+        },
+        "replayed_sequence": 11
+      },
+      "cancel": {
+        "expected": 4,
+        "readback": {
+          "actions": [],
+          "revision": 6.0,
+          "state": "canceling",
+          "summary": "取消已接收，等待进程关闭"
+        },
+        "replayed_sequence": 5
+      },
+      "pause_checkpoint": {
+        "control": {
+          "state": "paused",
+          "summary": "已暂停；原授权 installed-test-plan，来源修订 c6e1fbe028f34b189e7316464d5c40715e9899846bf26a6eefac27eab61e125b，确认人 usr_c82c10ad63a5459e9e12bd783fbe4b5d，阶段 preview，验收条件 individual output；工作者退出码 0，输出记录 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855，已保存候选 40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+          "revision": 9,
+          "actions": [
+            "resume",
+            "cancel"
+          ]
+        },
+        "id": "0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36",
+        "worker_ref": "native-worker:0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36",
+        "issue": "iss_c1d408fc81384caca5f8be58e386a2f1",
+        "source_revision": "c6e1fbe028f34b189e7316464d5c40715e9899846bf26a6eefac27eab61e125b",
+        "stage": "preview",
+        "state": "paused",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "provider_model": null,
+        "usage": null,
+        "events": [
+          {
+            "sequence": 1,
+            "recorded_at": "2026-11-22T10:43:36.472Z",
+            "state": "ready",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 2,
+            "recorded_at": "2026-11-22T10:43:36.556Z",
+            "state": "reserved",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 3,
+            "recorded_at": "2026-11-22T10:43:36.580Z",
+            "state": "running",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T10:43:36.610Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          {
+            "sequence": 5,
+            "recorded_at": "2026-11-22T10:43:41.206Z",
+            "state": "running",
+            "step": "control.pause",
+            "details": {
+              "actor": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+              "reviewed_sequence": 4
+            }
+          },
+          {
+            "sequence": 6,
+            "recorded_at": "2026-11-22T10:43:41.911Z",
+            "state": "running",
+            "step": "process.closed",
+            "details": {
+              "exit_code": 0,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "sequence": 7,
+            "recorded_at": "2026-11-22T10:43:41.926Z",
+            "state": "running",
+            "step": "workspace.collect",
+            "details": {
+              "changed_modules": [
+                "a"
+              ]
+            }
+          },
+          {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T10:43:41.967Z",
+            "state": "running",
+            "step": "candidate.compose",
+            "details": {
+              "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+              "modules": {
+                "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+              }
+            }
+          },
+          {
+            "sequence": 9,
+            "recorded_at": "2026-11-22T10:43:41.968Z",
+            "state": "paused",
+            "step": "state",
+            "details": {}
+          }
+        ]
+      },
+      "resumed": {
+        "task": "0439d426daac768ce51c653b8716d9d5612547b75efbaa5a1aec954a45c96c36",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+          "criteria": "individual output",
+          "document_id": "doc_9ff4151947e040b2a67a0908749e2b69",
+          "issue_id": "iss_c1d408fc81384caca5f8be58e386a2f1",
+          "issue_revision": "fbbbf3b2ad26e8e9906cfb15d9989c96aaae18196bf4808f13d343de77f3983b",
+          "responsible_user": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "modules": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "checks": {
+          "check": {
+            "evidence": "bc7681064c2f43c0dd7e50f913447142810fc744237ee01e37b15f56ddb143ee",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "peer": {
+        "task": "4656d85a709bd13781ad17e969c9e9ab85a9042141163eb4e347b716c1df61ae",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+          "criteria": "individual output",
+          "document_id": "doc_9ff4151947e040b2a67a0908749e2b69",
+          "issue_id": "iss_b246f210f23e4a2ab03a3789387727d9",
+          "issue_revision": "120dd68a4bae7ede0181a7fd21d0198273003335490541d53b408ed7e086a148",
+          "responsible_user": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "modules": {
+          "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+        },
+        "checks": {
+          "check": {
+            "evidence": "dedd4c949d6d1f327d87783c5367cb9a8114944f9f72add3d4f4bb011da46af7",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "reopened": {
+        "candidate": null,
+        "control": {
+          "actions": [],
+          "revision": 7.0,
+          "state": "cancelled",
+          "summary": "已取消"
+        },
+        "events": [
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:43:36.543Z",
+            "sequence": 1.0,
+            "state": "ready",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:43:46.958Z",
+            "sequence": 2.0,
+            "state": "reserved",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:43:46.970Z",
+            "sequence": 3.0,
+            "state": "running",
+            "step": "state"
+          },
+          {
+            "details": {
+              "modules": {
+                "c": "95f8e1393a57c7f1ecde6da19da297ee4380d6f1b5c0369efb135a6e2f474f73"
+              }
+            },
+            "recorded_at": "2026-11-22T10:43:46.993Z",
+            "sequence": 4.0,
+            "state": "running",
+            "step": "workspace.materialize"
+          },
+          {
+            "details": {
+              "actor": "usr_c82c10ad63a5459e9e12bd783fbe4b5d",
+              "reviewed_sequence": 4.0
+            },
+            "recorded_at": "2026-11-22T10:43:50.677Z",
+            "sequence": 5.0,
+            "state": "running",
+            "step": "control.cancel"
+          },
+          {
+            "details": {
+              "exit_code": null,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "recorded_at": "2026-11-22T10:43:50.701Z",
+            "sequence": 6.0,
+            "state": "running",
+            "step": "process.closed"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T10:43:50.731Z",
+            "sequence": 7.0,
+            "state": "cancelled",
+            "step": "state"
+          }
+        ],
+        "id": "7970de8eb9a620975834362cac222fbeba65da8d326addd8445e8f98d0c7445f",
+        "issue": "iss_c2d102acbfa44077b9b04445294f2184",
+        "provider_model": null,
+        "source_revision": "96142731097e638732bff0fe6e28263476ca7a191fd4bee26c311ac06e4393b3",
+        "stage": "preview",
+        "state": "cancelled",
+        "usage": null,
+        "worker_ref": "native-worker:7970de8eb9a620975834362cac222fbeba65da8d326addd8445e8f98d0c7445f"
+      },
+      "authorization_denied": 403,
+      "cancelled_replay_starts": 0,
+      "http_control_requests": [
+        {
+          "operation": "cancel",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "pause",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 403,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 409,
+          "count": 1
+        }
+      ],
+      "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc"
+    }
+  }
+}

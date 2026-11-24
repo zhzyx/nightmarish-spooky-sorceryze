@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-audit-request-20261121",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "request",
+  "occurred_at": "2026-11-20T21:39:46.530648+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "codex-root",
+    "version": "host-session",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "actual_codex_host"
+  },
+  "payload": {
+    "user_statement": "排查并推进当前git内所有夸父阻塞",
+    "scope": "原失败及恢复逐事故核对，保留在途、暂停、权限和业务验收边界",
+    "authority": "current Codex user request 2026-11-21",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "evidence_refs": [],
+  "sha256": "5ce0e1c3f69d16a1dd28f58268038b34a06ad3e2fa10f2af97dfd482f9da04b3"
+}

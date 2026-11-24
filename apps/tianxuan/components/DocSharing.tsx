@@ -48,7 +48,7 @@ const visibilityRowStyle = {
   padding: "12px 14px",
   border: "1px solid var(--line)",
   borderRadius: "13px",
-  background: "rgba(245, 242, 234, 0.025)",
+  background: "var(--ink-3)",
 } as const;
 
 const visibilityCopyStyle = {
@@ -56,8 +56,8 @@ const visibilityCopyStyle = {
   gap: "8px",
   alignItems: "center",
   marginTop: "4px",
-  color: "rgba(245, 242, 234, 0.66)",
-  fontSize: "10.5px",
+  color: "var(--paper-72)",
+  fontSize: ".875rem",
   lineHeight: 1.6,
 } as const;
 
@@ -165,8 +165,7 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
       <section aria-label={t("sharing.title")} className="panel">
         <header className="panel-head">
           <div>
-            <p className="section-kicker">WENQU · SHARING</p>
-            <h2>{t("sharing.title")}</h2>
+            <h2 id="doc-sharing">{t("sharing.title")}</h2>
           </div>
           <span className="mono-key">{t("sharing.disabled")}</span>
         </header>
@@ -184,8 +183,7 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
     <section aria-label={t("sharing.title")} className="panel">
       <header className="panel-head">
         <div>
-          <p className="section-kicker">WENQU · SHARING</p>
-          <h2>{t("sharing.title")}</h2>
+          <h2 id="doc-sharing">{t("sharing.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading" ? t("sharing.summaryLoading") : formatMessage(t("sharing.summary"), { count: shares.length })}
@@ -217,7 +215,7 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
         </div>
 
         {error ? (
-          <p className="section-note" role="alert" style={{ color: "#D48B80" }}>
+          <p className="section-note" role="alert" style={{ color: "var(--error-text)" }}>
             <Icon name="alert" size={13} /> {error}
           </p>
         ) : null}

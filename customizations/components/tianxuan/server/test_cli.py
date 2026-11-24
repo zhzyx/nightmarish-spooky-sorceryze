@@ -359,3 +359,63 @@ def test_connection_failure_raises_cli_error() -> None:
     with _client(handler, token="txs_token") as client:
         with pytest.raises(CliError, match="request failed"):
             get_board(client)
+
+
+@pytest.mark.parametrize(
+    ("arguments", "method", "path", "body"),
+    [
+        (["capabilities"], "GET", "capabilities", None),
+        (
+            [
+                "execute",
+                "req1",
+                "--call-id",
+                "run1",
+                "--scope",
+                "text",
+                "--scope",
+                "art",
+                "--dependency",
+                "task1",
+                "--model",
+                "chosen",
+            ],
+            "POST",
+            "execute",
+            {
+                "requirement": "req1",
+                "call_id": "run1",
+                "scopes": ["text", "art"],
+                "dependencies": ["task1"],
+                "model": "chosen",
+            },
+        ),
+        (
+            ["execute", "req1", "--call-id", "run2", "--scope", "text", "--model", ""],
+            "POST",
+            "execute",
+            {"requirement": "req1", "call_id": "run2", "scopes": ["text"], "model": ""},
+        ),
+        (["releases", "entry1", "--after", "17", "--limit", "3"], "GET", "entry1/releases", None),
+        (
+            ["rollback", "entry1", "--call-id", "restore1", "--selection", "a" * 64, "--expected", "b" * 64],
+            "POST",
+            "entry1/rollback",
+            {"call_id": "restore1", "selection": "a" * 64, "expected": "b" * 64},
+        ),
+        (["lookup", "call/1"], "POST", "calls/status", {"call_id": "call/1"}),
+        (["status", "entry1"], "GET", "entry1", None),
+    ],
+)
+def test_runs_commands(arguments, method, path, body, monkeypatch, capsys):
+    seen, handler = _record(lambda request: httpx.Response(200, json={"state": "observed"}))
+    _stub_main_client(monkeypatch, handler)
+    assert tianxuan_cli.main(["--token", "txs_fixture", "runs", *arguments]) == 0
+    (request,) = seen
+    assert request.method == method
+    assert request.url.path == "/api/v1/native/entry/" + path
+    if arguments[0] == "releases":
+        assert dict(request.url.params) == {"after": "17", "limit": "3"}
+    assert request.headers["authorization"] == "Bearer txs_fixture"
+    assert (_json(request) if request.content else None) == body
+    assert json.loads(capsys.readouterr().out) == {"state": "observed"}

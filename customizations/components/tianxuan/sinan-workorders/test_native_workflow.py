@@ -11,6 +11,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import issue_lifecycle
 import pytest
 from native_check_runner import NativeCheckRunner
 from native_evidence import EvidenceCache
@@ -81,8 +82,37 @@ def fixture(tmp_path):
         lambda *a: True,
         catalog=[dict(id="local", available=True, targets=["agent"], capabilities=[])],
     )
-    yield workflow, actor, tenant, req, initial, tmp_path
-    domain.db.close()
+    try:
+        yield workflow, actor, tenant, req, initial, tmp_path
+    finally:
+        domain.db.close()
+
+
+def test_stage_check_reads_active_definition_under_connection_lock(fixture):
+    workflow, actor, *_ = fixture
+    key, _ = task(fixture, "a")
+    protected_reads = []
+
+    def connection_busy():
+        lock = workflow.domain._connection_lock
+        if lock.acquire(blocking=False):
+            lock.release()
+            return False
+        return True
+
+    with ThreadPoolExecutor(max_workers=1) as observer:
+
+        def observe(statement):
+            if statement.startswith("SELECT task FROM native_active_tasks WHERE issue="):
+                protected_reads.append(observer.submit(connection_busy).result(timeout=2))
+
+        workflow.domain.db.set_trace_callback(observe)
+        try:
+            with pytest.raises(NativeStoreError, match="Confirmed producer terminal required"):
+                workflow.check(actor, key)
+        finally:
+            workflow.domain.db.set_trace_callback(None)
+    assert protected_reads and all(protected_reads)
 
 
 def task(f, module, selected=None, dependencies=None):
@@ -293,7 +323,8 @@ def test_actual_node_authenticated_http_dispatch(fixture):
         assert process.returncode == 0, process.stderr
         dispatch = json.loads(process.stdout)
         assert len(dispatch["results"]) == 3, dispatch
-        assert all(r["state"] == "running" for r in dispatch["results"]), dispatch
+        for item in dispatch["results"]:
+            assert item["state"] == "running", (item.get("stage"), item.get("reason"))
         assert dispatch["errors"] == [], dispatch
         assert len(dispatch["deliveries"]) == 3
         assert all(w.status(actor, k)["state"] == "accepted" for k in [a, b])
@@ -562,6 +593,20 @@ def test_definition_change_and_replayed_manual_done_fail_closed(fixture):
     manual = w.domain.create_issue(actor, "manual")
     for state in ["planned", "in-progress", "in-review"]:
         w.domain.transition_issue(actor, manual["id"], state)
+    evidence = w.domain.add_issue_comment(actor, manual["id"], "Manual deliverable reviewed")
+    current = issue_lifecycle.read(w.domain, actor, manual["id"], manual["project"])
+    issue_lifecycle.mutate(
+        w.domain,
+        actor,
+        manual["id"],
+        manual["project"],
+        "accept",
+        expected_version=current["version"],
+        revision=current["revision"],
+        comment=evidence["id"],
+        call_id="manual-accept",
+        asset_version=current["asset_version"],
+    )
     w.domain.transition_issue(actor, manual["id"], "done", call_id="old-done")
     with w._transaction() as db:
         db.execute("INSERT INTO native_managed_issues VALUES (?,?,NULL)", (manual["id"], "host-bound-test"))
@@ -803,7 +848,7 @@ const service=async(op,value)=>{
  if(op==='start')return {reference:key};
  if(op==='execute'){
   trace.push('start '+key);if(key==='A')await gate;if(key==='C')startedC();
-  states[key]='produced';trace.push('terminal '+key);return {state:'produced'};
+  states[key]='produced';trace.push('terminal '+key);return {state:'produced',id:key,worker_ref:'native-worker:'+key};
  }
  if(op==='finish'){states[key]='accepted';trace.push('accepted '+key);return {state:'accepted'};}
  return {};

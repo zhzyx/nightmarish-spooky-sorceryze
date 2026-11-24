@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e5dd0d2777258990584f479aed3f0a4c0b9a30d7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-content-rollback-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "34eb240b666159083841eb7f4828940779c792aef4f98506f150d48d7f215f90",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1645",
+    "action": "intake",
+    "detection_head": "7358ee22fa3df88f60f848f0fb1e83c19f275eb3",
+    "context_sha256": "ee68faf466159135f970e5fdf96f2b2492e283450ec180c80abd1e35edc19e5b",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+    "diagnosis": "The coordinator created the authorized implementation issue as planned; intake accepts only in-progress or in-review. Corrected the sole status label to in-progress and reran the same intake successfully. No gate or product code changed. The initial dispatch resource overlap was resolved by exporting the author-approved stopped draft to an isolated handoff snapshot, retaining the original runtime claim.",
+    "next_action": "New #1642 worker is active with its actual native chat receipt. Continue isolated implementation and normal acceptance; this incident does not satisfy A5 business acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T16:45:55.725754+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T16:51:15.374447+00:00",
+  "sha256": "ecbffa1bc964ba31b681f76b89d7840aafe4ebb082f074b781e0a0765f14da5a"
+}

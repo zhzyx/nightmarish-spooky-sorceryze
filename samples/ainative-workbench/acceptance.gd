@@ -12,6 +12,10 @@ func wait_idle():
 	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec() < deadline:
 		await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step, "subprocess completed without blocking frame loop")
+func wait_preview():
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "selection preview completed without blocking frame loop")
 func _initialize():
 	call_deferred("run")
 func run():
@@ -43,7 +47,7 @@ func run():
 	panel.path_edit.text = panel.state_dir.path_join("graph.json")
 	panel.save_graph()
 	var original = FileAccess.get_file_as_string(panel.path_edit.text)
-	check(not original.contains(source) and original.contains("source_snapshot"), "portable graph embeds content without source paths")
+	check(original.contains(source) and original.contains("source_snapshot"), "portable graph preserves the source path and embeds its content snapshot")
 	panel.nodes = []; panel.edges = []
 	panel.open_graph()
 	check(JSON.parse_string(JSON.stringify(panel.model())) == JSON.parse_string(original), "save/reopen preserves nodes edges positions parameters text image context")
@@ -68,6 +72,16 @@ func run():
 	panel.start_run()
 	await wait_idle()
 	check(panel.current.get("state") == "succeeded" and panel.heartbeat > ticks + 5, "real Executor succeeds while editor heartbeat advances")
+	panel.path_edit.text = panel.state_dir.path_join("graph.json")
+	panel.save_graph()
+	check(FileAccess.file_exists(panel.path_edit.text), "completed whole-workflow outputs save to the workflow JSON")
+	if not FileAccess.file_exists(panel.path_edit.text):
+		panel.queue_free()
+		await process_frame
+		quit(1)
+		return
+	var completed_outputs = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text)).get("output_history", {})
+	check(completed_outputs.has(first) and completed_outputs.has(second) and completed_outputs[first].size() == 1 and completed_outputs[second].size() == 1, "whole-workflow save collects successful outputs even before individual previews are opened")
 	panel.select_node(second)
 	panel.request_preview()
 	await wait_idle()
@@ -129,6 +143,12 @@ func run():
 	check(panel.current.state == "reconcile" and FileAccess.get_file_as_string(marker).replace("\r", "") == "submit\n", "unknown submit pauses without blind retry")
 	panel.resume_run(); await wait_idle()
 	check(panel.current.state == "reconcile" and FileAccess.get_file_as_string(marker).replace("\r", "") == "submit\nlookup\n", "explicit Resume performs exactly one lookup without another submission")
+	panel.path_edit.text = panel.state_dir.path_join("graph.json")
+	panel.open_graph()
+	check(panel.run_id.is_empty() and panel.preview_history.get(first, []).size() == 1 and panel.preview_history.get(second, []).size() == 1, "whole-workflow outputs reopen without first running or previewing them in this session")
+	panel.select_node(second)
+	await wait_preview()
+	check(panel.texture.texture != null and panel.preview_source_path.begins_with(panel.path_edit.text + ".assets/"), "unpreviewed whole-workflow output becomes a durable preview directly after reopen")
 	print("AINATIVE_ACCEPTANCE failures=" + str(failures))
 	panel.queue_free()
 	await process_frame

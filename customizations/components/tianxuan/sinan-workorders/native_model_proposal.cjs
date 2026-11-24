@@ -322,6 +322,9 @@ async function contextSession(packet, start = transport.start) {
             await check();
             const tmp = path.join(root, `${count + 1}.output.tmp`);
             await fs.writeFile(tmp, output, {flag: 'wx'});
+            // Order the mailbox publication after writes already queued on both pipes.
+            await Promise.all([process.stdout, process.stderr].map(stream =>
+                new Promise((resolve, reject) => stream.write('', error => error ? reject(error) : resolve()))));
             await fs.rename(tmp, path.join(root, `${count + 1}.output.json`));
             count++;
             if (receipt.status !== 'tool_requested') return;
@@ -398,6 +401,30 @@ module.exports.actionSchema = actionSchema;
 module.exports.schemaPreflight = schemaPreflight;
 module.exports.contextSession = contextSession;
 module.exports.validateAction = validateAction;
+// The installed planner and reviewer return decisions. Their native roles never write a file.
+async function decide(packet, start = transport.start) {
+    if (!exact(packet, ['schema', 'role', 'messages', 'installed']) ||
+        !['yanshi', 'reviewer'].includes(packet.role) || !text(packet.messages, 100000)) fail();
+    const {messages, decision_schema: schema} = JSON.parse(packet.messages);
+    if (!object(schema) || schema.type !== "object") fail();
+    if (!Array.isArray(messages) || !messages.every(m => exact(m, ['role', 'content']) &&
+        ['user', 'system', 'assistant'].includes(m.role) && typeof m.content === 'string')) fail();
+    const checksum = require('node:crypto').createHash('sha256').update(packet.messages).digest('hex');
+    const profile = packet.installed;
+    const session = await start(profile.entry, profile.python, profile.env);
+    const usage = new UsageObserver(session.rpc);
+    try {
+        const input = {model:profile.model, reasoning_effort:profile.reasoning_effort, available_tools:[],
+            tool_context:{}, messages:[...messages, {role:'system', content:
+                'Return only the JSON object required as the final value. No action wrapper, tools or file proposals.'}]};
+        const response = await session.turn(input, checksum, schema, JSON.stringify, () => {});
+        const decision = JSON.parse(response.output);
+        if (!object(decision)) fail();
+        await new Promise(resolve => setTimeout(resolve, 50));
+        return {input_digest:checksum, role:packet.role, decision, usage:usage.snapshot()};
+    } finally { usage.detach(); session.rpc.close(); }
+}
+module.exports.decide = decide;
 if (require.main === module) {
     let data = '';
     process.stdin.setEncoding('utf8');
@@ -405,6 +432,7 @@ if (require.main === module) {
     process.stdin.on('end', async () => {
         try {
             const packet = JSON.parse(data);
+            if (packet.schema === 3) { process.stdout.write(JSON.stringify(await decide(packet))); return; }
             if (packet.schema === 2) { await contextSession(packet); return; }
             if (!exact(packet, ['request', 'installed'])) fail();
             process.stdout.write(JSON.stringify(await propose(packet.request, packet.installed)));

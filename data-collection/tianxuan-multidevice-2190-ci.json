@@ -1,0 +1,36 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "failed_candidate": "efd9c46ca9a143d64f9e0f7f44c3aa6089446ba1",
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45295429078/job/138114482469",
+  "inputs": {
+    ".pre-commit-config.yaml": "90ff0b64e17b70b3326fe25105435ca03f98f5feeb05467d47c408a30511a12a",
+    "customizations/components/tianxuan/server/access_control.py": "924c5f0d2bad8ec0d75ee3afb016cb5dc5d83ce52dbc1fa66acae4067370c40c",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "621d44cb2c5b8065a55a2ab3e1f4ba27fedc3d8d1ba4ca07a001e312367e79ab",
+    "customizations/components/tianxuan/server/test_multidevice_auth.py": "c2909df30e0fb6373c13345274fd106954d269d0260bf531017605c6fbb41086"
+  },
+  "repair": [
+    "Return explicit strings from shared credential selector",
+    "Reject expiry during enrollment and roll back child transaction",
+    "Preserve exactly four previously committed raw-byte audit originals through existing formatter exclusion convention"
+  ],
+  "verification": {
+    "mypy": "2.4.0; 11 changed Python files passed in CI-equivalent isolated import environment (--no-site-packages)",
+    "auth_regression": {
+      "passed": 7
+    },
+    "ruff": "check and format passed",
+    "index_formatter": {
+      "checked_files": 36,
+      "immutable_originals_preserved": 4,
+      "bytes_changed": 0
+    },
+    "independent_review": {
+      "worker": "/root/sinan_3d244350c0c78e22",
+      "terminal": "collaboration.final:/root/sinan_3d244350c0c78e22",
+      "result": "no blocking findings",
+      "extra_checks": "Actual expiry rollback covers ordinary and caller-owned transactions; caller pending edits survive; sessions, device registrations and events rolled back. Exact excluded bytes equal original committed candidate."
+    }
+  },
+  "remote_ci": "pending reissue; local validation does not substitute remote recheck"
+}

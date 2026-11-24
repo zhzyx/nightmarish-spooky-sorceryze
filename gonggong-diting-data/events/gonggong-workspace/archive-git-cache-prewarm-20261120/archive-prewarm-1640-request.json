@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "archive-prewarm-1640-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "archive-git-cache-prewarm-20261120",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+  "occurred_at": "2026-11-19T16:44:45.394226+00:00",
+  "agent": {
+    "id": "codex-workspace-host",
+    "origin": "AGENTS.md",
+    "version": "2466b3bc",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "issue": 1640,
+    "parent": 1553,
+    "deployment": 1577,
+    "scope": "Offline Git index preparation, target published native database adoption, negative tests and deployment handoff",
+    "production_write": false
+  },
+  "evidence_refs": [],
+  "sha256": "1da2e5926e321d04590c7900dec5c398322c7b2e0140a3c0284c6469ff04d7ee"
+}

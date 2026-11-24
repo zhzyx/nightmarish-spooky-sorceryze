@@ -2,10 +2,10 @@ import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { Icon } from "@/components/Icon";
 import { IssueBoard } from "@/components/IssueBoard";
+import { issues as sampleIssues } from "@/lib/data";
+import { Icon } from "@/components/Icon";
 import { fetchBoard, fetchIssues, type ApiIssue } from "@/lib/server-api";
-import { issues } from "@/lib/data";
 import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -28,7 +28,7 @@ function collectColumnIssues(
   const seen = new Set<string>();
   const collected: ApiIssue[] = [];
   for (const status of statuses) {
-    for (const issue of board[status] ?? []) {
+    for (const issue of Object.hasOwn(board, status) ? board[status] : []) {
       if (!seen.has(issue.id)) {
         seen.add(issue.id);
         collected.push(issue);
@@ -119,10 +119,6 @@ export default async function IssuesPage() {
   const typeLabel = (type: string): string => typeLabels[type] ?? type;
   const priorityLabel = (priority: string): string => priorityLabels[priority.toLowerCase()] ?? priority;
 
-  const done = issues.filter((issue) => issue.status === "done").length;
-  const blocked = issues.filter((issue) => issue.blocked).length;
-  const completion = Math.round((done / issues.length) * 100);
-
   const actor = await currentActor();
   let live: { board: Record<string, ApiIssue[]>; issues: ApiIssue[] } | null = null;
   if (actor) {
@@ -134,28 +130,22 @@ export default async function IssuesPage() {
     }
   }
 
-  const liveCounts = live
-    ? liveColumns.map((column) => ({
-        label: column.label,
-        count: live.issues.filter((issue) => column.statuses.includes(issue.status)).length,
-      }))
-    : [];
+  const knownStatuses = new Set(liveColumns.flatMap(column => column.statuses));
+  for (const status of new Set(live?.issues.map(issue => issue.status))) {
+    if (!knownStatuses.has(status)) liveColumns.push({ id: "custom-" + status, label: status, hint: "", statuses: [status] });
+  }
 
   return (
     <div className="page-stack issues-page">
       <header className="page-header">
         <div className="page-title-group">
-          <p className="eyebrow">
-            <span className="eyebrow-rule" aria-hidden="true" />
-            SINAN · WORK ORDERS
-          </p>
           <h1>
             {t("issues.title")}
-            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
           <p className="page-lede">{t("issues.lede")}</p>
         </div>
         <div className="page-actions">
+          <Link className="btn btn-ghost" href="/issues/roadmap">{locale === "zh" ? "工单路线图" : "Roadmap"}</Link>
           <Link className="btn btn-ghost" href="/docs/sinan-events">
             <Icon name="branch" size={16} />
             {t("issues.rules")}
@@ -171,7 +161,6 @@ export default async function IssuesPage() {
         <section className="panel" aria-labelledby="live-issues-title">
           <div className="section-heading">
             <div>
-              <p className="section-kicker">SINAN · LIVE BOARD</p>
               <h2 id="live-issues-title">{t("issues.liveTitle")}</h2>
             </div>
             <span className="section-note">
@@ -179,28 +168,12 @@ export default async function IssuesPage() {
             </span>
           </div>
 
-          <div className="board-caption" style={{ padding: "0 26px 16px", flexWrap: "wrap" }}>
-            <span>
-              <span className="live-dot" aria-hidden="true" />
-              {formatMessage(t("issues.liveData"), { count: live.issues.length })}
-            </span>
-            <span>{liveCounts.map((item) => `${item.label} ${item.count}`).join(" · ")}</span>
-          </div>
-
           {live.issues.length === 0 ? (
             <p className="section-note" style={{ padding: "0 26px 22px" }}>
               {t("issues.emptyLive")}
             </p>
           ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-                gap: "11px",
-                alignItems: "start",
-                padding: "0 24px 24px",
-              }}
-            >
+            <div className="work-order-columns">
               {liveColumns.map((column) => {
                 const cards = collectColumnIssues(live.board, live.issues, column.statuses);
                 if (cards.length === 0) {
@@ -229,18 +202,11 @@ export default async function IssuesPage() {
                               {priorityLabel(issue.priority)}
                             </span>
                           </span>
-                          <span className="issue-card-title">{issue.title}</span>
+                          <Link className="issue-card-title" href={`/issues/${encodeURIComponent(issue.id)}`}>{issue.title}</Link>
                           <span className="issue-tags">
                             <span className="kind-tag">{typeLabel(issue.type)}</span>
                             {issue.status === "blocked" ? (
-                              <span
-                                className="kind-tag"
-                                style={{
-                                  borderColor: "rgba(200, 64, 47, 0.3)",
-                                  background: "rgba(200, 64, 47, 0.08)",
-                                  color: "#CF8175",
-                                }}
-                              >
+                              <span className="kind-tag issue-blocked">
                                 {t("issues.blocked")}
                               </span>
                             ) : null}
@@ -254,42 +220,21 @@ export default async function IssuesPage() {
             </div>
           )}
         </section>
-      ) : null}
-
-      <section className="sprint-banner" aria-label={t("issues.sprintAria")}>
-        <div className="sprint-main">
-          <p className="section-kicker">{t("issues.sprintKicker")}</p>
-          <h2>{t("issues.sprintTitle")}</h2>
-          <span className="sprint-meta">
-            <Icon name="clock" size={14} />
-            {t("issues.sprintMeta")}
-          </span>
-        </div>
-        <div className="sprint-progress">
-          <div className="sprint-stat">
-            <strong>{completion}%</strong>
-            <span>{t("issues.overall")}</span>
-          </div>
-          <div className="meter meter-lg" aria-hidden="true">
-            <span style={{ width: `${completion}%` }} />
-          </div>
-          <small>
-            {formatMessage(t("issues.doneSummary"), { done, total: issues.length })}
-            {blocked > 0 ? formatMessage(t("issues.blockedSummary"), { count: blocked }) : ""}
-          </small>
-        </div>
-        <div className="sprint-people">
-          <div className="avatar-stack">
-            <span className="avatar avatar-sm avatar-jade">文</span>
-            <span className="avatar avatar-sm avatar-gold">偃</span>
-            <span className="avatar avatar-sm avatar-cinnabar">司</span>
-            <span className="avatar avatar-sm avatar-mist">S</span>
-          </div>
-          <span>{formatMessage(t("issues.collaborators"), { count: 5 })}</span>
-        </div>
-      </section>
-
-      <IssueBoard initialIssues={issues} />
+      ) : (
+        <section className="panel route-state">
+          <p role="status">{actor
+            ? (locale === "zh" ? "工单暂时无法读取。" : "Work orders are temporarily unavailable.")
+            : (locale === "zh" ? "登录后查看工单看板。" : "Sign in to view the work order board.")}</p>
+          {actor
+            ? <a className="btn btn-ghost" href="/issues">{locale === "zh" ? "重新加载" : "Reload"}</a>
+            : <Link className="btn btn-primary" href="/login">{locale === "zh" ? "登录" : "Sign in"}</Link>}
+        </section>
+      )}
+      <details className="panel example-board">
+        <summary>{locale === "zh" ? "试用示例看板" : "Try the sample board"}</summary>
+        <p>{locale === "zh" ? "此处使用示例数据，移动工单仅在当前页面生效。" : "This board uses sample data. Changes last for this page visit."}</p>
+        <IssueBoard initialIssues={sampleIssues} />
+      </details>
     </div>
   );
 }

@@ -1,0 +1,72 @@
+{
+  "request_id": "duobao-requester-delivery-20261124",
+  "issue_number": 2162,
+  "parent_issue": 1709,
+  "production_card": 1729,
+  "scope": "Git-backed Duobao exact candidate requests through the Tianxuan application and editor",
+  "source_base": "99dbb00f18ac95148757682f38e933ff828492e2",
+  "independent_review": {
+    "decision": "approved",
+    "reviewer": "/root/sinan_626a7c1b357ab734",
+    "checked_at": "2026-11-24T03:12:57.9282243+08:00",
+    "files": [
+      {
+        "path": "customizations/components/tianxuan/duobao/README.md",
+        "base_blob": "ef24599bb102eea31523bc2391941f76b0630e68",
+        "raw_git_blob": "80973ca4ab3f07a721cbabd0ccc6702ff9a6c19a",
+        "sha256": "fcaff68aaf84ed75631eb6af65f44720a555885a6cc0448e183c00c7562545a8"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/merge_queue.py",
+        "base_blob": "0640daf1dbcb06d17eb14b31413951fc34f726db",
+        "raw_git_blob": "3aabc6918a453a65a14c4ce3571a2691ff21fe14",
+        "sha256": "35c37e7e754d094e2e82c622efcaf9767b3bbf641803274bc15b96a22a3363dd"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/test_merge_queue_api.py",
+        "base_blob": "d2f143cd46a2c9c3d7bb96e718266b4af5692430",
+        "raw_git_blob": "2ed15c3c71fd62c78f04ffa22ac87c4f4cf7c76d",
+        "sha256": "d7e680dbf710c6bfde9fb85d169e1484566a6e5902d198ef525344dee476c363"
+      },
+      {
+        "path": "tests/editor/run_workbench_duobao_delivery.py",
+        "base_blob": "c4fb037d5849c4d0905d6ad23f0a18703d840d55",
+        "raw_git_blob": "9098ab3a61e129c962e834d9e65fcf4fd8839972",
+        "sha256": "1957ae83cc7f5d501f989d0a3094f3bb1a06afabd9ded8c7465314cf52fabe0d"
+      },
+      {
+        "path": "tests/editor/workbench_duobao_delivery.gd",
+        "base_blob": "79abfa8ddf5893d7c4206126b37b776b4978ead6",
+        "raw_git_blob": "78ba127a6a35d195c976c64129303daceaa0dcab",
+        "sha256": "adfe58579423afb505d441f25dec8f6cf0351fd9351d27b88ca48a07e1d73db9"
+      }
+    ],
+    "verified": [
+      "Confirmed the real issue, its accepted scope and the intake gate.",
+      "Validated effective role, requester identity, issue binding and tenant isolation before review/delivery.",
+      "Checked queue path on protected target, outstanding change requests, distinct approvers, missing/failed checks, source drift and target drift.",
+      "Confirmed repeat and simultaneous deliveries share one comment. Persistence transition tested by generating Git/SQLite data on base code and recovering it after reopening with candidate code."
+    ],
+    "receipt_sha256": "a7fee1b15abc750b6ced3b9e0f3ec969b4e204150f5b50730649d8d053ab31f7"
+  },
+  "tests": {
+    "worker": "8 independent HTTP/API scenarios; old-version to new-version persisted recovery",
+    "repository": "60 passed and 13 subtests passed",
+    "editor": {
+      "platform": "Windows, headless editor and local authenticated service",
+      "editor_sha256": "d6a8f83c29d1f7df75f854be0cd278ab43848966d9be70e618142c75b36eb607",
+      "phases": [
+        "resolve",
+        "reject",
+        "requester_review",
+        "approve",
+        "deliver"
+      ],
+      "outstanding_change_request_blocked": true,
+      "target": "6789ce2aa75f039cd5fe4a879c5d5521cefa36b1",
+      "service_restarted": true,
+      "report_sha256": "fe6822571283c7e5d5891532c5f6282a4cc9272264b0d9b0b385ed5b5cffd48d"
+    }
+  },
+  "release": "Source and isolated acceptance. Production deployment and real single-account acceptance are tracked in G22."
+}

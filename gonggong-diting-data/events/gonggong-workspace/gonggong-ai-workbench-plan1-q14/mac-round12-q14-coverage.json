@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-q14-coverage",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q14",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T12:47:19.134346+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1727",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1727,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-q14.json",
+    "sha256": "6c4fa9d4c13e4a6199b4631b7bfdd6827aa20b75c2d014f471ad16d2399def2c",
+    "verification": "在同一个已登录的原生编辑器窗口新建设计，保存人工初稿，选中第二段并接受模型建议，再由作者修改第三段。版本历史逐次定位第二段和第三段，天璇持久层独立回读三版正文及作者。验收使用可重复的模型 HTTP 响应，提取选区、生成建议、保存和差异查询均走实际服务。运行 tests/editor/run_workbench_document_continuation.py，传入 --godot 和 --report。"
+  },
+  "evidence_refs": [],
+  "sha256": "2ceb7650aec20827e4b194f0e50c277d3f31b99d4a0138578f32367a68bb53b7"
+}

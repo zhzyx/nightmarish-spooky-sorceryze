@@ -15,6 +15,12 @@ func wait_idle():
 		await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step and not panel.creating, "node operation finishes while the editor frame loop advances")
 
+func wait_selection_preview(target):
+	var deadline = Time.get_ticks_msec() + 30000
+	while (target.is_preview_loading() or target.is_workflow_opening()) and Time.get_ticks_msec() < deadline: await process_frame
+	check(not target.is_workflow_opening(), "workflow open finishes while the editor frame loop advances")
+	check(not target.is_preview_loading(), "selection preview finishes while the editor frame loop advances")
+
 func double_click(control: Control):
 	var event = InputEventMouseButton.new()
 	event.button_index = MOUSE_BUTTON_LEFT
@@ -124,6 +130,42 @@ func run():
 	await wait_idle()
 	check(panel.current.get("state") == "cancelled" and panel.preview_history.get("upstream", []).size() == 1, "immediate cancellation leaves successful history intact")
 	check(FileAccess.get_sha256(image) == image_sha and FileAccess.get_sha256(mesh) == mesh_sha, "previews and reruns preserve original source bytes")
+	# Generated results are part of the portable workflow, not just this process.
+	for data in panel.nodes:
+		if data.id == "unrelated":
+			data.source = ""
+			data.source_paths = []
+	panel.path_edit.text = panel.state_dir.path_join("with-outputs.json")
+	panel.save_graph()
+	check(FileAccess.file_exists(panel.path_edit.text), "generated-output workflow saves successfully with no missing fixture inputs")
+	if not FileAccess.file_exists(panel.path_edit.text):
+		await finish()
+		return
+	var saved_outputs = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text)).get("output_history", {})
+	check(saved_outputs.get("target", []).size() == 3 and saved_outputs.get("upstream", []).size() == 1, "workflow save embeds every node's complete generated-result history")
+	check(saved_outputs.target[0].snapshot.content_sha256 == image_sha and saved_outputs.target[1].snapshot.content_sha256 == mesh_sha and not saved_outputs.target[0].has("path") and not saved_outputs.target[0].has("token"), "generated image and GLB bytes replace temporary preview paths and session tokens")
+	panel.open_graph()
+	check(panel.run_id.is_empty() and panel.current.is_empty() and panel.preview_history.get("target", []).size() == 3 and panel.preview_history.get("upstream", []).size() == 1, "reopen restores all output versions without restoring execution authority")
+	check(panel.preview_history.target[0].path.begins_with(panel.path_edit.text + ".assets/") and FileAccess.get_sha256(panel.preview_history.target[0].path) == image_sha and FileAccess.get_sha256(panel.preview_history.target[1].path) == mesh_sha, "restored outputs are durable content-addressed files independent of original previews")
+	panel.select_node("target")
+	panel.show_history(0)
+	check(panel.preview_resource is ImageTexture and panel.preview_source_path == panel.preview_history.target[0].path, "saved image result previews directly after reopen")
+	panel.show_history(1)
+	check(is_instance_valid(panel.preview_scene) and panel.preview_source_path == panel.preview_history.target[1].path, "saved GLB result previews directly after reopen")
+	var automatic = load("res://addons/ainative/workbench.gd").new()
+	automatic.state_dir = panel.state_dir
+	root.add_child(automatic)
+	await process_frame
+	await wait_selection_preview(automatic)
+	check(automatic.nodes.size() == panel.nodes.size() and automatic.preview_history.get("target", []).size() == 3 and automatic.run_id.is_empty(), "a new workbench instance automatically reopens the last saved workflow instead of creating an empty graph")
+	check(automatic.workflow_path_display.text == panel.path_edit.text and is_instance_valid(automatic.preview_scene), "automatic reopen shows the persisted path and restores the first node's saved preview")
+	automatic.queue_free()
+	await process_frame
+	panel.workflow_path_display.text = panel.path_edit.text
+	panel.workflow_path_display.text_submitted.emit(panel.workflow_path_display.text)
+	await wait_selection_preview(panel)
+	check(panel.nodes.size() == 4 and panel.preview_history.get("target", []).size() == 3 and panel.run_id.is_empty(), "submitting a path in the visible toolbar really replaces the current graph with the saved workflow")
+	check(is_instance_valid(panel.preview_scene) and panel.workflow_path_display.text == panel.path_edit.text, "visible-path opening restores the saved preview and keeps the displayed path synchronized")
 	# Reopening a different workflow with the same node ID must not alias old results.
 	panel.path_edit.text = panel.state_dir.path_join("replacement.json")
 	var replacement = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
@@ -153,6 +195,18 @@ func run():
 	panel.run_node_preview("upstream")
 	await wait_idle()
 	check(panel.current.get("state") == "succeeded" and panel.preview_history.get("upstream", []).size() == 1 and panel.preview_resource is ImageTexture, "correcting the Python setting allows a fresh run without stale history")
+	var missing = panel.state_dir.path_join("deleted-input.png")
+	var data = panel.nodes.filter(func(node): return node.id == "upstream")[0]
+	data.source = missing
+	data.source_paths = [missing]
+	data.source_snapshots = [panel._snapshot_file(image)]
+	panel.select_node("upstream")
+	var serial_before_missing = panel.serial
+	panel.run_node_preview("upstream")
+	check(panel.failure_dialog.visible and panel.jobs.is_empty() and panel.serial == serial_before_missing, "a missing runtime resource blocks execution and opens a native error dialog without launching a process")
+	check(data.source.is_empty() and data.source_paths == [""] and data.source_snapshots.size() == 1 and panel.source_edit.text.is_empty(), "missing runtime paths are cleared while their saved snapshots remain intact")
+	check(panel.failure_text.text.contains(missing) and panel.failure_text.text.contains("路径已清空"), "the error dialog identifies the missing resource and explains that its path was cleared")
+	panel.failure_dialog.hide()
 	await finish()
 
 func finish():

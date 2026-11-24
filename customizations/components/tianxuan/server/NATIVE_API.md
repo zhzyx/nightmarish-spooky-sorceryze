@@ -4,7 +4,21 @@ Set `TIANXUAN_STORAGE_MODE=native` and an explicit absolute `TIANXUAN_NATIVE_DB`
 
 Existing `TIANXUAN_REQUIRE_KEYS=1`, admitted `TIANXUAN_TENANT_ID`, and HTTPS public-origin restrictions remain unchanged. In isolated non-production mode, register with `/api/v1/auth/register` and acquire a Bearer session via `/api/v1/auth/session`. Native endpoints never trust X-Actor. Actor and tenant come exclusively from the verified production identity or valid session; viewers cannot write.
 
-All paths below start with `/api/v1/native` and require authentication. No query parameters are supported.
+### Multiple devices for one account (#2190)
+
+Password login creates an independent session for each login. Browser personal-key login and the native editor's personal-key login enroll an independent device session. Other clients can call `POST /api/v1/auth/device-session` with their source credential and retain the returned token in their credential store. Each registration has a server-generated `device_id` and `credential_id`, also returned by `/api/v1/auth/me`. These identify a device registration, not hardware attestation; copying a device token copies its registration. Never send a device header to select an identity. Keep the device token across retries/restarts; a new enrollment has a new request namespace.
+
+Device grants inherit the source session expiry, cannot enroll another device, and stop authorizing when the source is revoked or expired. Current roles and tenant restrictions still apply. `GET /api/v1/auth/devices` lists the account's registrations whose sessions still exist; `DELETE /api/v1/auth/devices/{device_id}` revokes one of the account's devices. Root personal keys retain their administrator-managed revocation endpoint. Logout revokes the current device session and leaves other devices and the shared root key intact.
+
+Authenticated batches and requirement snapshots scope request keys by tenant, account and device. Receipts include the account, device and credential identifiers, original request key, per-module requested/applied base, read set, written object hashes (null for deletion) and resulting immutable revisions. Content remains accessible through the revision/object APIs under the existing ACL. Receipts and changes commit atomically; retry with the same device token and request key to read the original result. Different devices may reuse a request key without colliding, but cannot overwrite conflicting content: unknown reads still reject any changed base and proven read/write overlaps remain conflicts.
+
+For the ordinary-directory CLI and Git dual-submission adapter, enroll separately on each device with `POST /api/v1/auth/device-session` and put its returned token in that device's trusted credential configuration. Never copy a device token between machines: the server identifies the authenticated registration, not physical hardware. Retain the same device token for retries. The repository service preserves account identity for roles and independent review; another device belonging to the author cannot approve that author's candidate.
+
+The whole-repository service at `/api/v1/native/repos/{repo}` also scopes mutation request keys by tenant, account and device, including downstream checks, reviews and merges. Commit receipts and immutable revision records bind the actor, device, credential, request key, branch, expected parent and full content-hash manifest to the resulting revision. Branch compare-and-swap still allows only one competing commit from a shared expected revision.
+
+Migration is additive (`session_devices`, `native_device_receipts`, `native_repo_device_requests`). Historical account-only receipts remain in `native_receipts` and `native_repo_requests`; trusted legacy store callers can still read them. Device scopes deliberately do not inherit historical account-only receipts whose originating device is unknown. Reconcile an in-flight pre-upgrade request through its original receipt before resubmitting from a new device. Rolling back code preserves the new tables and audit evidence, but old code cannot provide device-scoped receipt lookup; drain device writes before rollback and retain the upgraded database for readback.
+
+The following candidate routes start with `/api/v1/native`, require authentication and reject query parameters.
 
 * `POST /batches`: `{ "request_key": "stable-key", "changes": [{ "module": "module-a", "base": null, "reads": null, "edits": { "file.txt": "aGVsbG8=" } }] }`. A null base creates a module; otherwise use its exact revision. Base64 values write content; null values delete. Optional `dependencies` pins module revisions or `@batch`. Unknown fields are rejected.
 * `GET /modules/{module}/head`: current revision or null.
@@ -77,3 +91,20 @@ Retry uses the same binding and normal native idempotency. Backups must preserve
 both databases; restoring native content without its source binding cannot make
 private content public. This is application access control, not protection from
 an operator who can directly read either database or a trusted local host API.
+
+
+## Work order revision links (G12)
+
+In the native workbench, open a Tianxuan issue by number, enter the Duobao module and a full SHA-256 revision or `tag:NAME`, then select **关联多宝提交**. Selecting a linked commit opens the exact revision and its readable issues. **多宝提交 → 打开提交详情** opens the materialized project's current G11 revision, or the exact receipt after a successful submission. Select an issue to open its current I02 detail.
+
+These authenticated routes use the native prefix and the workbench session's `project` query parameter. The module is the native version line returned by G11 in its `branch` field. The association key includes tenant, project, issue ID, module and immutable revision.
+
+| Method and path | Input or result |
+| --- | --- |
+| `POST /issues/{issue_id}/revisions` | Send `module`, `revision` and optional `tag`. First insertion checks that the tag still points to the submitted revision. A retry of an existing association returns its original receipt. |
+| `GET /issues/{issue_id}/revisions` | Read the issue’s pinned revisions and their original tag labels under the current module permissions. |
+| `GET /modules/{module}/revisions/{revision}/issue-context` | Read the verified revision’s parent, file count and visible issues in the selected project. |
+| `GET /modules/{module}/tags/{tag}` | Resolve the project's current tag to a full revision. |
+| `PUT /modules/{module}/tags/{tag}` | Set `revision` with the previously observed `expected` revision, or `null` for creation. A conflicting move returns HTTP 409. |
+
+Viewers can follow visible links. Creating one requires issue write access and source module read access. Tag writes require editor access and a readable module. Moving a project tag or advancing the module head preserves existing links. Each direction checks current access on the issue, including its ancestors, and the module before returning linked records.

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "supplements": "data-collection/modular-ci-selection-1668-matrix-repair.json",
+  "candidate": "626df37f755e26c59cbcd0c2ee90ecc5b11926f6",
+  "real_pr_run": 44683919181,
+  "observed": {
+    "public_static_and_windows_run": 44683919058,
+    "public_static_and_windows_result": "success",
+    "module_editor_result": "failed_tools_import_paths",
+    "selection_and_generic_matrix": "success"
+  },
+  "repair": {
+    "editor": "Use direct tools scripts and discover StageTests; use direct tests/editor scripts where their imports require that directory",
+    "maliang": "Retain package-module entry for tests.editor bundles, direct script entry for Blender and provenance tool tests",
+    "status_contexts": "Registered actual caller-prefixed reusable workflow check names and the full static-check context"
+  },
+  "local_recheck": {
+    "selector_workflow_tests": "30 passed",
+    "ruff_mypy": "passed with CI-pinned versions",
+    "editor_entry_tests": "Build, staging, native app, provenance, source manifest, trusted hosts, self-build, isolation, receipts and credentials passed; startup process tests remain delegated to Linux CI after macOS sandbox failures",
+    "maliang_entry_tests": "9 package tests, 11 Blender runner tests and 20 provenance tests passed; 6 existing platform-specific provenance cases skipped on macOS"
+  },
+  "real_ci": "pending_editor_repair_candidate"
+}

@@ -61,6 +61,12 @@ export default async function DocPage({ params }: DocPageProps) {
       };
       return (
         <div className="page-stack doc-detail-page">
+          <nav className="document-tools" aria-label={locale === "zh" ? "文档工具" : "Document tools"}>
+            <a href="#doc-comments">{t("comments.title")}</a>
+            <a href="#doc-sharing">{t("sharing.title")}</a>
+            <a href="#doc-versions">{t("versions.title")}</a>
+            <a href="#doc-export-title">{t("export.title")}</a>
+          </nav>
           <DocEditor
             key={liveDoc.id}
             doc={record}

@@ -1,0 +1,217 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s02",
+  "issue_number": 1848,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1848",
+  "producer": "wave22_s02",
+  "baseline": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+  "source_revision": "b8b18ce5be5fe9ca8c637489055307ab7c0d0877441365090d3abffe9a967051",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s02/dispatch-93199f146daa46d1a861d7aad50d49cc.json",
+  "verified_at": "2026-11-22T05:18:55.256221+00:00",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_entry_factory.py": "60eaff8ad49f10ea2a7e1a4c53ad5e53264b5e9a",
+    "customizations/components/tianxuan/sinan-workorders/native_role_service.py": "88760256ee9e913d1cbb70eee4c11c9828696e66",
+    "customizations/components/tianxuan/sinan-workorders/native_local_profiles.py": "fea921b66d57939a632d0f089c861b668821f538",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "ade0c32a580c3fe22d44e1096773c7514f99fe71",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "eb80dc65ece5b68a482ae3d5d11f28d95ff622e8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py": "45a2991e75fd93ef75550a9eda86dc24d40ecd97",
+    "design-docs/gonggong-ai-workbench-s02.md": "8f618151ddf30c3b9e56634aa20fd12c01ae9a3f"
+  },
+  "receiver_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "18c5a8ae34d7ac32fce8404c35bf00f5fdabf296",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "dff7e53a12e767a4ff52c70003f21370d162c0a9",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "b25d6397556847af210c6c7cf5971fa528c81b44"
+  },
+  "inputs": {
+    "upstream_S01": 1851,
+    "upstream_S01_state": "COMPLETED",
+    "upstream_receipt": "data-collection/gonggong-ai-workbench-plan1-s01.json",
+    "upstream_receipt_blob": "874236e42f4bce0d0ec27c9bd9709c080d54a67b",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1848#issuecomment-7074409668"
+  },
+  "receiver": {
+    "platform": "Windows AMD64",
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "codex": "codex-cli 0.169.0-alpha.11.1",
+    "entry": "Signed native issue -> authorize -> authenticated workflow inspect -> dispatchNative/dispatchEvent -> reserve -> execute -> status",
+    "test_installation": "Two deterministic local process profiles; one installed producer Agent template (yanshi). Capabilities and model-to-capability assignments are fixture evaluation data.",
+    "host_cli": "Read-only host Codex login status and current visible catalog. The live matching sample uses the first two visible model IDs in lexical order. No inference request was made.",
+    "role_service": "Producer-only inspect-catalog over loopback mutual TLS. No production journal, workspace, model turn or credential value in reply. Test role template with an API-key requirement absent from the broker execution environment but present in the test caller.",
+    "role_service_deployment": "TLS receipt uses a test certificate and current OS identity. No new operating-system service was installed."
+  },
+  "result": {
+    "local_catalog": {
+      "ready": [
+        {
+          "id": "coding",
+          "available": true,
+          "capabilities": [
+            "coding"
+          ],
+          "targets": [
+            "agent"
+          ],
+          "configured": true,
+          "localStatus": {
+            "agent": "yanshi",
+            "requestedModel": "coding-model",
+            "status": "ready"
+          }
+        },
+        {
+          "id": "animation",
+          "available": true,
+          "capabilities": [
+            "animation"
+          ],
+          "targets": [
+            "agent"
+          ],
+          "configured": true,
+          "localStatus": {
+            "agent": "yanshi",
+            "requestedModel": "animation-model",
+            "status": "ready"
+          }
+        }
+      ],
+      "gap": {
+        "ticket": "a41c396e68bca97d59467d774423f9bbde2b011a1def8d7cd9692d7656b0e935",
+        "reason": "required_model_or_capabilities_unavailable",
+        "model": "animation",
+        "localStatus": {
+          "agent": "yanshi",
+          "requestedModel": "animation-model",
+          "status": "credential_missing"
+        },
+        "modelAvailable": false,
+        "requiredCapabilities": [
+          "animation"
+        ],
+        "missingCapabilities": []
+      },
+      "selected": [
+        {
+          "ticket": "569b02e4c1c27b9d3a8e89f42cfd4714ce5f27dc358be61bdd40e2d0b25edb58",
+          "selected": {
+            "capabilities": [
+              "coding"
+            ],
+            "id": "coding",
+            "localStatus": {
+              "agent": "yanshi",
+              "requestedModel": "coding-model",
+              "status": "ready"
+            },
+            "reason": "installed_profile_and_required_capabilities"
+          },
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57"
+        },
+        {
+          "ticket": "a41c396e68bca97d59467d774423f9bbde2b011a1def8d7cd9692d7656b0e935",
+          "selected": {
+            "capabilities": [
+              "animation"
+            ],
+            "id": "animation",
+            "localStatus": {
+              "agent": "yanshi",
+              "requestedModel": "animation-model",
+              "status": "ready"
+            },
+            "reason": "installed_profile_and_required_capabilities"
+          },
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57"
+        }
+      ],
+      "physical_calls": 2
+    },
+    "installed_cli": {
+      "host_login": "ready",
+      "isolated_empty_login": "credential_missing",
+      "visible_models": [
+        "gpt-5.6-luna",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "gpt-6-astra",
+        "gpt-6-luna",
+        "gpt-6-sol",
+        "gpt-6.1-sol",
+        "gpt-6.1-terra",
+        "gpt-6.2-astra",
+        "gpt-6.2-sol"
+      ],
+      "matched_sample": [
+        {
+          "id": "gpt-5.6-luna",
+          "available": true,
+          "targets": [
+            "agent"
+          ],
+          "capabilities": [
+            "coding"
+          ],
+          "configured": true,
+          "localStatus": {
+            "agent": "yanshi",
+            "requestedModel": "gpt-5.6-luna",
+            "status": "ready"
+          }
+        },
+        {
+          "id": "gpt-5.6-sol",
+          "available": true,
+          "targets": [
+            "agent"
+          ],
+          "capabilities": [
+            "animation"
+          ],
+          "configured": true,
+          "localStatus": {
+            "agent": "yanshi",
+            "requestedModel": "gpt-5.6-sol",
+            "status": "ready"
+          }
+        }
+      ],
+      "model_calls": 0
+    },
+    "installation_replacement": "Changed installed CLI bytes rejected; restoring original bytes returned same two ready catalog entries on unchanged Node and Python binaries.",
+    "model_removed": "A signed-in CLI hiding the configured model returned model_missing.",
+    "reservation_readback": "Server overwrote caller-supplied localStatus from its own observed catalog. Revocation after reservation returned ready without launching; recovery used the original ticket and launched once.",
+    "role_service_state": "credential_missing"
+  },
+  "validation": {
+    "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py customizations/components/tianxuan/server/test_native_role_admission.py customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py customizations/components/tianxuan/sinan-workorders/test_native_capability_stage.py customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+    "checks": [
+      {
+        "test": "test_signed_local_catalog",
+        "result": "passed"
+      },
+      {
+        "test": "test_installed_codex_login",
+        "result": "passed"
+      },
+      {
+        "test": "test_role_catalog_uses_producer_identity_without_execution",
+        "result": "passed"
+      }
+    ],
+    "summary": "39 passed; 1 existing TestClient deprecation warning",
+    "checksums": "git hash-object, exact normalized source bytes after ruff and file_format",
+    "static_checks": [
+      "ruff-check passed",
+      "ruff-format passed",
+      "mypy passed",
+      "git diff --check passed"
+    ]
+  },
+  "handoff": {
+    "receiver": "Windows parent delivery session",
+    "next_issue": 1845,
+    "issue_close": "parent delivery owner verifies protected main and closes the issue",
+    "macos_run": null
+  }
+}

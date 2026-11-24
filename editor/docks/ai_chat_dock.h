@@ -39,6 +39,7 @@
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;
+class EditorCommandPalette;
 class AIChatEditorBridge;
 class Button;
 class CheckBox;
@@ -70,9 +71,16 @@ class InputEvent;
 class Texture2D;
 class ShaderMaterial;
 class TextureRect;
+class TianxuanModelHost;
 
 class AIChatDock : public EditorDock {
 	GDCLASS(AIChatDock, EditorDock);
+	friend class TianxuanModelHost;
+	// A headless consultation reuses the provider loop without loading or saving AI Chat tabs.
+	bool bLocalConsultationWorker = false;
+	Dictionary mapLocalConsultationBinding;
+	Callable fnLocalConsultationFinished;
+	void FinishLocalConsultation();
 	Timer *gonggong_timer = nullptr;
 	int64_t gonggong_pid = -1;
 	uint64_t gonggong_generation = 0;
@@ -135,6 +143,9 @@ class AIChatDock : public EditorDock {
 	uint64_t issue_guide_generation = 0;
 	uint64_t issue_guide_run_generation = 0;
 	int64_t issue_guide_pid = -1;
+	uint32_t issue_guide_read_attempts = 0;
+	uint64_t issue_guide_read_deadline = 0;
+	int issue_guide_exit_code = -1;
 	String issue_guide_action;
 	String issue_guide_input_path;
 	String issue_guide_output_path;
@@ -292,6 +303,22 @@ class AIChatDock : public EditorDock {
 	bool _native_task_allows(const String &p_tool, const Dictionary &p_arguments);
 	CheckBox *auto_apply_file_changes = nullptr;
 	CheckBox *auto_execute_commands = nullptr;
+	VBoxContainer *pConversationView = nullptr;
+	EditorDock *pWorkbenchSidebar = nullptr;
+	VBoxContainer *pSidebarLayout = nullptr;
+	Button *pRestoreSidebar = nullptr;
+	ObjectID idSidebarSource;
+	ObjectID idWorkbenchReturnScreen;
+	int nConversationIndex = -1;
+	void CaptureWorkbenchSource();
+	void PrepareWorkbenchConsultation();
+	void OpenWorkbenchSidebar();
+	void ShowWorkbenchSidebar(bool p_capture_source);
+	void EnsureSidebarComposerVisible();
+	void ExpandWorkbenchSidebar();
+	void CloseWorkbenchSidebar();
+	void DismissWorkbenchSidebar();
+	void RestoreWorkbenchFocus(ObjectID idSource);
 	ScrollContainer *chat_scroll = nullptr;
 	bool chat_follow_latest = true;
 	bool chat_scroll_update_pending = false;
@@ -339,6 +366,60 @@ class AIChatDock : public EditorDock {
 	bool _check_snapshot_editor(const Dictionary &p_snapshot, String &r_error) const;
 	Button *add_image = nullptr;
 	Button *paste_image = nullptr;
+	VBoxContainer *pWorkbenchReferencePanel = nullptr;
+	VBoxContainer *pLocalReferenceHost = nullptr;
+	VBoxContainer *pBusinessModules = nullptr;
+	AIChatSessionData stBusinessReferences;
+	struct LiveDraftSelection {
+		ObjectID scene;
+		ObjectID node;
+		Vector<ObjectID> selection;
+		Array references;
+	};
+	HashMap<String, LiveDraftSelection> live_business_selections;
+	String strBusinessModule;
+	String strBusinessIssue;
+	AIChatSessionData &WorkbenchReferenceDraft();
+	bool WorkbenchReferenceLocked() const;
+	void ChangeWorkbenchReferenceScope(const String &pModule, const String &pIssue);
+	Dictionary ReadBusinessDraft(const String &strKey) const;
+	bool WriteBusinessDraft(const String &strKey, const Dictionary &mapDraft);
+	void RestoreBusinessReferences(const String &strKey, const Dictionary &mapDraft);
+	Dictionary FreezeBusinessReferences(const String &pBody);
+	String WorkbenchSelectionContent(const AIChatSessionData &pDraft, const String &pIssue) const;
+	void WorkbenchDraftChanged();
+	Button *pWorkbenchReference = nullptr;
+	Label *pWorkbenchContext = nullptr;
+	VBoxContainer *pWorkbenchReferenceRows = nullptr;
+	ScrollContainer *pWorkbenchReferenceScroll = nullptr;
+	Timer *pWorkbenchReferenceTimer = nullptr;
+	static void RestoreLegacyWorkbenchReference(AIChatSessionData &stSession);
+	void StageWorkbenchSelection();
+	void StageWorkbenchPageReference();
+	Dictionary WorkbenchPageSnapshot(const Array &arrReferences) const;
+	String StageWorkbenchReference(Control *pHost, Node *pNode);
+	String GetWorkbenchModelAsset(Node *pNode, Node *pRoot) const;
+	bool WorkbenchReferenceValid(AIChatSessionData &stSession, bool bCheckBytes);
+	bool WorkbenchReferenceAtValid(const AIChatSessionData &stSession, int pIndex, bool bCheckBytes);
+	void RemoveWorkbenchReferenceAt(int pIndex);
+	String WorkbenchIssueContext() const;
+	void AddWorkbenchResourceSelection(int nSource);
+	void RefreshWorkbenchReference();
+	Dictionary ReadWorkbenchCurrentContext(bool bVerify = false);
+	String RedactWorkbenchCurrentText(const String &strText) const;
+	String CurrentContextFileRevision(const String &strPath, bool bVerify);
+	void CaptureWorkbenchCurrentContext();
+	bool ValidateWorkbenchCurrentContext(const Dictionary &mapSnapshot);
+	Array MergeWorkbenchCurrentReferences(const AIChatSessionData &stSession) const;
+	Label *pWorkbenchCurrentContext = nullptr;
+	ObjectID idWorkbenchContextSource;
+	ObjectID idWorkbenchContextMain;
+	Dictionary mapCurrentContextFileCache;
+	bool RedactWorkbenchDraft(AIChatSessionData &pSession) const;
+	void CaptureWorkbenchScriptSelection();
+	void WorkbenchSceneChanged();
+	void RemoveWorkbenchReference();
+	void ClearWorkbenchReferences(AIChatSessionData &stSession);
 	HFlowContainer *image_attachments = nullptr;
 	FileDialog *image_picker = nullptr;
 	AcceptDialog *image_dialog = nullptr;
@@ -726,6 +807,7 @@ class AIChatDock : public EditorDock {
 	bool _design_child_finished(int p_agent, bool p_completed, uint64_t p_generation);
 	bool _queue_design_parent_result(int p_parent);
 	bool _design_return_allowed(int p_parent, const Dictionary &p_message) const;
+	bool bParallelDispatchClosing = false;
 	int64_t sub_agent_parallel_pid = -1;
 	String sub_agent_parallel_output;
 	CheckBox *production_setup = nullptr;
@@ -767,11 +849,13 @@ class AIChatDock : public EditorDock {
 	String _parent_context_result() const;
 
 	AgentSession _capture_agent() const;
-	void _restore_agent(const AgentSession &p_session);
+	void _restore_agent(const AgentSession &p_session, bool p_keep_consultation_mode = false);
 	void _agent_selected(int p_index);
+	void _select_agent(int p_index, int p_dispatch_parent);
 	void _agent_close_requested(int p_index);
 	void _agent_right_clicked(int p_index);
 	void _agent_menu_selected(int p_id);
+	void _open_conversation_original(int p_agent);
 	void _validate_agent_name();
 	void _rename_agent();
 	void _cancel_agent_rename();
@@ -863,8 +947,12 @@ class AIChatDock : public EditorDock {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
+	void save_layout_to_config(Ref<ConfigFile> &p_layout, const String &p_section) const override;
+	void RestoreWorkbenchLayout(bool p_full, const Dictionary &p_location);
+	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton);
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;
 	Dictionary GetAiWorkflowSnapshot() const;

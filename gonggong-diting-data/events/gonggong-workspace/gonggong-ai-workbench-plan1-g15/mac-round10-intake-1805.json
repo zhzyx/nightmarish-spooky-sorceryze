@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g15",
+  "event_id": "mac-round10-intake-1805",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1805",
+  "occurred_at": "2026-11-22T06:21:59.091654+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1805,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T06:09:17Z",
+    "scope": "在 Mac 对多宝目标分支和天璇工单执行交付验收，分别验证审查拒绝与接受后的确切目标提交、工单定位和幂等回写。"
+  },
+  "evidence_refs": [],
+  "sha256": "365ae0f44c5d3be43ce5fc542d6a3e133bc750473812ffd83ce5b7cd64c9b29b"
+}

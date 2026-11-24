@@ -1,0 +1,139 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g16",
+  "issue_number": 1782,
+  "observed_at": "2026-11-21T12:24:50.258494+00:00",
+  "source_inventory": "data-collection/gonggong-ai-workbench-g01-inventory.json",
+  "source_sha256": "b46b2a6a81802722c4769ac61923cd6d2e9f9c80d77ba4ffcb35388ef60735a1",
+  "source_snapshot_time": "2026-11-21T04:43:01.384169+00:00",
+  "count": 5,
+  "open_pulls": [
+    {
+      "number": 1661,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1661",
+      "title": "天璇原生内容回退与发布历史（#1642）",
+      "author": "Sail-Li",
+      "source_issue": {
+        "number": 1642,
+        "state": "OPEN",
+        "stateReason": "",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642"
+      },
+      "base": "main",
+      "candidate": "86fe0140398fa4a51fb37ae13432054979750889",
+      "source_review": "GitHub",
+      "draft": false,
+      "review_requested": [
+        "zhzyx"
+      ],
+      "owner": "Sail-Li",
+      "next_action": "由 Sail-Li 在 #1642 接续天璇内容回退和发布历史验收，向已请求的审查人提交原候选或绑定后的修订。",
+      "require_migration_confirmation": null,
+      "on_merge": "G17 验证增量同步，G23 按仓库、PR 编号和实际 merge OID 核销接收回执。",
+      "on_close": "记录原平台关闭时间、理由、最后 head 和替代链接，原始来源进入 I12 归档。",
+      "while_open": "在 GitHub 保留原作者与审查；切换时交由 G24 继续跟踪。"
+    },
+    {
+      "number": 1245,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1245",
+      "title": "fix(editor): preserve preparation and continuation across controller sessions",
+      "author": "Sail-Li",
+      "source_issue": {
+        "number": 951,
+        "state": "OPEN",
+        "stateReason": "",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951"
+      },
+      "base": "main",
+      "candidate": "30ae3066535e5b0edbdcb3d8ded87591b6526317",
+      "source_review": "GitHub",
+      "draft": false,
+      "review_requested": [
+        "zhzyx"
+      ],
+      "owner": "Sail-Li",
+      "next_action": "由 Sail-Li 在 #951 核对跨控制器会话的接续验收，并同 #1234 比较独有修改，记录最终采用的精确候选。",
+      "require_migration_confirmation": "与 #1234 成对对照并确认两条原始审查链的去向。",
+      "on_merge": "G17 验证增量同步，G23 按仓库、PR 编号和实际 merge OID 核销接收回执。",
+      "on_close": "记录原平台关闭时间、理由、最后 head 和替代链接，原始来源进入 I12 归档。",
+      "while_open": "在 GitHub 保留原作者与审查；切换时交由 G24 继续跟踪。"
+    },
+    {
+      "number": 1234,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1234",
+      "title": "fix(editor): preserve preparation and parent continuation",
+      "author": "Sail-Li",
+      "source_issue": {
+        "number": 951,
+        "state": "OPEN",
+        "stateReason": "",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951"
+      },
+      "base": "main",
+      "candidate": "40bfbdc81916125a293cfb2e2ec01dc998fdb7d6",
+      "source_review": "GitHub",
+      "draft": true,
+      "review_requested": [
+        "zhzyx"
+      ],
+      "owner": "Sail-Li",
+      "next_action": "由 Sail-Li 确认草稿与 #1245 的共同及独有修改。在原 PR 记录继续审查或被替代的决定及对应链接。",
+      "require_migration_confirmation": "同一 #951 的两个独立 head，迁移负责人须核实去重处置和对应终态。",
+      "on_merge": "G17 验证增量同步，G23 按仓库、PR 编号和实际 merge OID 核销接收回执。",
+      "on_close": "记录原平台关闭时间、理由、最后 head 和替代链接，原始来源进入 I12 归档。",
+      "while_open": "在 GitHub 保留原作者与审查；切换时交由 G24 继续跟踪。"
+    },
+    {
+      "number": 1216,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1216",
+      "title": "test(godot-host): retry liveness revocation on Windows sharing violation (#1168)",
+      "author": "Sail-Li",
+      "source_issue": {
+        "number": 1168,
+        "state": "CLOSED",
+        "stateReason": "COMPLETED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1168"
+      },
+      "base": "main",
+      "candidate": "148c99da417903b7b9d9599057cc3818c1adfb26",
+      "source_review": "GitHub",
+      "draft": false,
+      "review_requested": [
+        "zhzyx"
+      ],
+      "owner": "Sail-Li",
+      "next_action": "由 Sail-Li 核对已完成的 #1168 实际接收修订与本 PR 的 Windows 共享冲突回归，注明是否仍有未交付差异。",
+      "require_migration_confirmation": "业务单已关闭，PR 仍开放。迁移负责人须取得原发布者对差异的确认。",
+      "on_merge": "G17 验证增量同步，G23 按仓库、PR 编号和实际 merge OID 核销接收回执。",
+      "on_close": "记录原平台关闭时间、理由、最后 head 和替代链接，原始来源进入 I12 归档。",
+      "while_open": "在 GitHub 保留原作者与审查；切换时交由 G24 继续跟踪。"
+    },
+    {
+      "number": 645,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/645",
+      "title": "fix: preserve AI runtime intake recovery candidate",
+      "author": "kaiyunxue",
+      "source_issue": {
+        "number": 49,
+        "state": "CLOSED",
+        "stateReason": "COMPLETED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/49"
+      },
+      "base": "main",
+      "candidate": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+      "source_review": "GitHub",
+      "draft": true,
+      "review_requested": [],
+      "owner": "kaiyunxue",
+      "next_action": "由 kaiyunxue 确认已完成的 #49 与本草稿保留的运行时恢复候选是否一致，再指定审查人或签认结转理由。",
+      "require_migration_confirmation": "原业务单已关闭且未请求审查人。须保留原作者对草稿处置的决定。",
+      "on_merge": "G17 验证增量同步，G23 按仓库、PR 编号和实际 merge OID 核销接收回执。",
+      "on_close": "记录原平台关闭时间、理由、最后 head 和替代链接，原始来源进入 I12 归档。",
+      "while_open": "在 GitHub 保留原作者与审查；切换时交由 G24 继续跟踪。"
+    }
+  ],
+  "verification": {
+    "exact_set_match": true,
+    "exact_candidate_author_base_match": true,
+    "no_external_review_changes": true
+  }
+}

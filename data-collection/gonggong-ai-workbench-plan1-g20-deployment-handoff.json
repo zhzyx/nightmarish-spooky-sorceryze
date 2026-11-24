@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-g20",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "issue_number": 1736,
+  "scope": "Deployment-server handoff of the locally verified G19 replacement baseline",
+  "parent_issue": 1709,
+  "source_receipt": {
+    "path": "data-collection/gonggong-ai-workbench-plan1-g20-refreeze.json",
+    "sha256": "5482a6083385430316c344ae57a221d7c8aec1a84e8ba153b11e449e973bb614"
+  },
+  "independent_run": "g20-3a26c08e-review",
+  "package_sha256": "307057431a002cfbcec704179e153b54ab5e48f27cc583189cbd76d1bee28b4d",
+  "expected_catalog_revision": "3ed9e211c4d8f6b9bf6cfafb104991a1c712cc2ac80c92f293236149af24776a",
+  "target_project": "部署服务器内部的共工项目",
+  "deployment_authority_receipt": null,
+  "production_receipt": null,
+  "state": "awaiting_project_import_identity",
+  "tracking": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2099"
+}

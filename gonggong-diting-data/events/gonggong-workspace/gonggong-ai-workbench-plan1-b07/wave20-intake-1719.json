@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b07",
+  "event_id": "wave20-intake-1719",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1719",
+  "occurred_at": "2026-11-21T04:37:15.733614+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1719,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:13Z",
+    "accepted_dependencies": {
+      "1873": "f1a4fe98b5568820786d2f87b943d1003ce31b7a",
+      "1870": "5750a0f0826da805bbe9a462826b030605e1ce59",
+      "1874": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "1853": "f90a589d1be50326e58c097ab528bcae13e5fac7"
+    },
+    "title": "[方案一 B07] 建立需求到任务的基线表"
+  },
+  "evidence_refs": [],
+  "sha256": "2fc7952204920c6a767d75da893ad50493174154a5d50335c34af0a6a3d49e63"
+}

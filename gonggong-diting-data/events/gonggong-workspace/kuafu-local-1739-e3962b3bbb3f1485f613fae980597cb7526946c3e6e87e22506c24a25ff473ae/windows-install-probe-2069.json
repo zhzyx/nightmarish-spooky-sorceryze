@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "kuafu-local-1739-e3962b3bbb3f1485f613fae980597cb7526946c3e6e87e22506c24a25ff473ae",
+  "event_id": "windows-install-probe-2069",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2069",
+  "occurred_at": "2026-11-22T12:45:55Z",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 2069,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T12:45:55Z",
+    "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca"
+  },
+  "evidence_refs": [],
+  "sha256": "3987bcff82128ee3eabfb4c343b628d5997dd4cf6b89ed8a3a0cf9186442738c"
+}

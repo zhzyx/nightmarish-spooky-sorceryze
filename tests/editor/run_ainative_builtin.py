@@ -91,6 +91,10 @@ def main():
                     repository / "samples/ainative-workbench/fixtures" / ("sample." + extension),
                     project / ("fixture." + extension),
                 )
+            shutil.copy2(
+                repository / "samples/ainative-workbench/fixtures" / "rigged.glb",
+                project / "rigged.glb",
+            )
         transfer = base / "portable-transfer"
         environment = {
             key: value
@@ -113,7 +117,7 @@ def main():
             environment[name] = str(private_path)
         environment["AINATIVE_PYTHON"] = sys.executable
         environment["AINATIVE_TEST_TRANSFER"] = str(transfer)
-        # Provider selection is explicitly offline for this test, regardless of the user's environment.
+        # Use the local demo factory for Copy fixtures, regardless of the user's environment.
         environment["AINATIVE_PROVIDER_FACTORY"] = "editor_demo:factory"
 
         def run(name, project, mode, editor=True, screenshot=None):

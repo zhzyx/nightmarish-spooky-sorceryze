@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c01",
+  "event_id": "wave20-intake-1868",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1868",
+  "occurred_at": "2026-11-21T04:37:14.591669+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1868,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:12Z",
+    "accepted_dependencies": {
+      "1870": "5750a0f0826da805bbe9a462826b030605e1ce59"
+    },
+    "title": "[方案一 C01] 建立业务模块稳定标识"
+  },
+  "evidence_refs": [],
+  "sha256": "ec9aeb32e9757aaffb078447a548c2c20a231a1da0076f406730a4a8d96b6e81"
+}

@@ -1,0 +1,472 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c06",
+  "issue_number": 1744,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1744",
+  "observed_at": "2026-11-21T12:52:46.328436+00:00",
+  "source_baseline": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "dependencies_read_back": {
+    "1784": "CLOSED/COMPLETED",
+    "1869": "CLOSED/COMPLETED"
+  },
+  "scope": "Windows headless native selector; macOS service and saved design draft roundtrip separately recorded under the prior observation. Post-integration main receipt and completed closure belong to the publisher.",
+  "source_sha256": {
+    "editor/SCsub": "60de7a84d2526a59172161525f01395d0a3fe6c4c077fbbcddd82c144782ff9a",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "ba1ea74aa2c93e08a24258066227400938b176dfbbc87c3c1a7964e2dd382c9d",
+    "editor/docks/workbench/module_selector.gd": "b0378c92f786ba174281617415a9c9781476961dfbfa2dddec8133041789f490",
+    "tests/editor/workbench_business_modules.gd": "30573e18e07663dc1abd2fa0b2a211196a91bd4fdf5e04befebb353733fe671b",
+    "tests/editor/run_workbench_business_modules.py": "266345791fe4747e6819f2234bbc65437ab1d719d2b0c91b18827b52f70bbb53",
+    "design-docs/gonggong-ai-workbench-c06.md": "b8a4e57a57104719b29186114112c56f1976fb13ac3e2ffb90e2bdcc696a93f9"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "compiler": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-scons-cache> cache_limit=0 --cache-readonly -j10",
+    "final_native_change": "Generated module_selector.gen.h, compiled AIWorkbenchSidebar.cpp, linked editor and console wrapper. Exit 0.",
+    "native_inputs": "The selector is compiled into the native editor from the generated header. WebView2 SDK files were verified against the pinned manifest by tools/install_webview2.py --arch x64 --output-dir bin.",
+    "artifact_sha256": {
+      "godot.windows.editor.x86_64.exe": "a3ef5f3a4da6ee3b9a40ff8319c857fad28a80666d97836ba495157901556714",
+      "godot.windows.editor.x86_64.console.exe": "7431d99c0d82a019e1948457881d3d0f470e05230981381c17f3ae120190f0c0",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "original_acceptance": {
+    "requirement": "切换两次能回到原工单、会话及草稿。",
+    "consumer": "Actual headless native shared workbench sidebar opened from the editor command palette. Authenticated account, real TCP, ephemeral Tianxuan domain and native DB; two same-name modules and same-title issues. A and B unsent inputs remained private to the correct selection and absent from the server transcript. Explicit send in a separate empty module reached its new conversation, without a model configured.",
+    "command": "python -B -X utf8 tests/editor/run_workbench_business_modules.py --godot bin/godot.windows.editor.x86_64.exe --report bin/c06-native-final.json",
+    "exit_code": 0,
+    "report": {
+      "state": "passed",
+      "native_steps": [
+        {
+          "conversation_id": "16f02bac-484b-461a-810b-2dc8c91993a5",
+          "draft": "",
+          "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+          "issue_id": "iss_f7d56b8ccdd64a62a56472da5ae2bf16",
+          "module_id": "mod_9fc8ad684ec74ea4bbb31cd6aedb0bd2",
+          "position": "issue/comments#A"
+        },
+        {
+          "conversation_id": "a34b3a30-2f9e-4b49-b7ef-b8c28823d208",
+          "draft": "",
+          "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+          "issue_id": "iss_3f9ae542e7364096bd165964ed75211c",
+          "module_id": "mod_c8c096d7bce94286b8de293ff2e57bf9",
+          "position": "issue/comments#B"
+        },
+        {
+          "conversation_id": "16f02bac-484b-461a-810b-2dc8c91993a5",
+          "draft": "A pending",
+          "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+          "issue_id": "iss_f7d56b8ccdd64a62a56472da5ae2bf16",
+          "module_id": "mod_9fc8ad684ec74ea4bbb31cd6aedb0bd2",
+          "position": "issue/comments#A"
+        },
+        {
+          "conversation_id": "a34b3a30-2f9e-4b49-b7ef-b8c28823d208",
+          "draft": "B pending",
+          "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+          "issue_id": "iss_3f9ae542e7364096bd165964ed75211c",
+          "module_id": "mod_c8c096d7bce94286b8de293ff2e57bf9",
+          "position": "issue/comments#B"
+        }
+      ],
+      "native_http": [
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_9fc8ad684ec74ea4bbb31cd6aedb0bd2/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_f7d56b8ccdd64a62a56472da5ae2bf16/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/16f02bac-484b-461a-810b-2dc8c91993a5",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_c8c096d7bce94286b8de293ff2e57bf9/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_3f9ae542e7364096bd165964ed75211c/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/a34b3a30-2f9e-4b49-b7ef-b8c28823d208",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_9fc8ad684ec74ea4bbb31cd6aedb0bd2/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_f7d56b8ccdd64a62a56472da5ae2bf16/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/16f02bac-484b-461a-810b-2dc8c91993a5",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_c8c096d7bce94286b8de293ff2e57bf9/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_3f9ae542e7364096bd165964ed75211c/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/a34b3a30-2f9e-4b49-b7ef-b8c28823d208",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/mod_c8c096d7bce94286b8de293ff2e57bf9/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/default/location",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/9f6aee52-9380-4b73-b6d2-229edbd8a479/turns",
+          200
+        ]
+      ],
+      "isolated_identity_race": true,
+      "last_position_saved": {
+        "issue_id": null,
+        "conversation_id": "a34b3a30-2f9e-4b49-b7ef-b8c28823d208",
+        "position": "module/overview"
+      },
+      "explicit_send_snapshot": {
+        "project": "c06/studio",
+        "module_id": "default",
+        "issue_id": null,
+        "references": []
+      },
+      "editor_sha256": "a3ef5f3a4da6ee3b9a40ff8319c857fad28a80666d97836ba495157901556714"
+    }
+  },
+  "regression": {
+    "service_tests": {
+      "command": "python -B -X utf8 -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_module_locations.py customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "passed": 8,
+      "warnings": [
+        "Starlette TestClient httpx deprecation"
+      ]
+    },
+    "workbench": {
+      "command": "python -B -X utf8 tests/editor/run_ai_chat_tab_order.py --godot <isolated source editor> --report <report> --workbench-command",
+      "state": "passed",
+      "binary_sha256": "a3ef5f3a4da6ee3b9a40ff8319c857fad28a80666d97836ba495157901556714",
+      "phases": [
+        {
+          "name": "initial",
+          "command_invocations": 9,
+          "round_trips": 3
+        },
+        {
+          "name": "legacy_maliang_last",
+          "command_invocations": 9,
+          "round_trips": 3
+        },
+        {
+          "name": "legacy_maliang_selected",
+          "command_invocations": 9,
+          "round_trips": 3
+        },
+        {
+          "name": "pre_daqian_layout",
+          "command_invocations": 9,
+          "round_trips": 3
+        },
+        {
+          "name": "pre_maliang_layout",
+          "command_invocations": 9,
+          "round_trips": 3
+        },
+        {
+          "name": "restart",
+          "command_invocations": 9,
+          "round_trips": 3
+        }
+      ],
+      "report_sha256": "b0bc266a82b80d0f65a2e4f5f390986c49aee19623007060411fb6113ba8e43d"
+    }
+  },
+  "identity": "The isolated C06 test uses the process-provided account session and a contract fixture for D14's identity-change race. Real D14 identity provider plus C06 is a combined-candidate check.",
+  "mac_prior_observation": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1744#issuecomment-7060360378",
+    "revision": "72c807cceff96aa813650fe702ef942875ecf2d2",
+    "receipt": "data-collection/gonggong-ai-workbench-plan1-macos-round2-20261121.json",
+    "scope": "Loopback A-B-A with verified accounts, saved design drafts, issues, conversations and positions. No native selector test in that observation."
+  },
+  "integration": {
+    "base": "75419237e87776e6de3b5a20a921f2d7381d3977",
+    "d14": "75419237e87776e6de3b5a20a921f2d7381d3977",
+    "record": {
+      "state": "passed",
+      "native_steps": [
+        {
+          "conversation_id": "64426c22-643f-49cd-b298-cd867d465cde",
+          "draft": "",
+          "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+          "issue_id": "iss_7ae7b4060a374afea53ddd51f786c59b",
+          "module_id": "mod_3821c67ed22443878787395f780f794c",
+          "position": "issue/comments#A"
+        },
+        {
+          "conversation_id": "b96894d9-e93a-41b5-8520-22ce5f0b2ca6",
+          "draft": "",
+          "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+          "issue_id": "iss_ac97f32a142845018503866675b9a5b6",
+          "module_id": "mod_276218d7066740378866ff1fe5c84f5e",
+          "position": "issue/comments#B"
+        },
+        {
+          "conversation_id": "64426c22-643f-49cd-b298-cd867d465cde",
+          "draft": "A pending",
+          "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+          "issue_id": "iss_7ae7b4060a374afea53ddd51f786c59b",
+          "module_id": "mod_3821c67ed22443878787395f780f794c",
+          "position": "issue/comments#A"
+        },
+        {
+          "conversation_id": "b96894d9-e93a-41b5-8520-22ce5f0b2ca6",
+          "draft": "B pending",
+          "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+          "issue_id": "iss_ac97f32a142845018503866675b9a5b6",
+          "module_id": "mod_276218d7066740378866ff1fe5c84f5e",
+          "position": "issue/comments#B"
+        }
+      ],
+      "native_http": [
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_3821c67ed22443878787395f780f794c/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_7ae7b4060a374afea53ddd51f786c59b/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/64426c22-643f-49cd-b298-cd867d465cde",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_276218d7066740378866ff1fe5c84f5e/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_ac97f32a142845018503866675b9a5b6/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/b96894d9-e93a-41b5-8520-22ce5f0b2ca6",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_3821c67ed22443878787395f780f794c/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_7ae7b4060a374afea53ddd51f786c59b/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/64426c22-643f-49cd-b298-cd867d465cde",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_276218d7066740378866ff1fe5c84f5e/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_ac97f32a142845018503866675b9a5b6/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/workspace/conversations/b96894d9-e93a-41b5-8520-22ce5f0b2ca6",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/mod_276218d7066740378866ff1fe5c84f5e/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/default/location",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/99348da8-d4ec-496b-ab55-c86074849a15/turns",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/auth/session",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/default/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ]
+      ],
+      "real_account_switch": true,
+      "isolated_identity_race": false,
+      "last_position_saved": {
+        "issue_id": null,
+        "conversation_id": "b96894d9-e93a-41b5-8520-22ce5f0b2ca6",
+        "position": "module/overview"
+      },
+      "explicit_send_snapshot": {
+        "project": "c06/studio",
+        "module_id": "default",
+        "issue_id": null,
+        "references": []
+      },
+      "editor_sha256": "6e01c62f1dbf843a756b34076e59a02a2ecc737a45f6446b340e2ef1502c276a"
+    },
+    "files": {
+      "design-docs/gonggong-ai-workbench-c06.md": "0a1fd1c91024f39a595a4da8cce6b2a491fea360",
+      "editor/SCsub": "b0ee88c9dd74bf79c6e95d41dd667c9b9a0a7c51",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b117819102dc89b3b721c30d24936c0d75cdfcde",
+      "editor/docks/workbench/module_selector.gd": "bc62bcbec513a4f5dc29e5bbc7655789f8590df2",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-7f3f8fd2fe794af52413ae8d25e41dd15d7bb729eebb6698b926db39bc5349b0.json": "44fe7193179fcc8a7a48c9670c6c2e639f6343e5",
+      "tests/editor/run_workbench_business_modules.py": "21cddd21d0b4920a22170f3c3822b06708d25179",
+      "tests/editor/workbench_business_modules.gd": "910c8e64dbd251cff7ebb490e39c96782963a06c"
+    }
+  }
+}

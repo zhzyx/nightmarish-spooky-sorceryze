@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-b5a5114d5c52afb4ff1de2d2d0645cd3077e07fbedcd4e3e79b9ac1c667775c3",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847",
+  "occurred_at": "2026-11-22T03:16:19.199322+00:00",
+  "evidence_refs": [
+    "dispatch-79176ae67b134c1d9f7065eda121dd0c"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "route-embedded-dialog-mouse-through-root",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "For headless Godot embedded native dialogs, send mouse motion and press/release in root viewport coordinates computed from the actual control screen transform. Assert selection and the authoritative response for the clicked issue.",
+      "when": "A headless Godot editor hosts the tested dialog as an embedded subwindow and acceptance requires real pointer clicks on visible controls.",
+      "counterexample": "A direct control signal or local subviewport coordinates can appear valid yet omit the root input path. A physically separate OS window needs its own event routing.",
+      "trial_plan": "Open a different embedded dialog in a private editor process at two sizes, click identifiable controls with screen-to-root conversion and compare persisted results by identity. Reject the method if real selections or persisted writes diverge."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-a02.json",
+        "sha256": "8e5f8f2d37279a1e670d6dfeeac0b1b0a2d25f41860e2ec5f5e0c8783bfd19f2"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a02/dispatch-79176ae67b134c1d9f7065eda121dd0c.json",
+      "sha256": "62a6bda5e778ffa16e6a393c3065e81e6061549c39ffbe49132aa066403110ab"
+    }
+  },
+  "sha256": "80367d2ead864f83739618a8863317aaae0180e894440acf25f77b22daba254b"
+}

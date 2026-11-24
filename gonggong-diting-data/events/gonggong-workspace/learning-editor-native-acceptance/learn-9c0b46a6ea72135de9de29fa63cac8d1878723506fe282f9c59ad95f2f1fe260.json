@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-9c0b46a6ea72135de9de29fa63cac8d1878723506fe282f9c59ad95f2f1fe260",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+  "occurred_at": "2026-11-21T23:35:58.262755+00:00",
+  "evidence_refs": [
+    "wave22-b2009-source",
+    "learn-f4c2032c4fa628fc1aa5b76fd98d540d8ce1b09c4264e832632cc7684913351b"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 8,
+    "previous": "411674139292c8b5a73cf891447efed31bff71012c8e40cac737918530910545",
+    "action": "applied",
+    "details": {
+      "task": "Windows #2009 requirements cancellation followed by a late model response",
+      "observed": "The model marked receipt of the live request before Cancel. Only after the editor acknowledged cancellation did the fixture allow its response attempt. The guide stayed cancelled with no issue-guide receipt diagnostic."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45.json",
+        "sha256": "bd86ba89a5089f96189856490ebc73d8cd2eed74905d9d56e0b28c78529291f0"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45/wave22-b2009-source.json",
+      "sha256": "c29b8d770770b0dfe42e1e5df3157c601f05ffb1935403190fabce22444b71e2"
+    }
+  },
+  "sha256": "25535c5ece608c4bae0fe79e9308d4bfb9ec7b571e2ef708129dd4f092bde5e8"
+}

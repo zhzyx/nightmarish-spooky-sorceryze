@@ -117,11 +117,17 @@ func run():
 	find_button(sections.environment, '保存高级运行环境').pressed.emit()
 	local.load(state_path.path_join('local.cfg'))
 	check(local.get_value('host', 'python') == panel.python_edit.text and local.get_value('host', 'script') == 'fixture-old-editor-host.py', 'central environment save writes the existing local keys')
+	var shared = ConfigFile.new()
+	check(shared.load(panel._shared_host_settings_path()) == OK and shared.get_value('host', 'python', '') == 'fixture-new-maliang-python', 'environment save also writes the machine-shared host configuration')
 	panel.cli_path_edit.text = 'fixture-new-service-cli'
 	panel.cli_path_edit.text_changed.emit(panel.cli_path_edit.text)
+	panel.python_edit.text = 'fixture-transient-runtime-python'
 	find_button(sections.environment, '保存 CLI 与生成服务设置').pressed.emit()
 	var current_saved = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
 	check(current_saved.cli_path == 'fixture-new-service-cli' and panel.service_saved.cli_path == current_saved.cli_path, 'central save updates the actual CLI task-service source and consumer snapshot')
+	local.load(state_path.path_join('local.cfg'))
+	shared.load(panel._shared_host_settings_path())
+	check(local.get_value('host', 'python', '') == 'fixture-new-maliang-python' and shared.get_value('host', 'python', '') == 'fixture-new-maliang-python', 'saving a service never overwrites the selected host Python with a transient runtime field')
 	panel.python_edit.text = ''
 	var serial = panel.serial
 	panel.launch('service-check', {'service':panel.service_draft()})
@@ -139,6 +145,12 @@ func run():
 	await new_panel()
 	check(panel.python_edit.text == 'fixture-new-maliang-python' and panel.cli_path_edit.text == 'fixture-new-service-cli', 'reopening restores values saved by the central forms')
 	check(JSON.parse_string(JSON.stringify(panel.service_saved)) == current_saved and panel.serial == 0, 'reopening retains the real consumer snapshot without launching generation')
+	panel.queue_free()
+	await settle()
+	state_path = state_path + '-second-project'
+	await new_panel()
+	check(panel.python_edit.text == 'fixture-new-maliang-python', 'a fresh project inherits the shared Python instead of resetting to the platform default')
+	check(not FileAccess.file_exists(state_path.path_join('local.cfg')) or not ConfigFile.new().has_section_key('host', 'python'), 'fresh project does not need a preexisting local host Python entry')
 	panel.queue_free()
 	await settle()
 	await new_panel(false)

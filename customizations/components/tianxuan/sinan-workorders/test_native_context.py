@@ -7,6 +7,8 @@ import json
 import os
 import shutil
 import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -142,6 +144,8 @@ let data=''; process.stdin.on('data',c=>data+=c); process.stdin.on('end',async()
   turns++; const id='turn-'+turns;
   if(turns===2 && p.installed.env.PROBE_MODE==='crash')process.exit(7);
   if(turns===2 && p.installed.env.PROBE_MODE==='flood')process.stdout.write('x'.repeat(600000));
+  if(turns===2 && p.installed.env.PROBE_MODE==='late-stdout')process.stdout.write('x'.repeat(256));
+  if(turns===2 && p.installed.env.PROBE_MODE==='late-stderr')process.stderr.write('x'.repeat(256));
   const parsed=JSON.parse(params.input[0].text);
   if(turns>1 && (parsed.messages.length!==2 || parsed.messages[0].role!=='assistant'))throw Error('history replay');
   const parsedContext=p.request.context.startsWith('{')?JSON.parse(p.request.context):null;
@@ -197,7 +201,34 @@ def make_host(tmp_path, mode="success"):
     return host
 
 
-def test_real_process_reuses_subscription_and_physically_closes(context, tmp_path):
+def exit_between_mailbox_check_and_poll(session, final_turn, monkeypatch):
+    request = session.mailbox / f"{final_turn}.input.json"
+    staged = request.with_suffix(".tmp")
+    response = session.mailbox / f"{final_turn}.output.json"
+    replace, exists = Path.replace, Path.exists
+
+    def delay_request(path, target):
+        if path == staged and target == request:
+            return target
+        return replace(path, target)
+
+    def observe(path):
+        present = exists(path)
+        if path == response and not present and exists(staged):
+            # Release the real final turn only after capturing the negative mailbox read.
+            replace(staged, request)
+            while session.command.poll() is None:
+                assert time.monotonic() < session.deadline
+                time.sleep(0.005)
+            assert session.command.poll() == 0 and exists(response)
+        return present
+
+    monkeypatch.setattr(Path, "replace", delay_request)
+    monkeypatch.setattr(Path, "exists", observe)
+
+
+@pytest.mark.parametrize("delay_request", [False, True], ids=["normal", "exit-between-checks"])
+def test_real_process_reuses_subscription_and_physically_closes(context, tmp_path, monkeypatch, delay_request):
     c, _ = context
     before = c.binding["selected"]["code"]
     after = c.store.submit(
@@ -214,6 +245,8 @@ def test_real_process_reuses_subscription_and_physically_closes(context, tmp_pat
         acceptance="fixed",
     )
     session = host.context_session(request, c, 6)
+    if delay_request:
+        exit_between_mailbox_check_and_poll(session, 5, monkeypatch)
     messages = [{"role": "system", "content": "fixed host"}, {"role": "user", "content": "fixed task"}]
     receipts = []
     try:
@@ -364,10 +397,20 @@ def test_delta_fixed_pairs_and_cumulative_budget(context, tmp_path):
         restored.resolve(dict(op="delta", **pair, cursor=None))
 
 
-@pytest.mark.parametrize("mode", ["crash", "flood"])
-def test_real_process_unknown_turn_closes_without_replay(context, tmp_path, mode):
+@pytest.mark.parametrize("mode", ["crash", "flood", "late-stdout", "late-stderr"])
+def test_real_process_unknown_turn_closes_without_replay(context, tmp_path, mode, monkeypatch):
     c, _ = context
     host = make_host(tmp_path, mode)
+    release_reader = threading.Event()
+    if mode.startswith("late-"):
+        # Keep all 256 bytes in the real pipe until the host observes the mailbox.
+        original_drain = host.helper.OwnedCommand._drain
+
+        def delayed_drain(command, channel):
+            release_reader.wait()
+            original_drain(command, channel)
+
+        monkeypatch.setattr(host.helper.OwnedCommand, "_drain", delayed_drain)
     session = host.context_session(
         dict(request_id=c.binding["execution"], task="fixed", context="fixed", write_allowlist=[], acceptance="fixed"),
         c,
@@ -377,6 +420,9 @@ def test_real_process_unknown_turn_closes_without_replay(context, tmp_path, mode
     try:
         receipt = session.turn(messages)
         command = session.command
+        if mode.startswith("late-"):
+            for channel in command.channels:
+                channel["remaining"] = 128
         messages.extend([
             {"role": "assistant", "content": json.dumps(receipt["action"], separators=(",", ":"))},
             {"role": "user", "content": "result"},
@@ -384,7 +430,9 @@ def test_real_process_unknown_turn_closes_without_replay(context, tmp_path, mode
         with pytest.raises(ValueError):
             session.turn(messages)
         assert session.command is command and session.sequence == 2
+        assert [e["data"]["sequence"] for e in c.events() if e["kind"] == "model_receipt"] == [1]
     finally:
+        release_reader.set()
         session.close()
     assert session.command.process.returncode is not None
     assert c.receipt()["terminal"] == "incomplete"
@@ -498,6 +546,9 @@ def test_real_worker_producer_context_pipeline(fixture, monkeypatch, tmp_path):
         encoding="utf8",
     )
     w.worker.profiles["local"]["argv"] = [sys.executable, "-B", "-X", "utf8", str(launch)]
+    from native_observations import OBSERVATION_PROTOCOL
+
+    w.worker.profiles["local"]["observation_protocol"] = OBSERVATION_PROTOCOL
     key, grant = admit(fixture, profile, root, old_registry, "a")
     contract = json.loads(w.status(actor, key)["task"])
     binding = dict(
@@ -536,6 +587,44 @@ def test_real_worker_producer_context_pipeline(fixture, monkeypatch, tmp_path):
     assert result["context_receipt"]["reads"] is None
     assert w.worker.store.read(tenant, "a", result["modules"]["a"], "output") == b"context-consumed"
     assert json.loads((tmp_path / "counts.json").read_text()) == {"threads": 1, "turns": 3}
+    calls = result["model_calls"]
+    assert [(c["call"], c["source"], c["usage"]["last"]["totalTokens"]) for c in calls] == [
+        (1, "codex-cli", 3),
+        (2, "codex-cli", 3),
+        (3, "codex-cli", 3),
+    ]
+    assert [c["usage"]["total"]["totalTokens"] for c in calls] == [3, 6, 9]
+    assert result["usage"] == calls[-1]["usage"]
+    assert w.worker.reconcile(contract, key)["model_calls"] == calls
+
+
+@pytest.mark.parametrize("received", [[2], [1, 3]])
+def test_worker_preserves_received_call_numbers_after_unknown(fixture, received):
+    from native_observations import OBSERVATION_PROTOCOL, valid_producer_calls
+    from test_native_workflow import reserve, task
+
+    workflow, actor, *_ = fixture
+    calls = [
+        dict(call=n, source="codex-cli", requested_model="selected", provider_model=None, usage=None) for n in received
+    ]
+    for invalid in ([0], [101], [1, 1], [3, 1], [True]):
+        assert not valid_producer_calls([{**calls[0], "call": n} for n in invalid])
+    profile = workflow.worker.profiles["local"]
+    profile["observation_protocol"] = OBSERVATION_PROTOCOL
+    profile["argv"] = [
+        sys.executable,
+        "-c",
+        "import json, os, pathlib, sys;"
+        "print(json.dumps(dict(execution=pathlib.Path(os.environ['NATIVE_WORKSPACE']).parent.name,"
+        "proposal_applied=True, provider_model=None, usage=None, model_calls=json.loads(sys.argv[1]))))",
+        json.dumps(calls),
+    ]
+    key, _ = task(fixture, "a")
+    contract = json.loads(workflow.status(actor, key)["task"])
+    reserve(fixture, key)
+    produced = workflow.execute(actor, key)
+    assert produced["model_calls"] == calls
+    assert workflow.worker.reconcile(contract, key)["model_calls"] == calls
 
 
 def test_effective_context_size_rejected_before_process(context, tmp_path, monkeypatch):

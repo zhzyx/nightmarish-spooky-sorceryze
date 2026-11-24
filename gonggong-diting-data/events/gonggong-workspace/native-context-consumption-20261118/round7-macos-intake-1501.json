@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "native-context-consumption-20261118",
+  "event_id": "round7-macos-intake-1501",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "occurred_at": "2026-11-21T16:27:53.224025+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1501,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T14:23:10Z",
+    "scope": "Verify native worker output after a short-lived process exits on Darwin and retain ownership for cleanup retry"
+  },
+  "evidence_refs": [],
+  "sha256": "483e81bbf2a46caf958ef2d4e7654dc34733b0fd5669a29bc0da1fe888bd0abe"
+}

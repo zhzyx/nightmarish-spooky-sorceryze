@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-6ea32a2c10eb7a269e04326a1131aa1f4bfa3e4b141d91dd4089bf1324c3ef5d",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T00:51:33.381477+00:00",
+  "evidence_refs": [
+    "kuafu-2d8322b6a554ecaffcea8174f20bbf91e500c0c1",
+    "learn-aa69f9cab8140b96d4b2c573003bdb7149d765ffe757cfc19dcdd89d8e3090f4"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 41,
+    "previous": "24596366d48f1ab40c9062ca0f13c770754ba8b7b9f27d342adc16af775bb3bf",
+    "action": "applied",
+    "details": {
+      "task": "K01/U13 Windows editor and TianShu package readback",
+      "observed": "The isolated G11 probe timed out with a bare editor. Rebuilding the UI and board archives from the target source reproduced the builder hashes. With these packages installed the same binary passed the original selected-file action and preserved the other file in the index and worktree."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/kuafu-2009-windows-runtime-package-recovery.json",
+        "sha256": "1b2fc8ab1d3899e4e305375e350a3eeed4809e6d69a59aad1103f57cb0144f78"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-2d8322b6a554ecaffcea8174f20bbf91e500c0c1.json",
+      "sha256": "910d5419055ccec12dd76b538139d9e9414cfcb96de6c4fcf7847692b825b1e1"
+    }
+  },
+  "sha256": "5d151e6481e137bc4eac767b311b4b72f37cc3e4625b10c46ca00fcc91825933"
+}

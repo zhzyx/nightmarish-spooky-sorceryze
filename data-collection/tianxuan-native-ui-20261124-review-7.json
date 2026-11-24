@@ -1,0 +1,33 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "reviewer": "/root/sinan_166ba41a04521d99",
+  "implementer": "/root",
+  "observed_at": "2026-11-23T19:15:18.067086+00:00",
+  "state": "passed_with_limits",
+  "extends": "data-collection/tianxuan-native-ui-20261124-review-6.json",
+  "scope": "Five upstream metadata files added between 8fb43f5e and 99dbb00f; merge tree and evidence reuse only.",
+  "merge_proof": {
+    "base": "8fb43f5eb40b2dd307952f089c9971f61e1bf563",
+    "main_observed": "99dbb00f18ac95148757682f38e933ff828492e2",
+    "signed_head": "947d4a56f98dc06a307d7594732a72db79c9c871",
+    "merged_tree": "96e82fa0752ae455d62eddf0b901418a69858055",
+    "upstream_paths": [
+      "data-collection/gonggong-ai-workbench-plan1-g22-precutover.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g22/dispatch-1915c4a795d04151935907056cd19789.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g22/dispatch-339d03fbf4344fa590bd7d50fba6af03.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g22/kuafu-bfadc1a091e32453096225ba49a60cb0ad5b8534.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g22/resume-1709-receive-1729.json"
+    ],
+    "overlapping_read_or_write_paths": [],
+    "merged_delta_matches_upstream": true,
+    "latest_main_content_preserved": true,
+    "interpretation": "No product or test inputs differ from the reviewed and CI-tested PR head. Delivery rules still apply."
+  },
+  "conclusion": "All 83 task write paths preserve their reviewed blobs. The five upstream files have no overlap with the 19 declared read dependencies or task writes. Prior implementation and business test evidence remains applicable.",
+  "delivery_requirement": "The current collaborator PR text requires rebinding/resigning and new-head CI or a queue verified against the latest base; the host-only disjoint-merge exception is not assumed for this route.",
+  "limits": [
+    "No new Godot test executed by reviewer.",
+    "Old CI is not described as having run on the new merge tree."
+  ]
+}

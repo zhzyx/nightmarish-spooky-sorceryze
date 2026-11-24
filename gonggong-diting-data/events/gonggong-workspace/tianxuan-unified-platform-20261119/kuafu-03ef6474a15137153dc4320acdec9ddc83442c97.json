@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-03ef6474a15137153dc4320acdec9ddc83442c97",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6584c14316850a6974d3b597f6aca6651688f9b7be287c436f256b77063f2550",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1583",
+    "action": "validation",
+    "detection_head": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+    "context_sha256": "5ead892457df8b7b8cfbd762c2c04162eaa52cb2edea7f0ec248cbd5935573c2",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "authority_ref": "user-approved-1550-implementation",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "diagnosis": "Correction after source inspection: gate checks parent request identity. work_items collect only infers Issue from request-kind events, while this parent source is step-kind. Adding child indexes alone did not fix missing parent issue_number. Actual GitHub intake supports explicit parent evidence binding.",
+    "next_action": "Stage explicit data-collection/tianxuan-unified-platform-1550.json and rerun formal gate on candidate. Preserve prior failed receipts and keep full product acceptance open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T12:56:36.123117+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T12:58:44.936688+00:00",
+  "sha256": "f4db35e1bbf1e821c643832815b349c95aa67162314e5e368d099b36c3227304"
+}

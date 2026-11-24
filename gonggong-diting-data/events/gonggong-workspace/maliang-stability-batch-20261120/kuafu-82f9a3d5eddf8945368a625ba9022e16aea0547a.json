@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-82f9a3d5eddf8945368a625ba9022e16aea0547a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-stability-batch-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "56263f6abccfacd2ae8929f9bc064b389cdc096b29d222ca6972277c3c4c0da9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1624",
+    "action": "intake",
+    "detection_head": "0abaed9fb19b968335e6b3f8caa046ec588e078e",
+    "context_sha256": "6dfcc4c5b370329b6049307a69554fbda439e7cf3a1a23bd45bed223c311dd7d",
+    "operator": "kaiyunxue",
+    "worker": "kimi:main",
+    "authority_ref": "user-request:maliang-stability-batch-20261120",
+    "evidence": "customizations/components/issue-workorders/issue_gate.py",
+    "diagnosis": "The first intake invocation omitted the repository tenant binding. Re-running intake with tenant gonggong-workspace succeeded against Issue 1625.",
+    "next_action": "Continue candidate validation and formal delivery; no code fault remains from this intake error.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T16:03:59.214154+00:00",
+    "attempted": "Repeated the same intake with the explicit tenant and received verified_issue_source.",
+    "repair_owner": "kimi:main",
+    "continuable": "Candidate validation and delivery can continue."
+  },
+  "occurred_at": "2026-11-19T16:05:44.040823+00:00",
+  "sha256": "893f981bc09e9ceb029d38ac00b716eeb203cc1522241123f41ad90648141d67"
+}

@@ -1,0 +1,481 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-a02",
+  "issue_number": 1847,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847",
+  "producer": "wave22_a02",
+  "baseline": "cc476c104de48c9cc7eb807d6e7ea7d87cdaa90c",
+  "source_revision": "9b88091146e3d0c0953ca5898eb6ee4932d8cfa24bb099eb0c1d05c830dd5eb7",
+  "verified_at": "2026-11-22T03:14:42.653090+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a02/dispatch-79176ae67b134c1d9f7065eda121dd0c.json",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "d04ee7fb26ec5fafbcbb4d5b13c9917f914be34b",
+    "customizations/components/tianxuan/server/schemas.py": "058144456af721a742a5c707c26b59d60ba18758",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "c088b4878969bf09e9ce47585689ba719082f211",
+    "customizations/components/tianxuan/server/test_task_confirmations.py": "c1ae96e54ea5b30994e04e89ec9c978acf7847ed",
+    "editor/docks/workbench/issue_actions/issue_task_confirmation.gd": "9c0f9e467bc05ab957bb3490d200336f901a18e7",
+    "tests/editor/run_workbench_task_confirmations.py": "9bb180bfeaf34e375011326b4ba4d910951a7a6f",
+    "tests/editor/workbench_task_confirmations.gd": "05e7845a49aee5f4d62a764c6d1ac2f981be8dfe",
+    "design-docs/gonggong-ai-workbench-a02.md": "d5c24658ddb1d79c1188913a2fef08a21ad9445f"
+  },
+  "intake": {
+    "state": "in-progress",
+    "gate": "intake-only passed",
+    "prerequisites": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1856#issuecomment-7073209122",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069088567"
+    ],
+    "upstream_macos": {
+      "i06_initial": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7067781078",
+      "i06_later_integrated": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775",
+      "d03_exact_version": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618"
+    },
+    "macos_a02_candidate_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5 / SDK 10.0.26100.0",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "embedded_input": "editor/docks/workbench/issue_actions/issue_task_confirmation.gd",
+    "invalidation": {
+      "change": "Increase the visible task area and keep revocation available on terminal issues.",
+      "previous_editor_sha256": "1e825c0e368d3b72400dcf19eff0ecd3ef09c12e77c912ad43207824cc48b88e",
+      "previous_header_sha256": "d9b83af1423cde1b1306108bf7df4890f9ebb008eadc2de1140dbec26c65079d",
+      "editor_sha256": "99ce43b273e7c1107fb3add05d53e44f1d10b8d8a41ff4d6234df0c6ca908597",
+      "header_sha256": "8ab9a91f091fceeff0aad504ec3fa93285ce61431add960f0a4d633c0a1edaec",
+      "rebuilt": [
+        "IssueActions.gen.h",
+        "AIWorkbenchSidebar.cpp",
+        "editor.windows.editor.x86_64.lib",
+        "godot.windows.editor.x86_64.exe",
+        "godot.windows.editor.x86_64.console.exe"
+      ]
+    }
+  },
+  "test_results": {
+    "native": {
+      "state": "passed",
+      "editor_sha256": "99ce43b273e7c1107fb3add05d53e44f1d10b8d8a41ff4d6234df0c6ca908597",
+      "runs": {
+        "confirm": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+              "selected": true
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": true
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 待确认\n拉动拉杆一次开桥",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 97.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 134.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 222.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 程序",
+            "#2 动画"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        },
+        "read": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "勾选要核对的任务，再点击该项的确认按钮。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 121.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 158.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 246.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        },
+        "revoke": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已撤销\n拉动拉杆一次开桥",
+              "selected": true
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": true
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 121.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 158.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 246.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 程序",
+            "#2 动画"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        }
+      },
+      "records": {
+        "confirm": [
+          {
+            "issue_id": "iss_c96f50459c9c4f2795263a21abca0a94",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "1d5fb97094235ecf902bf5a249df8cdebfed1b50d14c3ff17214a1431f580247",
+            "revision": 1,
+            "status": "confirmed",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": "usr_8978a871ea3d4ea3b0208aa78a1fdb45"
+          },
+          {
+            "issue_id": "iss_fc45cfa2c821455dac034ca4849260a4",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "a4fcf938b4b84290e3012223f1d2f7d7893b5ce41af63ac026f9443f91aae440",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": null
+          }
+        ],
+        "read": [
+          {
+            "issue_id": "iss_c96f50459c9c4f2795263a21abca0a94",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "1d5fb97094235ecf902bf5a249df8cdebfed1b50d14c3ff17214a1431f580247",
+            "revision": 1,
+            "status": "confirmed",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": "usr_8978a871ea3d4ea3b0208aa78a1fdb45"
+          },
+          {
+            "issue_id": "iss_fc45cfa2c821455dac034ca4849260a4",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "a4fcf938b4b84290e3012223f1d2f7d7893b5ce41af63ac026f9443f91aae440",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": null
+          }
+        ],
+        "revoke": [
+          {
+            "issue_id": "iss_c96f50459c9c4f2795263a21abca0a94",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "1d5fb97094235ecf902bf5a249df8cdebfed1b50d14c3ff17214a1431f580247",
+            "revision": 2,
+            "status": "revoked",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": null
+          },
+          {
+            "issue_id": "iss_fc45cfa2c821455dac034ca4849260a4",
+            "document_id": "doc_605fef917fc14b33abc3bb0a6c99233b",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "a4fcf938b4b84290e3012223f1d2f7d7893b5ce41af63ac026f9443f91aae440",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_8978a871ea3d4ea3b0208aa78a1fdb45",
+            "confirmed_by": null
+          }
+        ]
+      }
+    },
+    "service_regression": {
+      "tests": [
+        "test_task_confirmations.py",
+        "test_task_targets.py",
+        "test_design_tasks.py",
+        "test_design_signoff.py",
+        "test_issue_assignee.py",
+        "test_access_control.py",
+        "test_issue_number.py",
+        "test_issue_flow.py"
+      ],
+      "result": "24 passed, 1 Starlette TestClient deprecation warning in 16.68s",
+      "scope": [
+        "confirmed and revoked request replay",
+        "concurrent confirm on separate SQLite connections",
+        "stale target, origin and issue definition",
+        "returned and absent target",
+        "immutable signed design after later draft",
+        "viewer, other member, wrong project, inaccessible source, forged identity",
+        "reassignment including owner -> member -> owner; new owner confirms the original defined target"
+      ]
+    },
+    "a01_same_editor": {
+      "state": "passed",
+      "editor_sha256": "99ce43b273e7c1107fb3add05d53e44f1d10b8d8a41ff4d6234df0c6ca908597",
+      "signoff": {
+        "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+        "version": 1,
+        "confirmed_by": "usr_20b0214e59b64886b3bb56b60d6ef99b",
+        "confirmed_at": "2026-11-22T03:12:52.993040+00:00",
+        "acceptance": "拉杆控制开桥，桥面完成展开"
+      },
+      "design_tasks": [
+        {
+          "id": "iss_5be60ed5baf444ec987332a155e42785",
+          "number": 1,
+          "title": "程序",
+          "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+          "version": 1,
+          "paragraph": 1,
+          "project": "a01/bridge",
+          "module_id": "mod_592046bdc15245f4a784f7523e238dab",
+          "acceptance": "程序模块符合拉杆设计"
+        },
+        {
+          "id": "iss_88b3fd85a18e48c49200281d34c5d3c3",
+          "number": 2,
+          "title": "动画",
+          "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+          "version": 1,
+          "paragraph": 2,
+          "project": "a01/bridge",
+          "module_id": "mod_182139ada2f8458ebffef6a33dc919bf",
+          "acceptance": "动画模块符合拉杆设计"
+        }
+      ],
+      "program": [
+        {
+          "criteria": "拉动拉杆后只发出一次开桥事件",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 1",
+          "stage": "可运行原型",
+          "target": {
+            "criteria": "拉动拉杆后只发出一次开桥事件",
+            "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+            "issue_id": "iss_5be60ed5baf444ec987332a155e42785",
+            "responsible_user": "usr_20b0214e59b64886b3bb56b60d6ef99b",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 1.0,
+            "stage": "可运行原型",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "animation": [
+        {
+          "criteria": "",
+          "feedback": "阶段目标已退回：请填写可验证的到达条件。",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "",
+            "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+            "issue_id": "iss_88b3fd85a18e48c49200281d34c5d3c3",
+            "responsible_user": "usr_450c7b06d23c4108971507631a773ece",
+            "return_comment_id": "icmt_eec72e15ee244f8f91063e4acd2198df",
+            "return_reason": "阶段目标已退回：请填写可验证的到达条件。",
+            "revision": 1.0,
+            "stage": "动画预览",
+            "status": "returned",
+            "version": 1.0
+          }
+        },
+        {
+          "criteria": "播放预览时桥面在第 24 帧完全展开",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 2",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "播放预览时桥面在第 24 帧完全展开",
+            "document_id": "doc_f4f091cd06a94550b6ccb6663aa4dc50",
+            "issue_id": "iss_88b3fd85a18e48c49200281d34c5d3c3",
+            "responsible_user": "usr_450c7b06d23c4108971507631a773ece",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 2.0,
+            "stage": "动画预览",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "return_comment": {
+        "id": "icmt_eec72e15ee244f8f91063e4acd2198df",
+        "tenant_id": "ten_369d01295fa9469785ddac67cfe0aa4c",
+        "issue_id": "iss_88b3fd85a18e48c49200281d34c5d3c3",
+        "author": "usr_450c7b06d23c4108971507631a773ece",
+        "body": "阶段目标已退回：请填写可验证的到达条件。",
+        "created_at": "2026-11-22T03:13:00.701755+00:00",
+        "author_name": "animation",
+        "parent_id": null
+      },
+      "service_restart_readback": true,
+      "source_visibility_enforced": true,
+      "changed_design_version": 2,
+      "replay_same_record": true,
+      "wrong_actor": 403,
+      "stale_target": 409,
+      "wrong_version": 409,
+      "wrong_project": 404
+    },
+    "i06_same_editor": {
+      "engine_sha256": "99ce43b273e7c1107fb3add05d53e44f1d10b8d8a41ff4d6234df0c6ca908597",
+      "edits": [
+        [
+          "PUT",
+          "/api/v1/issues/{id}/assignee",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/{id}/work/flow/advance",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/{id}/assignee",
+          403
+        ],
+        [
+          "POST",
+          "/api/v1/issues/{id}/work/flow/advance",
+          403
+        ]
+      ],
+      "native_views": {
+        "write": [
+          {
+            "owner": null,
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "backlog",
+            "visible": "标题　场景检查\n负责人　未分配\n状态　backlog\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "backlog",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　backlog\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          }
+        ],
+        "acl": [
+          {
+            "owner": "陈墨",
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          }
+        ],
+        "viewer": [
+          {
+            "owner": "陈墨",
+            "revision": "fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　fa3882a272259a09e6e25fd601d3106c09f56ebd7cdb059431596116af1c7a3c"
+          }
+        ]
+      },
+      "reopened_database_matches": true
+    },
+    "static": [
+      "ruff check passed",
+      "ruff format --check: 5 files already formatted",
+      "mypy: success on 5 files",
+      "git diff --check passed"
+    ],
+    "corrected_probe": {
+      "observed": "Native selection failed when events were sent to the embedded dialog viewport.",
+      "fix": "Convert button center from screen to editor-root coordinates, notify mouse entry and deliver press and release through the root viewport.",
+      "result": "The final native run records both selected rows, matching live readbacks and a separate revoke."
+    }
+  },
+  "cleanup": {
+    "fixtures": "The native runners discarded private editor copies, sessions and fixture databases before exit.",
+    "retained": "Candidate binary, source inputs and worktree retained for integration by the parent session."
+  }
+}

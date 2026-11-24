@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-i02",
+  "event_id": "next20-intake-1854",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854",
+  "occurred_at": "2026-11-21T16:05:52.974991+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1854,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T16:05:48Z",
+    "accepted_dependencies": {
+      "1859": "4c56b3fe48a2d1689259291d02580d2317a9ef12"
+    },
+    "title": "[方案一 I02] 读取工单原生详情"
+  },
+  "evidence_refs": [],
+  "sha256": "e2317d0d9507cab6a04fe00b7bdab893da147cc4b40254c3c962f5d243881aa5"
+}

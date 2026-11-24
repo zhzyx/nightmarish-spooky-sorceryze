@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-511c151c46034e3505441dc992c3c5b4a9b8ec1d5db6beffc7a7d04489202469",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785",
+  "occurred_at": "2026-11-21T17:03:48.371424+00:00",
+  "evidence_refs": [
+    "dispatch-012d14561c05431dba97a5bf79711c13",
+    "learn-b9a6e438f137213199848aef21cdbda7e811d291d5c2da16ac11d766f36522bd"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 6,
+    "previous": "b864503231d36b117b22b8495a76e063a47e7d033ebbe94e99751f90b5825f2d",
+    "action": "verify",
+    "details": {
+      "test": "C07 已合主线引用入口的编辑器和经过认证的回环天璇服务。",
+      "expected": "收到服务端查询后取消，迟到响应保持原草稿与选择。",
+      "observed": "收到服务端查询后取消，迟到响应保持原草稿与选择。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-c07.json",
+        "sha256": "666a5c6c85990f0f60a12ecb28abbcc3dca2ba4ac57cea5d0ca208b88a857076"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-c07-integration.json",
+        "sha256": "c8df66bf2ee58cc5d0d67ad13a028e64963b4c983371babbe3c6bfbfba2f3eff"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-c07/dispatch-012d14561c05431dba97a5bf79711c13.json",
+      "sha256": "f748e77a9d6e1f042cf732fd90dc5ae12ec9d1e213f16f658b96d408deed13a1"
+    }
+  },
+  "sha256": "e22a15eb9ab41a00afe3ba10bb923b72ab3f309cc830e3a4ac31d73d7f7a04fa"
+}

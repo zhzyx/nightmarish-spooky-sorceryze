@@ -548,7 +548,11 @@
 /project/                                     @zhzyx
 /releases/                                    @zhzyx
 /samples/                                     @zhzyx
+/samples/ainative-workbench/locomotion_preview_sheet.py @zhzyx @godotengine/buildsystem
 /samples/ainative-workbench/test_unified_settings.py @zhzyx @godotengine/buildsystem
+/samples/gonggong-workbench/fixtures/b05/sample.py @zhzyx @godotengine/buildsystem
+/samples/game-config/tests/                    @zhzyx @godotengine/tests
+/samples/game-config/tests/*.py                @zhzyx @godotengine/tests @godotengine/buildsystem
 /tools/                                       @zhzyx @godotengine/buildsystem
 /tests/editor/                                @godotengine/tests @godotengine/editor
 /tests/editor/*.py                            @godotengine/tests @godotengine/editor @godotengine/buildsystem
@@ -566,4 +570,8 @@
 /engine_next/**/*.py                            @kaiyunxue @godotengine/buildsystem
 /engine_next/Tests/                             @kaiyunxue @godotengine/tests
 /deploy/ @zhzyx
+/deploy/check-native-text.py @zhzyx @godotengine/buildsystem
+/deploy/prepare-native-role-installation.py @zhzyx @godotengine/buildsystem
 /deploy/production/ @zhzyx @godotengine/buildsystem
+
+/tools/skintokens.cpp/tests/ @zhzyx @godotengine/buildsystem @godotengine/tests

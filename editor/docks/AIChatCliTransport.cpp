@@ -32,6 +32,8 @@
 // clang-format off
 #include "AIChatCliTransport.h"
 
+#include "editor/docks/gonggong_process.h"
+
 #include "core/io/dir_access.h"
 #include "core/io/json.h"
 #include "core/os/os.h"
@@ -123,6 +125,7 @@ Error AIChatCliTransport::Submit(const AIChatCliRequest &stRequest, uint64_t nGe
 	if (!stRequest.bReuse)
 	{
 		Cancel();
+		ERR_FAIL_COND_V(HasProcess(), ERR_BUSY);
 	}
 	const Error eWrite = WriteRequest(stRequest);
 	if (eWrite != OK)
@@ -281,6 +284,13 @@ AIChatCliEvent AIChatCliTransport::Poll()
 	{
 		return stEvent;
 	}
+#ifdef MACOS_ENABLED
+	if (stSession.bGroupCancelPending)
+	{
+		CancelSession(stSession);
+		return stEvent;
+	}
+#endif
 	const bool bReceived = ReadPipes();
 	const uint64_t nNow = OS::get_singleton()->get_ticks_msec();
 	const bool bTimeout = bWaiting && (nNow - nLastActivityMillis > 310000 || nNow - nStartedMillis > 1810000);
@@ -313,7 +323,11 @@ AIChatCliEvent AIChatCliTransport::Poll()
 	{
 		return stEvent;
 	}
+#ifdef MACOS_ENABLED
+	stEvent.nExitCode = nLine >= 0 ? 0 : stSession.nGroupExitCode;
+#else
 	stEvent.nExitCode = nLine >= 0 ? 0 : OS::get_singleton()->get_process_exit_code(stSession.nCliProcess);
+#endif
 	stEvent.nGeneration = nRequestGeneration;
 	stEvent.arrBody = nLine >= 0 ? arrOutput.slice(0, nLine) : arrOutput;
 	JSON stResponse;
@@ -348,10 +362,26 @@ AIChatCliEvent AIChatCliTransport::Poll()
 
 void AIChatCliTransport::CancelSession(AIChatSessionTransport &stSaved)
 {
+#ifdef MACOS_ENABLED
+	if (stSaved.nCliProcess >= 0 && !stSaved.bGroupFinished)
+	{
+		const Error eFinish = FinishMacWorkerGroup(stSaved.nCliProcess, true);
+		if (eFinish != OK && eFinish != ERR_DOES_NOT_EXIST)
+		{
+			if (!stSaved.bGroupCancelPending)
+			{
+				RecordMacWorkerGroupFailure(stSaved.nCliProcess, eFinish);
+			}
+			stSaved.bGroupCancelPending = true;
+			return;
+		}
+	}
+#else
 	if (stSaved.nCliProcess >= 0 && OS::get_singleton()->is_process_running(stSaved.nCliProcess))
 	{
 		OS::get_singleton()->kill(stSaved.nCliProcess);
 	}
+#endif
 	stSaved = AIChatSessionTransport();
 }
 
@@ -379,9 +409,32 @@ void AIChatCliTransport::RequestReset()
 	bResetRequested = true;
 }
 
-bool AIChatCliTransport::IsProcessAlive() const
+bool AIChatCliTransport::IsProcessAlive()
 {
+#ifdef MACOS_ENABLED
+	if (!HasProcess() || stSession.bGroupFinished || stSession.bGroupCancelPending)
+	{
+		return false;
+	}
+	const Error eFinish = FinishMacWorkerGroup(stSession.nCliProcess, false, &stSession.nGroupExitCode);
+	if (eFinish != OK && eFinish != ERR_DOES_NOT_EXIST)
+	{
+		if (eFinish != ERR_BUSY)
+		{
+			RecordMacWorkerGroupFailure(stSession.nCliProcess, eFinish);
+			stSession.bGroupCancelPending = true;
+		}
+		return true;
+	}
+	stSession.bGroupFinished = true;
+	if (eFinish == ERR_DOES_NOT_EXIST)
+	{
+		RecordMacWorkerGroupFailure(stSession.nCliProcess, eFinish);
+	}
+	return false;
+#else
 	return HasProcess() && OS::get_singleton()->is_process_running(stSession.nCliProcess);
+#endif
 }
 
 bool AIChatCliTransport::HasProcess() const

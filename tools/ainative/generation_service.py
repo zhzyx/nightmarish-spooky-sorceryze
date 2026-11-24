@@ -20,7 +20,16 @@ from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
 RETIRED_MODELING_MODES = frozenset(("codex_modeling", "codex_sculpt"))
 RETIRED_MODELING_PROVIDERS = frozenset(("codex-modeling", "codex-sculpt"))
-KINDS = ("generate_image", "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
+KINDS = (
+    "generate_image",
+    "text_to_image",
+    "image_to_image",
+    "image_to_mesh",
+    "text_to_mesh",
+    "model_adjust",
+    "human_shape_adjust",
+)
+LOCAL_KINDS = ("garment_split",)
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -52,6 +61,7 @@ MESSAGES = {
     "source_invalid": "源文件格式无效或不受此节点支持。图像输入请选择 PNG/JPEG；网格复制请选择 GLB 或内嵌 glTF。",
     "prompt_missing": "缺少生成提示词。请在节点的提示词参数或文字说明中填写内容后重试。",
     "node_unsupported": "当前生成服务不支持该节点类型。请检查节点类型及“本机设置”的服务模式。",
+    "node_parameters_invalid": "节点包含当前类型不支持的参数。请重新选择该节点并应用表单；旧工作流的空提示词和空关键点占位会自动迁移。",
     "api_key_missing": "未检测到 API 凭据环境变量；请核对本机连接设置并在配置环境变量后重启马良。",
     "node_api_model_invalid": "该节点的 API 模型为空、无效或已下线。请在节点检查器中填写有效的本节点模型 ID。",
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
@@ -111,7 +121,7 @@ def settings(value):
         "image_board_builder_path",
     }:
         raise ServiceError("service_config_invalid")
-    result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
+    result = dict(schema_version=1, mode="comfy", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
     result.update(value)
     if (
         result["schema_version"] != 1
@@ -119,7 +129,6 @@ def settings(value):
         or result["mode"]
         not in (
             *RETIRED_MODELING_MODES,
-            "offline",
             "comfy",
             "codex",
             "kimi_native",
@@ -338,18 +347,6 @@ def _probe_service(value):
             return _probe_kimi(config), {}
         if config["mode"] == "codex":
             return _probe_codex(config)
-        if config["mode"] == "offline":
-            return dict(
-                mode="offline",
-                connected=False,
-                models={"image": [], "mesh": []},
-                capabilities={
-                    kind: dict(ready=False, code="service_not_configured", message=MESSAGES["service_not_configured"])
-                    for kind in KINDS
-                },
-                backend_revision="",
-                message="当前为离线复制演示；未连接真实生成服务。",
-            ), {}
         info = read_endpoint(config["endpoint"], "/object_info")
         if not isinstance(info, dict) or not info or not any(key in info for key in IMAGE_NODES | MESH_NODES):
             raise ServiceError("service_protocol_invalid")
@@ -467,6 +464,7 @@ def _probe_kimi(config):
             text_to_mesh=mesh,
             image_to_mesh=dict(mesh),
             model_adjust=dict(mesh),
+            human_shape_adjust=dict(mesh),
         ),
         backend_revision="kimi-native-3d-v1|"
         + config["model3d_model"]
@@ -569,7 +567,7 @@ def adapt_image_providers(providers, database, batch):
 def check_inputs(model):
     for node in model["nodes"]:
         kind = node.get("type", "copy")
-        if kind not in (*KINDS, "copy"):
+        if kind not in (*KINDS, *LOCAL_KINDS, "copy"):
             raise ServiceError("node_unsupported")
         incoming = [edge for edge in model["edges"] if edge["to"] == node["id"]]
         source = node.get("source", "")
@@ -578,7 +576,7 @@ def check_inputs(model):
         if not isinstance(source_paths, list) or not isinstance(context_paths, list):
             raise ServiceError("source_invalid")
         if (
-            (kind.startswith("image_") or kind == "model_adjust")
+            (kind.startswith("image_") or kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS))
             and not incoming
             and not source
             and not any(source_paths)
@@ -588,17 +586,28 @@ def check_inputs(model):
             raise ServiceError("source_missing")
         if kind == "copy" and len(source_paths) + len(context_paths) > 1:
             raise ServiceError("source_invalid")
-        if kind == "model_adjust" and len([path for path in source_paths if path]) > 1:
+        if kind in (*LOCAL_KINDS,) and context_paths:
+            raise ServiceError("source_invalid")
+        if (
+            kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS)
+            and len([path for path in source_paths if path]) > 1
+        ):
             raise ServiceError("source_invalid")
         for field, paths in (("source", source_paths), ("image_context", context_paths)):
             for path in paths:
                 if not isinstance(path, str) or path and not Path(path).is_file():
                     raise ServiceError("source_missing")
-                model_source = kind == "model_adjust" and field == "source"
-                allowed = (".glb", ".gltf") if model_source else (".png", ".jpg", ".jpeg")
+                model_source = kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS) and field == "source"
+                allowed = (
+                    (".glb",)
+                    if kind in LOCAL_KINDS and model_source
+                    else (".glb", ".gltf")
+                    if model_source
+                    else (".png", ".jpg", ".jpeg")
+                )
                 if kind != "copy" and path and Path(path).suffix.lower() not in allowed:
                     raise ServiceError("source_invalid")
-        if kind in KINDS and kind not in ("image_to_mesh", "model_adjust"):
+        if kind in KINDS and kind not in ("image_to_mesh", "model_adjust", "human_shape_adjust"):
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
             has_image_input = bool(
                 incoming
@@ -632,9 +641,7 @@ def _migrate_node_models(node, config):
     """Accept legacy graphs once; new empty node choices never consult other nodes."""
     kind = node["type"]
     mode = config["mode"]
-    if mode == "offline" and "model" not in node:
-        return
-    mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
+    mesh_kind = kind.endswith("mesh") or kind in ("model_adjust", "human_shape_adjust")
     if "model" not in node:
         if mode in ("api_modeling", "api_sculpt"):
             node["model"] = config.get("api_model", "")
@@ -676,25 +683,57 @@ def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, le
     return snapshot
 
 
-def prepare_provider(config, model, database, run_id):
+def prepare_provider(config, model, database, run_id, local_runtime=None):
     from comfy_provider import ComfyProvider, LocalMeshProvider
     from editor_demo import factory
 
+    if local_runtime is None:
+        local_runtime = {}
+    if (
+        not isinstance(local_runtime, dict)
+        or set(local_runtime) - {"godot_path", "render_script"}
+        or any(not isinstance(value, str) for value in local_runtime.values())
+    ):
+        raise ServiceError("service_config_invalid")
     registry, providers = factory()
-    generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
+    generated = [node for node in model["nodes"] if node.get("type", "copy") in (*KINDS, *LOCAL_KINDS)]
+    local_generated = [node for node in generated if node["type"] in LOCAL_KINDS]
+    generated = [node for node in generated if node["type"] not in LOCAL_KINDS]
+    snapshots, provider_types = {}, {}
+    storage = Path(database).resolve().parent
+    if local_generated:
+        from garment_split_provider import PROVIDER_ID, GarmentSplitProvider
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL
+
+        review_script = local_runtime.get("render_script", "")
+        if not review_script and config.get("builder_path"):
+            review_script = str(Path(config["builder_path"]).with_name("mesh_review.gd"))
+        provider_config = dict(
+            storage=str(storage / "garment-split-state"),
+            planner=dict(endpoint=DEFAULT_ENDPOINT, model=DEFAULT_MODEL, key_env="KIMI_API_KEY"),
+            review_godot_path=local_runtime.get("godot_path", "") or config.get("godot_path", ""),
+            review_script_path=review_script,
+        )
+        providers[PROVIDER_ID] = GarmentSplitProvider(provider_config)
+        snapshots[PROVIDER_ID] = provider_config
+        provider_types[PROVIDER_ID] = "garment_split"
+        for node in local_generated:
+            node["provider"] = PROVIDER_ID
     reject_retired_modeling_nodes(generated)
     if config["mode"] in RETIRED_MODELING_MODES:
         config = settings(config)
         if any(node["type"].endswith("mesh") for node in generated):
             raise ServiceError("gpt_modeling_retired")
-    if any(node["type"] == "model_adjust" and config["mode"] != "kimi_native" for node in generated):
+    if any(
+        node["type"] in ("model_adjust", "human_shape_adjust") and config["mode"] != "kimi_native" for node in generated
+    ):
         raise ServiceError("node_unsupported")
     if not generated:
-        return registry, providers, {"mode": "offline"}
+        if snapshots:
+            return registry, providers, _provider_snapshot("local_tools", snapshots, provider_types)
+        return registry, providers, {"mode": "local_copy"}
     for node in generated:
         _migrate_node_models(node, config)
-    snapshots, provider_types = {}, {}
-    storage = Path(database).resolve().parent
     if config["mode"] in ("api_modeling", "api_sculpt"):
         from api_planner import validate_config
         from modeling_provider import ModelingProvider
@@ -732,7 +771,7 @@ def prepare_provider(config, model, database, run_id):
         return registry, providers, _provider_snapshot(config["mode"], snapshots, provider_types)
 
     if config["mode"] == "kimi_native":
-        from kimi_provider import KimiNativeDirectProvider
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, KimiNativeDirectProvider
         from kimi_work_image_provider import KimiWorkImageProvider
 
         report = _probe_kimi(config)
@@ -742,7 +781,7 @@ def prepare_provider(config, model, database, run_id):
                 raise ServiceError(capability_report.get("code") or "service_not_configured")
         register_workflow(registry)
         for node in generated:
-            mesh_node = node["type"].endswith("mesh") or node["type"] == "model_adjust"
+            mesh_node = node["type"].endswith("mesh") or node["type"] in ("model_adjust", "human_shape_adjust")
             selected = node["model"].strip()
             if mesh_node:
                 if selected not in report["models"]["mesh"]:
@@ -763,6 +802,11 @@ def prepare_provider(config, model, database, run_id):
                         storage=str(storage / "kimi-native-3d-state"),
                         model=selected,
                         texture_model=config.get("texture_model", "v3.5"),
+                        planner=dict(endpoint=DEFAULT_ENDPOINT, model=DEFAULT_MODEL, key_env="KIMI_API_KEY"),
+                        review_godot_path=config.get("godot_path", ""),
+                        review_script_path=str(Path(config["builder_path"]).with_name("mesh_review.gd"))
+                        if config.get("builder_path")
+                        else "",
                     )
                     provider_types[key] = "kimi_native"
                     providers[key] = KimiNativeDirectProvider(snapshots[key])
@@ -932,7 +976,11 @@ def restore_provider(snapshot):
         register_workflow(registry)
         for key, config in snapshot["providers"].items():
             kind = snapshot["provider_types"][key]
-            if kind in ("comfy", "local_mesh"):
+            if kind == "garment_split":
+                from garment_split_provider import GarmentSplitProvider
+
+                providers[key] = GarmentSplitProvider(config)
+            elif kind in ("comfy", "local_mesh"):
                 provider_class = LocalMeshProvider if kind == "local_mesh" else ComfyProvider
                 providers[key] = provider_class(config)
             elif kind == "kimi_native":
@@ -1016,6 +1064,8 @@ def failure(error):
             "glTF must embed dependencies": "source_invalid",
             "invalid GLB": "source_invalid",
             "unregistered node version": "node_unsupported",
+            "unknown parameter": "node_parameters_invalid",
+            "parameter enum mismatch": "node_parameters_invalid",
         }
         code = known.get(str(error), str(error) if str(error) in MULTI_IMAGE_MESSAGES else code)
     return dict(

@@ -1,0 +1,134 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-v10",
+  "issue_number": 1774,
+  "status": "passed",
+  "summary": "真实 Windows headless Godot 读取 AnimationPlayer 场景。12 秒改为 17 秒后只重跑 motion，未改资产沿用原回执；25 秒样例按预期失败。重复提交、并发保存、撤权和相邻阶段回归已通过，共 17 项。",
+  "observed": "2026-11-22T14:12:22.968723+00:00",
+  "source_tree": "82c9b1ba11047203d8233fe086233aba53f09227",
+  "verified_editor": {
+    "sha256": "2f9fd49fce1f23928e9f4368d104b1fa388e1b0f85dbf08270e60ff409a2c59a",
+    "accepted_main": "db5012ded3f34ec7c3f85d8aeba484b57da1dd88"
+  },
+  "checks": [
+    {
+      "case": "test_targeted_scene_recheck[17-passed]",
+      "starts": 1,
+      "changed": 17,
+      "target": "0286b9acdb7ab44f86c7c6fd628007ba8b36a78b4f1d86828ef542af898a91ea",
+      "tool": "motion",
+      "exit": 0,
+      "current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "passed",
+        "checks": {
+          "motion": "passed"
+        }
+      },
+      "asset": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "state": "passed",
+        "checks": {
+          "check": "passed"
+        }
+      },
+      "evidence": "5f166d134380db0465c79c336f8a9b97219b5591fdd0171d37b5fcdda649ba31"
+    },
+    {
+      "case": "test_targeted_scene_recheck[25-failed]",
+      "starts": 1,
+      "changed": 25,
+      "target": "f49caf449c760839ba1f7b35443b287c10f510a100870469fb55970b5009866e",
+      "tool": "motion",
+      "exit": 1,
+      "current": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "sha256": "c58a04d19de5cc255c879eeb7017036fe5fc01325c09374a1f3b616c8bd85555",
+        "state": "failed",
+        "checks": {
+          "motion": "failed"
+        }
+      },
+      "asset": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "state": "passed",
+        "checks": {
+          "check": "passed"
+        }
+      },
+      "evidence": "ead8d113a5727bed0b0d79ba8adc910baba7e43434e6c0bb0acc7434ffce028e"
+    },
+    {
+      "case": "test_recheck_overlap[save]",
+      "status": 409,
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ],
+      "current": {
+        "revision": "54fdf7a68a86bb2195852eb3673783c546b5cc41e7a6c4372d71fd1fb75450f7",
+        "sha256": "79471db67ccfe83b698e3db2d1f7d021f41104e735ab28b829ca1632e69f62e2",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      }
+    },
+    {
+      "case": "test_recheck_overlap[revocation]",
+      "status": 422,
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ],
+      "current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      }
+    },
+    {
+      "case": "test_recheck_overlap[duplicate]",
+      "status": 200,
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ],
+      "current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "passed",
+        "checks": {
+          "motion": "passed"
+        }
+      }
+    }
+  ],
+  "tests": [
+    "test_validation_after_edit[blue-passed]",
+    "test_validation_after_edit[red-failed]",
+    "test_only_changed_check_inputs_expire",
+    "test_targeted_scene_recheck[17-passed]",
+    "test_targeted_scene_recheck[25-failed]",
+    "test_recheck_overlap[save]",
+    "test_recheck_overlap[revocation]",
+    "test_recheck_overlap[duplicate]",
+    "test_original_check_authority_and_policy_required",
+    "test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+    "test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+    "test_unbound_and_mismatched_criteria",
+    "test_revocation_during_stage_check",
+    "test_revoked_evidence_and_contribution_never_release",
+    "test_simultaneous_settlement_reuses_exact_check",
+    "test_stage_receipt_binds_current_editable_revision[True]",
+    "test_stage_receipt_binds_current_editable_revision[False]"
+  ]
+}

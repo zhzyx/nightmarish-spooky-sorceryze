@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2c726d7c2e6cbf285bee0bcca8b30300ba6ac6fc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-migration-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ffbf8fc1e841b5e97024a843c928a6c8bd0d14c883682a0f3b7dc6079aef6890",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1560",
+    "action": "validation",
+    "detection_head": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+    "context_sha256": "8a0f4a65118dbd591546cc49361818758e334f1caef76c4a73e0bad9c22027c2",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f28e-4ecd-78e1-9ef0-232cf5929717",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1560",
+    "diagnosis": "正式预检查要求 data-collection 下独立证据关联本工单。现有报告位于 migration 模块目录。",
+    "next_action": "追加引用真实清单与演练报告摘要的本工单 JSON 并重验提交。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T07:20:22.706346+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T07:22:11.100138+00:00",
+  "sha256": "95593b3a48e5e558bc560463eece3208e7f419c977d5f8ce967866024793350f"
+}

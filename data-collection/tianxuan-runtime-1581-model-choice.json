@@ -1,0 +1,66 @@
+{
+  "issue": 1581,
+  "measured_utc": "2026-11-19T17:46:39.923083+00:00",
+  "source": "Authenticated ordinary HTTP execute and owner status, actual installed Codex CLI, isolated bounded text design.",
+  "cases": [
+    {
+      "ordinary_entry_status_sha256": "b086cea09b8b350355d21750a3c73fb0c5d3e96b1fe73c2f2456ac5e5ac9046a",
+      "entry_state": "delivered",
+      "task_state": "accepted",
+      "selected_profile": "gpt-6.2-astra",
+      "provider_reported_model": "gpt-6.2-astra",
+      "provider_last_tokens": 9244,
+      "role_calls": [
+        {
+          "role": "yanshi",
+          "requested_model": "gpt-6.2-astra",
+          "observed_model": "gpt-6.2-astra",
+          "source": "codex-cli",
+          "normalized_usage": null,
+          "provider_last_tokens": 9534
+        },
+        {
+          "role": "reviewer",
+          "requested_model": "gpt-6.2-astra",
+          "observed_model": "gpt-6.2-astra",
+          "source": "codex-cli",
+          "normalized_usage": null,
+          "provider_last_tokens": 17853
+        }
+      ],
+      "validation_mode": "isolated Windows signer identities in one local operating-system account"
+    },
+    {
+      "ordinary_entry_status_sha256": "7db0b28d6a203ebb24b94ac1a48bd8b450285a317597f201bc3c4aa910d7a71f",
+      "entry_state": "delivered",
+      "task_state": "accepted",
+      "selected_profile": "gpt-6.2-sol",
+      "provider_reported_model": "gpt-6.2-sol",
+      "provider_last_tokens": 9232,
+      "role_calls": [
+        {
+          "role": "yanshi",
+          "requested_model": "gpt-6.2-astra",
+          "observed_model": "gpt-6.2-astra",
+          "source": "codex-cli",
+          "normalized_usage": null,
+          "provider_last_tokens": 9502
+        },
+        {
+          "role": "reviewer",
+          "requested_model": "gpt-6.2-astra",
+          "observed_model": "gpt-6.2-astra",
+          "source": "codex-cli",
+          "normalized_usage": null,
+          "provider_last_tokens": 17846
+        }
+      ],
+      "validation_mode": "isolated Windows signer identities in one local operating-system account"
+    }
+  ],
+  "limits": [
+    "Earlier single-model run predates dedicated local validation mode.",
+    "Reported token counts retain provider last-turn scope. No cross-turn cumulative totals were added.",
+    "Windows cross-account services, Linux activation, and CodeBuddy model calls remain unverified here."
+  ]
+}

@@ -248,6 +248,23 @@ class GitServiceTests(unittest.TestCase):
             self.service.merge(self.repo, "left", "main")
         self.assertEqual(self._git("-C", self.repo, "rev-parse", "main").strip(), main_sha)
 
+    def test_clone_excludes_receive_quarantine_objects(self) -> None:
+        first = self._commit(files={"seed.txt": "seed\n"})
+        # A concurrent receive owns this directory and can remove it at any time.
+        # The clone must transfer reachable objects, not copy this transient tree.
+        quarantine = Path(self.repo) / "objects" / "tmp_objdir-incoming-regression"
+        quarantine.mkdir()
+        (quarantine / "pending-object").write_bytes(b"unpublished receive data")
+        destination = Path(self._temporary.name) / "isolated-clone"
+
+        self.service._clone(Path(self.repo), destination)
+
+        self.assertEqual(self._git("-C", str(destination), "rev-parse", "HEAD").strip(), first)
+        self.assertEqual((destination / "seed.txt").read_text(), "seed\n")
+        self.assertFalse((destination / ".git" / "objects" / quarantine.name).exists())
+        self.assertFalse((destination / ".git" / "objects" / "info" / "alternates").exists())
+        self.assertEqual((quarantine / "pending-object").read_bytes(), b"unpublished receive data")
+
     def test_concurrent_disjoint_commits_and_overlapping_conflict_guard(self) -> None:
         import threading
         from concurrent.futures import ThreadPoolExecutor

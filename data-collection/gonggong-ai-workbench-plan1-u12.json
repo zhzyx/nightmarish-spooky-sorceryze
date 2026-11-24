@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u12",
+  "issue_number": 1809,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809",
+  "observed_at": "2026-11-21T13:45:04.368547+00:00",
+  "source_baseline": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "086c7d7d17416d4bae2c189d9505dab6e2a402533a5939ed855a9e7a5bf700c4",
+    "editor/docks/ai_chat_dock.h": "312593910f9a0aa493a443725c88a9667b655678286b9423bd24da4e7fe871b8",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "7328d4a7afd02ab0a47d82b446aa37c3c0e895d1c0879220112849e08951b787",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "6314af0cc82632c015bea39cef086ee388101f8366459439cd002a0106a8364d",
+    "editor/editor_main_screen.cpp": "ecc5721d7e4a114ee759c1692a0e118ec837a787e0f43b53aae16cb820c11d1f",
+    "editor/plugins/editor_plugin.cpp": "7ce38a71101367812a166436d4fa3b78094b1caf54fecd27638db0aa7523d92a",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "491a88e17cee33c7cfbb22f1e5fde0dc0ad351f574c21b0537ee5d589af7afba",
+    "tests/editor/run_workbench_page_reference.py": "99e18ee0ac972717bbd780a737ce7546c940c42970d66a2f29abee820352d784",
+    "tests/editor/workbench_page_reference.gd": "6960d88a962ce64500aabfaeb2e902c0280a16b747766aa3ca7ed81a4d189b8a",
+    "tests/editor/ai_chat_tab_order.gd": "2da2103c62fdf856ac561b50be02421309908ad7d5dacb17d9832ed16e28f72e",
+    "design-docs/gonggong-ai-workbench-u12.md": "37c098dc82bc29ce5ab1417036fe3362239479fd154b1a45335a3cbe968abea5"
+  },
+  "intake": {
+    "status": "in-progress",
+    "dependencies": {
+      "1864": "closed",
+      "1869": "closed"
+    },
+    "mac_prior_observations": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7060359271",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7062655779"
+    ]
+  },
+  "host": "Windows x86_64; Visual Studio 14.5, Windows SDK 10.0.26100.0, Python 3.14; private headless Godot editor copies and project; loopback model",
+  "build": {
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only-cache> cache_limit=0 --cache-readonly -j6",
+    "sdk": "tools/install_webview2.py --arch x64 --output-dir bin verified pinned SDK manifest",
+    "exit_code": 0,
+    "build_input": "editor/SCsub generated ainative/bundle.gen.h from the narrow-window change in workbench.gd; ainative_editor_plugin.cpp and both editor binaries relinked.",
+    "artifacts_sha256": {
+      "godot.windows.editor.x86_64.exe": "1a9c72757b175a3fd9b8fc8a62405f68d4fb3025501a2656e0db107ea0c87abf",
+      "godot.windows.editor.x86_64.console.exe": "4b88f910a7699bcaa8657e863cd1f53df88932608057a4c2d58db343864117ad",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+    }
+  },
+  "method_learning": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "verified_application": "Used a separate worktree and read-only SCons cache. The embedded Maliang script invalidated the generated native bundle and linked editor. The installed fixture bundle matched current source. No cross-platform inference."
+  },
+  "target_receipt": {
+    "command": "python -X utf8 tests/editor/run_workbench_page_reference.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u12-pages.json",
+    "transport": "Native command palette and original sidebar composer -> localhost chat completions -> persisted user turns. Private extension draft never entered any outbound request.",
+    "history_matches_receiver": true,
+    "editor_exit": 0,
+    "previews": [
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618341108971,
+        "module": "AINativeMainScreen",
+        "name": "马良",
+        "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+      },
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 675.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618341108971,
+        "module": "res://addons/notes/plugin.gd",
+        "name": "R4 Notes",
+        "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+      }
+    ],
+    "received_page_snapshots": [
+      {
+        "module_id": "AINativeMainScreen",
+        "page_name": "马良",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+            "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+          }
+        ]
+      },
+      {
+        "module_id": "res://addons/notes/plugin.gd",
+        "page_name": "R4 Notes",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+            "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+          }
+        ]
+      }
+    ],
+    "request_count": 3,
+    "last_user_content_after_removal": "only the typed question",
+    "source_draft_preserved": true,
+    "source_draft_absent_in_full_requests": true,
+    "rename_rejected_before_removal": true
+  },
+  "narrow_window_fix": {
+    "before": "At width 1200 the 900px minimum of the bundled Maliang page pushed the 326px reference button past the window edge: only 277px remained visible.",
+    "after": "Embedded page uses original scroll container with flexible width. Standalone minimum stays 900px. All six measured reference and composer rectangles were enclosed."
+  },
+  "regressions": {
+    "native": "bin/godot.windows.editor.x86_64.console.exe --headless --test --test-case=*[AIChat]*; 115 tests and 1909 assertions passed, exit 0. Output also included the existing object signal and uninstantiated EditorSettings diagnostics.",
+    "spatial": {
+      "command": "python -X utf8 tests/editor/run_tianshu_spatial.py --references --godot <candidate> --report <report>",
+      "exit_code": 0,
+      "model_requests": 1,
+      "restarts": [
+        {
+          "phase": "stale",
+          "exit_code": 0
+        },
+        {
+          "phase": "legacy",
+          "exit_code": 0
+        }
+      ]
+    },
+    "sidebar": {
+      "command": "python -X utf8 tests/editor/run_ai_chat_tab_order.py --workbench-command --godot <candidate> --report <report>",
+      "result": "passed",
+      "phases": [
+        "initial",
+        "legacy_maliang_last",
+        "legacy_maliang_selected",
+        "pre_daqian_layout",
+        "pre_maliang_layout",
+        "restart"
+      ]
+    },
+    "maliang": {
+      "command": "python -X utf8 tests/editor/run_ainative_builtin.py --godot <candidate> --report <report>",
+      "installed_bundle_matches_source": true,
+      "bundle_version": "7029098f0518b226311ca0633b6889c9ab3330af472d00690c36418bb9de5a1d",
+      "phases": [
+        {
+          "name": "mesh-and-rig",
+          "passed": true,
+          "returncode": 0
+        },
+        {
+          "name": "independent-project",
+          "passed": true,
+          "returncode": 0
+        },
+        {
+          "name": "sample-addon-compatibility",
+          "passed": true,
+          "returncode": 0
+        },
+        {
+          "name": "relocated-runtime",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    }
+  },
+  "scope": "Windows headless controls and geometry; synthetic loopback responses. The cited Mac observations are prior runs on earlier candidates."
+}

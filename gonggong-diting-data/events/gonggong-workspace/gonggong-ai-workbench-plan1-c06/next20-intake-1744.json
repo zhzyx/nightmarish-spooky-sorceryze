@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c06",
+  "event_id": "next20-intake-1744",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1744",
+  "occurred_at": "2026-11-21T12:08:58.944775+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1744,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:08:56Z",
+    "accepted_dependencies": {
+      "1784": "4ed6bfa2aefdebfe10cf3aa9eb96fbea56e58cd6",
+      "1869": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd"
+    },
+    "title": "[方案一 C06] 显式切换业务模块"
+  },
+  "evidence_refs": [],
+  "sha256": "2c859710e8497973a58d3acdad9108619e90c669707c6b1303ac69b0105b3092"
+}

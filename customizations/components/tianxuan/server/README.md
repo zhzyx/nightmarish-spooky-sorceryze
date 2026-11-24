@@ -39,3 +39,30 @@ python -m unittest discover -s customizations/components/tianxuan/server -p "tes
 - 密码使用 PBKDF2-SHA256 + 随机盐；不存明文。
 - 身份与权限由宿主/平台校验，领域层只做范围检查。
 - 事件用于谛听回执与审计；不把凭据、提示词原文或本机路径写入事件。
+
+### 原生编辑器凭据
+
+编辑器先读 `GET /api/v1/auth/config`。在 `accounts` 和 `legacy` 下，原生客户端通过 HTTPS 向 `POST /api/v1/auth/editor-session` 发送 `{"email":"…","password":"…"}`，省略浏览器的 Origin 头。服务端核验密码并复用登录限流，返回 `token`、`credential_id`、`user_id`、`tenant_id`、`email`、`name` 和 `role`。客户端保存令牌后，以 Bearer 调用既有天璇和多宝入口。`GET /api/v1/auth/me` 可回读当前账号和角色。`accounts` 下的文档租户沿用原有业务范围。
+
+设备授权持续到撤销。编辑器以设备令牌调用 `POST /api/v1/auth/logout` 即可退出。设备丢失时，持有人或同租户管理员可在另一会话调用 `GET /api/v1/auth/editor-devices`，按回读的 ID 调用 `DELETE /api/v1/auth/editor-devices/{id}`。同租户管理员可从身份事件中核对签发、撤销的主体及设备 ID。
+
+`keys` 模式由管理员分配个人密钥，原生编辑器以此向 `POST /api/v1/auth/device-session` 登记独立设备授权，将返回的设备凭据保存在系统凭据库，再调用业务端点。设备授权继承来源密钥的期限及撤销状态；退出撤销当前设备授权，不撤销其他设备或来源个人密钥。旧服务明确不支持设备接口时，仅核实身份并临时登录，不保存共享密钥，也不声称已经建立独立设备授权。
+
+宿主首次签发长期个人密钥时沿用部署文档的受信管理员入口，调用 `store.issue_access_key(管理员ID, 接收者ID, 名称, until_revoked=True)`。持有长期管理员个人密钥的管理员也可向 `POST /api/v1/auth/keys` 显式提交 `{"user_id":"…","name":"…","until_revoked":true}`；此时省略 `days`。可在账户管理页或通过 `DELETE /api/v1/auth/keys/{id}` 撤销。
+
+原有按日签发的密钥默认 90 天，支持 1 至 365 天。通过 HTTP 委派时，有限期签发凭据同时限定新密钥的最晚到期时间，返回的 `expires_at` 给出实际期限。长期个人密钥返回 `until-revoked`。设备登录和个人密钥签发分别只返回一次原始令牌。
+
+### 普通工单依赖与人工阶段
+
+工单页进入「工单流程」维护前置工单和阶段图。读取 `GET /api/v1/issues/{id}/work/flow` 可获取真实状态、进度、允许的边及依赖验收状态。向同一路径下的 `configure`、`dependencies`、`advance`、`judge` 提交变更，每次带当前 `expected_version` 和稳定 `call_id`。配置阶段使用 `{id, progress, human}`，流转边使用 `{from, to}`。阶段进度为 0–100，完成阶段 `done` 为 100。离开人工阶段须由用户明确选择目标并确认。
+
+AI 工具 `flow.read`、`flow.configure`、`flow.dependencies`、`flow.advance` 与页面读取同一工单记录。前置工单状态和当前访问权在流转时重新核对；原生托管前置还须有验收记录。旧工单沿用原始流程，新增依赖也约束既有 `issue.transition` 入口。可在隔离任务中先绑定未完成前置、验证推进被拒，再验收前置并确认推进，最后在人工阶段验证退回及完成操作。
+
+
+## Feature 游戏配置
+
+Web 入口为 `/game-config`。创建项目后，按 feature 维护参数、内容与稳定 ID；编辑完成自动保存，协作者收到新版本，同字段冲突保留草稿并要求明确合并。项目本身是 `kind=game_config` 的文曲文档，共享现有身份、租户、ACL 与版本历史。普通文曲编辑和历史恢复同样校验配置，非法快照不会发布。
+
+支持 number、integer、boolean、string、enum、json、reference，定义含当前值、默认值、说明和约束；feature 可关联文曲说明。运行实例通过认证 WebSocket 接收完整快照，游戏应用后显式确认，页面分别显示待应用、已应用与拒绝。离线连接不算应用成功。跨 API 进程的持久版本更新会在活动连接上同步。
+
+接口契约见仓库根 `design-docs/game-config-api-20261120.md`；可运行 Godot 4 接入及热更新验收见 `samples/game-config/README.md`。当前仅开发通用支持平台，没有实际生产游戏接入。服务测试入口为 `python -m pytest customizations/components/tianxuan/server/test_game_config.py`。

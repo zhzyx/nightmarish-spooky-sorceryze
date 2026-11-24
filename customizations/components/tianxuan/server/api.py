@@ -18,11 +18,11 @@ import os
 import threading
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 from urllib.parse import quote
 
 from access_control import configure_access
-from docx_export import render_docx
+from anyio import from_thread
 from duobao_bridge import (
     GitService,
     GitServiceError,
@@ -30,27 +30,36 @@ from duobao_bridge import (
     approved_reviewers,
     ensure_branch_mutation_allowed,
     ensure_checks_passed,
+    ensure_merge_allowed,
     ensure_pr_merge_allowed,
     parse_protected_branches,
 )
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, Response
-from gateway import ModelGateway, create_model_router
+from gateway import ModelGateway, create_model_router, workspace_actor
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
-from pdf_export import render_pdf
+from paragraph_suggestion import ParagraphSuggestion, suggest_paragraph
 from schemas import (
+    BusinessModuleCreate,
+    BusinessModuleName,
     CommentCreateRequest,
     CommentResolveRequest,
     CommitStatusRequest,
+    ConflictResolution,
+    DesignSignoffRequest,
+    DesignSplitRequest,
     DocCreateRequest,
     DocIssueLinkRequest,
     DocMergeRequest,
     DocPatchRequest,
+    DocRestoreRequest,
     DocShareRequest,
     DocUpdateRequest,
     DocVisibilityRequest,
+    ExactMergeRequest,
+    ExactReview,
     ExternalLinkRequest,
     ExternalRequirementRequest,
     FieldPermissionRequest,
@@ -62,11 +71,16 @@ from schemas import (
     IdentityResolveRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
+    IssueAssigneeRequest,
+    IssueClassificationRequest,
     IssueCommentCreateRequest,
+    IssueModuleRequest,
+    IssueParentRequest,
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
     MergeQueueCreateRequest,
+    ModuleLocationRequest,
     PullRequestCreateRequest,
     PullRequestMergeRequest,
     PullRequestReviewRequest,
@@ -79,9 +93,14 @@ from schemas import (
     RequirementCommitRequest,
     RequirementCreateRequest,
     RoleUpdateRequest,
+    SelectedGitCommitRequest,
+    TaskConfirmationRequest,
+    TaskTargetRequest,
     TicketsRequest,
+    ToolCallRequest,
 )
 from tianxuan_core import (
+    DEFAULT_PROJECT,
     NotFound,
     PermissionDenied,
     StorageBusy,
@@ -92,9 +111,8 @@ from tianxuan_core import (
     VersionConflict,
 )
 from webhooks import summarize_gitea_event, verify_gitea_signature
-from wenqu_bridge import build_ai_index, export_markdown, merge_offline
+from wenqu_bridge import build_ai_index, export_markdown, merge_offline, merge_paragraphs
 from wenqu_bridge import classify as classify_markdown
-from wenqu_bridge import search as search_documents
 
 
 def _actor_header_enabled() -> bool:
@@ -117,6 +135,10 @@ def _require_actor(
             session_actor = request.app.state.store.user_for_token(token.strip())
             if not session_actor:
                 raise HTTPException(status_code=401, detail="invalid or expired bearer token")
+            device = request.app.state.store.device_context(token.strip())
+            if device is None:
+                raise HTTPException(401, "device credential expired or revoked")
+            request.state.verified_device = device
             return str(session_actor)
     header_actor = (x_actor or "").strip()
     if header_actor:
@@ -144,6 +166,27 @@ def _websocket_actor(store: Tianxuan, query_params: Any, *, allow_header: bool =
 ActorDep = Annotated[str, Depends(_require_actor)]
 
 
+def _private_actor(request: Request) -> str:
+    # A private location always needs an authenticated session, including in legacy mode.
+    if not getattr(request.state, "verified_actor", None) and not request.headers.get("authorization"):
+        raise HTTPException(status_code=401, detail="authenticated account required")
+    return _require_actor(request, x_actor=None, authorization=request.headers.get("authorization"))
+
+
+PrivateActorDep = Annotated[str, Depends(_private_actor)]
+
+
+async def _selected_commit_body(request: Request) -> SelectedGitCommitRequest:
+    from native_api import _body
+    from pydantic import ValidationError
+
+    data = await _body(request, max_bytes=28 * 1024 * 1024)
+    try:
+        return SelectedGitCommitRequest.model_validate(data)
+    except ValidationError:
+        raise HTTPException(422, "invalid selected commit request") from None
+
+
 class DocRooms:
     """单进程文档房间：连接、成员与广播；跨进程 fan-out 由部署层负责。"""
 
@@ -169,15 +212,18 @@ class DocRooms:
 
     async def broadcast(self, doc_id: str, payload: dict[str, Any]) -> None:
         for peer in list(self._peers.get(doc_id, ())):
+            actor = self._actors.get(peer)
+            if actor is None:
+                continue
             try:
                 try:
-                    self._store.get_doc_shared(self._actors[peer], doc_id)
+                    self._store.get_doc_shared(actor, doc_id)
                 except (NotFound, PermissionDenied):
                     await peer.close(code=4403)
                     self.leave(doc_id, peer)
                     continue
                 await peer.send_json(payload)
-            except (RuntimeError, WebSocketDisconnect):
+            except (OSError, RuntimeError, WebSocketDisconnect):
                 self.leave(doc_id, peer)
 
 
@@ -307,6 +353,7 @@ def create_app(
     native_only: bool = False,
     native_workflow: Any | None = None,
     native_entry: Any | None = None,
+    native_repository: Any | None = None,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     from contextlib import asynccontextmanager
@@ -324,7 +371,28 @@ def create_app(
     app = FastAPI(title="Tianxuan API", version="0.1.0", lifespan=lifespan)
     app.state.store = store
     app.state.native_only = native_only
+    if native_repository is not None:
+        from native_repository_api import create_native_repository_router
+
+        app.state.native_repository = native_repository
+        app.include_router(create_native_repository_router(native_repository))
+    from work_management_api import create_work_router
+
+    store.work_native_store = native_store
+    app.include_router(create_work_router(store, _require_actor, native_workflow))
+    from migration_api import migration_routes
+    from migration_history_api import HISTORY_TOOLS, history_routes
+
+    migration_router, migration_tool = migration_routes(store, _require_actor, native_store)
+    app.include_router(migration_router)
+    history_router, history_tool = history_routes(store, _require_actor, native_store)
+    app.include_router(history_router)
     configure_access(app, store)
+    from workspace_conversations import create_workspace_conversation_router, document_view_paragraphs
+    from workspace_inventory import create_workspace_inventory_router
+
+    app.include_router(create_workspace_conversation_router(store, gateway, native_entry))
+    app.include_router(create_workspace_inventory_router(native_entry, native_store))
     if native_entry is not None:
         from native_entry_api import create_entry_router
 
@@ -342,21 +410,43 @@ def create_app(
 
     if native_workflow is not None:
         from native_api import create_native_workflow_router
+        from native_validation import create_validation_router
 
         if native_workflow.domain is not store:
             raise ValueError("Native workflow must use authenticated domain store")
         app.include_router(create_native_workflow_router(native_workflow))
+        app.include_router(create_validation_router(native_workflow))
     if native_store is not None:
+        from business_asset_api import create_business_asset_router
+        from issue_revision_api import create_issue_revision_router
+        from issue_upload_api import create_issue_upload_router
         from native_api import create_native_router
 
         app.state.native_store = native_store
         app.include_router(create_native_router(native_store))
+        app.include_router(create_business_asset_router(store, native_store))
+        app.include_router(create_issue_revision_router(store, native_store))
+        app.include_router(create_issue_upload_router(store, native_store))
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
     app.state.required_approvals = required_approvals
     app.state.required_checks = tuple(required_checks)
     rooms = DocRooms(store)
+
+    def notify_task_change(issue_id: str, result: dict[str, Any]) -> dict[str, Any]:
+        if native_workflow is not None:
+            native_workflow.judgment_changed(issue_id)
+        return result
+
+    def notify_document_change(document: dict[str, Any]) -> dict[str, Any]:
+        from_thread.run(rooms.broadcast, document["id"], {"type": "changed"})
+        return document
+
+    from game_config_api import create_game_config_router
+
+    app.include_router(create_game_config_router(store, _require_actor, notify_document_change))
+
     if gateway is not None:
         app.include_router(create_model_router(gateway))
 
@@ -455,8 +545,21 @@ def create_app(
 
     # ---------- 身份 ----------
 
+    def check_account_attempt(request: Request, *, editor_device: bool = False) -> None:
+        if app.state.auth_mode != "accounts" and not editor_device:
+            return
+        expected = os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").rstrip("/")
+        origin = request.headers.get("origin")
+        if editor_device and origin is not None:
+            raise HTTPException(403, "native password login required")
+        if origin and origin != expected:
+            raise HTTPException(403, "same-origin request required")
+        if not allow_identity_attempt("account-login", request.client.host if request.client else "unknown"):
+            raise HTTPException(429, "too many authentication attempts")
+
     @app.post("/api/v1/auth/register")
-    def register(payload: RegisterRequest) -> dict[str, str]:
+    def register(payload: RegisterRequest, request: Request) -> dict[str, str]:
+        check_account_attempt(request)
         return store.register(payload.tenant_name, payload.email, payload.password, payload.name or "")  # type: ignore[no-any-return]
 
     @app.post("/api/v1/auth/login")
@@ -467,15 +570,50 @@ def create_app(
         return account  # type: ignore[no-any-return]
 
     @app.post("/api/v1/auth/session")
-    def create_session(payload: LoginRequest) -> dict[str, str]:
+    def create_session(payload: LoginRequest, request: Request):
+        check_account_attempt(request)
         account = store.authenticate(payload.email, payload.password)
         if account is None:
             raise HTTPException(status_code=401, detail="invalid email or password")
         token = store.issue_session(account["user_id"])
-        return {**account, "token": token}  # type: ignore[no-any-return]
+        account = {**account, **(store.device_context(token) or {})}
+        if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
+            from access_control import COOKIE, SESSION_COOKIE
+            from fastapi.responses import JSONResponse
+
+            result = account if request.headers.get("origin") else {**account, "token": token}
+            response = JSONResponse(result, headers={"Cache-Control": "no-store"})
+            response.delete_cookie(COOKIE, path="/", secure=True, httponly=True, samesite="strict")
+            response.set_cookie(
+                SESSION_COOKIE, token, max_age=86400, secure=True, httponly=True, samesite="strict", path="/"
+            )
+            return response
+        return {**account, "token": token}
+
+    @app.post("/api/v1/auth/editor-session")
+    def create_editor_session(payload: LoginRequest, request: Request) -> JSONResponse:
+        if app.state.auth_mode == "keys":
+            raise HTTPException(403, "account access is managed by the administrator")
+        check_account_attempt(request, editor_device=True)
+        grant = store.login_editor_device(payload.email, payload.password)
+        if grant is None:
+            raise HTTPException(401, "invalid email or password")
+        return JSONResponse(grant, headers={"Cache-Control": "no-store"})
 
     @app.post("/api/v1/auth/logout")
-    def logout(authorization: str | None = Header(default=None)) -> dict[str, bool]:
+    def logout(request: Request, authorization: str | None = Header(default=None)):
+        if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
+            from access_control import SESSION_COOKIE
+            from fastapi.responses import JSONResponse
+
+            token = request.cookies.get(SESSION_COOKIE, "")
+            if authorization:
+                scheme, _, value = authorization.partition(" ")
+                if scheme.lower() == "bearer":
+                    token = value.strip()
+            response = JSONResponse({"revoked": store.revoke_session(token)})
+            response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")
+            return response
         scheme, _, token = (authorization or "").partition(" ")
         if scheme.lower() != "bearer" or not token.strip():
             raise HTTPException(status_code=400, detail="Bearer token is required")
@@ -563,10 +701,14 @@ def create_app(
             media_type = "text/html; charset=utf-8"
             extension = "html"
         elif fmt == "docx":
+            from docx_export import render_docx
+
             content = render_docx(title, body_md)
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             extension = "docx"
         else:
+            from pdf_export import render_pdf
+
             content = render_pdf(title, body_md)
             media_type = "application/pdf"
             extension = "pdf"
@@ -579,7 +721,7 @@ def create_app(
 
     @app.patch("/api/v1/docs/{doc_id}")
     def update_doc(doc_id: str, payload: DocUpdateRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.update_doc(  # type: ignore[no-any-return]
+        updated = store.update_doc(
             actor,
             doc_id,
             payload.body_md,
@@ -589,7 +731,8 @@ def create_app(
             call_id=payload.call_id,
         )
 
-    # ---------- 偃师：需求与工单 ----------
+        # ---------- 偃师：需求与工单 ----------
+        return notify_document_change(updated)
 
     @app.post("/api/v1/requirements")
     def create_requirement(payload: RequirementCreateRequest, actor: ActorDep) -> dict[str, Any]:
@@ -611,16 +754,140 @@ def create_app(
 
     # ---------- 司南：工单 ----------
 
+    @app.get("/api/v1/business-modules")
+    def business_modules(actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, list[dict[str, Any]]]:
+        return {"modules": store.list_business_modules(actor, project)}
+
+    @app.post("/api/v1/business-modules")
+    def create_module(payload: BusinessModuleCreate, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.create_business_module(actor, project, payload.name, call_id=payload.call_id))
+
+    @app.patch("/api/v1/business-modules/{module_id}")
+    def rename_module(
+        module_id: str, payload: BusinessModuleName, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.rename_business_module(actor, project, module_id, payload.name))
+
+    @app.get("/api/v1/business-modules/{module_id}/location")
+    def module_location(
+        module_id: str, actor: PrivateActorDep, response: Response, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "private, no-store"
+        return {"location": store.module_location(actor, project, module_id)}
+
+    @app.put("/api/v1/business-modules/{module_id}/location")
+    def save_module_location(
+        module_id: str,
+        payload: ModuleLocationRequest,
+        actor: PrivateActorDep,
+        response: Response,
+        project: str = DEFAULT_PROJECT,
+    ) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "private, no-store"
+        location = store.save_module_location(
+            actor,
+            project,
+            module_id,
+            payload.issue_id,
+            str(payload.conversation_id) if payload.conversation_id else None,
+            payload.position,
+        )
+        return {"location": location}
+
     @app.get("/api/v1/issues")
     def list_issues(
         actor: ActorDep,
         status: str | None = Query(default=None),
         requirement_id: str | None = Query(default=None),
-    ) -> dict[str, list[dict[str, Any]]]:
-        issues = store.list_issues(actor, requirement_id)
-        if status is not None:
-            issues = [issue for issue in issues if issue["status"] == status]
-        return {"issues": issues}
+        project: str | None = Query(default=None),
+        module_id: str | None = Query(default=None),
+        assignee: str | None = Query(default=None),
+        q: str | None = Query(default=None),
+        label: str | None = Query(default=None, min_length=1, max_length=128),
+    ) -> dict[str, Any]:
+        issues = store.list_issues(
+            actor,
+            requirement_id,
+            project=project,
+            module_id=module_id,
+            status=status,
+            assignee=assignee,
+            keyword=q,
+            label=label,
+        )
+        result: dict[str, Any] = {"issues": issues}
+        if assignee or q:
+            result["applied_search"] = {"assignee": assignee or "", "q": q or ""}
+        if label is not None:
+            result["label_filter"] = {"name": label.strip(), "project": project or DEFAULT_PROJECT}
+        return result
+
+    @app.get("/api/v1/issues/by-number/{number}")
+    def read_issue_number(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.read_issue_number(actor, project, number))
+
+    @app.get("/api/v1/issues/by-number/{number}/detail")
+    def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        if native_workflow is not None:
+            return cast(dict[str, Any], native_workflow.issue_detail(actor, project, number))
+        return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
+
+    @app.put("/api/v1/issues/{issue_id}/task-target")
+    def set_task_target(
+        issue_id: str, payload: TaskTargetRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return notify_task_change(issue_id, store.set_task_target(actor, issue_id, project, **payload.model_dump()))
+
+    @app.put("/api/v1/issues/{issue_id}/task-confirmation")
+    def set_task_confirmation(
+        issue_id: str, payload: TaskConfirmationRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return notify_task_change(
+            issue_id, store.set_task_confirmation(actor, issue_id, project, **payload.model_dump())
+        )
+
+    @app.put("/api/v1/issues/{issue_id}/classification")
+    def set_issue_classification(
+        issue_id: str, payload: IssueClassificationRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_classification(
+                actor, issue_id, project, payload.type, payload.labels, payload.expected_type, payload.expected_labels
+            ),
+        )
+
+    @app.get("/api/v1/issues/{issue_id}/hierarchy")
+    def issue_hierarchy(issue_id: str, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.issue_hierarchy(actor, issue_id, project))
+
+    @app.put("/api/v1/issues/{issue_id}/hierarchy")
+    def set_issue_parent(
+        issue_id: str, payload: IssueParentRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_parent(actor, issue_id, project, payload.parent_number, payload.expected_parent_id),
+        )
+
+    @app.get("/api/v1/issues/{issue_id}")
+    def read_issue(issue_id: str, actor: ActorDep) -> dict[str, Any]:
+        return cast(dict[str, Any], store.read_issue(actor, issue_id))
+
+    @app.put("/api/v1/issues/{issue_id}/assignee")
+    def set_issue_assignee(
+        issue_id: str, payload: IssueAssigneeRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_assignee(actor, issue_id, project, payload.assignee_id, payload.expected_assignee_id),
+        )
+
+    @app.put("/api/v1/issues/{issue_id}/module")
+    def set_issue_module(
+        issue_id: str, payload: IssueModuleRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.set_issue_module(actor, issue_id, project, payload.module_id))
 
     @app.patch("/api/v1/issues/{issue_id}")
     def transition_issue(issue_id: str, payload: IssueTransitionRequest, actor: ActorDep) -> dict[str, Any]:
@@ -628,7 +895,9 @@ def create_app(
 
     @app.post("/api/v1/issues/{issue_id}/comments")
     def create_issue_comment(issue_id: str, payload: IssueCommentCreateRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.add_issue_comment(actor, issue_id, payload.body)  # type: ignore[no-any-return]
+        return store.add_issue_comment(  # type: ignore[no-any-return]
+            actor, issue_id, payload.body, payload.parent_id, call_id=payload.call_id
+        )
 
     @app.get("/api/v1/issues/{issue_id}/comments")
     def list_issue_comments(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -757,13 +1026,7 @@ def create_app(
         q: str = Query(min_length=1),
         limit: int = Query(default=20, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
-        documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
-        by_id = {document["id"]: document for document in documents}
-        results = []
-        for item in search_documents(documents, q)[:limit]:
-            document = by_id.get(item["id"], {})
-            results.append({**item, "title": document.get("title", ""), "kind": document.get("kind", "doc")})
-        return {"results": results}
+        return cast(dict[str, list[dict[str, Any]]], store.search_docs(actor, q, limit))
 
     @app.get("/api/v1/docs/{doc_id}/export")
     def export_doc(doc_id: str, actor: ActorDep) -> dict[str, str]:
@@ -771,9 +1034,25 @@ def create_app(
         return {"filename": f"{doc_id}.md", "markdown": export_markdown(document)}
 
     @app.get("/api/v1/docs/{doc_id}/ai-view")
-    def ai_view(doc_id: str, actor: ActorDep) -> dict[str, Any]:
+    def ai_view(
+        doc_id: str,
+        actor: ActorDep,
+        include_body: bool = True,
+        start_line: int = Query(default=1, ge=1),
+        max_lines: int | None = Query(default=None, ge=1),
+        max_chars: int | None = Query(default=None, ge=1),
+        expected_version: int | None = Query(default=None, ge=1),
+    ) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
-        return store.ai_view(doc_id)  # type: ignore[no-any-return]
+        result = store.ai_view(
+            doc_id,
+            include_body=include_body,
+            start_line=start_line,
+            max_lines=max_lines,
+            max_chars=max_chars,
+            expected_version=expected_version,
+        )
+        return cast(dict[str, Any], result)
 
     @app.post("/api/v1/docs/{doc_id}/classify")
     def classify_doc(doc_id: str, actor: ActorDep) -> dict[str, list[str]]:
@@ -782,13 +1061,40 @@ def create_app(
 
     # ---------- 文曲：离线草稿合并 ----------
 
+    def merge_inputs(doc_id: str, payload: DocMergeRequest, actor: str) -> tuple[dict[str, Any], str]:
+        document = store.get_doc_shared(actor, doc_id, write=True)
+        if not 1 <= payload.expected_version <= document["version"]:
+            raise VersionConflict("draft base version is outside document history")
+        base = store.version(doc_id, payload.expected_version)["body_md"]
+        if payload.base_md != base:
+            raise VersionConflict("draft base content does not match its version")
+        return document, base
+
+    @app.post("/api/v1/docs/{doc_id}/merge/preview")
+    def preview_paragraph_merge(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document, base = merge_inputs(doc_id, payload, actor)
+        remote = document["body_md"]
+        sections: list[dict[str, str]] = []
+        merged, conflicts = merge_paragraphs(base, payload.local_md, remote, sections=sections)
+        if conflicts:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "status": "conflict",
+                    "remote_md": remote,
+                    "sections": sections,
+                    "remote_version": document["version"],
+                },
+            )
+        return {"status": "ready", "body_md": merged, "remote_version": document["version"], "remote_md": remote}
+
     @app.post("/api/v1/docs/{doc_id}/merge")
     def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
-        document = store.get_doc_shared(actor, doc_id, write=True)
+        document, base = merge_inputs(doc_id, payload, actor)
         if document["version"] == payload.expected_version:
             updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
-            return {"status": "applied", "doc": updated}
-        merged_md, conflicts = merge_offline(payload.base_md, payload.local_md, document["body_md"])
+            return {"status": "applied", "doc": notify_document_change(updated)}
+        merged_md, conflicts = merge_offline(base, payload.local_md, document["body_md"])
         if conflicts:
             return JSONResponse(
                 status_code=409,
@@ -799,7 +1105,7 @@ def create_app(
                 },
             )
         updated = store.update_doc(actor, doc_id, merged_md, document["version"])
-        return {"status": "merged", "doc": updated, "remote_version": document["version"]}
+        return {"status": "merged", "doc": notify_document_change(updated), "remote_version": document["version"]}
 
     # ---------- 文曲：文档链接与反向链接 ----------
 
@@ -883,24 +1189,22 @@ def create_app(
 
     # ---------- 文曲：AI 结构化补丁 ----------
 
+    @app.post("/api/v1/docs/{doc_id}/paragraph-suggestion")
+    def preview_paragraph(doc_id: str, payload: ParagraphSuggestion, request: Request) -> dict[str, Any]:
+        actor = workspace_actor(request, write=True)
+        preview: dict[str, Any] = suggest_paragraph(store, gateway, actor, doc_id, payload)
+        return preview
+
     @app.post("/api/v1/docs/{doc_id}/patch")
     def patch_doc(doc_id: str, payload: DocPatchRequest, actor: ActorDep) -> dict[str, Any]:
-        document = store.get_doc_shared(actor, doc_id, write=True)
-        if document["version"] != payload.expected_version:
-            raise VersionConflict(
-                f"version mismatch: expected {payload.expected_version}, current {document['version']}"
-            )
-        body = document["body_md"]
-        for operation in payload.patches:
-            if not operation.find:
-                raise TianxuanError("patch find must not be empty")
-            occurrences = body.count(operation.find)
-            if occurrences == 0:
-                raise TianxuanError(f"patch target not found: {operation.find!r}")
-            if occurrences > 1:
-                raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {operation.find!r}")
-            body = body.replace(operation.find, operation.replace, 1)
-        return store.update_doc(actor, doc_id, body, payload.expected_version)  # type: ignore[no-any-return]
+        result = store.patch_doc(
+            actor,
+            doc_id,
+            payload.expected_version,
+            [operation.model_dump() for operation in payload.patches],
+            call_id=payload.call_id,
+        )
+        return notify_document_change(result)
 
     # ---------- 文曲：版本历史与差异 ----------
 
@@ -914,13 +1218,38 @@ def create_app(
         store.get_doc_shared(actor, doc_id)
         return store.version(doc_id, version)  # type: ignore[no-any-return]
 
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def get_design_signoff(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def confirm_design(doc_id: str, version: int, payload: DesignSignoffRequest, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version, payload.acceptance)}
+
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}/tasks")
+    def design_tasks(doc_id: str, version: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return {"tasks": store.design_tasks(actor, doc_id, version, project)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/tasks")
+    def split_design(
+        doc_id: str, version: int, payload: DesignSplitRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        items = [item.model_dump() for item in payload.items]
+        return {"tasks": store.split_design(actor, doc_id, version, project, items, payload.call_id)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/restore")
+    def restore_version(doc_id: str, version: int, payload: DocRestoreRequest, actor: ActorDep) -> dict[str, Any]:
+        updated = store.restore_doc(actor, doc_id, version, payload.expected_version, call_id=payload.call_id)
+        return notify_document_change(updated)
+
     @app.get("/api/v1/docs/{doc_id}/diff")
     def diff_versions(
         doc_id: str,
         actor: ActorDep,
         from_version: int = Query(ge=1),
         to_version: int = Query(ge=1),
-    ) -> dict[str, str]:
+        paragraphs: bool = False,
+    ) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
         before = store.version(doc_id, from_version)["body_md"]
         after = store.version(doc_id, to_version)["body_md"]
@@ -933,7 +1262,30 @@ def create_app(
                 lineterm="",
             )
         )
-        return {"diff": diff}
+        if not paragraphs:
+            return {"diff": diff}
+        old, new = document_view_paragraphs(before), document_view_paragraphs(after)
+        changes = []
+        for tag, i, end_i, j, end_j in difflib.SequenceMatcher(None, old, new, autojunk=False).get_opcodes():
+            if tag == "equal":
+                continue
+            for offset in range(max(end_i - i, end_j - j)):
+                left = i + offset + 1 if i + offset < end_i else None
+                right = j + offset + 1 if j + offset < end_j else None
+                text = new[right - 1] if right is not None else old[i + offset]
+                changes.append({"before": left, "after": right, "preview": text.split("\n", 1)[0][:96]})
+        try:
+            store.editable_doc_body(actor, doc_id, to_version)
+            editable = True
+        except (PermissionDenied, VersionConflict):
+            editable = False
+        return {
+            "diff": diff,
+            "from_version": from_version,
+            "to_version": to_version,
+            "changes": changes,
+            "editable": editable,
+        }
 
     # ---------- 多宝：Gitea 仓库接入 ----------
 
@@ -942,6 +1294,7 @@ def create_app(
         return {
             "configured": bool(os.environ.get("TIANXUAN_GITEA_URL") and os.environ.get("TIANXUAN_GITEA_TOKEN")),
             "owner": os.environ.get("TIANXUAN_GITEA_OWNER", ""),
+            "revision_guards": True,
         }
 
     @app.get("/api/v1/repos")
@@ -955,7 +1308,10 @@ def create_app(
             with client:
                 return {"repos": client.list_repos(owner, limit)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos")
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
@@ -968,7 +1324,10 @@ def create_app(
                     payload.name, payload.private, payload.default_branch
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}")
     def get_repo(owner: str, name: str, actor: ActorDep) -> dict[str, Any]:
@@ -977,7 +1336,10 @@ def create_app(
             with client:
                 return client.get_repo(owner, name)  # type: ignore[no-any-return]
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/branches")
     def list_repo_branches(owner: str, name: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -986,7 +1348,10 @@ def create_app(
             with client:
                 return {"branches": client.list_branches(owner, name)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/releases")
     def create_repo_release(
@@ -1003,7 +1368,10 @@ def create_app(
                     owner, name, payload.tag_name, payload.name, payload.body, payload.draft, payload.prerelease
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.patch("/api/v1/repos/{owner}/{name}/releases/{release_id}")
     def update_repo_release(
@@ -1017,6 +1385,15 @@ def create_app(
         client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
+                if payload.expected_release is not None:
+                    expected = payload.expected_release.model_dump()
+                    current = client.get_release(owner, name, release_id)
+                    if any(current.get(key) != value for key, value in expected.items()):
+                        raise HTTPException(
+                            status_code=409, detail="release changed; refresh and reconcile the retained draft"
+                        )
+                    # Gitea has no release CAS. This detects known stale drafts, not an
+                    # atomic exclusion of writers accessing Gitea directly.
                 return client.update_release(  # type: ignore[no-any-return]
                     owner,
                     name,
@@ -1027,7 +1404,10 @@ def create_app(
                     prerelease=payload.prerelease,
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/releases")
     def list_repo_releases(
@@ -1040,7 +1420,10 @@ def create_app(
             with client:
                 return {"releases": client.list_releases(owner, name)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/pulls")
     def list_repo_pulls(
@@ -1056,7 +1439,10 @@ def create_app(
             with client:
                 return {"pulls": client.list_pull_requests(owner, name, state, page, limit)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls")
     def create_repo_pull(
@@ -1073,7 +1459,10 @@ def create_app(
                     owner, name, payload.title, payload.head, payload.base, payload.body
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/merge")
     def merge_repo_pull(
@@ -1087,11 +1476,25 @@ def create_app(
         try:
             with client:
                 pull = client.get_pull_request(owner, name, number)
+                if payload.expected_head_sha is not None and pull.get("head_sha") != payload.expected_head_sha:
+                    raise HTTPException(status_code=409, detail="pull request head changed; review the current commit")
+                if payload.expected_base is not None and pull.get("base") != payload.expected_base:
+                    raise HTTPException(
+                        status_code=409, detail="pull request target changed; confirm the current target"
+                    )
                 base = str(pull.get("base") or "")
                 if not base:
                     raise HTTPException(status_code=502, detail="pull request base branch is missing")
                 required = int(getattr(app.state, "required_approvals", 0) or 0)
                 reviews = client.list_reviews(owner, name, number) if required else []
+                if payload.expected_head_sha is not None:
+                    reviews = [
+                        review
+                        for review in reviews
+                        if review.get("commit_id") == payload.expected_head_sha
+                        and not review.get("stale")
+                        and not review.get("dismissed")
+                    ]
                 ensure_pr_merge_allowed(
                     base,
                     _policy_patterns(app),
@@ -1107,12 +1510,19 @@ def create_app(
                         raise HTTPException(status_code=502, detail="pull request head sha is missing")
                     ensure_checks_passed(client.list_commit_statuses(owner, name, head_sha), required_checks)
                 return client.merge_pull_request(  # type: ignore[no-any-return]
-                    owner, name, number, payload.method
+                    owner,
+                    name,
+                    number,
+                    payload.method,
+                    **({"head_commit_id": payload.expected_head_sha} if payload.expected_head_sha is not None else {}),
                 )
         except PolicyError as error:
             raise HTTPException(status_code=403, detail=str(error)) from error
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
     def list_repo_pull_reviews(owner: str, name: str, number: int, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -1121,7 +1531,10 @@ def create_app(
             with client:
                 return {"reviews": client.list_reviews(owner, name, number)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
     def create_repo_pull_review(
@@ -1135,11 +1548,29 @@ def create_app(
         client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
+                if payload.expected_head_sha is not None or payload.expected_base is not None:
+                    pull = client.get_pull_request(owner, name, number)
+                    if payload.expected_head_sha is not None and pull.get("head_sha") != payload.expected_head_sha:
+                        raise HTTPException(
+                            status_code=409, detail="pull request head changed; review the current commit"
+                        )
+                    if payload.expected_base is not None and pull.get("base") != payload.expected_base:
+                        raise HTTPException(
+                            status_code=409, detail="pull request target changed; confirm the current target"
+                        )
                 return client.create_review(  # type: ignore[no-any-return]
-                    owner, name, number, event=payload.event, body=payload.body
+                    owner,
+                    name,
+                    number,
+                    event=payload.event,
+                    body=payload.body,
+                    **({"commit_id": payload.expected_head_sha} if payload.expected_head_sha is not None else {}),
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/commits/{sha}/statuses")
     def list_repo_commit_statuses(
@@ -1153,7 +1584,10 @@ def create_app(
             with client:
                 return {"statuses": client.list_commit_statuses(owner, name, sha)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/statuses/{sha}")
     def create_repo_commit_status(
@@ -1177,7 +1611,10 @@ def create_app(
                     target_url=payload.target_url,
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     # ---------- 多宝：仓库绑定与 webhook ----------
 
@@ -1305,6 +1742,42 @@ def create_app(
         repo = _repo_under_root(name)
         try:
             return {"branches": GitService().list_branches(repo)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/selected-commits/{sha}")
+    def selected_commit_receipt(name: str, sha: str, branch: str, base: str, actor: PrivateActorDep) -> dict[str, str]:
+        from selected_commit import receipt
+
+        repo = _repo_under_root(name)
+        try:
+            GitService().branch_tip(repo, branch)
+            return cast(dict[str, str], receipt(repo, branch, base, sha))
+        except (GitServiceError, ValueError, OSError) as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/selected-commits")
+    def receive_selected_commit(
+        name: str, actor: PrivateActorDep, payload: Annotated[SelectedGitCommitRequest, Depends(_selected_commit_body)]
+    ) -> dict[str, str]:
+        from selected_commit import receive
+
+        repo = _repo_under_root(name)
+        try:
+            ensure_merge_allowed(payload.branch, _policy_patterns(app), actor_role=store.role_of(actor), path="direct")
+            # Resolve a real repository root and the exact branch, as for the G10 toolbar.
+            GitService().branch_tip(repo, payload.branch)
+            return cast(dict[str, str], receive(repo, **payload.model_dump()))
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        except (GitServiceError, ValueError, OSError) as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/branch-tip")
+    def git_branch_tip(name: str, actor: ActorDep, branch: str = Query(min_length=1)) -> dict[str, str]:
+        repo = _repo_under_root(name)
+        try:
+            return {"branch": branch, "sha": GitService().branch_tip(repo, branch)}
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -1552,6 +2025,159 @@ def create_app(
 
     if merge_queue is not None:
 
+        def exact_request_view(item: dict[str, Any]) -> dict[str, Any]:
+            evidence = item["evidence"]
+            return {
+                "id": item["id"],
+                "source": item["source"],
+                "target": item["target"],
+                **evidence["exact_request"],
+                "check_state": item["check_state"],
+                "issue_id": evidence.get("binding", {}).get("issue_ref", ""),
+                "reviews": evidence.get("reviews", {}),
+                "merge_sha": evidence.get("merge_sha", ""),
+                "resolved_from": evidence.get("resolved_from", ""),
+                "checks": [
+                    {"command": check["command"], "exit_code": check["exit_code"]}
+                    for check in evidence.get("checks", [])
+                ],
+            }
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests")
+        def create_exact_request(name: str, payload: ExactMergeRequest, actor: PrivateActorDep) -> dict[str, Any]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot enqueue merge candidates")
+            repo = _repo_under_root(name)
+            try:
+                if payload.issue_id:
+                    store.issue_snapshot(actor, payload.issue_id, write=True)
+                item = merge_queue.enqueue(
+                    actor,
+                    str(repo),
+                    payload.source,
+                    payload.target,
+                    candidate=payload.candidate,
+                    issue_ref=payload.issue_id,
+                )
+            except PolicyError as error:
+                raise HTTPException(status_code=403, detail=str(error)) from error
+            except (GitServiceError, ValueError, OSError) as error:
+                raise HTTPException(status_code=409, detail=str(error)) from error
+            return exact_request_view(item)
+
+        def exact_item(name, item_id, actor, *, write=False):
+            repo = _repo_under_root(name)
+            try:
+                item = merge_queue.get(item_id)
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge request not found") from error
+            if (
+                item["repo"] != str(repo)
+                or "exact_request" not in item["evidence"]
+                or store.actor_context(item["created_by"])["tenant"] != store.actor_context(actor)["tenant"]
+            ):
+                raise HTTPException(status_code=404, detail="merge request not found")
+            issue_id = item["evidence"].get("binding", {}).get("issue_ref")
+            if issue_id:
+                store.issue_snapshot(actor, issue_id, write=write)
+            if write and store.role_of(actor) == "viewer":
+                raise PermissionDenied("An editor account is required")
+            return item
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}")
+        def read_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            return exact_request_view(exact_item(name, item_id, actor))
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}/conflicts")
+        def request_conflicts(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            from exact_integration import conflict_files
+
+            item = exact_item(name, item_id, actor)
+            if item["check_state"] != "conflict":
+                raise HTTPException(409, "A current conflicted request is required")
+            try:
+                return {"id": item_id, "files": conflict_files(merge_queue.git.git_executable, item)}
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/resolve")
+        def resolve_exact_request(
+            name: str, item_id: str, payload: ConflictResolution, actor: PrivateActorDep
+        ) -> dict[str, Any]:
+            from exact_integration import resolved_candidate
+
+            item = exact_item(name, item_id, actor, write=True)
+            if item["created_by"] != actor or item["check_state"] != "conflict":
+                raise HTTPException(409, "Resolve a current conflicted request owned by this account")
+            try:
+                # A resolution always creates its own branch, including under wildcard protection.
+                choices = {path: choice.model_dump(exclude_unset=True) for path, choice in payload.files.items()}
+                branch, oid = resolved_candidate(
+                    merge_queue.git.git_executable,
+                    item,
+                    choices,
+                    authorize=lambda branch: ensure_branch_mutation_allowed(
+                        branch, _policy_patterns(app), actor_role=store.role_of(actor), operation="create"
+                    ),
+                )
+                result = merge_queue.enqueue(
+                    actor,
+                    item["repo"],
+                    branch,
+                    item["target"],
+                    candidate=oid,
+                    issue_ref=item["evidence"].get("binding", {}).get("issue_ref", ""),
+                    resolved_from=item_id,
+                )
+                return exact_request_view(result)
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/review")
+        def review_exact_request(
+            name: str, item_id: str, payload: ExactReview, actor: PrivateActorDep
+        ) -> dict[str, Any]:
+            exact_item(name, item_id, actor, write=True)
+            try:
+                return exact_request_view(merge_queue.reviewed_delivery(item_id, actor, review=payload.decision))
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/deliver")
+        def deliver_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            item = exact_item(name, item_id, actor, write=True)
+            try:
+                result = merge_queue.reviewed_delivery(
+                    item_id, actor, approvals=app.state.required_approvals, required_checks=app.state.required_checks
+                )
+                view = exact_request_view(result)
+                target_tip = merge_queue.git.branch_tip(item["repo"], item["target"])
+                from exact_integration import git
+
+                if git(
+                    merge_queue.git.git_executable,
+                    item["repo"],
+                    "merge-base",
+                    "--is-ancestor",
+                    view["merge_sha"],
+                    target_tip,
+                    check=False,
+                ).returncode:
+                    raise ValueError("Target no longer contains the delivered commit")
+                text = (
+                    f"多宝交付 {name} · {item['target']} @ {view['merge_sha']} · 候选 {view['candidate']} · {item_id}"
+                )
+                note = store.add_issue_comment(actor, view["issue_id"], text, call_id="duobao:" + item_id)
+                return {**view, "target_tip": target_tip, "comment_id": note["id"]}
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
         @app.post("/api/v1/merge-queue")
         def enqueue_merge(payload: MergeQueueCreateRequest, actor: ActorDep) -> dict[str, Any]:
             if store.role_of(actor) == "viewer":
@@ -1765,6 +2391,44 @@ def create_app(
             not in {"/api/v1/requirements/{request_id}/commit", "/api/v1/requirements/{request_id}/git-file"}
         ]
 
+    @app.post("/api/v1/tools")
+    def call_tool(payload: ToolCallRequest, actor: ActorDep) -> dict[str, Any]:
+        document_tools = {"doc.read", "doc.list", "doc.search", "doc.create", "doc.update", "doc.patch", "doc.restore"}
+        from issue_flow import TOOLS as FLOW_TOOLS
+
+        available_tools = (
+            document_tools
+            | FLOW_TOOLS
+            | {
+                "requirement.create",
+                "requirement.plan",
+                "issue.create",
+                "issue.transition",
+                "issue.list",
+            }
+        )
+        migration_tools = {"migration.entry", "migration.status", "migration.start"}
+        if payload.name not in available_tools | migration_tools | HISTORY_TOOLS:
+            raise HTTPException(status_code=400, detail="unknown tool")
+        public_workspace = os.environ.get("TIANXUAN_AUTH_MODE") == "accounts" and store.actor_context(actor)[
+            "tenant"
+        ] != os.environ.get("TIANXUAN_TENANT_ID")
+        if public_workspace and payload.name not in document_tools:
+            raise HTTPException(status_code=403, detail="this workspace is limited to document tools")
+        try:
+            if payload.name in HISTORY_TOOLS:
+                return cast(dict[str, Any], history_tool(actor, payload.name, payload.payload, payload.call_id))
+            if payload.name in migration_tools:
+                return cast(dict[str, Any], migration_tool(actor, payload.name, payload.payload, payload.call_id))
+            result = cast(
+                dict[str, Any], store.dispatch_tool(actor, payload.name, payload.payload, call_id=payload.call_id)
+            )
+            if payload.name in {"doc.update", "doc.patch", "doc.restore"}:
+                return notify_document_change(result)
+            return result
+        except (TypeError, KeyError) as error:
+            raise HTTPException(status_code=422, detail="invalid tool arguments") from error
+
     @app.get("/api/v1/capabilities")
     def capabilities() -> dict[str, Any]:
         installation = native_entry.installation.verify() if native_entry is not None else None
@@ -1775,6 +2439,7 @@ def create_app(
             "issues": True,
             "models": gateway is not None,
             "native_candidates": native_store is not None,
+            "native_repository": native_repository is not None,
             "native_execution": {
                 "enabled": installation is not None,
                 "mode": installation["mode"] if installation else "unconfigured",

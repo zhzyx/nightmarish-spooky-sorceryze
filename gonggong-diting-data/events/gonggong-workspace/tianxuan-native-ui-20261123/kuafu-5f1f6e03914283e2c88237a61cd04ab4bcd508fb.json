@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5f1f6e03914283e2c88237a61cd04ab4bcd508fb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e913251435659e6c330cb3b3886e372319d3004c1d15d38cdfb9cb169be7601b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "c4886df2b5af55ea0a44e90b6de7d995e04c25af",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "local:validation-r6; old bridge 2 failures/1 pass; repaired bridge and Git/native suites 27 passed; compiled native 125 and branch/restart 13 passed",
+    "diagnosis": "Integrated main a5c70178 applies remote credential binding before local Git diff/preview. Reproduced with legacy token and identity. This task owns the narrow compatibility repair; remote write credential guards and materialized native authentication remain enforced.",
+    "next_action": "Independently review helper and regression, deliver signed candidate with exact-head CI, then read back main; Windows manual display and IME remain pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T20:48:45.026814+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T20:51:35.161884+00:00",
+  "sha256": "23e18f5e3ca8c78d7f10031136b4f1bf9b3ff7a15a48499a7e99d5050bd541af"
+}

@@ -1,0 +1,206 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "recorded_at": "2026-11-23T21:35:26.572537+00:00",
+  "code_delivery": {
+    "headRefOid": "44e581845869cdff8d6e7a326de545455c70ed44",
+    "mergeCommit": {
+      "oid": "25e1e6f057b8c045c3a0d4aec8f61fc571533d6d"
+    },
+    "mergedAt": "2026-11-23T21:32:44Z",
+    "mergedBy": {
+      "id": "U_kgDOFOKx7w",
+      "is_bot": false,
+      "login": "Sail-Li",
+      "name": ""
+    },
+    "state": "MERGED",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2174"
+  },
+  "candidate": "64802afd38612254bd41deb34c94d8b97b68008a",
+  "main_content_readback": {
+    "main": "25e1e6f057b8c045c3a0d4aec8f61fc571533d6d",
+    "delivered_paths_differ": []
+  },
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T20:57:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624695/job/138008137572",
+      "name": "issue-association",
+      "startedAt": "2026-11-23T20:57:12Z",
+      "status": "COMPLETED",
+      "workflowName": "GongGong Issue association"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T20:57:28Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008135768",
+      "name": "CI / Select changed modules",
+      "startedAt": "2026-11-23T20:57:12Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T20:57:50Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624303/job/138008135165",
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "startedAt": "2026-11-23T20:57:12Z",
+      "status": "COMPLETED",
+      "workflowName": "🔗 GHA"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T20:57:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008312095",
+      "name": "Module / ci",
+      "startedAt": "2026-11-23T20:57:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T20:58:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008312124",
+      "name": "Module / editor",
+      "startedAt": "2026-11-23T20:57:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:11:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008312576",
+      "name": "editor-native / Editor (target=editor)",
+      "startedAt": "2026-11-23T20:57:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:31:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624303/job/138008525546",
+      "name": "Compile affected Metal targets",
+      "startedAt": "2026-11-23T20:57:53Z",
+      "status": "COMPLETED",
+      "workflowName": "🔗 GHA"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:02:50Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624303/job/138008526900",
+      "name": "🏁 Windows / Editor (target=editor)",
+      "startedAt": "2026-11-23T20:57:52Z",
+      "status": "COMPLETED",
+      "workflowName": "🔗 GHA"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:13:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008312597",
+      "name": "tianxuan-tests / Module and web tests",
+      "startedAt": "2026-11-23T20:57:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:04:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138008312698",
+      "name": "tianxuan-deploy / Docker images",
+      "startedAt": "2026-11-23T20:57:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-23T21:13:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/job/138017820806",
+      "name": "CI / Modular tests",
+      "startedAt": "2026-11-23T21:13:12Z",
+      "status": "COMPLETED",
+      "workflowName": "Modular CI"
+    }
+  ],
+  "windows_reports": [
+    {
+      "file": "controller.json",
+      "checks": 125,
+      "passed": true,
+      "binary_sha256": "e860492d1d5f036828cfb6bb42b8836a6b5dc7af63e2d88b7bd98b789d09a13a",
+      "tracked_input_match": true
+    },
+    {
+      "file": "execution-controls.json",
+      "checks": 36,
+      "passed": true,
+      "binary_sha256": "e860492d1d5f036828cfb6bb42b8836a6b5dc7af63e2d88b7bd98b789d09a13a",
+      "tracked_input_match": true
+    },
+    {
+      "file": "execution.json",
+      "checks": 17,
+      "passed": true,
+      "binary_sha256": "e860492d1d5f036828cfb6bb42b8836a6b5dc7af63e2d88b7bd98b789d09a13a",
+      "tracked_input_match": true
+    },
+    {
+      "file": "layout.json",
+      "checks": 164,
+      "passed": true,
+      "binary_sha256": "e860492d1d5f036828cfb6bb42b8836a6b5dc7af63e2d88b7bd98b789d09a13a",
+      "tracked_input_match": true
+    },
+    {
+      "file": "races.json",
+      "checks": 21,
+      "passed": true,
+      "binary_sha256": "e860492d1d5f036828cfb6bb42b8836a6b5dc7af63e2d88b7bd98b789d09a13a",
+      "tracked_input_match": true
+    }
+  ],
+  "windows_artifact": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/artifacts/14863210733",
+  "acceptance": {
+    "satisfied_criteria": 8,
+    "total_criteria": 9,
+    "passed": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A8",
+      "A9"
+    ],
+    "partial": {
+      "A7": "macOS presentation accepted by user. Windows automatic checks passed; real-window display and Chinese IME await user feedback. Exhaustive IME/DPI combinations are not inferred from satisfaction."
+    },
+    "issue_state": "OPEN",
+    "evidence_summary": "data-collection/tianxuan-native-ui-20261124-validation-r6.json",
+    "independent_review": "data-collection/tianxuan-native-ui-20261124-review-9.json"
+  },
+  "retention": {
+    "task_worktree": "Retained for pending display feedback and potential repair.",
+    "private_preview": "User-opened preview retained; installed editor not replaced.",
+    "audit_receipts": "Private reports retained until full acceptance and cleanup; public summaries are committed."
+  },
+  "limits": [
+    "Execution role programs in automated checks are deterministic-test fixtures, not live-provider acceptance.",
+    "Headless shutdown diagnostics remain recorded.",
+    "Upstream target-branch and release edits retain the documented post-check race.",
+    "Bug #2157 remains open; the separate macOS rebind-path defect was not fixed by this UI delivery."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "request_id": "macos-startup-validation-sidecars",
+  "issue_number": 2123,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45062919388",
+  "step": 17,
+  "commit": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+  "artifact": 14771815768,
+  "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+  "cold": {
+    "editor_exit_code": 0,
+    "observations": [],
+    "new_receipts": []
+  },
+  "validation": "pending native repetition and outcome-driven close"
+}

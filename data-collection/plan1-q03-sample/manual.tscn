@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://c2gmbsc6wx803"]
+
+[sub_resource type="Animation" id="Animation_dr66u"]
+step = 0.041666668
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Actor:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [35.0, 93.0, 155.0, 250.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Actor:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [96.0, 46.0, 36.0, 96.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_plt1x"]
+_data = {
+&"Walk": SubResource("Animation_dr66u")
+}
+
+[node name="Stage" type="Node2D" unique_id=613384721]
+
+[node name="Actor" type="Polygon2D" parent="." unique_id=1827738206]
+position = Vector2(35, 96)
+color = Color(0.9372549, 0.627451, 0.22745098, 1)
+polygon = PackedVector2Array(0, -15, 12, 0, 0, 15, -12, 0)
+
+[node name="Ground" type="Line2D" parent="." unique_id=787413406]
+points = PackedVector2Array(15, 112, 280, 112)
+width = 2.0
+
+[node name="Player" type="AnimationPlayer" parent="." unique_id=674509241]
+libraries/ = SubResource("AnimationLibrary_plt1x")

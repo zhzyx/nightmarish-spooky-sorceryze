@@ -45,6 +45,7 @@
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_sub_agent_receipts.h"
 #include "editor/docks/ai_chat_tools.h"
+#include "editor/docks/gonggong_process.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/docks/production/ParentGate.h"
 #include "editor/file_system/editor_file_system.h"
@@ -1825,7 +1826,7 @@ void AIChatDock::_sub_agent_dispatch() {
 			}
 			Dictionary child = Dictionary(entry.value["children"])[entry.key];
 			if (String(child.get("state", "")) == "waiting") {
-				_agent_selected(_agent_index(entry.key));
+				_select_agent(_agent_index(entry.key), parent);
 				if (active_agent == entry.key) {
 					design_child_starting = entry.key;
 					_dispatch_queued_message(entry.key);
@@ -1852,7 +1853,7 @@ void AIChatDock::_sub_agent_dispatch() {
 		}
 	}
 	if (design_batches.has(acceptance_parent) && bool(design_batches[acceptance_parent].get("parallel_external", false)) && _is_review_child() && acceptance_reviews.has(active_agent) && (acceptance_reviews[active_agent].has("verified_decision") || bool(acceptance_reviews[active_agent].get("repair_queued", false)))) {
-		_agent_selected(_agent_index(acceptance_parent));
+		_select_agent(_agent_index(acceptance_parent), acceptance_parent);
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 		return;
 	}
@@ -1903,7 +1904,7 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (paused || queue.size() != 1 || !Dictionary(queue[0]).has("design_batch_return")) {
 			return;
 		}
-		_agent_selected(_agent_index(parent));
+		_select_agent(_agent_index(parent), parent);
 		if (active_agent == parent) {
 			callable_mp(this, &AIChatDock::_dispatch_queued_message).call_deferred(parent);
 		}
@@ -1941,7 +1942,7 @@ void AIChatDock::_sub_agent_dispatch() {
 			_append(TTR("Error"), "Dependency provenance is unavailable, changed, or its batch storage is full. Preserve the original evidence, check storage, and resume with a fresh live review; dispatch remains suspended.");
 			return;
 		}
-		_agent_selected(_agent_index(id));
+		_select_agent(_agent_index(id), parent);
 		if (active_agent != id) {
 			return;
 		}
@@ -2057,6 +2058,9 @@ bool AIChatDock::_persist_serial_dependency_preflight(int p_child) {
 }
 
 bool AIChatDock::_dispatch_parallel_sub_agents() {
+	if (bParallelDispatchClosing) {
+		return true;
+	}
 	const int review_parent = _sub_agent_root(active_agent);
 	if (_is_review_child() || bool(GetAiSession().mapSnapshot.get("read_only_review_return", false)) || (design_batches.has(review_parent) && bool(design_batches[review_parent].get("read_only_review", false)))) {
 		return false; // A live read-only review never dispatches production CLI workers.
@@ -2458,7 +2462,19 @@ bool AIChatDock::_bind_parallel_review(int id, const Dictionary &receipt, const 
 }
 
 void AIChatDock::_poll_parallel_sub_agents() {
-	if (OS::get_singleton()->is_process_running(sub_agent_parallel_pid)) {
+#ifdef MACOS_ENABLED
+	const Error eFinish = FinishMacWorkerGroup(sub_agent_parallel_pid, false);
+	if (eFinish == ERR_DOES_NOT_EXIST) {
+		RecordMacWorkerGroupFailure(sub_agent_parallel_pid, eFinish);
+		sub_agent_parallel_pid = -1;
+		return;
+	}
+	// The still-waitable leader pins the group for the next poll.
+	const bool bRunning = eFinish != OK;
+#else
+	const bool bRunning = OS::get_singleton()->is_process_running(sub_agent_parallel_pid);
+#endif
+	if (bRunning) {
 		return; // Observe an existing process only; no new scheduling or model call.
 	}
 	sub_agent_parallel_pid = -1;

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c79504f68ace777102ffdcec37719a3cbf1d2239",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-workbench-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4b99e49e01bf5597ffc1d942d65668faf8a5603a42864507aa4ba8bc457b5418",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1675",
+    "action": "validation",
+    "detection_head": "ab81eea9b12eddf6bf98da05f02c8ce7fbea403b",
+    "context_sha256": "6b4b3cac7828006fe54d4ab4379a53dbd385f807b99b13e79b4c48da2974ea2c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-config-20261120",
+    "authority_ref": "codex:user-request-20261120-game-config-platform",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44702147630/job/136172844505; data-collection/game-config-review-r2-1671.json; data-collection/game-config-ownership-review-1671.json",
+    "diagnosis": "Static job found four type annotations and missing explicit sample test owners. Mypy now passes all eight affected Python files. Added exact tests-directory ownership with existing owner preserved; independent validator exit 0 and no validator/protection changes. Configuration and actual Godot regressions independently pass.",
+    "next_action": "Sign final ownership correction candidate; require its actual CI success before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T08:26:48.062396+00:00",
+    "attempted": "mypy, Ruff, independent 44 configuration tests, actual Godot harness and ownership validation passed locally",
+    "repair_owner": "Sail-Li/current Codex",
+    "continuable": "Final signed candidate and CI"
+  },
+  "occurred_at": "2026-11-20T08:27:59.531537+00:00",
+  "sha256": "e6149ba498e3f591ab4e6998bfb537a2d1d1296a40beaafc703a87be24fb2ab6"
+}

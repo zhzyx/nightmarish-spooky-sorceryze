@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e96a68fede6ab72e7681a26a814504ba9e695e4b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0cc3aa4876dff8d5927cd1b5e5fc0c48bc068429dd67f13f12415dcc129fa09e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "validation",
+    "detection_head": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+    "context_sha256": "e89b0916aed063ea3f4ed9666470721225f95245393425ed6a8b53841ed0eb2b",
+    "operator": "Sail-Li",
+    "worker": "heqi_2183_dual",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceDual-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45295041515",
+    "diagnosis": "The parent and child gates briefly contended for the same worktree index. The child completed and released its lock normally.",
+    "next_action": "Use serialized gates for this shared index and continue signed PR delivery. Both local gates passed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:10:54.229779+00:00",
+    "attempted": "Observed the lock released, read back tree f5ab3d7be875325071cbf10b2e8ca3007307c024, and reverified the same parent operation at 00:12:11 UTC.",
+    "repair_owner": "heqi_2183_dual",
+    "continuable": "Protected PR and acceptance are separate and remain in progress."
+  },
+  "occurred_at": "2026-11-24T00:12:53.820392+00:00",
+  "sha256": "5cae8c98a1c7a8c321cda1b74f3abc4a61bc340dd87244e2610bb823b86acda7"
+}

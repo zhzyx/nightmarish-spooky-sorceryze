@@ -6,9 +6,13 @@ export const LOCALE_COOKIE = "tianxuan_locale";
 
 const zh = {
   "nav.home": "工作台",
+  "nav.accounts": "账号",
+  "nav.roadmap": "路线图",
   "nav.docs": "文档",
+  "nav.gameConfig": "游戏配置",
   "nav.issues": "工单",
   "nav.repos": "代码仓库",
+  "nav.migration": "历史迁移",
   "nav.requirements": "需求",
   "nav.search": "全局搜索",
   "nav.settings": "设置",
@@ -492,13 +496,13 @@ const zh = {
   "req.quote": "先写清楚不做什么，剩下的路径才会自己浮现。",
   "req.quoteCaption": "偃师手记 · 027",
   "search.title": "全局搜索",
-  "search.lede": "从一句话出发，找到文档、工单、仓库与需求之间的同一条线索。搜索结果只来自本地工作区索引。",
+  "search.lede": "按名称、编号或关键词查找文档、工单、仓库和需求。",
   "search.inputLabel": "搜索工作区",
   "search.placeholder": "搜索页面、编号、仓库或一句话…",
   "search.submit": "搜索",
   "search.try": "试试看",
   "search.resultsFor": "关于 “{query}” 的结果",
-  "search.found": "在本地索引中找到 {count} 条",
+  "search.found": "共 {count} 条结果",
   "search.localIndex": "本地演示索引",
   "search.scopeAria": "搜索范围",
   "search.scopeAll": "全部",
@@ -509,12 +513,12 @@ const zh = {
   "search.aiTitle": "AI 摘要",
   "search.aiNote": "演示生成 · 不调用模型",
   "search.aiBody": "与“{query}”最相关的线索集中在 {kind}「{title}」。当前共有 {count} 条可回读结果，建议先打开最接近原始判断的文档，再检查关联工单的验收条件。",
-  "search.liveTitle": "实时结果",
-  "search.liveMeta": "文曲检索 API · {count} 条",
+  "search.liveTitle": "工作区",
+  "search.liveMeta": "{count} 条结果",
   "search.liveTag": "实时索引",
-  "search.liveEmpty": "实时索引没有匹配的文档。",
+  "search.liveEmpty": "工作区没有匹配的结果。",
   "search.clear": "清除搜索",
-  "search.emptyDesc": "换一个更短的关键词，或先在文档空间中建立一条新的可检索记录。",
+  "search.emptyDesc": "请尝试不同的关键词或搜索范围。",
   "search.emptyTitle": "没有找到对应的线索",
   "search.indexScope": "索引范围",
   "search.indexDocs": "文档页面",
@@ -762,6 +766,11 @@ const zh = {
   "versions.retry": "重试",
   "versions.diffAria": "v{from} 与 v{to} 的版本差异",
   "versions.same": "v{from} 与 v{to} 内容一致，没有差异。",
+  "versions.restore": "恢复 v{version}",
+  "versions.confirmRestore": "将 v{sourceVersion} 的正文恢复为新修订？当前版本为 v{expectedVersion}，历史版本将保留。",
+  "versions.restored": "恢复完成，新修订为 v{version}。",
+  "versions.restoreConflict": "其他人已保存新修订。请查看最新差异，再决定是否恢复。",
+  "versions.restoreError": "恢复失败，请刷新版本记录后重试。",
   "versions.note": "默认对比最新两个版本；差异以只读统一差异（unified diff）文本展示。",
   "versions.errorLoad": "无法读取版本历史，请确认后端服务已启动且当前账号有权限。",
   "versions.errorDiff": "无法生成版本差异，请确认所选版本仍然存在后重试。",
@@ -821,9 +830,13 @@ export type MessageKey = keyof typeof zh;
 
 const en: Record<MessageKey, string> = {
   "nav.home": "Workspace",
+  "nav.accounts": "Accounts",
+  "nav.roadmap": "Roadmap",
   "nav.docs": "Documents",
+  "nav.gameConfig": "Game configuration",
   "nav.issues": "Issues",
   "nav.repos": "Repositories",
+  "nav.migration": "History migration",
   "nav.requirements": "Requirements",
   "nav.search": "Search",
   "nav.settings": "Settings",
@@ -1308,13 +1321,13 @@ const en: Record<MessageKey, string> = {
   "req.quote": "Write clearly what you will not do first; the remaining path will reveal itself.",
   "req.quoteCaption": "Yanshi notes · 027",
   "search.title": "Search",
-  "search.lede": "Start from one sentence and find the same thread across documents, issues, repositories and requirements. Results come only from the local workspace index.",
+  "search.lede": "Find documents, work orders, repositories and requirements by name, number or keyword.",
   "search.inputLabel": "Search the workspace",
   "search.placeholder": "Search pages, keys, repositories or a sentence…",
   "search.submit": "Search",
   "search.try": "Try",
   "search.resultsFor": "Results for “{query}”",
-  "search.found": "{count} found in the local index",
+  "search.found": "{count} results",
   "search.localIndex": "Local demo index",
   "search.scopeAria": "Search scope",
   "search.scopeAll": "All",
@@ -1325,12 +1338,12 @@ const en: Record<MessageKey, string> = {
   "search.aiTitle": "AI summary",
   "search.aiNote": "Demo generation · no model call",
   "search.aiBody": "The strongest clues for “{query}” cluster around {kind} \"{title}\". There are {count} re-readable results; open the document closest to the original judgment first, then check the acceptance criteria of linked issues.",
-  "search.liveTitle": "Live results",
-  "search.liveMeta": "Wenqu search API · {count}",
+  "search.liveTitle": "Workspace",
+  "search.liveMeta": "{count} results",
   "search.liveTag": "Live index",
-  "search.liveEmpty": "No documents match the live index.",
+  "search.liveEmpty": "No matches in the workspace.",
   "search.clear": "Clear search",
-  "search.emptyDesc": "Try a shorter keyword, or create a new searchable record in a document space first.",
+  "search.emptyDesc": "Try a different keyword or search scope.",
   "search.emptyTitle": "No matching clue found",
   "search.indexScope": "Index scope",
   "search.indexDocs": "Document pages",
@@ -1578,6 +1591,11 @@ const en: Record<MessageKey, string> = {
   "versions.retry": "Retry",
   "versions.diffAria": "Version diff from v{from} to v{to}",
   "versions.same": "v{from} and v{to} are identical; no differences.",
+  "versions.restore": "Restore v{version}",
+  "versions.confirmRestore": "Restore the body of v{sourceVersion} as a new revision? The current version is v{expectedVersion}. Previous versions will remain available.",
+  "versions.restored": "Restored as v{version}.",
+  "versions.restoreConflict": "Another revision was saved. Compare the latest changes before restoring.",
+  "versions.restoreError": "Restore failed. Refresh the version history before trying again.",
   "versions.note": "By default the two latest versions are compared; the diff is shown as read-only unified diff text.",
   "versions.errorLoad": "Failed to load version history; check that the backend is running and the current account has permission.",
   "versions.errorDiff": "Failed to generate the version diff; check that the selected versions still exist and try again.",
@@ -1653,13 +1671,22 @@ export function routeTitleKey(pathname: string): MessageKey {
   if (first === "docs" && pathname.split("/").length > 2) {
     return "shell.docReader";
   }
+  if (pathname === "/issues/roadmap") return "nav.roadmap";
   switch (first) {
     case "":
       return "nav.home";
+    case "accounts":
+      return "nav.accounts";
+    case "login":
+      return "login.title";
     case "docs":
       return "nav.docs";
+    case "game-config":
+      return "nav.gameConfig";
     case "issues":
       return "nav.issues";
+    case "migration":
+      return "nav.migration";
     case "repos":
       return "nav.repos";
     case "requirements":

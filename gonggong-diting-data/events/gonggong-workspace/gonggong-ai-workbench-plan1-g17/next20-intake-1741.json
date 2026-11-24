@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g17",
+  "event_id": "next20-intake-1741",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1741",
+  "occurred_at": "2026-11-21T15:34:21.039773+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1741,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T15:34:18Z",
+    "accepted_dependencies": {
+      "1804": "43fc71066248d58ca1a565b33eb05b44b8efc4ee",
+      "1782": "27410222cdf359ce2fb71049fc7b5831564091f0"
+    },
+    "title": "[方案一 G17] 用一个已合 PR 验证增量同步"
+  },
+  "evidence_refs": [],
+  "sha256": "b633c48384be8ac274a24e9e8f397305d9de390780bfae46f118d2fce4652056"
+}

@@ -109,10 +109,88 @@ class Executor:
     def _read(self, run_id):
         row = self.db.execute("SELECT body FROM runs WHERE id=?", (run_id,)).fetchone()
         require(row is not None, "unknown run")
-        return json.loads(row[0])
+        run = json.loads(row[0])
+        artifacts = {(asset["id"], asset["revision"]): asset for asset in run["manifest"]["artifacts"]}
+        for node in run["nodes"].values():
+            stored = node.get("result")
+            if not isinstance(stored, dict) or stored.get("storage") != "run_manifest":
+                continue
+            require(
+                set(stored) == {"schema_version", "storage", "artifacts"},
+                "invalid stored node result",
+            )
+            restored = []
+            for reference in stored["artifacts"]:
+                key = (reference.get("id"), reference.get("revision"))
+                require(key in artifacts, "stored node result artifact missing")
+                restored.append(artifacts[key])
+            node["result"] = {"schema_version": stored["schema_version"], "artifacts": restored}
+        return run
 
     def _write(self, run):
-        self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(run), run["id"]))
+        # The run manifest already owns every result artifact. Persist only
+        # references in each node instead of duplicating large base64 payloads;
+        # _read restores the public status shape used by preview and the UI.
+        stored = dict(run)
+        stored["nodes"] = dict(run["nodes"])
+        for node_id, node in run["nodes"].items():
+            result = node.get("result")
+            if result is None:
+                continue
+            compact = dict(node)
+            compact["result"] = {
+                "schema_version": result["schema_version"],
+                "storage": "run_manifest",
+                "artifacts": [{"id": asset["id"], "revision": asset["revision"]} for asset in result["artifacts"]],
+            }
+            stored["nodes"][node_id] = compact
+        self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(stored), run["id"]))
+
+    def _restore_cached_manifest(self, manifest):
+        """Hydrate abbreviated cached snapshots from their immutable stored records."""
+        manifest = copy.deepcopy(manifest)
+        check_content(manifest)
+        require(not validate(manifest), "invalid manifest")
+        restored = []
+        index = {}
+        pending = [(asset, False) for asset in manifest["artifacts"]]
+        while pending:
+            candidate, hydrate = pending.pop(0)
+            key = (candidate.get("id"), candidate.get("revision"))
+            row = self.db.execute("SELECT body FROM assets WHERE id=? AND revision=?", key).fetchone()
+            asset = candidate
+            if row is not None:
+                stored = json.loads(row[0])
+                if canonical(stored) != canonical(candidate):
+                    candidate_sha = candidate.get("payload", {}).get("content_sha256")
+                    stored_sha = stored.get("payload", {}).get("content_sha256")
+                    require(
+                        candidate.get("type") == stored.get("type")
+                        and isinstance(candidate_sha, str)
+                        and candidate_sha
+                        and candidate_sha == stored_sha,
+                        "immutable artifact revision changed",
+                    )
+                    hydrate = True
+                asset = stored
+            asset_id = asset["id"]
+            if asset_id in index:
+                require(canonical(index[asset_id]) == canonical(asset), "conflicting cached artifact")
+                continue
+            index[asset_id] = asset
+            restored.append(asset)
+            if hydrate:
+                references = list(asset.get("dependencies", []))
+                references += [entry["artifact"] for entry in asset.get("context", []) if "artifact" in entry]
+                for reference in references:
+                    dependency = self.db.execute(
+                        "SELECT body FROM assets WHERE id=? AND revision=?",
+                        (reference.get("id"), reference.get("revision")),
+                    ).fetchone()
+                    require(dependency is not None, "cached artifact dependency missing")
+                    pending.append((json.loads(dependency[0]), True))
+        manifest["artifacts"] = restored
+        return manifest
 
     def _assets(self, manifest):
         require(not validate(manifest), "invalid manifest")
@@ -129,12 +207,15 @@ class Executor:
         """graph: [{id, provider, request, links:{input:{node,port}}}]."""
         graph = json.loads(canonical(graph))
         require(isinstance(graph, list) and bool(graph), "nonempty graph required")
+        required = {"id", "provider", "request", "links"}
+        optional = required | {"ignore_cache"}
         require(
             all(
                 isinstance(n, dict)
-                and set(n) == {"id", "provider", "request", "links"}
+                and set(n) in (required, optional)
                 and isinstance(n["id"], str)
                 and n["id"]
+                and isinstance(n.get("ignore_cache", False), bool)
                 for n in graph
             ),
             "invalid graph node",
@@ -161,7 +242,7 @@ class Executor:
                     set(source[link["port"]]["types"]) <= set(definition["inputs"][port]["types"]),
                     "incompatible linked types",
                 )
-            node.update(state="pending", attempt=0, job=None, result=None, error=None)
+            node.update(state="pending", attempt=0, job=None, result=None, error=None, public_error=None)
             node["provider_manifest"] = provider_manifest(self.providers[node["provider"]].describe())
             node["definition"] = definition
         while pending:
@@ -169,6 +250,7 @@ class Executor:
             require(bool(ready), "DAG cycle")
             pending -= ready
             visited |= ready
+        manifest = self._restore_cached_manifest(manifest)
         run = {
             "id": run_id or uuid.uuid4().hex,
             "cancelled": False,
@@ -223,7 +305,9 @@ class Executor:
                 not run["cancelled"] and node["state"] == "failed" and node["job"] and node["job"]["state"] == "failed",
                 "only confirmed provider failure can retry",
             )
-            node.update(state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None)
+            node.update(
+                state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None, public_error=None
+            )
             self._write(run)
 
     def export(self, run_id):
@@ -281,7 +365,9 @@ class Executor:
                             canonical([run_id, node_id, node["attempt"], key]).encode()
                         ).hexdigest(),
                     )
-                    cached = self.db.execute("SELECT body FROM cache WHERE key=?", (key,)).fetchone()
+                    cached = None
+                    if not node.get("ignore_cache", False):
+                        cached = self.db.execute("SELECT body FROM cache WHERE key=?", (key,)).fetchone()
                     if cached:
                         result = json.loads(cached[0])
                         validate_outputs(
@@ -311,6 +397,7 @@ class Executor:
             # Cancel remains local and the next step can notify other providers.
             return self.status(run_id)
         snapshot, result, error = None, None, None
+        public_error = None
         raw = None
         validating_result = False
         try:
@@ -338,6 +425,12 @@ class Executor:
                 validate_job(raw, node["job"])
                 snapshot = copy.deepcopy(raw)
                 if snapshot["state"] == "failed":
+                    if hasattr(provider, "public_failure_message"):
+                        public_error = provider.public_failure_message(snapshot)
+                        require(
+                            public_error is None or isinstance(public_error, str) and len(public_error) <= 4000,
+                            "invalid public failure summary",
+                        )
                     snapshot["error"] = "provider_failed"  # Never persist provider error text.
                 if snapshot["state"] == "succeeded":
                     result = provider.result_manifest(snapshot["job_id"])
@@ -362,6 +455,7 @@ class Executor:
             if current["attempt"] != node["attempt"] or current["state"] in ("succeeded", "failed", "cancelled"):
                 return self.status(run_id)
             current["error"] = error
+            current["public_error"] = public_error
             if snapshot is not None:
                 # Persist a known job even if fetching/validating its result failed.
                 if error:
@@ -385,8 +479,11 @@ class Executor:
                         try:
                             merged = merge_manifest(run["manifest"], result)
                             self._assets(result)
+                            operation = (
+                                "INSERT OR REPLACE" if current.get("ignore_cache", False) else "INSERT OR IGNORE"
+                            )
                             self.db.execute(
-                                "INSERT OR IGNORE INTO cache VALUES(?,?)",
+                                operation + " INTO cache VALUES(?,?)",
                                 (current["key"], canonical({"job": snapshot, "manifest": result})),
                             )
                         except (ValueError, KeyError, TypeError):

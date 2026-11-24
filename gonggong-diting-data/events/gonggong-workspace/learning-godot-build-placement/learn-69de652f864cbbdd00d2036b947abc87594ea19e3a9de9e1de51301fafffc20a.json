@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-69de652f864cbbdd00d2036b947abc87594ea19e3a9de9e1de51301fafffc20a",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+  "occurred_at": "2026-11-22T09:42:45.385446+00:00",
+  "evidence_refs": [
+    "dispatch-f852d96ed50e4da69ab15a4613c26801",
+    "learn-0ada6d037959eaa6e9ffa37e4757f9031ae4b7010f3a302fa7cb81f62970e859"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 55,
+    "previous": "a6bc6ed0bf7cfc206fccf6cdf7bd7b77c83fca42cb1b5fd4fc071d0bb2ee6d9c",
+    "action": "applied",
+    "details": {
+      "task": "S07 #1763",
+      "observed": "原生编辑器通过三个嵌入脚本生成头文件。#2042 旧二进制缺少运行进度控件，S07 独立重建后的候选通过模块、工单和展开视图的同运行最新回执、进程失败与只读账号实测。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s07.json",
+        "sha256": "db3312015136f4afe8ae1d9c9e6ab48b58734809584c3418b59308b5315f4398"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/dispatch-f852d96ed50e4da69ab15a4613c26801.json",
+      "sha256": "7ac2757a91cb262aa2f94f82f048147bf4c50a452999dc2a76a3265c6dfe520b"
+    }
+  },
+  "sha256": "4fc89c61207e356cad28f66a5111b4e42a175223dcd381812f5bc47227b19e03"
+}

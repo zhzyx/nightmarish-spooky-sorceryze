@@ -7,12 +7,18 @@ caller's responsibility; uncertain exit is not permission to call again.
 """
 
 import argparse
+import base64
 import hashlib
 import json
 import os
+import sqlite3
 import sys
 import time
+from contextlib import closing
 from pathlib import Path
+
+from native_model_host import executable_sha256
+from native_observations import model_observation
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "customizations/platforms/ai-access/host-http/runtime"))
@@ -28,7 +34,7 @@ def load_config(path, digest):
     runner.require(hashlib.sha256(raw).hexdigest() == digest, "Broker configuration changed")
     config = json.loads(raw)
     runner.require(
-        set(config) - {"context_transport"}
+        set(config) - {"context_transport", "catalog_bindings"}
         == {
             "template",
             "template_sha256",
@@ -52,12 +58,12 @@ def load_config(path, digest):
         hashlib.sha256(template.read_bytes()).hexdigest() == config["template_sha256"], "Broker template changed"
     )
     runner.require(
-        hashlib.sha256(Path(config["node"]).read_bytes()).hexdigest() == config["node_sha256"],
+        executable_sha256(config["node"]) == config["node_sha256"],
         "Admitted Node executable changed",
     )
     runner.require(Path(config["node"]).name.lower() in {"node", "node.exe"}, "Direct Node executable required")
     runner.require(
-        hashlib.sha256(Path(config["python"]).read_bytes()).hexdigest() == config["python_sha256"],
+        executable_sha256(config["python"]) == config["python_sha256"],
         "Admitted Python executable changed",
     )
     runner.require(runner.runtime_digest() == config["runtime_sha256"], "Host runtime changed")
@@ -110,6 +116,41 @@ def execute(config, template, request, *, recover=False):
     plan = json.loads(runner.canonical(template))
     task = plan["task"]
     task.update(id=request["entry"], tenant_id=request["tenant"], input=request, authority_ref=config["authority_ref"])
+    for profile in plan["profiles"]:
+        if profile["protocol"] == "codex-native-role":
+            runner.require(profile.get("entry_role") == request["role"], "Installed CLI role mismatch")
+    if request["role"] == "yanshi" and all(p["protocol"] == "codex-native-role" for p in plan["profiles"]):
+        # Local IDs only link steps inside this plan. Supply portable, distinct
+        # choices so the provider can enforce the host's finite naming contract.
+        fields = task["steps"][0]["schema"]["properties"]
+        fields["source"] = {"type": "string", "enum": [request["source"]]}
+        item = fields["tasks"]["items"]["properties"]
+        local_id = {"type": "string", "enum": ["task-" + str(n) for n in range(1, 65)]}
+        item["id"] = local_id
+        item["dependencies"]["items"] = local_id
+        item["scope"] = {"type": "string", "enum": sorted(request["scopes"])}
+        item["complexity"] = {"type": "string", "enum": sorted(request["complexity"])}
+    if request["role"] == "reviewer" and all(p["protocol"] == "codex-native-role" for p in plan["profiles"]):
+        # The reviewer sees the actual text and file digests. The original host
+        # validates its returned coverage against the immutable candidate bytes.
+        inspected = {}
+        for name, encoded in request["scopes"].items():
+            content = base64.b64decode(encoded, validate=True)
+            inspected[name] = {"sha256": hashlib.sha256(content).hexdigest(), "text": content.decode("utf-8")}
+        task["input"] = {**request, "scopes": inspected}
+        properties = task["steps"][0]["schema"]["properties"]
+        for field, value in (
+            ("candidate", request["source"]),
+            ("reviewer", request["complexity"]["reviewer"]),
+            ("criteria", request["document"]["source"]["definition"]["acceptance"]),
+        ):
+            properties[field] = {"type": "string", "enum": [value]}
+        properties["inspected"] = {
+            "type": "object",
+            "properties": {name: {"type": "string", "enum": [item["sha256"]]} for name, item in inspected.items()},
+            "required": list(inspected),
+            "additionalProperties": False,
+        }
     state = runtime_state(config, plan, task)
     framework = Path(config["framework"])
     # runner.context uses the host Node CLI; resolve only the pinned installation.
@@ -141,8 +182,6 @@ def execute(config, template, request, *, recover=False):
         runner.require(grant["signature"] == runner.signature(grant["payload"]), "Recovery grant signature changed")
         if receipt_path.exists():
             return runner.read(receipt_path)
-        import sqlite3
-        from contextlib import closing
 
         database = (state / "runtime.sqlite").as_uri() + "?mode=ro"
         with closing(sqlite3.connect(database, uri=True)) as connection:
@@ -174,6 +213,20 @@ def execute(config, template, request, *, recover=False):
         "proposal": next(iter(outputs.values())),
         "runtime_state": str(state),
     }
+    if all(profile["protocol"] == "codex-native-role" for profile in plan["profiles"]):
+        with closing(sqlite3.connect((state / "runtime.sqlite").as_uri() + "?mode=ro", uri=True)) as cx:
+            cx.row_factory = sqlite3.Row
+            calls = cx.execute(
+                "SELECT data FROM events WHERE job=? AND kind='call_end' ORDER BY seq", (runner.jid_for(task),)
+            ).fetchall()
+        receipt["model_calls"] = []
+        for row in calls:
+            call = json.loads(row["data"])
+            usage = (call.get("protocol_evidence") or {}).get("usage") or {}
+            receipt["model_calls"].append({
+                "requested_model": call["requested_model"],
+                **model_observation(usage.get("observed_model"), usage.get("raw")),
+            })
     with receipt_path.open("x", encoding="utf-8") as stream:
         stream.write(runner.canonical(receipt))
         stream.flush()

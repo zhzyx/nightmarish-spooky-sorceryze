@@ -1,0 +1,70 @@
+{
+  "issue_number": 1822,
+  "request_id": "gonggong-ai-workbench-plan1-r06",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1822",
+  "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "environment": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "command": "python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/server/test_native_workcopy_commit.py customizations/components/tianxuan/server/test_selected_commit.py",
+  "results": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "10",
+    "time": "4.619",
+    "timestamp": "2026-11-22T20:39:57.327451+08:00",
+    "hostname": "OracledeMacBook-Air.local"
+  },
+  "observations": [
+    {
+      "written": true,
+      "calls": [
+        [
+          "GET",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ],
+        [
+          "POST",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ],
+        [
+          "GET",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ]
+      ],
+      "effects": 1,
+      "branch": "game",
+      "sha": "181044c67f890904f704dd9edfecb58c5480ec3e2e808a454c4fbbad5598d70f",
+      "request_key": "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+    },
+    {
+      "written": false,
+      "calls": [
+        [
+          "GET",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ],
+        [
+          "POST",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ],
+        [
+          "GET",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ],
+        [
+          "POST",
+          "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+        ]
+      ],
+      "effects": 1,
+      "branch": "game",
+      "sha": "181044c67f890904f704dd9edfecb58c5480ec3e2e808a454c4fbbad5598d70f",
+      "request_key": "g11-9e52401ae771c8cd97f05c5413a975033f53db97e36b059c2d0c7875e6aa44b5"
+    }
+  ],
+  "candidate_blobs": {
+    "customizations/components/tianxuan/server/native_workcopy_commit.py": "45b8d9ef5d282cb5b82a927ea4031bdcdc9d2365",
+    "customizations/components/tianxuan/server/test_native_workcopy_commit.py": "2c84911509f0f44e714107a73ddc4b9e49339ab7"
+  }
+}

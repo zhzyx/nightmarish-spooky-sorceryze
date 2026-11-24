@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1d5caa94ff301034daa68b54e8b48088e127a643",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1b0bf0a9567e53bcc57260910dd078fe47afa566f2aaacf8bc4ad88ab1c048fa",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1586",
+    "action": "validation",
+    "detection_head": "05d05638cb0d2e387fc3ed3e09daf126d9297475",
+    "context_sha256": "adc5815005605ead482301a5ea5b284c6bfba27bcf5cb4c430dc470c59d98e37",
+    "operator": "Sail-Li",
+    "worker": "reviewer_definition_audit",
+    "authority_ref": "Issue 1581 runtime handoff and PR 1700 CI repair",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44783910803/job/136453573019",
+    "diagnosis": "Registered host-http inventory omitted changed sources; missing buildsystem owners and a Windows /fo spelling false positive. Linux workspace fixture lacked newly implemented role_calls; other 1344 module cases passed.",
+    "next_action": "Correct the host package registration, script owners and workspace fixture, run exact failed checks and sign a replacement candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T17:48:02.585380+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T18:03:06.785798+00:00",
+  "sha256": "e14f14d8bd5a1006c7e0330c2d433e9e5359684ce29c73ce3da3a1f7ce3f2bc3"
+}

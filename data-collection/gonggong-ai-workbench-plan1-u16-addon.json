@@ -1,0 +1,122 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u16",
+  "issue_number": 1793,
+  "base": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+  "editor_sha256": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e",
+  "input_blobs": {
+    "samples/gonggong-workbench/addons/project_brief/plugin.cfg": "e9fab74e0bf9d2623b062f63f3294b015f61feaa",
+    "samples/gonggong-workbench/addons/project_brief/plugin.gd": "29879bf02e8168876dcbd1f657285e3d69d28a19",
+    "samples/gonggong-workbench/project.godot": "72b8c76d656b9bf9ea3868b5e645aaefcd078382",
+    "tests/editor/run_workbench_page_addon.py": "da2314ba1d774908f8517676200a63ba591d007b",
+    "tests/editor/workbench_page_addon.gd": "a846670a96395be457956ccd779ece9fa3698106",
+    "tests/editor/run_workbench_page_field.py": "025b724bcbe118d072b891b1bb7da5d8123ac4d9",
+    "tests/editor/workbench_page_field.gd": "fb3d2a5d6bf00b6ce7bd63651131540cdd7a1493",
+    "tests/editor/editor_test_isolation.py": "8e5cc499a6046554ed717393ef21e6f1c29e307c",
+    "editor/docks/workbench/AIWorkbenchPageField.cpp": "a04a829568499a146752e90539d968d5d31bf666",
+    "editor/editor_node.cpp": "6368f24e33f3b8ee7a6d1002ff5ccb5659bb37cb"
+  },
+  "checks": {
+    "same_binary_update": {
+      "command": "python -X utf8 tests/editor/run_workbench_page_addon.py --godot bin/godot.windows.editor.x86_64.exe --report bin/project-brief-addon.json",
+      "observed": "The same editor loaded Summary as replace_text, then as read. The separate loopback model observed one replacement action and then an empty action list.",
+      "passed": true,
+      "before_executable": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e",
+      "after_executable": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e",
+      "before_package": "26940c6e3872c6a97d336f65bcbf2da3d3b12ebdfc951dd92080d2a1972d066e",
+      "after_package": "d5e29547136efde765237b2dfd21362bce20e1c38a6ce79cd892812944131e4b"
+    },
+    "incompatible_rejection": {
+      "command": "python -X utf8 tests/editor/run_workbench_page_addon.py --godot bin/godot.windows.editor.x86_64.exe --report bin/project-brief-addon.json",
+      "observed": "The project still enabled the addon in its configuration. Godot parsed the replacement script with base Node, reported the addon disabled and registered zero Project Brief docks.",
+      "passed": true
+    },
+    "rollback": {
+      "command": "python -X utf8 tests/editor/run_workbench_page_addon.py --godot bin/godot.windows.editor.x86_64.exe --report bin/project-brief-addon.json",
+      "observed": "Restoring the original package digest enabled the plugin again and restored exactly one dock with the replace_text field. The loopback model received the replacement action again.",
+      "passed": true
+    }
+  },
+  "package_hash_definition": "SHA-256 of UTF-8 compact sorted JSON mapping each of plugin.cfg and plugin.gd to its SHA-256 digest.",
+  "loader": {
+    "original": {
+      "files": {
+        "plugin.cfg": "331feb78636257ade66232e0efce34463e999d98d7487f9a0162119ae685d2f9",
+        "plugin.gd": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6"
+      },
+      "package_sha256": "26940c6e3872c6a97d336f65bcbf2da3d3b12ebdfc951dd92080d2a1972d066e",
+      "loader": {
+        "configured": true,
+        "enabled": true,
+        "script_base": "EditorPlugin",
+        "summary_modes": [
+          "replace_text"
+        ]
+      }
+    },
+    "update": {
+      "files": {
+        "plugin.cfg": "331feb78636257ade66232e0efce34463e999d98d7487f9a0162119ae685d2f9",
+        "plugin.gd": "35567c017eb831b7cb19b37bc89e21997d8b4eb3309d4c4ee7475dde9b39d97e"
+      },
+      "package_sha256": "d5e29547136efde765237b2dfd21362bce20e1c38a6ce79cd892812944131e4b",
+      "loader": {
+        "configured": true,
+        "enabled": true,
+        "script_base": "EditorPlugin",
+        "summary_modes": [
+          "read"
+        ]
+      }
+    },
+    "incompatible": {
+      "files": {
+        "plugin.cfg": "331feb78636257ade66232e0efce34463e999d98d7487f9a0162119ae685d2f9",
+        "plugin.gd": "52dc6db86b445db3846d751e2fde53e2acf7a58aa98fd056ab06a3a9d22c0c57"
+      },
+      "package_sha256": "6ee4f459479fce082660f85e849a7e5eba0a1f7562c9e22b7414f942eefffc71",
+      "loader": {
+        "configured": true,
+        "enabled": false,
+        "script_base": "Node",
+        "summary_modes": []
+      }
+    },
+    "rollback": {
+      "files": {
+        "plugin.cfg": "331feb78636257ade66232e0efce34463e999d98d7487f9a0162119ae685d2f9",
+        "plugin.gd": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6"
+      },
+      "package_sha256": "26940c6e3872c6a97d336f65bcbf2da3d3b12ebdfc951dd92080d2a1972d066e",
+      "loader": {
+        "configured": true,
+        "enabled": true,
+        "script_base": "EditorPlugin",
+        "summary_modes": [
+          "replace_text"
+        ]
+      }
+    }
+  },
+  "field_request_receipts": [
+    {
+      "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+      "received_actions": [
+        "replace_page_field"
+      ]
+    },
+    {
+      "plugin_sha256": "35567c017eb831b7cb19b37bc89e21997d8b4eb3309d4c4ee7475dde9b39d97e",
+      "received_actions": []
+    },
+    {
+      "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+      "received_actions": [
+        "replace_page_field"
+      ]
+    }
+  ],
+  "field_command": "python -X utf8 tests/editor/run_workbench_page_field.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u16-fields.json",
+  "incident": "460b1cc598b2f38d6e902b79a0ce4884488d9418cdd4058129d5eca470946e0e",
+  "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u16/kuafu-300f2d5f4725078ce50c1435d42ed72249b0b202.json",
+  "observed": "2026-11-22T05:08:47.013306+00:00"
+}

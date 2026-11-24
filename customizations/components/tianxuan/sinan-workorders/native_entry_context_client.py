@@ -30,7 +30,15 @@ class _ContextHTTPHandler(_ResponseBeforeClose, urllib.request.HTTPHandler):
 
 
 class _ContextHTTPSHandler(_ResponseBeforeClose, urllib.request.HTTPSHandler):
-    pass
+    def __init__(self):
+        # build_opener requires an HTTPSHandler to suppress its eager default.
+        # This handler belongs to one attempt: loopback HTTP never needs a CA
+        # store, while HTTPS retains fresh stdlib certificate/hostname checks.
+        urllib.request.AbstractHTTPHandler.__init__(self)
+
+    def https_open(self, req):
+        urllib.request.HTTPSHandler.__init__(self)
+        return super().https_open(req)
 
 
 class ContextNotStarted(urllib.error.HTTPError):
@@ -113,9 +121,15 @@ class EntryContextClient:
 
     @staticmethod
     def _attempt(request, redirect, timeout):
+        # ProxyHandler mutates Request routing (including its CONNECT target).
+        # A typed admission retry must retain the logical request, but never
+        # carry that per-attempt routing into a new opener/connection.
+        attempt_request = urllib.request.Request(
+            request.full_url, data=request.data, headers=dict(request.header_items()), method=request.get_method()
+        )
         try:
             response = urllib.request.build_opener(redirect(), _ContextHTTPHandler(), _ContextHTTPSHandler()).open(
-                request, timeout=timeout
+                attempt_request, timeout=timeout
             )
         except urllib.error.HTTPError as error:
             try:

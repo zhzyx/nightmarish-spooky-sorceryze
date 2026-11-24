@@ -16,6 +16,13 @@ import writer_submit as submission
 
 
 class WriterTests(unittest.TestCase):
+    def test_partial_dual_submission_does_not_report_delivery_recovered(self) -> None:
+        result = {"commit": "verified-git-commit", "duobao_submission": {"state": "pending"}}
+        with patch("kuafu_incident.notify_failure") as failed, patch("kuafu_incident.observe_success") as success:
+            submission.observe_submission(Path.cwd(), 2178, "request", result)
+        failed.assert_called_once()
+        success.assert_not_called()
+
     def test_permission_is_per_repository_and_not_a_personal_whitelist(self) -> None:
         for login, permission in [
             ("alice", "WRITE"),
@@ -591,6 +598,54 @@ class HandoffTests(unittest.TestCase):
             alice_prune = submission.prune_own_superseded(self.repo)
             self.assertEqual(alice_prune["closed_prs"], [{"pr": 7, "superseded_by": 10, "issue": 9}])
             self.assertEqual(closed_prs, ["7"])
+
+
+class ModuleAuditBindingTests(unittest.TestCase):
+    def test_handoff_uses_base_registry_and_binds_the_actual_tree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def git(*args):
+                return submission.git(root, *args)
+
+            git("init", "-q")
+            git("config", "user.name", "test")
+            git("config", "user.email", "test@example.invalid")
+            git("config", "commit.gpgsign", "false")
+            registry_path = root / "tools/ci/modules.json"
+            registry_path.parent.mkdir(parents=True)
+            registry_path.write_bytes((submission.issue_gate.INSTALLATION / "tools/ci/modules.json").read_bytes())
+            source = root / "samples/ainative-workbench/acceptance.gd"
+            source.parent.mkdir(parents=True)
+            source.write_text("extends SceneTree\n")
+            git("add", ".")
+            git("commit", "-qm", "base")
+            base = git("rev-parse", "HEAD")
+            # Candidate-side removal of a required check must not exempt it.
+            registry = json.loads(registry_path.read_text())
+            next(m for m in registry["modules"] if m["name"] == "maliang")["status_checks"] = []
+            registry_path.write_text(json.dumps(registry))
+            source.unlink()
+            added = root / "tools/ainative/test_new.py"
+            added.parent.mkdir(parents=True)
+            added.write_text("pass\n")
+            git("add", "-A")
+            tree = git("write-tree")
+            report = submission.handoff(root, base, tree, base)
+            profile = report["audit_profile"]
+            self.assertEqual(profile["module_selection"]["base"], base)
+            self.assertEqual(profile["module_selection"]["head"], tree)
+            self.assertEqual(profile["module_selection"]["changed_files"], report["write_paths"])
+            checks = profile["yanluo_requirements"]["mandatory_ci_checks"]
+            self.assertIn("Module / ci", checks)
+            self.assertIn("maliang-offline / editor / Editor (target=editor)", checks)
+            self.assertIn(source.relative_to(root).as_posix(), report["write_paths"])
+            registry_path.unlink()
+            registry_path.symlink_to("other.json")
+            git("add", "-A")
+            git("commit", "-qm", "linked registry")
+            with self.assertRaisesRegex(ValueError, "regular file"):
+                submission.handoff(root, git("rev-parse", "HEAD"), tree, base)
 
 
 if __name__ == "__main__":

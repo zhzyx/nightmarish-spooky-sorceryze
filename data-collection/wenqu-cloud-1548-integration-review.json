@@ -1,0 +1,299 @@
+{
+  "issue_number": 1548,
+  "request_id": "wenqu-cloud-20261119",
+  "reviewer": "codex-native-editor_flow",
+  "state": "integration_bytes_verified_formal_ci_pending",
+  "head_before_merge": "225e3a160893e003ca68ef25fe838f98d438b1fc",
+  "upstream_main": "3e4f05e5ed3b8f3526ffc0ef2434c8c8911e5d34",
+  "merge_base": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+  "index_tree": "5402d665314d0d62ffb14b7057821a4da0171743",
+  "upstream_paths_count": 22,
+  "upstream_paths": [
+    {
+      "path": ".github/workflows/tianxuan-deploy-build.yml",
+      "index_blob": "894381f267da7e1558e8f01f76a430306ce942bc",
+      "upstream_blob": "894381f267da7e1558e8f01f76a430306ce942bc",
+      "sha256": "876944099b26fe432c201cf1b71ea4d3e975a2d5417e77363e7d38ed626225d7"
+    },
+    {
+      "path": ".github/workflows/tianxuan-tests.yml",
+      "index_blob": "a6070b6cf3a8fc57e949b42a3945a484f68ae112",
+      "upstream_blob": "a6070b6cf3a8fc57e949b42a3945a484f68ae112",
+      "sha256": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537"
+    },
+    {
+      "path": "customizations/components/tianxuan/build-impact.json",
+      "index_blob": "2718f7945a875b2f37ef7879f20a5ffba5d0033c",
+      "upstream_blob": "2718f7945a875b2f37ef7879f20a5ffba5d0033c",
+      "sha256": "317086cda6933d273888058771e5b9baac525bf4ae6a581a0681638edeb67038"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+      "index_blob": "624d78d737f232c91187574e44ce9eaee37e2a1e",
+      "upstream_blob": "624d78d737f232c91187574e44ce9eaee37e2a1e",
+      "sha256": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/build-impact.json",
+      "index_blob": "6558113aaa163ced572e6467fc5fd151969fecca",
+      "upstream_blob": "6558113aaa163ced572e6467fc5fd151969fecca",
+      "sha256": "e8a945e5e24d64256c91a921f7b840bd1e7d32891a3846408645b3bc90e1db73"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py",
+      "index_blob": "cddf436ae951b7b8bf824910a950ba0fb7abeab3",
+      "upstream_blob": "cddf436ae951b7b8bf824910a950ba0fb7abeab3",
+      "sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026"
+    },
+    {
+      "path": "data-collection/native-context-transport-cost-repair-1445.json",
+      "index_blob": "8b2ace19c87380cb285a3fc02733740c18ebb215",
+      "upstream_blob": "8b2ace19c87380cb285a3fc02733740c18ebb215",
+      "sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30"
+    },
+    {
+      "path": "data-collection/native-entry-transport-review-1499.json",
+      "index_blob": "7c07a1a23774cebc5c2af252bd02d2c4a2041e16",
+      "upstream_blob": "7c07a1a23774cebc5c2af252bd02d2c4a2041e16",
+      "sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb"
+    },
+    {
+      "path": "data-collection/native-runtime-artifact-local-validation-1529.json",
+      "index_blob": "bbb85fded0a2e0c0571d4dabdbd951ff95f972f4",
+      "upstream_blob": "bbb85fded0a2e0c0571d4dabdbd951ff95f972f4",
+      "sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42"
+    },
+    {
+      "path": "data-collection/native-runtime-artifact-review-1529.json",
+      "index_blob": "c2ddafa6e3dbbd3ef42493ffa83b99b93185bfac",
+      "upstream_blob": "c2ddafa6e3dbbd3ef42493ffa83b99b93185bfac",
+      "sha256": "cd868bfd4853d490a685785a2cfa7482c36b563a87761fecf0cdd3bf69ce6ebd"
+    },
+    {
+      "path": "data-collection/native-runtime-artifact-static-1529.json",
+      "index_blob": "c941e8cccb3cf447e38ea7003b30ca16f47f8109",
+      "upstream_blob": "c941e8cccb3cf447e38ea7003b30ca16f47f8109",
+      "sha256": "2b12d6a2305c2e5886ebc667ff26d7f696fd8de937b9342d29f280478a11db45"
+    },
+    {
+      "path": "data-collection/native-transport-slice-delivery-1499.json",
+      "index_blob": "717f5b0ce9a32f7c23d55156b7307c9d3dcfb823",
+      "upstream_blob": "717f5b0ce9a32f7c23d55156b7307c9d3dcfb823",
+      "sha256": "2d1bdb6818b97a67679e0d9306e1d900f871f73fda77787885dd55c8f235b0b6"
+    },
+    {
+      "path": "data-collection/native-transport-slice-module-build-impact-1499.json",
+      "index_blob": "97e334b1daa7b310733bc1687db015bc51726c2e",
+      "upstream_blob": "97e334b1daa7b310733bc1687db015bc51726c2e",
+      "sha256": "46a2f103fd0626cdaad6eaacd0f846747a4b3e7975fed1bb161b8d5eedb1421b"
+    },
+    {
+      "path": "data-collection/native-transport-slice-review-1499.json",
+      "index_blob": "3118cd0d3fc74545fd8a68aec9d56d92598bc40f",
+      "upstream_blob": "3118cd0d3fc74545fd8a68aec9d56d92598bc40f",
+      "sha256": "542d28a6632abfe80a06fd0499af6ac65b995eea77b2eaf2eac5ac959a32538b"
+    },
+    {
+      "path": "data-collection/native-transport-slice-workflow-build-impact-1499.json",
+      "index_blob": "b1f5181f2644798df6eee05d47d35eb95ae08264",
+      "upstream_blob": "b1f5181f2644798df6eee05d47d35eb95ae08264",
+      "sha256": "553460339bf401843dff6d17696c862fd1612b70ba7d1d2d49d8092667370bb8"
+    },
+    {
+      "path": "deploy/README.md",
+      "index_blob": "f618da00928b961fc12b8fd49e81afee8137d584",
+      "upstream_blob": "f618da00928b961fc12b8fd49e81afee8137d584",
+      "sha256": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4"
+    },
+    {
+      "path": "design-docs/native-production-entry-20261118.md",
+      "index_blob": "f811969afc932a9d6dc1bd58bc829c50881e99d1",
+      "upstream_blob": "f811969afc932a9d6dc1bd58bc829c50881e99d1",
+      "sha256": "98ff7ac0c63d1badb5e1461aea8aea75935704e2a281ca93774faf4a5fbb8711"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-278c8989e90545b38cda9dd8b9458305.json",
+      "index_blob": "fcb788a319a77e1785459c86dd3d436f56c05b1d",
+      "upstream_blob": "fcb788a319a77e1785459c86dd3d436f56c05b1d",
+      "sha256": "ba6faa341e794831ad74cb2d93beef2a48eec0849da9c2fec59d90d0fa203715"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-3e94d361a3084b7697165661e7ec011b.json",
+      "index_blob": "7ea8b9ad65d7257444f209237582d05af0bf737c",
+      "upstream_blob": "7ea8b9ad65d7257444f209237582d05af0bf737c",
+      "sha256": "24059e3f95bfd1aab4cd6c5b5e88349d6e92516e927bddf3590b034c3225880d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-662f2094abaa4fb79f975f42cd6a93a4.json",
+      "index_blob": "8c86c3d3e0150a290453f4b95efc86e5f068b3a7",
+      "upstream_blob": "8c86c3d3e0150a290453f4b95efc86e5f068b3a7",
+      "sha256": "8a714834604a745fead79e396354d6c88e909f1d4aec233310c429385f06124e"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-8034a624faff4d3bb67b60c3f178979a.json",
+      "index_blob": "f8f060829086402b9dbcc239f198f2294b2a5f89",
+      "upstream_blob": "f8f060829086402b9dbcc239f198f2294b2a5f89",
+      "sha256": "dbed9e05baf5a70da3ace844384ba020c50ab3ddde91de4215f0d6f365f7cb7d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-99bb175d2b22861c66b19b3b5d10fc0419dace63.json",
+      "index_blob": "5e2186c9910d35262a08604da886e14f533c0a97",
+      "upstream_blob": "5e2186c9910d35262a08604da886e14f533c0a97",
+      "sha256": "17237ddaedf6b8f3c04d4243ff6d73c07ed4f206bc8c1202f44c7fe2590cf490"
+    }
+  ],
+  "preserved_wenqu_path_count": 35,
+  "preserved_wenqu_paths": [
+    {
+      "path": "apps/tianxuan/app/docs/page.tsx",
+      "index_blob": "70ff89370ced49964f7b86815fddd93ebee312fe"
+    },
+    {
+      "path": "apps/tianxuan/app/login/page.tsx",
+      "index_blob": "c1b0485a914fb25fb020ecd184cae589f041776e"
+    },
+    {
+      "path": "apps/tianxuan/components/CreateDoc.tsx",
+      "index_blob": "fbc7a52960bce1c18bad88733b119a15b87dc96b"
+    },
+    {
+      "path": "apps/tianxuan/components/DocEditor.tsx",
+      "index_blob": "498d63a4ed10287fcd0646134370939bb703ac6e"
+    },
+    {
+      "path": "apps/tianxuan/lib/api.ts",
+      "index_blob": "7a771ff4fa91198b6bec0e13ce8ccc620f2c459c"
+    },
+    {
+      "path": "apps/tianxuan/lib/server-api.ts",
+      "index_blob": "22d92e0609b07c1a04f3c3fa80da028533c5e669"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/access_control.py",
+      "index_blob": "e7770e3bfa521b7942d8a7438ade02cbfda6e78e"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "index_blob": "a16aa91fd304716317f3ab655cc3baa71dc114d2"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/schemas.py",
+      "index_blob": "dd1da6980b95217948bbbd84a43fafd762807092"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_account_registration.py",
+      "index_blob": "8c603cd4b47d22dcf7d43e6b452cb89cda3f109a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_ai_document_tools.py",
+      "index_blob": "0902a78a7d28548f23fed66c736aa96a4a59a107"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "index_blob": "df5a6b13be99039d48e4c4d674e0ac8d6ba41596"
+    },
+    {
+      "path": "data-collection/issue-events/b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948/envelope.json",
+      "index_blob": "1fec33e366bac8690de905bdba612f785f663754"
+    },
+    {
+      "path": "data-collection/issue-events/b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948/receipt.json",
+      "index_blob": "808e7555e8075ae0e73046e967fe12ce4d65b732"
+    },
+    {
+      "path": "data-collection/requests/wenqu-cloud-20261119/14435f31-012f-4dce-b7af-442671282517.json",
+      "index_blob": "c60a99130e798c341cb266981250411caad8a1b6"
+    },
+    {
+      "path": "data-collection/requests/wenqu-cloud-20261119/17a32443-f88f-46e8-983f-d9b3d6bad602.json",
+      "index_blob": "b7db9894706e432f7a01d7f443e24cf2cbfc8be8"
+    },
+    {
+      "path": "data-collection/requests/wenqu-cloud-20261119/372d3f29-359f-48be-ada6-7ec72e6eaee8.json",
+      "index_blob": "81fd46869d94d72654aed812c5da1803bf2cd7eb"
+    },
+    {
+      "path": "data-collection/requests/wenqu-cloud-20261119/3fcf2fee-0ec3-476e-8fac-9be7c69262c4.json",
+      "index_blob": "3504fd4b524d651b6cd6bd0874b3612332284b25"
+    },
+    {
+      "path": "data-collection/requests/wenqu-cloud-20261119/6450c0c5-147f-4fa1-92c7-cfad1222fab8.json",
+      "index_blob": "d6a4c46a9ff3526243b16ec4149bc6c03abc5be2"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-editor-review.json",
+      "index_blob": "0f728d2a2ef133ef5695e366d018f5ffe8b9643e"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-memory-review.json",
+      "index_blob": "2c1e8c121c8f1c65e3971886bed507f5a971e571"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-memory-validation.json",
+      "index_blob": "1973de5c895d4f7026b4b1d1228bac513f1929b0"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-review-static-fix.json",
+      "index_blob": "2bfcd6a39038fb85ba636ea880457b36489dbac3"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-review.json",
+      "index_blob": "06a509e1266bd87f1ec3a4a48d73693c29bebd02"
+    },
+    {
+      "path": "data-collection/wenqu-cloud-1548-validation.json",
+      "index_blob": "c80ba6a516b83a1dfdcc31d350e85b4173e73474"
+    },
+    {
+      "path": "design-docs/wenqu-cloud-20261119.md",
+      "index_blob": "5b29338ac083b4f7fcb58b12051fbb925796d1b7"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-40782a42fb5586eaca604a1e6b7464fd3d0ccb1f2f8a4e33317a9da967daf9c7.json",
+      "index_blob": "4881b5a8b0fe3c67d2decaec02c5b86a9c614284"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/learning-github-issue-delivery/learn-641ba49089de31ee78a5522edec8259e69fa47725cf2802f3d7631845509ebc7.json",
+      "index_blob": "eacaaf97a1c319e973bf061e04e92fa977d6b319"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/github-b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948.json",
+      "index_blob": "ef8c03e66f5fdde60692ff206d86b7f4e75f2287"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-5da524240bf18aa05b5294b700ac6d25dfadf60c.json",
+      "index_blob": "052328812080572ce8d731b4b8e4f93ff435147d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-6811d7e1a9cbf19f90752272cfd6f0447388086a.json",
+      "index_blob": "3632bb23c4fb34a124707eea08958d64b459de3a"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-727aaceeb7e4f991c4a17bb84fb3df2cce9c35f7.json",
+      "index_blob": "db90493e0840bd35c0a361f62fa569a9718b9416"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-897f8c7637b428f2d0a46b4cbf6838a5e0007da7.json",
+      "index_blob": "ecdbe51e4aa752159ab04bb89238c8259e7dcf33"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-dfe5f9de2e69d52490b5f2aadf554b124731eb16.json",
+      "index_blob": "0e5b3b9b33ee99a25fc5207582440e26ac51f0a1"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/wenqu-cloud-1548-request.json",
+      "index_blob": "49589644968ac46b15ce613631aaa25e3a7eda54"
+    }
+  ],
+  "api_sha256": "bead135f8951504844cbc9b45a6fe20e157c08c2966f1d49b67ac937027aa20b",
+  "checks": [
+    "No unresolved index stages",
+    "Exactly 22 upstream changes are staged",
+    "Each staged upstream file matches upstream main blob and worktree bytes",
+    "Every pre-merge Wenqu task path matches its original HEAD blob",
+    "Lazy export API SHA256 remains unchanged",
+    "No resolver v3 marker in added code/workflow lines; no resolver path changed"
+  ],
+  "resolver_limit": "This is a delta identity check against the requested upstream, not a fresh audit of all pre-existing resolver behavior.",
+  "conclusion": "Upstream merge preserves Wenqu implementation and exact lazy-import candidate. Formal merged-candidate CI remains pending."
+}

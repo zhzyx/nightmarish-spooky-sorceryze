@@ -8,13 +8,11 @@ import { Icon, type IconName } from "@/components/Icon";
 import {
   docs,
   issues,
-  recentDocIds,
   requirements,
   repos,
-  type DocRecord,
   type Tone,
 } from "@/lib/data";
-import { fetchSearch, type ApiSearchResult } from "@/lib/server-api";
+import { fetchIssues, fetchRepoCapabilities, fetchRepos, fetchRequirements, fetchSearch, type ApiSearchResult } from "@/lib/server-api";
 import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -69,13 +67,15 @@ function buildSearchHref(query: string, type: SearchType): string {
   return suffix ? `/search?${suffix}` : "/search";
 }
 
+type LiveResult = ApiSearchResult & { href: string; icon: IconName };
+
 function LiveSearchResults({
   query,
   results,
   t,
 }: {
   query: string;
-  results: ApiSearchResult[];
+  results: LiveResult[];
   t: (key: MessageKey) => string;
 }) {
   const kindLabel = (kind: string): string => {
@@ -95,10 +95,6 @@ function LiveSearchResults({
           <strong id="live-search-title">{t("search.liveTitle")}</strong>
           <span>{formatMessage(t("search.liveMeta"), { count: results.length })}</span>
         </p>
-        <span className="search-index-tag">
-          <span className="live-dot" aria-hidden="true" />
-          {t("search.liveTag")}
-        </span>
       </div>
 
       {results.length > 0 ? (
@@ -106,11 +102,11 @@ function LiveSearchResults({
           {results.map((result) => (
             <Link
               className="search-result"
-              href={`/docs/${encodeURIComponent(result.id)}`}
-              key={result.id}
+              href={result.href}
+              key={result.href + result.id}
             >
               <span className="search-result-icon tone-jade">
-                <Icon name="file" size={17} />
+                <Icon name={result.icon} size={17} />
               </span>
               <span className="search-result-body">
                 <span className="search-result-head">
@@ -175,14 +171,51 @@ export default async function SearchPage({
   const needle = query.toLowerCase();
 
   const actor = await currentActor();
-  let liveResults: ApiSearchResult[] | null = null;
-  if (query && (actor)) {
-    try {
-      liveResults = await fetchSearch(actor, query);
-    } catch {
-      // 实时检索不可用时静默回退到本地示例结果。
-      liveResults = null;
-    }
+  const liveResults: LiveResult[] = [];
+  const failedScopes: string[] = [];
+  let showNativeCatalog = false;
+  if (query && actor) {
+    const matches = (value: string) => value.toLowerCase().includes(needle);
+    const loaders: Record<Exclude<SearchType, "all">, () => Promise<LiveResult[]>> = {
+      docs: async () => (await fetchSearch(actor, query)).map(doc => ({
+        ...doc, href: `/docs/${encodeURIComponent(doc.id)}`, icon: "file",
+      })),
+      issues: async () => (await fetchIssues(actor))
+        .filter(issue => matches(`#${issue.number} ${issue.title} ${issue.status}`))
+        .map(issue => ({
+          id: issue.id, kind: "工单", title: `#${issue.number} ${issue.title}`, snippet: issue.status,
+          href: `/issues/${encodeURIComponent(issue.id)}`, icon: "issues",
+        })),
+      requirements: async () => (await fetchRequirements(actor))
+        .filter(req => matches(`${req.title} ${req.id} ${req.request_id ?? ""}`))
+        .map(req => ({
+          id: req.id, kind: "需求", title: req.title, snippet: req.status,
+          href: `/docs/${encodeURIComponent(req.id)}`, icon: "requirements",
+        })),
+      repos: async () => {
+        const capabilities = await fetchRepoCapabilities();
+        showNativeCatalog = capabilities.native_candidates;
+        if (!capabilities.git) return [];
+        return (await fetchRepos(actor)).filter(repo => matches(repo.full_name)).map(repo => ({
+          id: repo.full_name, kind: "仓库", title: repo.full_name, snippet: repo.default_branch,
+          href: "/repos", icon: "repos",
+        }));
+      },
+    };
+    const scopes = searchScopes.filter(scope => scope.id !== "all" && (activeType === "all" || scope.id === activeType));
+    const responses = await Promise.allSettled(scopes.map(scope => loaders[scope.id as Exclude<SearchType, "all">]()));
+    const seen = new Set<string>();
+    responses.forEach((response, index) => {
+      if (response.status === "rejected") {
+        failedScopes.push(scopes[index].label);
+        return;
+      }
+      for (const item of response.value) {
+        const key = item.href + item.id;
+        if (!seen.has(key)) liveResults.push(item);
+        seen.add(key);
+      }
+    });
   }
 
   const docResults: SearchResult[] = docs
@@ -261,13 +294,6 @@ export default async function SearchPage({
     ? [...docResults, ...issueResults, ...repoResults, ...requirementResults]
     : [];
 
-  const counts: Record<SearchType, number> = {
-    all: allResults.length,
-    docs: docResults.length,
-    issues: issueResults.length,
-    repos: repoResults.length,
-    requirements: requirementResults.length,
-  };
 
   const visibleResults =
     activeType === "all"
@@ -280,20 +306,11 @@ export default async function SearchPage({
             ? repoResults
             : requirementResults;
 
-  const recentDocs = recentDocIds
-    .map((id) => docs.find((doc) => doc.id === id))
-    .filter((doc): doc is DocRecord => Boolean(doc));
-
   return (
     <div className="page-stack search-page">
       <header className="search-hero">
-        <p className="eyebrow">
-          <span className="eyebrow-rule" aria-hidden="true" />
-          DITING · GLOBAL SEARCH
-        </p>
         <h1>
           {t("search.title")}
-          {locale === "zh" ? <span className="title-period">。</span> : null}
         </h1>
         <p className="search-lede">{t("search.lede")}</p>
 
@@ -312,7 +329,7 @@ export default async function SearchPage({
             placeholder={t("search.placeholder")}
             type="search"
           />
-          <kbd>↵</kbd>
+          {activeType !== "all" && <input type="hidden" name="type" value={activeType} />}
           <button className="btn btn-primary" type="submit">
             {t("search.submit")}
           </button>
@@ -333,12 +350,8 @@ export default async function SearchPage({
           <div className="search-summary-row">
             <p>
               <strong>{formatMessage(t("search.resultsFor"), { query })}</strong>
-              <span>{formatMessage(t("search.found"), { count: allResults.length })}</span>
+              <span>{formatMessage(t("search.found"), { count: visibleResults.length + liveResults.length })}</span>
             </p>
-            <span className="search-index-tag">
-              <span className="live-dot" aria-hidden="true" />
-              {t("search.localIndex")}
-            </span>
           </div>
 
           <div aria-label={t("search.scopeAria")} className="search-scope-tabs" role="navigation">
@@ -351,48 +364,27 @@ export default async function SearchPage({
               >
                 <Icon name={scope.icon} size={14} />
                 {scope.label}
-                <span>{counts[scope.id]}</span>
               </Link>
             ))}
           </div>
 
-          <div className="search-results-layout">
+          <div className="route-results">
             <div className="search-main">
-              {liveResults !== null ? (
+              {failedScopes.length > 0 && <p role="status">{locale === "zh" ? "暂时无法读取" : "Currently unavailable"} · {failedScopes.join(" · ")}</p>}
+              {actor && (liveResults.length > 0 || failedScopes.length === 0) ? (
                 <LiveSearchResults query={query} results={liveResults} t={t} />
               ) : null}
 
+              {showNativeCatalog && <p className="native-search-note">
+                {locale === "zh" ? "仓库搜索覆盖 Git 仓库。" : "Repository search covers Git repositories."}{" "}
+                <Link className="text-link" href="/repos#native-repo-title">
+                  {locale === "zh" ? "浏览原生模块目录" : "Browse native modules"}
+                </Link>
+              </p>}
+
               {visibleResults.length > 0 ? (
                 <>
-                  <section className="ai-answer" aria-labelledby="ai-answer-title">
-                    <div className="ai-answer-head">
-                      <span className="ai-answer-orb">
-                        <Icon name="sparkles" size={15} />
-                      </span>
-                      <span>
-                        <strong id="ai-answer-title">{t("search.aiTitle")}</strong>
-                        <small>{t("search.aiNote")}</small>
-                      </span>
-                      <span className="ai-answer-badge">LOCAL</span>
-                    </div>
-                    <p>
-                      {formatMessage(t("search.aiBody"), {
-                        query,
-                        kind: kindLabel(visibleResults[0]?.kind ?? ""),
-                        title: visibleResults[0]?.title ?? "",
-                        count: visibleResults.length,
-                      })}
-                    </p>
-                    <div className="ai-answer-sources">
-                      {visibleResults.slice(0, 3).map((result) => (
-                        <Link href={result.href} key={result.id}>
-                          <span>{kindLabel(result.kind)}</span>
-                          {result.title}
-                        </Link>
-                      ))}
-                    </div>
-                  </section>
-
+                  <h2>{t("search.localIndex")}</h2>
                   <div className="search-results-list">
                     {visibleResults.map((result) => (
                       <Link className="search-result" href={result.href} key={result.id}>
@@ -419,7 +411,7 @@ export default async function SearchPage({
                     ))}
                   </div>
                 </>
-              ) : liveResults === null || liveResults.length === 0 ? (
+              ) : !actor || (!liveResults.length && !failedScopes.length) ? (
                 <EmptyState
                   actionHref="/search"
                   actionLabel={t("search.clear")}
@@ -429,165 +421,9 @@ export default async function SearchPage({
                 />
               ) : null}
             </div>
-
-            <aside className="search-aside">
-              <section className="panel search-index-panel">
-                <header className="panel-head">
-                  <div>
-                    <p className="section-kicker">INDEX STATUS</p>
-                    <h2>{t("search.indexScope")}</h2>
-                  </div>
-                  <Icon className="panel-head-icon" name="layers" size={18} />
-                </header>
-                <div className="index-rows">
-                  <div>
-                    <span>{t("search.indexDocs")}</span>
-                    <strong>{docs.length}</strong>
-                  </div>
-                  <div>
-                    <span>{t("search.indexIssues")}</span>
-                    <strong>{issues.length}</strong>
-                  </div>
-                  <div>
-                    <span>{t("search.indexRepos")}</span>
-                    <strong>{repos.length}</strong>
-                  </div>
-                  <div>
-                    <span>{t("search.indexReq")}</span>
-                    <strong>{requirements.length}</strong>
-                  </div>
-                </div>
-                <p className="index-note">
-                  {t("search.indexNote")}
-                </p>
-              </section>
-
-              <section className="panel search-recent-panel">
-                <header className="panel-head">
-                  <div>
-                    <p className="section-kicker">RECENTLY READ</p>
-                    <h2>{t("search.recent")}</h2>
-                  </div>
-                </header>
-                <div className="search-recent-list">
-                  {recentDocs.slice(0, 3).map((doc) => (
-                    <Link href={`/docs/${doc.id}`} key={doc.id}>
-                      <Icon name="file" size={14} />
-                      <span>{doc.title}</span>
-                      <Icon name="chevronRight" size={13} />
-                    </Link>
-                  ))}
-                </div>
-              </section>
-
-              <section className="search-tip">
-                <span className="aside-quote-mark" aria-hidden="true">
-                  〝
-                </span>
-                <p>{t("search.tip")}</p>
-                <span>{t("search.tipCaption")}</span>
-              </section>
-            </aside>
           </div>
         </>
-      ) : (
-        <div className="search-landing">
-          <section className="panel search-suggest-panel" aria-labelledby="search-suggest-title">
-            <header className="panel-head">
-              <div>
-                <p className="section-kicker">START HERE</p>
-                <h2 id="search-suggest-title">{t("search.start")}</h2>
-              </div>
-              <Icon className="panel-head-icon" name="search" size={18} />
-            </header>
-            <div className="suggest-list">
-              {suggestions.map((suggestion, index) => (
-                <Link href={buildSearchHref(suggestion.query, "all")} key={suggestion.label}>
-                  <span className="suggest-index">{String(index + 1).padStart(2, "0")}</span>
-                  <span>{suggestion.label}</span>
-                  <Icon name="arrowRight" size={14} />
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel search-recent-large" aria-labelledby="recent-search-title">
-            <header className="panel-head">
-              <div>
-                <p className="section-kicker">CURATED FOR YOU</p>
-                <h2 id="recent-search-title">{t("search.recent")}</h2>
-              </div>
-              <Link className="text-link" href="/docs">
-                {t("search.allDocs")}
-                <Icon name="arrowRight" size={14} />
-              </Link>
-            </header>
-            <div className="search-doc-grid">
-              {recentDocs.map((doc) => (
-                <Link className="search-doc-card" href={`/docs/${doc.id}`} key={doc.id}>
-                  <span className="search-doc-top">
-                    <span className={`doc-glyph tone-${doc.spaceId === "sinan" ? "cinnabar" : doc.spaceId === "duobao" ? "gold" : "jade"}`}>
-                      <Icon name="file" size={16} />
-                    </span>
-                    <span className={`kind-tag kind-${doc.kind}`}>{doc.kind}</span>
-                  </span>
-                  <strong>{doc.title}</strong>
-                  <span>{doc.excerpt}</span>
-                  <small>
-                    {doc.updated} · {doc.readTime}
-                  </small>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel search-scope-panel" aria-labelledby="scope-title">
-            <header className="panel-head">
-              <div>
-                <p className="section-kicker">SOURCES</p>
-                <h2 id="scope-title">{t("search.sources")}</h2>
-              </div>
-            </header>
-            <div className="search-source-list">
-              <div>
-                <span className="source-icon tone-jade">
-                  <Icon name="docs" size={15} />
-                </span>
-                <span>
-                  <strong>{formatMessage(t("search.sourceDocs"), { count: docs.length })}</strong>
-                  <small>{t("search.sourceDocsNote")}</small>
-                </span>
-              </div>
-              <div>
-                <span className="source-icon tone-cinnabar">
-                  <Icon name="issues" size={15} />
-                </span>
-                <span>
-                  <strong>{formatMessage(t("search.sourceIssues"), { count: issues.length })}</strong>
-                  <small>{t("search.sourceIssuesNote")}</small>
-                </span>
-              </div>
-              <div>
-                <span className="source-icon tone-gold">
-                  <Icon name="repos" size={15} />
-                </span>
-                <span>
-                  <strong>{formatMessage(t("search.sourceRepos"), { count: repos.length })}</strong>
-                  <small>{t("search.sourceReposNote")}</small>
-                </span>
-              </div>
-            </div>
-          </section>
-
-          <section className="search-tip search-tip-large">
-            <span className="aside-quote-mark" aria-hidden="true">
-              〝
-            </span>
-            <p>{t("search.tipLarge")}</p>
-            <span>{t("search.tipLargeCaption")}</span>
-          </section>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

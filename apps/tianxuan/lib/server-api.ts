@@ -6,11 +6,11 @@ import type { ApiRequirement } from "./requirements-api";
 import type { ApiSearchResult } from "./search-api";
 export type { ApiDoc, ApiDocDetail, ApiRepo, ApiIssue, ApiHealth, ApiGiteaStatus, ApiRequirement, ApiSearchResult };
 export type { ApiRequirementProgress } from "./requirements-api";
-export interface Identity { id: string; name: string; email: string; role: string }
+export interface Identity { id: string; name: string; email: string; role: string; can_issue_admin_keys?: boolean }
 
 async function read<T>(path: string): Promise<T> {
   const base = process.env.TIANXUAN_INTERNAL_API_BASE ?? process.env.NEXT_PUBLIC_TIANXUAN_API_BASE ?? "http://127.0.0.1:8000";
-  const key = cookies().get("__Host-tianxuan_key")?.value;
+  const key = cookies().get("__Host-tianxuan_session")?.value ?? cookies().get("__Host-tianxuan_key")?.value;
   const headers: Record<string, string> = key ? { Authorization: `Bearer ${key}` } : {};
   if (!key && process.env.TIANXUAN_REQUIRE_KEYS !== "1" && process.env.TIANXUAN_ACTOR) headers["X-Actor"] = process.env.TIANXUAN_ACTOR;
   const response = await fetch(`${base.replace(/\/$/, "")}${path}`, { headers, cache: "no-store" });
@@ -29,6 +29,9 @@ export const currentIdentity = cache(async (): Promise<Identity | null> => {
     return null;
   }
 });
+export async function fetchMembers(): Promise<Identity[]> {
+  return (await read<{ users: Identity[] }>("/api/v1/users")).users;
+}
 export async function currentActor(): Promise<string> {
   return (await currentIdentity())?.id ?? (process.env.TIANXUAN_REQUIRE_KEYS === "1" ? "" : process.env.TIANXUAN_ACTOR ?? "");
 }
@@ -42,3 +45,7 @@ export async function fetchBoard(_actor: string): Promise<Record<string, ApiIssu
 export async function fetchRequirements(_actor: string): Promise<ApiRequirement[]> { return (await read<{docs: ApiRequirement[]}>("/api/v1/docs?kind=requirement")).docs; }
 export async function fetchRequirementProgress(_actor: string, id: string): Promise<ApiRequirement> { return read(`/api/v1/docs/${encodeURIComponent(id)}`); }
 export async function fetchSearch(_actor: string, q: string, limit=20): Promise<ApiSearchResult[]> { return (await read<{results: ApiSearchResult[]}>(`/api/v1/search?${new URLSearchParams({q,limit:String(limit)})}`)).results; }
+
+export async function fetchRepoCapabilities(): Promise<{ git: boolean; native_candidates: boolean }> {
+  return read("/api/v1/capabilities");
+}

@@ -1,0 +1,192 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "527d3f2c78a028ee3ddbf5d3d0747fd9f92fb341",
+  "editor_sha256": "806526b12cca632f348115229da2357bb4d215a77b111c90ba46837617875638",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "73fa3f9e104b49dff0e87c0a60ee463b1396b730",
+    "customizations/components/tianxuan/server/schemas.py": "e1bcd0d25621874bb4828bd7803bce9ce31b56df",
+    "customizations/components/tianxuan/server/test_task_targets.py": "cdd6c9a3251fc3f668ffbdff7e3d2cbe1e217cf7",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "3c0a51f1f1aae8cb4fdb98ea6d44f29dc0710690",
+    "editor/docks/workbench/issue_actions/issue_task_target.gd": "9fea0712dd28511c1a5971306ee904f5900bd9d0",
+    "tests/editor/run_workbench_task_targets.py": "c4a684148b9cff3be54561746a941164c7ec88a8",
+    "tests/editor/workbench_task_targets.gd": "3cfe4ae314a2496d144aa314f2d3f631b00b088d"
+  },
+  "checks": {
+    "a01": "647bbab45ffee0dc488c00dceab8a0c3bbe7e5cb1fbf15ba3479a93109112027",
+    "d10": "3dd946a7f524d087ba6dec230b690aba28169dccd8d60feabad010ae555ca70d",
+    "d13": "2f3ae2cc71669bc440ae8a23e76e6ef56a22d7e28383a7a46bcd5bba5c917e7e",
+    "u14": "695ffdfd97dc4338e2e418f9d6c7bb49812da358d25e9c505f35b1fa11570bdd",
+    "i02": "c3a8fbd7677280911cf81457b01e303329a661e7f150ef49aceb9bc716fd49b9",
+    "i06": "81bab972fd4ce00e572d5a59563d0289e325b95d159078811a0c96a1e619031f"
+  },
+  "issues": {
+    "a01": 1856
+  },
+  "observed": "2026-11-22T02:36:25.143304+00:00",
+  "verified_windows_build": {
+    "source_tree": "a4a69df7a811551f29e5995fc73f799c5b4e2b12",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "806526b12cca632f348115229da2357bb4d215a77b111c90ba46837617875638",
+      "godot.windows.editor.x86_64.console.exe": "54c7959644114d1219008f2d309873e35a8ee4cc8e7d65cafc319fb2fbe18117",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": []
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/server/test_task_targets.py",
+      "customizations/components/tianxuan/server/test_design_tasks.py",
+      "customizations/components/tianxuan/server/test_design_signoff.py",
+      "customizations/components/tianxuan/server/test_issue_assignee.py",
+      "customizations/components/tianxuan/server/test_issue_number.py",
+      "customizations/components/tianxuan/server/test_issue_comments.py",
+      "customizations/components/tianxuan/server/test_api_versions.py",
+      "customizations/components/tianxuan/server/test_access_control.py",
+      "customizations/components/tianxuan/server/test_issue_flow.py",
+      "customizations/components/tianxuan/server/test_module_issues.py"
+    ],
+    "passed": 36,
+    "summary": "36 passed, 1 warning in 17.11s",
+    "source_tree": "a4a69df7a811551f29e5995fc73f799c5b4e2b12"
+  },
+  "validation_scripts": {
+    "a01": [
+      "run_workbench_task_targets.py"
+    ],
+    "d10": [
+      "run_workbench_design_tasks.py"
+    ],
+    "d13": [
+      "run_workbench_design_progress.py"
+    ],
+    "u14": [
+      "run_workbench_compact_model_route.py"
+    ],
+    "i02": [
+      "run_workbench_issue_detail.py"
+    ],
+    "i06": [
+      "run_workbench_issue_assignment.py"
+    ]
+  },
+  "worker_sources": {
+    "a01": "c0d6942dbd32a1eb45fdac1806d8cbaf5a1369fc"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2016",
+  "results": {
+    "a01": {
+      "state": "passed",
+      "editor_sha256": "806526b12cca632f348115229da2357bb4d215a77b111c90ba46837617875638",
+      "signoff": {
+        "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+        "version": 1,
+        "confirmed_by": "usr_f16b32eda05d4f71998645f132abb602",
+        "confirmed_at": "2026-11-22T02:35:14.920510+00:00",
+        "acceptance": "拉杆控制开桥，桥面完成展开"
+      },
+      "design_tasks": [
+        {
+          "id": "iss_fc452a9efb8b4a87902947fbae7e1fe0",
+          "number": 1,
+          "title": "程序",
+          "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+          "version": 1,
+          "paragraph": 1,
+          "project": "a01/bridge",
+          "module_id": "mod_887eec5b445d4ecfabc195451d888402",
+          "acceptance": "程序模块符合拉杆设计"
+        },
+        {
+          "id": "iss_96cf5fad131643309a17b62178289e9d",
+          "number": 2,
+          "title": "动画",
+          "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+          "version": 1,
+          "paragraph": 2,
+          "project": "a01/bridge",
+          "module_id": "mod_1c3f4489e36949edae597b709c874600",
+          "acceptance": "动画模块符合拉杆设计"
+        }
+      ],
+      "program": [
+        {
+          "criteria": "拉动拉杆后只发出一次开桥事件",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 1",
+          "stage": "可运行原型",
+          "target": {
+            "criteria": "拉动拉杆后只发出一次开桥事件",
+            "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+            "issue_id": "iss_fc452a9efb8b4a87902947fbae7e1fe0",
+            "responsible_user": "usr_f16b32eda05d4f71998645f132abb602",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 1.0,
+            "stage": "可运行原型",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "animation": [
+        {
+          "criteria": "",
+          "feedback": "阶段目标已退回：请填写可验证的到达条件。",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "",
+            "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+            "issue_id": "iss_96cf5fad131643309a17b62178289e9d",
+            "responsible_user": "usr_b3810d3ebb204b95bf9bc6a91a8af27b",
+            "return_comment_id": "icmt_7064643162bf424d9abd28a93fbd5351",
+            "return_reason": "阶段目标已退回：请填写可验证的到达条件。",
+            "revision": 1.0,
+            "stage": "动画预览",
+            "status": "returned",
+            "version": 1.0
+          }
+        },
+        {
+          "criteria": "播放预览时桥面在第 24 帧完全展开",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 2",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "播放预览时桥面在第 24 帧完全展开",
+            "document_id": "doc_8edb7b8839ef48908670a322f1e7458b",
+            "issue_id": "iss_96cf5fad131643309a17b62178289e9d",
+            "responsible_user": "usr_b3810d3ebb204b95bf9bc6a91a8af27b",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 2.0,
+            "stage": "动画预览",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "return_comment": {
+        "id": "icmt_7064643162bf424d9abd28a93fbd5351",
+        "tenant_id": "ten_d0c7098b75db492b9cf14cf9fa1aaa56",
+        "issue_id": "iss_96cf5fad131643309a17b62178289e9d",
+        "author": "usr_b3810d3ebb204b95bf9bc6a91a8af27b",
+        "body": "阶段目标已退回：请填写可验证的到达条件。",
+        "created_at": "2026-11-22T02:35:22.349281+00:00",
+        "author_name": "animation",
+        "parent_id": null
+      },
+      "service_restart_readback": true,
+      "source_visibility_enforced": true,
+      "changed_design_version": 2,
+      "replay_same_record": true,
+      "wrong_actor": 403,
+      "stale_target": 409,
+      "wrong_version": 409,
+      "wrong_project": 404
+    }
+  }
+}

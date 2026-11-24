@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2180dfba42b18569f3e988a8c2d22c194617b6d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c545cd3a3689ffc2a6781461956c18e09dfe1d3af96d806dd931ff6c73ebfb0b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1540",
+    "action": "user-report",
+    "detection_head": "63a727e545b6015eb7483c7c9b1cbbce6d6fbfba",
+    "context_sha256": "88df1f167f3cff83a371a08d77016d10c3c4b11ded712336f3f4cabe4742929a",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:user-request-20261118-existing-web-server",
+    "evidence": "data-collection/godot-web-platforms-1454-server-entry.json",
+    "diagnosis": "Follow-up supersedes planned closure: missing URL is repaired, but user reports personal-Key rejection. HTTP and actual hidden native WebKit deployed login-handler controls with a synthetic invalid key both returned 401; native UI showed the expected error and process exited 0. No personal credential was accessed. These controls validate rejection transport only, not key validity or successful login. Root cause of the user rejection remains unknown.",
+    "next_action": "Keep bug1540, parent1454 and acceptance1474 open. Publish scoped evidence. Resume account/key metadata and rejection-reason inspection through the existing authorized production administration environment; no such channel is available on this Mac. Do not ask user to switch browsers or disclose Key.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T15:35:01.876741+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li via current Codex root; server-side verification requires authorized production administration channel",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T15:57:33.517631+00:00",
+  "sha256": "d1daa08750c8f7ebab34ac4b8af8f6fc0b3ecf9d9b13bd46851ebc941c0832e3"
+}

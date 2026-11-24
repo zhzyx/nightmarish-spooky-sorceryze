@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2c090e36fe21d1f8210377856755ed6e090402bf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h04",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dda5fbef45ebdc01fa25c3b4c94d1ec905f6ae0b7b4a6baf803c719bf48f3b7d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2067",
+    "action": "intake",
+    "detection_head": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+    "context_sha256": "88779283b222c2c97ad7f2f3e78f33b104d5ba1779772fba80622043577da630",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45022859754",
+    "diagnosis": "Windows 协调脚本在 planned 状态提前执行了要求 active 标签的 intake-only。同期 Mac 已在原单登记负责实施。",
+    "next_action": "已修正本会话调用顺序，复核同轮未占用工单和主单入口。H04 由原 Mac 会话推进，Windows 释放自己空的准备树。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T12:32:55.588763+00:00",
+    "attempted": "核实 H04 仍为 planned、无 Windows 指派和启动回执，原始拒绝为 Issue requires exactly one active status label。",
+    "repair_owner": "Windows 协调会话",
+    "continuable": "Windows 平台独立验证"
+  },
+  "occurred_at": "2026-11-22T12:35:28.587325+00:00",
+  "sha256": "55f2d918efb9c160c2e98ac2fa9978a9207a7f685d90845e3081026907cf54d0"
+}

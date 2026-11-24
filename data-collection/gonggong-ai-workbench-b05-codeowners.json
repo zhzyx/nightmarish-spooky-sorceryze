@@ -1,0 +1,11 @@
+{
+  "issue": 1827,
+  "tracker": 1886,
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44868100954/job/136736232544",
+  "original_head": "48e3348bf07175f207bc3c63af6354b5f709e4e9",
+  "script": "samples/gonggong-workbench/fixtures/b05/sample.py",
+  "diagnosis": "Missing @godotengine/buildsystem for this new Python file",
+  "candidate_codeowners": "c85ee82e9d05b39a1116dae84227663f59072327",
+  "command": "python misc/scripts/validate_codeowners.py samples/gonggong-workbench/fixtures/b05/sample.py",
+  "observed": "INFO: samples/gonggong-workbench/fixtures/b05/sample.py: ['@zhzyx', '@godotengine/buildsystem']"
+}

@@ -1,0 +1,273 @@
+{
+  "issue_number": 1867,
+  "request_id": "gonggong-ai-workbench-plan1-d14",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867",
+  "observed_at": "2026-11-21T21:06:04.374259+08:00",
+  "baseline": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "intake": {
+    "status": "in-progress",
+    "B02_1870": "closed/completed",
+    "U02_1869": "closed/completed"
+  },
+  "prior_macos_observations": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+  ],
+  "source_sha256": {
+    "editor/SCsub": "97d1bb784b681a42a75f8d49e6dba03ef15851b3575dceb6d84fc64a483c0dae",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "ecadc8fc7b8288abc1541d70c4a4a0f8268855310ecfaf68c382710c5fba840e",
+    "editor/docks/workbench/business_session.gd": "614e4048446e80fc1093909afbcf28d1fdcaab8b890a2094002b244e8a694975",
+    "tests/editor/workbench_business_session.gd": "2503636460ca10dc8f188731c19c2e2d23e5cbfbabe22a20ffb20a497fb6fad9",
+    "tests/editor/run_workbench_business_session.py": "452840d63d96a51ea53f730615814e55ad3dbe9a739ac106c6e5875997f60188",
+    "design-docs/gonggong-ai-workbench-d14.md": "338943d510ec0e5afec37cd8cd1897815119532b829516e637f4d8326b7e4d1b"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5 / SDK 10.0.26100.0 / SCons 4.11.1",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j14",
+    "sdk_manifest": "thirdparty/webview2/manifest.json",
+    "embedded_input": "editor/docks/workbench/business_session.gd -> BusinessSession.gen.h -> AIWorkbenchSidebar.cpp -> editor binary",
+    "failure_and_retest": "Initial compile required an explicit ClassDB include; corrected source compiled, linked and ran native tests.",
+    "first_failure_log_sha256": "0fbbb8c218060d78585baee05732f6fa883a3f9d07df3ab400a8c5515aca431b",
+    "final_build_log_sha256": "504f489d2f9a9bbb5a8a5bf7c687bd1feace5223a78377d2c1cafe4115e4eb6f",
+    "engine_sha256": "2eb8c76695bbbf28e5896fa906a49d39f54c791a7e5248da1c1098e1f6c90454",
+    "exit_code": 0
+  },
+  "acceptance": {
+    "account_switch": "Passed. Server returned different private module positions to password-authenticated admin and key-authenticated viewer on the same project, and an empty position on a different project. Stale account response discarded.",
+    "permission": "Passed. Viewer write returned 403, subsequent reads remained authenticated.",
+    "revocation": "Passed. Real key revocation returned 401, cleared the identity, showed the visible native login form and blocked subsequent writes. Signing back in restored original private content.",
+    "storage": "Passed. No fixture password, personal key or issued session bytes in scanned project/settings/home files; unchanged original project files.",
+    "target_receipt": "Actual Windows candidate opened from the command palette, mounted the session and consumed the account and location responses (see native_product)."
+  },
+  "native_product": {
+    "exit_code": 0,
+    "command": "python tests/editor/run_workbench_business_session.py --godot bin/godot.windows.editor.x86_64.exe --report <local-report>",
+    "target": "compiled editor sidebar",
+    "project_files_created_by_editor": [
+      ".godot",
+      "test.gd.uid"
+    ],
+    "exit_diagnostics": [
+      "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+      "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+      "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+      "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+      "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+      "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+      "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+      "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 113 RIDs of type \"CanvasItem\" were leaked.",
+      "WARNING: 580 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+    ],
+    "engine_sha256": "2eb8c76695bbbf28e5896fa906a49d39f54c791a7e5248da1c1098e1f6c90454",
+    "script_sha256": "614e4048446e80fc1093909afbcf28d1fdcaab8b890a2094002b244e8a694975",
+    "checks": [
+      "native sidebar",
+      "open workbench command",
+      "business session mounted",
+      "account password verified and field cleared",
+      "verified admin and project",
+      "first account private position",
+      "previous identity cleared synchronously",
+      "personal key verified for second account",
+      "old account response discarded",
+      "second account private position with project query",
+      "viewer write denied by server, session retained",
+      "revocation prompts native reauthentication",
+      "write rejected while signed out",
+      "reauthenticated",
+      "different project isolated",
+      "returned to first project",
+      "original location restored",
+      "explicit logout clears identity"
+    ],
+    "credentials_checked": 5,
+    "files_scanned": 18,
+    "project_source_sha256_unchanged": {
+      "project.godot": "3483029a70f7a6de28391860b7ad570678ee359dc167a2b2bc105493be9b4498",
+      "test.gd": "2503636460ca10dc8f188731c19c2e2d23e5cbfbabe22a20ffb20a497fb6fad9"
+    },
+    "fixture": "loopback FastAPI accounts service, disposable tenant, admin and viewer, isolated editor copy"
+  },
+  "regressions": {
+    "account_service": {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_account_registration.py customizations/components/tianxuan/server/test_module_locations.py",
+      "exit_code": 0,
+      "passed": 7,
+      "warnings": [
+        "Starlette testclient httpx deprecation warning"
+      ]
+    },
+    "sidebar": {
+      "command": "python tests/editor/run_ai_chat_tab_order.py --godot <candidate> --report <local-report> --workbench-command",
+      "exit_code": 0,
+      "state": "passed",
+      "binary_sha256": "2eb8c76695bbbf28e5896fa906a49d39f54c791a7e5248da1c1098e1f6c90454",
+      "phases": [
+        "initial",
+        "legacy_maliang_last",
+        "legacy_maliang_selected",
+        "pre_daqian_layout",
+        "pre_maliang_layout",
+        "restart"
+      ],
+      "report_sha256": "71003a90e1b74ddbdd7e0602057903da92f7f64c20e372e6a1ee30d0239ff1cf"
+    },
+    "ai_chat_native": {
+      "command": "godot.windows.editor.x86_64.console.exe --headless --test --test-case=*[AIChat]* (private copy, sanitized environment)",
+      "exit_code": 0,
+      "doctest_and_diagnostics": [
+        "[doctest] doctest version is \"2.4.12\"",
+        "[doctest] run with \"--help\" for options",
+        "[doctest] test cases:  115 |  115 passed | 0 failed | 1486 skipped",
+        "[doctest] assertions: 1909 | 1909 passed | 0 failed |",
+        "[doctest] Status: SUCCESS!",
+        "ERROR: Object '<Object#51287949831>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.",
+        "ERROR: Object '<Object#58166608352>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.",
+        "ERROR: EditorSettings not instantiated yet when getting setting \"interface/theme/base_spacing\"."
+      ],
+      "log_sha256": "529daeb2d775dc6816111151938d5f5344c9f49ac9659c13ea4c70df21580729"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "version": "0.15.2",
+      "check": [
+        "tests/editor/run_workbench_business_session.py",
+        "editor/SCsub"
+      ]
+    }
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 20,
+    "application": "Used a per-worktree build and read-only shared SCons cache; verified the generated header consumer compiled and the linked native panel succeeded."
+  },
+  "handoff": {
+    "business_target": "native editor account control and Tianxuan API",
+    "downstream": [
+      "C06 uses identity_changed/get_identity/api_request",
+      "D02 #1865",
+      "I01 #1859"
+    ],
+    "publication": "parent session owns combined candidate review, PR, main and issue close readback"
+  },
+  "integration": {
+    "base_main": "07fe7a37aeb78000674b61cc0d3e068cd73aeb25",
+    "worker_base": "217cd6c7641af1b6bddeed284599992d9f800a91",
+    "engine_sha256": "6348cec3c79dab573b98b8bc617d30122ad71eb9ebd04be34056f6f6da171afa",
+    "editor_account_checks": [
+      "native sidebar",
+      "open workbench command",
+      "business session mounted",
+      "account password verified and field cleared",
+      "verified admin and project",
+      "first account private position",
+      "previous identity cleared synchronously",
+      "personal key verified for second account",
+      "old account response discarded",
+      "second account private position with project query",
+      "viewer write denied by server, session retained",
+      "revocation prompts native reauthentication",
+      "write rejected while signed out",
+      "reauthenticated",
+      "different project isolated",
+      "returned to first project",
+      "original location restored",
+      "explicit logout clears identity"
+    ],
+    "project_and_settings_files_scanned": 18,
+    "credentials_checked": 5,
+    "fixed_button_and_command": [
+      {
+        "layout": "initial",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      },
+      {
+        "layout": "legacy_maliang_last",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      },
+      {
+        "layout": "legacy_maliang_selected",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      },
+      {
+        "layout": "pre_daqian_layout",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      },
+      {
+        "layout": "pre_maliang_layout",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      },
+      {
+        "layout": "restart",
+        "clicks": 6,
+        "screens": [
+          "2D",
+          "3D",
+          "Script"
+        ],
+        "same_composer": true,
+        "same_sidebar": true,
+        "all_focused": true
+      }
+    ],
+    "files": {
+      "design-docs/gonggong-ai-workbench-d14.md": "36dfc4b40a79acbb3e83fc622cd2a196ae35afa3",
+      "editor/SCsub": "b40466c4fe6e59cdc0209916d34e06d029fe6759",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b66960ddfc88a1f5a2385ba074042829449e59bd",
+      "editor/docks/workbench/business_session.gd": "639e78d6f6b4c8ee0471429d99da25f023602c2b",
+      "tests/editor/run_workbench_business_session.py": "4c4882a29de9a50d1c6b1b7785d9ed5adbe7ca27",
+      "tests/editor/workbench_business_session.gd": "337cf93820a67059d04b3cbd8ed81dcc1d1e2adf"
+    },
+    "raw_controls_sha256": "52006ec584584cedf3f6befa0014c0d3ae16f696f2301f0644f932a35a627283",
+    "ci_correction": {
+      "previous_pr": 1930,
+      "check": "codespell",
+      "job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44911018999/job/136866643164",
+      "resolution": "Preserve the exact raw typed-text fixture by digest. Summarize six verified layout results and 36 clicks without changing the fixture."
+    }
+  }
+}

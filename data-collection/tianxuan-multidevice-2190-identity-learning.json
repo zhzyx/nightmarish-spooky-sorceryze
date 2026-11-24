@@ -1,0 +1,157 @@
+{
+  "issue": 2190,
+  "event": "independent_editor_integration_review",
+  "base": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+  "worker": "/root/sinan_6643ac7a1c24fc66",
+  "finding": "Credential storage queue completion preceded asynchronous server logout; earlier fixture aggregate observed retained derived tokens despite stage assertions passing.",
+  "correction": "Wait for restore, storage queue and session._requests to settle, then verify server-side revocation and shared root validity.",
+  "source_loaded_report": {
+    "passed": true,
+    "mode": "source_loaded",
+    "platform": "win32",
+    "binary_sha256": "58dcc1f84a59abc0f5dd88642e123f2fe47accff638fdd1bfd73df0c09ace7c2",
+    "source_sha256": {
+      "editor/docks/tianxuan/session_controller.gd": "43c4c88d334facb27a07b7bfe9f02d4a5c127104ba32cb99a873715acf46f37d",
+      "editor/docks/daqian/session_memory.gd": "9ee95ace26cbe4b1dbac78f235ae4aacb42c1f74c8f9a629c4ef981e3a5cedf2",
+      "customizations/components/godot-host/session_credentials.py": "68777d992d5cb55108777159bc9b5e2947cf1c6e7b80509a96551004087bfe29",
+      "tests/editor/run_tianxuan_identity.py": "d25739b03699703228cf7ea58ce11378aee3d60f31c69f48e5d155b8c51c3e06",
+      "tests/editor/tianxuan_identity.gd": "7f111bc20cfae38058d517cdb5c30bdf9f2d7755048584f93ada188838d5856b"
+    },
+    "phases": {
+      "login": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "existing AI credential consumer is mounted",
+        "existing AI connection memory uses the shared bounded pipe",
+        "fresh editor is signed out",
+        "ordinary password login",
+        "verified device grant saved"
+      ],
+      "restart": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "new process restored verified actor and project",
+        "business permission refusal keeps login",
+        "failed account switch retains actor",
+        "invalid_me rejects new device session",
+        "invalid_me retains prior actor and stored grant",
+        "failed_enrollment rejects new device session",
+        "failed_enrollment retains prior actor and stored grant",
+        "new login cancels pending enrollment",
+        "late enrollment cannot replace actor or persisted grant",
+        "different origin cannot restore first grant",
+        "returning to bound origin restores actor",
+        "verified personal key switched account",
+        "personal key persists only its independently revocable device session",
+        "late old response cannot reset new actor",
+        "server recorded current account on operation"
+      ],
+      "precedence": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "desktop with inherited launcher credential restores the account selected by the user",
+        "headless launch uses its own grant without replacing desktop identity"
+      ],
+      "offline": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "unavailable server retains pending grant without asserting identity",
+        "reconnect restored without credential entry",
+        "authenticated endpoint confirms revoked identity"
+      ],
+      "logout": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "revoked grant absent after restart",
+        "user supplied reauthorized personal key",
+        "logout forgets and revokes only the device session"
+      ],
+      "legacy": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "fresh editor is signed out",
+        "ordinary password login",
+        "verified device grant saved"
+      ],
+      "early_logout": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "cold-start logout cancels pending identity restore"
+      ],
+      "migrate_failure": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "failed or superseded legacy migration never activates shared credentials"
+      ],
+      "migrate_cancel": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "failed or superseded legacy migration never activates shared credentials"
+      ],
+      "migrate_cas": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "failed or superseded legacy migration never activates shared credentials"
+      ],
+      "migrate_denied": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "failed or superseded legacy migration never activates shared credentials"
+      ],
+      "migrate_logout_during_save": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "logout during committed migration cannot restore either identity"
+      ],
+      "migrate": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "legacy personal-key identity restores with its original actor and project",
+        "legacy shared key is upgraded to a persisted owned device grant"
+      ],
+      "migration_restart": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "legacy personal-key identity restores with its original actor and project",
+        "legacy shared key is upgraded to a persisted owned device grant"
+      ],
+      "migration_logout": [
+        "editor mounted its shared session",
+        "isolated native helper embedded",
+        "upgraded device survives process restart",
+        "upgraded device logs out independently of shared key"
+      ]
+    },
+    "service_observations": [
+      "issued",
+      "enrolled-bob-invalid_me",
+      "logout-bob",
+      "enrolled-bob-failed_enrollment",
+      "logout-bob",
+      "enrolled-bob-cancel_enrollment",
+      "logout-bob",
+      "enrolled-bob-online",
+      "logout-alice",
+      "audit-bob",
+      "enrolled-alice-online",
+      "enrolled-alice-online",
+      "logout-bob",
+      "enrolled-bob-online",
+      "logout-bob",
+      "legacy-issued",
+      "logout-alice",
+      "enrolled-bob-invalid_me",
+      "logout-bob",
+      "enrolled-bob-cancel_enrollment",
+      "logout-bob",
+      "enrolled-bob-cas_competition",
+      "logout-bob",
+      "enrollment-denied",
+      "enrolled-bob-online",
+      "logout-bob",
+      "enrolled-bob-online",
+      "logout-bob"
+    ]
+  },
+  "compiled_validation": "pending"
+}

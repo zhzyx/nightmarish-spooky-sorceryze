@@ -51,6 +51,11 @@ func make_source(path: String, color: Color, size: Vector2i):
 	image.fill(color)
 	check(image.save_png(path) == OK, "test source is created without external assets: " + path.get_file())
 
+func wait_preview():
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "restored selection preview completes")
+
 func run():
 	root.size = Vector2i(1440, 1000)
 	state_path = OS.get_environment("AINATIVE_MULTI_IMAGE_STATE")
@@ -75,6 +80,8 @@ func run():
 	check(node(mesh).version == "2" and panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, "image-to-Mesh exposes ordered multi-file input")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
 	check(node(mesh).source_paths == [front, side], "image-to-Mesh stores multiple source images in order")
+	panel.source_picker.files_selected.emit(PackedStringArray([front, side, front, side, front, side, front, side, front]))
+	check(node(mesh).source_paths.size() == 9, "reviewed image-to-Mesh accepts every reference without a fixed collection-size cap")
 	panel.select_node(downstream)
 	var data = node(downstream)
 	if data.is_empty():
@@ -114,8 +121,9 @@ func run():
 	panel.save_graph()
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
 	var saved_node = find_node(saved, downstream)
-	check(saved_node.source_paths == ["", ""] and saved_node.source_snapshots.size() == 2 and saved_node.image_context_snapshots.size() == 1, "save embeds all ordered source and reference snapshots")
+	check(saved_node.source_paths == [front, side] and saved_node.source_snapshots.size() == 2 and saved_node.image_context_snapshots.size() == 1, "save preserves ordered source paths and embeds all source and reference snapshots")
 	check(saved_node.source_snapshots[0].content_sha256 == FileAccess.get_sha256(front) and saved_node.source_snapshots[1].content_sha256 == FileAccess.get_sha256(side) and saved_node.image_context_snapshots[0].content_sha256 == FileAccess.get_sha256(reference), "snapshot identities match original bytes in the chosen order")
+	check(find_node(saved, mesh).source_snapshots.size() == 9, "save retains the complete uncapped Mesh reference collection")
 	var original = saved.duplicate(true)
 	var corrupt = original.duplicate(true)
 	find_node(corrupt, downstream).source_paths = [front, 2]
@@ -134,8 +142,15 @@ func run():
 	panel.open_graph()
 	panel.select_node(downstream)
 	data = node(downstream)
-	check(panel.selected_id == downstream and data.source_paths == ["", ""] and data.source_snapshots.size() == 2 and data.image_context_snapshots.size() == 1, "reopen restores ordered snapshots without source files or new generation")
+	check(panel.selected_id == downstream and data.source_paths == [front, side] and panel.source_edit.text == " ; ".join([front, side]) and data.source_snapshots.size() == 2 and data.image_context_snapshots.size() == 1, "reopen restores the visible ordered source paths together with their snapshots")
+	var moved = front + ".moved"
+	check(DirAccess.rename_absolute(front, moved) == OK, "test input is temporarily moved to exercise snapshot fallback")
+	panel.save_graph()
+	var relocated = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(find_node(relocated, downstream).source_paths == [front, side] and find_node(relocated, downstream).source_snapshots[0].content_sha256 == FileAccess.get_sha256(moved), "resaving a missing original path preserves both the visible path and its immutable snapshot")
+	check(DirAccess.rename_absolute(moved, front) == OK, "test input is restored after fallback verification")
 	check(data.parameters.prompt == "结合参考图生成雕塑，正面和三分之四侧面" and not panel.parameter_form.outputs_edit.visible, "reopen preserves the requirement and automatic output mode")
+	check(node(mesh).source_snapshots.size() == 9 and panel.node_run_blocker(mesh).is_empty(), "reopen accepts the complete Mesh reference collection")
 	check(panel.edges == original.edges and panel.run_id.is_empty() and panel.preview_token.is_empty(), "reopen preserves valid ports but clears old execution authority")
 	# Preview fixtures only test Godot's member selector. Host membership, publication
 	# and restore are exercised by the Python Executor integration test.
@@ -147,10 +162,38 @@ func run():
 	check(panel.current_images.size() == 2 and panel.result_choice.item_count == 2 and panel.result_choice.is_visible_in_tree(), "two independent images have individual preview choices")
 	panel.show_result(1)
 	check(panel.preview_artifact.id == "second" and panel.preview_token == "second-token" and panel.texture.texture != null, "selecting the second member updates bytes, identity and confirmation token")
+	var generated = panel.preview_history.get(downstream, [])
+	if generated.is_empty():
+		generated = [{"type":"image", "path":front, "token":"first-token", "run":"preview-fixture", "node":downstream, "description":"multi-image fixture", "artifact":{"id":"first", "revision":"1".repeat(64)}, "images":[
+			{"type":"image", "path":front, "label":"正面", "token":"first-token", "run":"preview-fixture", "node":downstream, "description":"", "artifact":{"id":"first", "revision":"1".repeat(64)}},
+			{"type":"image", "path":side, "label":"三分之四侧面", "token":"second-token", "run":"preview-fixture", "node":downstream, "description":"", "artifact":{"id":"second", "revision":"2".repeat(64)}}
+		]}]
+		panel.preview_history[downstream] = generated
+	panel.save_graph()
+	var with_outputs = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(with_outputs.output_history[downstream][0].images.size() == 2 and with_outputs.output_history[downstream][0].images[0].snapshot.content_sha256 == FileAccess.get_sha256(front) and with_outputs.output_history[downstream][0].images[1].snapshot.content_sha256 == FileAccess.get_sha256(side), "save embeds every ordered image-set member and its original bytes")
+	for member in with_outputs.output_history[downstream][0].images: member.erase("description")
+	write_model(with_outputs)
+	panel.open_graph()
+	panel.select_node(downstream)
+	await wait_preview()
+	check(panel.preview_history[downstream][0].images.all(func(member): return member.description == ""), "image-set members saved without descriptions remain readable and restore a safe empty default")
+	check(panel.current_images.size() == 2 and panel.result_choice.item_count == 2 and panel.preview_history[downstream][0].images[0].path != front and panel.preview_history[downstream][0].images[1].path != side, "reopen restores the complete image set from durable copies without rerunning generation")
+	panel.show_result(1)
+	check(panel.preview_artifact.id == "second" and panel.preview_token == "second-token" and panel.texture.texture != null, "restored image-set members retain independent identity selection and preview")
 	panel.show_native_section("other")
 	check(not panel.result_choice.is_visible_in_tree(), "image member selector stays on the generation page")
 	panel.show_native_section("mesh")
 	check(panel.result_choice.is_visible_in_tree() and panel.result_choice.selected == 1, "returning to generation preserves the selected member")
+	var pathless = with_outputs.duplicate(true)
+	find_node(pathless, downstream).source = ""
+	find_node(pathless, downstream).source_paths = ["", ""]
+	write_model(pathless)
+	panel.open_graph()
+	panel.select_node(downstream)
+	data = node(downstream)
+	check(data.source_paths.size() == 2 and data.source_paths.all(func(path): return path.begins_with(panel.path_edit.text + ".assets/inputs/")) and FileAccess.get_sha256(data.source_paths[0]) == FileAccess.get_sha256(front) and FileAccess.get_sha256(data.source_paths[1]) == FileAccess.get_sha256(side), "legacy pathless snapshots reopen as durable visible input files with identical bytes")
+	check(panel.source_edit.text == " ; ".join(data.source_paths), "recovered legacy input paths are visible in the source field")
 	var legacy = original.duplicate(true)
 	legacy.nodes = [find_node(legacy, upstream), find_node(legacy, mesh)]
 	legacy.nodes[0].type = "text_to_image"

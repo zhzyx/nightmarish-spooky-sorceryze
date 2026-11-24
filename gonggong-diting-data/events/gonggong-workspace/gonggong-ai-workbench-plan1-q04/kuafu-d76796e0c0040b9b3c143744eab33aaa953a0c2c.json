@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d76796e0c0040b9b3c143744eab33aaa953a0c2c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q04",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fd385c753fa02d6f3938aa95fe0692a67042367a823c1b8210195e607e2b8090",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2133",
+    "action": "validation",
+    "detection_head": "7067ebab140e7be2d851e5e72a6456f331e66f2b",
+    "context_sha256": "2e536f2c884c292786e6701bd57480d74c07b355e45f577421c0a0a427f6c1c3",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731#issuecomment-7083710413",
+    "diagnosis": "冻结 Windows 编辑器完成正常关闭后，工作者仍成功应答退出后产生的随机值。与 #2126 的恢复请求登记工作组问题相符。",
+    "next_action": "沿 #2126 对同一工作组做物理退出取证，在集成 Windows 编辑器上复跑 Q04 完整链。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T18:35:06.415201+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T18:42:10.727479+00:00",
+  "sha256": "1fd8f602cc865adff5ea54395b66d009b6ae974f2086369f90483b32afc9ceb2"
+}

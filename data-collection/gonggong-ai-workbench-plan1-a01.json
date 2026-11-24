@@ -1,0 +1,188 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-a01",
+  "issue_number": 1856,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1856",
+  "producer": "wave22_a01",
+  "baseline": "8ac06922b009d24a3af8feefad7ad95f3cd78988",
+  "source_revision": "c32c4bef400cbaa133e998646ff9d2b42adabf0d8e1a0662dcf341327254f316",
+  "verified_at": "2026-11-22T02:21:52.875668+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a01/dispatch-f7f724c73c944c5184809b49ebd2bf29.json",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "73fa3f9e104b49dff0e87c0a60ee463b1396b730",
+    "customizations/components/tianxuan/server/schemas.py": "e1bcd0d25621874bb4828bd7803bce9ce31b56df",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "3c0a51f1f1aae8cb4fdb98ea6d44f29dc0710690",
+    "customizations/components/tianxuan/server/test_task_targets.py": "cdd6c9a3251fc3f668ffbdff7e3d2cbe1e217cf7",
+    "editor/docks/workbench/issue_actions/issue_task_target.gd": "9fea0712dd28511c1a5971306ee904f5900bd9d0",
+    "tests/editor/run_workbench_task_targets.py": "c4a684148b9cff3be54561746a941164c7ec88a8",
+    "tests/editor/workbench_task_targets.gd": "3cfe4ae314a2496d144aa314f2d3f631b00b088d",
+    "design-docs/gonggong-ai-workbench-a01.md": "ba6f77b40d2bafa98a2a8fc1d6abf955ed673a8b"
+  },
+  "intake": {
+    "status": "status:in-progress",
+    "dependency": 1857,
+    "dependency_state": "completed",
+    "dependency_commit": "8ac06922b009d24a3af8feefad7ad95f3cd78988",
+    "upstream_macos": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_candidate_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5; Windows SDK 10.0.26100.0",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared SCons cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "embedded_input": "editor/docks/workbench/issue_actions/issue_task_target.gd",
+    "generated_input_invalidation": {
+      "change": "Show the target revision alongside the pinned design revision after readback.",
+      "before_editor_sha256": "f4c88c783eae94c550ac159150e434f7ef04def1a97d503da143372563326a71",
+      "after_editor_sha256": "7e2d3559365af30954afcac464acaa79452346e5742c2257d66df66b23463a4e",
+      "before_header_sha256": "25b8a331132b8422b412e45a0643e2028d6ce313d6146b0a0973d7dc38b1a755",
+      "after_header_sha256": "6296848103fbc37d4e315f36350f3ce940dec66d7864816e9efdcb495e28e2d0",
+      "rebuilt": [
+        "IssueActions.gen.h",
+        "AIWorkbenchSidebar.cpp",
+        "editor.windows.editor.x86_64.lib",
+        "godot.windows.editor.x86_64.exe",
+        "godot.windows.editor.x86_64.console.exe"
+      ],
+      "passed": true
+    }
+  },
+  "test_results": {
+    "task_targets": {
+      "state": "passed",
+      "editor_sha256": "7e2d3559365af30954afcac464acaa79452346e5742c2257d66df66b23463a4e",
+      "signoff": {
+        "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+        "version": 1,
+        "confirmed_by": "usr_7e39840b38ee421fbe32b4efd63a8bc3",
+        "confirmed_at": "2026-11-22T02:20:21.404037+00:00",
+        "acceptance": "拉杆控制开桥，桥面完成展开"
+      },
+      "design_tasks": [
+        {
+          "id": "iss_c167462d425c4eaf8517644ee3204e36",
+          "number": 1,
+          "title": "程序",
+          "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+          "version": 1,
+          "paragraph": 1,
+          "project": "a01/bridge",
+          "module_id": "mod_5f2e088236344e69ae5dfb1e978b25fa",
+          "acceptance": "程序模块符合拉杆设计"
+        },
+        {
+          "id": "iss_abdadd62846f4c5f96f53b1cb588ad8f",
+          "number": 2,
+          "title": "动画",
+          "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+          "version": 1,
+          "paragraph": 2,
+          "project": "a01/bridge",
+          "module_id": "mod_4fb802209c9b4f68b0a33e6bef51c418",
+          "acceptance": "动画模块符合拉杆设计"
+        }
+      ],
+      "program": [
+        {
+          "criteria": "拉动拉杆后只发出一次开桥事件",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 1",
+          "stage": "可运行原型",
+          "target": {
+            "criteria": "拉动拉杆后只发出一次开桥事件",
+            "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+            "issue_id": "iss_c167462d425c4eaf8517644ee3204e36",
+            "responsible_user": "usr_7e39840b38ee421fbe32b4efd63a8bc3",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 1.0,
+            "stage": "可运行原型",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "animation": [
+        {
+          "criteria": "",
+          "feedback": "阶段目标已退回：请填写可验证的到达条件。",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "",
+            "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+            "issue_id": "iss_abdadd62846f4c5f96f53b1cb588ad8f",
+            "responsible_user": "usr_9ad4728398864e29bba028bb3f63dff7",
+            "return_comment_id": "icmt_fad8b08556424a0ba96a21cbed4de2ba",
+            "return_reason": "阶段目标已退回：请填写可验证的到达条件。",
+            "revision": 1.0,
+            "stage": "动画预览",
+            "status": "returned",
+            "version": 1.0
+          }
+        },
+        {
+          "criteria": "播放预览时桥面在第 24 帧完全展开",
+          "feedback": "已保存目标 · 来源设计 v1 · 目标修订 2",
+          "stage": "动画预览",
+          "target": {
+            "criteria": "播放预览时桥面在第 24 帧完全展开",
+            "document_id": "doc_2ddcb961ef4b4b90b60ffede7d0e4f2d",
+            "issue_id": "iss_abdadd62846f4c5f96f53b1cb588ad8f",
+            "responsible_user": "usr_9ad4728398864e29bba028bb3f63dff7",
+            "return_comment_id": null,
+            "return_reason": "",
+            "revision": 2.0,
+            "stage": "动画预览",
+            "status": "defined",
+            "version": 1.0
+          }
+        }
+      ],
+      "return_comment": {
+        "id": "icmt_fad8b08556424a0ba96a21cbed4de2ba",
+        "tenant_id": "ten_354569bd8be74d24b868f3de7781e47f",
+        "issue_id": "iss_abdadd62846f4c5f96f53b1cb588ad8f",
+        "author": "usr_9ad4728398864e29bba028bb3f63dff7",
+        "body": "阶段目标已退回：请填写可验证的到达条件。",
+        "created_at": "2026-11-22T02:20:30.859035+00:00",
+        "author_name": "animation",
+        "parent_id": null
+      },
+      "service_restart_readback": true,
+      "source_visibility_enforced": true,
+      "changed_design_version": 2,
+      "replay_same_record": true,
+      "wrong_actor": 403,
+      "stale_target": 409,
+      "wrong_version": 409,
+      "wrong_project": 404
+    },
+    "service_regression": {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_task_targets.py customizations/components/tianxuan/server/test_design_tasks.py customizations/components/tianxuan/server/test_design_signoff.py customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_issue_comments.py customizations/components/tianxuan/server/test_api_versions.py customizations/components/tianxuan/server/test_access_control.py customizations/components/tianxuan/server/test_issue_flow.py customizations/components/tianxuan/server/test_module_issues.py",
+      "observed": "35 passed, 1 upstream Starlette TestClient deprecation warning in 18.29s"
+    },
+    "d10_same_editor": {
+      "command": "python tests/editor/run_workbench_design_tasks.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "state": "passed",
+      "editor_sha256": "7e2d3559365af30954afcac464acaa79452346e5742c2257d66df66b23463a4e",
+      "counts": {
+        "issues": 2,
+        "doc_issue_links": 2,
+        "design_task_sources": 2
+      },
+      "concurrent_replays": 2
+    },
+    "static": [
+      "ruff check: passed",
+      "ruff format --check: 5 files already formatted",
+      "mypy: success on 5 Python files",
+      "git diff --check: passed"
+    ]
+  },
+  "cleanup": {
+    "temporary_fixtures": "Native runners closed the two temporary HTTP services, discarded fixture databases, editor copies and test profiles before reporting success.",
+    "retained": "Candidate executable, build outputs, source and this receipt retained for parent integration and acceptance."
+  }
+}

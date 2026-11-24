@@ -24,11 +24,17 @@ func run():
 	for kind in ["generate_image", "image_to_mesh", "text_to_mesh"]:
 		panel.generator_choice.selected = kind_index
 		panel.add_generator()
-		var image_stage = true
-		check(form.prompt_edit.visible == image_stage and form.rows.width.visible == image_stage and form.rows.height.visible == image_stage, "type-specific prompt and image sizes: " + kind)
+		var prompt_stage = kind != "image_to_mesh"
+		check(form.prompt_edit.visible == prompt_stage and form.rows.width.visible and form.rows.height.visible, "type-specific prompt and image sizes: " + kind)
 		check(not form.advanced_box.visible and not panel.params_edit.is_visible_in_tree(), "advanced and developer fields start folded: " + kind)
 		form.advanced_toggle.button_pressed = true
 		check(form.rows.mesh_steps.visible == kind.ends_with("mesh") and form.rows.denoise.visible == (kind in ["generate_image", "image_to_mesh"]), "advanced fields follow node capabilities: " + kind)
+		if kind == "image_to_mesh":
+			panel.nodes[-1].parameters.prompt = "旧工作流提示词"
+			panel.nodes[-1].text = "旧版文字说明"
+			panel.select_node(panel.nodes[-1].id)
+			check(not form.prompt_edit.is_visible_in_tree() and panel.nodes[-1].parameters.prompt.is_empty() and panel.nodes[-1].text.is_empty(), "image-to-Mesh hides text and clears both legacy prompt fields")
+			check(panel.apply_fields() and panel.nodes[-1].parameters.prompt.is_empty(), "applying image-to-Mesh keeps its request image-only")
 		kind_index += 1
 	# Real widget signals, not editing the backing JSON.
 	panel.generator_choice.selected = 0
@@ -118,9 +124,97 @@ func run():
 	config.load(panel.state_dir.path_join("local.cfg"))
 	check(config.get_value("interface", "developer_mode", true) == false, "developer visibility is a machine setting")
 	check(not panel.model().has("developer_mode"), "developer visibility is excluded from portable workflows")
+	# The body-shape node exposes only five controls and AINative fits landmarks.
+	panel.generator_choice.selected = 4
+	panel.add_generator()
+	var shape = panel.nodes[-1]
+	var shape_id = str(shape.id)
+	check(shape.type == "human_shape_adjust" and not form.prompt_edit.visible and not form.landmarks_edit.visible and not form.pose_row.visible, "human shape node uses its automatic five-control pre-rig form")
+	check(form.rows.height_cm.visible and not form.rows.height_m.visible and form.rows.head_ratio.visible and form.rows.arm_length_scale.visible and form.rows.leg_length_scale.visible and form.rows.build.visible, "all five human shape controls are visible with centimeter height")
+	check(shape.parameters.height_cm == 180 and shape.parameters.height_cm is int and not shape.parameters.has("height_m"), "new human shape nodes store integer centimeters")
+	check(panel.apply_fields() and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "default node delegates pose and landmark fitting without manufacturing an empty prompt")
+	shape.parameters.confirmed = false
+	shape.parameters.prompt = ""
+	shape.parameters.reference_pose = "T"
+	shape.parameters.landmarks = {"source_sha256":""}
+	shape.parameters.height_m = 1.9
+	shape.parameters.erase("height_cm")
+	panel.select_node(shape_id)
+	check(not shape.parameters.has("confirmed") and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "legacy prompt, confirmation and empty landmarks migrate to automatic AINative fitting")
+	check(form.controls.height_cm.get_line_edit().text == "190" and shape.parameters.has("height_m"), "legacy meter values migrate in the form without mutating the node before apply")
+	form.controls.head_ratio.value = 9.0
+	form.controls.arm_length_scale.value = 1.2
+	form.controls.leg_length_scale.value = 1.1
+	form.controls.build.value = 0.4
+	check(panel.apply_fields() and shape.parameters.height_cm == 190 and shape.parameters.height_cm is int and not shape.parameters.has("height_m") and shape.parameters.head_ratio == 9.0 and shape.parameters.arm_length_scale == 1.2 and shape.parameters.leg_length_scale == 1.1 and shape.parameters.build == 0.4, "human shape widgets update all five contract values without manual landmarks")
+	check(not shape.parameters.has("confirmed") and not shape.parameters.has("landmarks"), "automatic mode preserves neither manufactured confirmation nor manual landmarks")
+	for height_cm in [170, 180, 190]:
+		var height_input = form.controls.height_cm.get_line_edit()
+		height_input.text = str(height_cm)
+		height_input.text_changed.emit(str(height_cm))
+		check(panel.apply_fields() and shape.parameters.height_cm == height_cm and shape.parameters.height_cm is int, "typed whole centimeters parse as integers: " + str(height_cm))
+	panel.add_generator()
+	var other_shape = panel.nodes[-1]
+	var other_shape_id = str(other_shape.id)
+	form.controls.height_cm.get_line_edit().text = "190"
+	form.controls.height_cm.get_line_edit().text_changed.emit("190")
+	check(panel.apply_fields() and other_shape.parameters.height_cm == 190, "second human shape node accepts an independent height")
+	panel.select_node(shape_id)
+	form.controls.height_cm.get_line_edit().text = "170"
+	form.controls.height_cm.get_line_edit().text_changed.emit("170")
+	check(panel.apply_fields() and shape.parameters.height_cm == 170 and other_shape.parameters.height_cm == 190, "changing one node does not overwrite another node")
+	panel.path_edit.text = panel.state_dir.path_join("height-cm-workflow.json")
+	panel.save_graph()
+	panel.open_graph()
+	panel.select_node(shape_id)
+	shape = panel.nodes.filter(func(node): return node.id == shape_id)[0]
+	other_shape = panel.nodes.filter(func(node): return node.id == other_shape_id)[0]
+	check(shape.parameters.height_cm == 170 and other_shape.parameters.height_cm == 190 and shape.parameters.height_cm is int and other_shape.parameters.height_cm is int, "save and reopen preserve independent integer heights")
+	var last_valid = shape.parameters.duplicate(true)
+	for invalid_height in ["173", "180.5", "170.1", "", "not-a-number", "10", "410"]:
+		var height_input = form.controls.height_cm.get_line_edit()
+		height_input.text = invalid_height
+		height_input.text_changed.emit(invalid_height)
+		panel.run_node_preview(shape_id)
+		check(not panel.apply_fields() and shape.parameters == last_valid and height_input.text == invalid_height and form.error_label.text == form.HEIGHT_CM_ERROR and panel.jobs.is_empty(), "invalid height preserves draft and last valid configuration without running: " + invalid_height)
+	form.controls.height_cm.get_line_edit().text = "180"
+	form.controls.height_cm.get_line_edit().text_changed.emit("180")
+	check(panel.apply_fields() and shape.parameters.height_cm == 180 and other_shape.parameters.height_cm == 190, "valid correction after an invalid draft updates only the selected node")
 	# Switching nodes must not leak another type's values or reopen advanced UI.
 	panel.select_node(panel.nodes[0].id)
 	check(form.copy_hint.visible and not form.advanced_box.visible and JSON.parse_string(JSON.stringify(panel.nodes[0].parameters)) == JSON.parse_string(JSON.stringify(original)), "node switching restores independent parameters and collapsed UI")
+	# Garment splitting defaults to AI recognition; geometry JSON is developer-only.
+	panel.generator_choice.selected = 6
+	panel.add_generator()
+	var garment = panel.nodes[-1]
+	check(garment.type == "garment_split" and garment.provider == "garment-split" and garment.parameters.items.is_empty(), "garment split node starts with an empty item list for AI recognition")
+	check(not form.garment_items_edit.visible and not form.garment_items_label.visible and form.cli_hint.visible and form.cli_hint.text.contains("AI") and not form.prompt_edit.visible and not form.advanced_toggle.visible and not panel.node_model_edit.visible, "garment form explains AI recognition without exposing geometry JSON or generation controls")
+	check(panel.input_kind(garment) == panel.PORT_MESH and panel.output_kind(garment) == panel.PORT_MESH and not panel.context_row.visible, "garment node has Mesh input/output and no image context")
+	var empty_garment = form.parameters()
+	check(empty_garment is Dictionary and empty_garment.get("items", null) == [] and form.error_label.text.is_empty(), "empty garment item list remains a valid automatic configuration")
+	check(panel.apply_fields() and garment.parameters.items.is_empty(), "applying an empty garment draft preserves automatic recognition")
+	garment.source = ProjectSettings.globalize_path("res://fixtures/sample.glb")
+	check(panel.node_run_blocker(str(garment.id)).is_empty(), "running an empty garment draft starts AI recognition instead of demanding component IDs")
+	panel.path_edit.text = panel.state_dir.path_join("empty-garment-form-workflow.json")
+	panel.save_graph()
+	var saved_empty_garment = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(saved_empty_garment is Dictionary and saved_empty_garment.nodes.any(func(node): return node.id == garment.id and node.parameters.items.is_empty()), "workflow save persists an automatic garment draft without a validation dialog")
+	var garment_items = [{"id":"cape","label":"披风","category":"garment","slot":"back","behavior":"cloth","confidence":0.9,"review_state":"needs_review","selection":{"mode":"components","component_ids":["cmp_fixture"]}}]
+	form.garment_items_edit.text = JSON.stringify(garment_items, "  ", true, true)
+	form.garment_items_edit.text_changed.emit()
+	check(panel.apply_fields() and garment.parameters.items == garment_items and not garment.parameters.has("prompt") and garment.text.is_empty(), "developer garment JSON updates the exact contract without manufacturing a prompt")
+	var garment_id = str(garment.id)
+	panel.path_edit.text = panel.state_dir.path_join("garment-form-workflow.json")
+	panel.save_graph()
+	panel.open_graph()
+	panel.select_node(garment_id)
+	garment = panel.nodes.filter(func(node): return node.id == garment_id)[0]
+	check(garment.parameters.items == garment_items and not form.garment_items_edit.visible and JSON.parse_string(form.garment_items_edit.text) == garment_items, "developer garment JSON survives workflow save and reopen without becoming ordinary UI")
+	var valid_garment = garment.parameters.duplicate(true)
+	form.garment_items_edit.text = "[1]"
+	form.garment_items_edit.text_changed.emit()
+	check(not panel.apply_fields() and garment.parameters == valid_garment, "non-object garment entries are rejected without replacing the last valid list")
+	panel.failure_dialog.hide()
 	var report = {"ok":failures == 0, "checks":checks, "failures":failures, "real_inference":false}
 	var report_path = OS.get_environment("AINATIVE_PARAMETER_FORM_REPORT")
 	if not report_path.is_empty():

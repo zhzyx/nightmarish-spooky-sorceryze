@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1544-vision-review-loop-20261119",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-vision-review-loop-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-18T17:03:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1544",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261119",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Audit all current Maliang changes across sessions, retain the accepted multi-view visual review and previous-model repair loop, capability-limited Chinese delivery, human head gate and the explicitly retained experimental SkinTokens route; remove duplicate, obsolete, incorrect or one-off recovery complexity; verify, commit and push the necessary changes to main",
+    "authorization_ref": "User accepted the actual result and explicitly requested audit, pruning, commit and push to main; subsequently directed that experimental SkinTokens auto-rigging must not be reverted",
+    "validation": "data-collection/maliang-vision-review-loop-20261119-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [
+    "github-ef2a33effe75ffc1569a5075de3065468f2a6637e1600a7d30a9d6c9612166b4"
+  ],
+  "sha256": "7687fcd1b0ab23400de7b5e94adf1a39e8c0110a27f60bf6b0e19393edd63d5e"
+}

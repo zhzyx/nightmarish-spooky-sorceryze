@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import binascii
 import hashlib
@@ -9,13 +10,15 @@ import json
 import re
 import sqlite3
 from collections.abc import Callable
+from threading import Event
 from typing import Any
 
-from access_control import COOKIE
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
+from native_checkpoint import read_checkpoint, recover_project, recovery_list
 from native_store import Conflict, NativeStore, NativeStoreError
 from starlette.concurrency import run_in_threadpool
+from tianxuan_core import require_native_source_read as _module_read
 
 PREFIX = "/api/v1/native"
 MAX_BODY = 8 * 1024 * 1024
@@ -31,16 +34,30 @@ def create_native_workflow_router(workflow) -> APIRouter:
 
     @router.post("/{operation}")
     async def invoke(operation: str, request: Request):
-        _, actor = _identity(request)
+        control = operation in {"pause", "resume", "cancel"}
+        project_scoped = control or operation == "recover-project"
+        _, actor = _identity(request, allow_project=project_scoped)
         payload = await _body(request)
         fields = {
             "inspect": set(),
             "advance": set(),
+            "await-judgment": {"issue", "binding"},
+            "admit-judgment": {"issue", "binding"},
             "status": {"key"},
+            "checkpoint": {"key"},
+            "recovery": {"project"},
+            "recover-occupancy": {"project"},
+            "recover-project": set(),
+            "execution-readback": {"key"},
+            "record-execution-fault": {"key"},
+            **{op: {"issue", "key", "expected"} for op in ("pause", "resume", "cancel")},
+            "edit-baseline": {"key", "module", "path"},
             "reconcile": {"key"},
             "execute": {"key"},
             "await-terminal": {"key"},
             "check": {"key"},
+            "verify-stage": {"key"},
+            "renew-stage": {"key", "target_revision", "confirmation_revision"},
             "integration-authorize": {"group"},
             "integration-continue": {"key"},
             "integration-await": {"key", "event"},
@@ -65,17 +82,34 @@ def create_native_workflow_router(workflow) -> APIRouter:
         if operation not in fields:
             raise HTTPException(404, "workflow operation unavailable")
         optional = {
-            "advance": {"exclude"},
+            "advance": {"exclude", "completion"},
+            "recovery": {"after"},
             "integration-continue": {"event"},
             "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
         }
         _fields(payload, fields[operation], optional.get(operation))
+        if (
+            operation == "recovery"
+            and "after" in payload
+            and (not isinstance(payload["after"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["after"]))
+        ):
+            raise HTTPException(422, "invalid recovery cursor")
+        if "binding" in payload and (
+            not isinstance(payload["binding"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["binding"])
+        ):
+            raise HTTPException(422, "exact creative dependency binding required")
         if operation == "advance" and (
             not isinstance(payload.get("exclude", []), list)
             or len(payload.get("exclude", [])) > 1024
             or not all(isinstance(key, str) and len(key) == 64 for key in payload.get("exclude", []))
         ):
             raise HTTPException(422, "invalid deferred event keys")
+        if (
+            operation == "advance"
+            and "completion" in payload
+            and (not isinstance(payload["completion"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["completion"]))
+        ):
+            raise HTTPException(422, "exact completion ticket required")
         for key in {"key", "issue", "channel", "group"} & payload.keys():
             if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
                 raise HTTPException(422, "invalid workflow identifier")
@@ -85,10 +119,17 @@ def create_native_workflow_router(workflow) -> APIRouter:
             and (not isinstance(payload["event"], str) or not payload["event"] or len(payload["event"]) > 512)
         ):
             raise HTTPException(422, "invalid publisher event")
+        if control and (type(payload["expected"]) is not int or payload["expected"] < 1):
+            raise HTTPException(422, "exact observed progress sequence required")
         if operation == "revise" and (
             not isinstance(payload["expected"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["expected"])
         ):
             raise HTTPException(422, "exact previous task required")
+        if operation == "renew-stage" and any(
+            type(payload[field]) is not int or payload[field] < 1
+            for field in ("target_revision", "confirmation_revision")
+        ):
+            raise HTTPException(422, "exact positive target and confirmation revisions required")
         if "assignment" in payload:
             assignment = payload["assignment"]
             if not isinstance(assignment, dict) or not isinstance(assignment.get("ticket"), str):
@@ -101,6 +142,12 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 raise HTTPException(422, "invalid assignment contract")
 
         def call():
+            if operation == "execution-readback":
+                return workflow.execution_readback(actor, payload["key"])
+            if operation == "record-execution-fault":
+                return workflow.record_execution_fault(actor, payload["key"])
+            if control:
+                return workflow.control_run(actor, operation, project=request.query_params.get("project"), **payload)
             if operation.startswith("integration-"):
                 integration = getattr(workflow, "integration", None)
                 if integration is None:
@@ -125,11 +172,31 @@ def create_native_workflow_router(workflow) -> APIRouter:
                     board["integrations"] = integration.discover(actor)
                 return board
             if operation == "advance":
-                return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
-            if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
+                return workflow.advance(
+                    actor, isolate=True, exclude=payload.get("exclude", []), completion=payload.get("completion")
+                )
+            if operation == "execute":
+                return workflow.execute_receipt(actor, payload["key"])
+            if operation in {"status", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "recover-occupancy":
+                from native_local_occupancy import recover_local_occupancy
+
+                return recover_local_occupancy(workflow, actor, payload["project"])
+            if operation == "recovery":
+                return recovery_list(workflow, actor, **payload)
+            if operation == "checkpoint":
+                return read_checkpoint(workflow, actor, payload["key"])
+            if operation == "edit-baseline":
+                return workflow.edit_baseline(actor, **payload)
+            if operation == "verify-stage":
+                return workflow.verify_stage(actor, payload["key"])
+            if operation == "renew-stage":
+                return workflow.renew_stage(actor, **payload)
             if operation == "revise":
                 return workflow.authorize_installed(actor, payload["issue"], expected=payload["expected"])
+            if operation == "admit-judgment":
+                return workflow.authorize_installed(actor, payload["issue"], _judgment_binding=payload["binding"])
             if operation == "authorize":
                 return workflow.authorize_installed(actor, payload["issue"])
             if operation == "publish":
@@ -148,6 +215,43 @@ def create_native_workflow_router(workflow) -> APIRouter:
             return {"state": row["state"]}
 
         try:
+            if operation == "recover-project":
+                closed = Event()
+
+                def current_session():
+                    if closed.is_set():
+                        raise HTTPException(499, "editor recovery connection closed")
+                    if _identity(request, refresh=True, allow_project=True)[1] != actor:
+                        raise HTTPException(401, "recovery identity changed")
+
+                project = request.query_params.get("project")
+                if (
+                    request.headers.get("x-native-worker-lifetime") != "editor-connection"
+                    or not request.client
+                    or request.client.host not in {"127.0.0.1", "::1"}
+                    or not getattr(workflow.worker, "records_local_process_group", False)
+                    or callable(getattr(workflow.worker, "reserve", None))
+                ):
+                    return await recover_project(workflow, actor, project, current_session)
+
+                # The body is consumed. Observe this socket's EOF throughout recovery,
+                # including while the producer is supervised on a different thread.
+                async def observe_editor():
+                    while (await request.receive())["type"] != "http.disconnect":
+                        pass
+                    closed.set()
+
+                from native_worker import editor_connection_closed
+
+                observer = asyncio.create_task(observe_editor())
+                binding = editor_connection_closed.set(closed)
+                try:
+                    return await recover_project(workflow, actor, project, current_session)
+                finally:
+                    closed.set()
+                    editor_connection_closed.reset(binding)
+                    observer.cancel()
+                    await asyncio.gather(observer, return_exceptions=True)
             if operation == "integration-await":
                 if not isinstance(payload["event"], str) or len(payload["event"]) > 512:
                     raise HTTPException(422, "invalid publisher event")
@@ -158,6 +262,22 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 if _identity(request, refresh=True)[1] != actor:
                     raise HTTPException(401, "publisher observer identity changed")
                 return result
+            if operation == "await-judgment":
+                # A CLI may disconnect while a person considers the artwork. Release that subscription.
+                waiting = asyncio.create_task(workflow.await_judgment(actor, payload["issue"], payload["binding"]))
+                disconnected = asyncio.create_task(request.receive())
+                try:
+                    await asyncio.wait((waiting, disconnected), return_when=asyncio.FIRST_COMPLETED)
+                    if not waiting.done():
+                        raise HTTPException(499, "creative observer disconnected")
+                    await waiting
+                finally:
+                    for task in (waiting, disconnected):
+                        task.cancel()
+                    await asyncio.gather(waiting, disconnected, return_exceptions=True)
+                if _identity(request, refresh=True)[1] != actor:
+                    raise HTTPException(401, "creative observer identity changed")
+                return {"observed": True}
             if operation == "await-terminal":
                 result = await workflow.await_terminal(actor, payload["key"])
                 # Sessions may have been revoked while the observer was asleep.
@@ -171,25 +291,40 @@ def create_native_workflow_router(workflow) -> APIRouter:
     return router
 
 
-def _identity(request: Request, *, refresh: bool = False) -> tuple[str, str]:
+def _identity(
+    request: Request, *, refresh: bool = False, read_only: bool = False, allow_project: bool = False
+) -> tuple[str, str]:
     store = request.app.state.store
     actor = getattr(request.state, "verified_actor", None)
-    if actor and refresh:
-        scheme, _, bearer = request.headers.get("authorization", "").partition(" ")
-        token = bearer.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
-        if store.user_for_access_key(token) != actor:
-            raise HTTPException(401, "terminal observer access key expired or revoked")
+    if actor and refresh and request.state.refresh_verified_actor() != actor:
+        raise HTTPException(401, "terminal observer credential expired or revoked")
     if not actor:
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
         actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None
+        if actor and callable(getattr(store, "device_context", None)):
+            request.state.verified_device = store.device_context(token.strip())
+            if request.state.verified_device is None:
+                raise HTTPException(401, "authenticated device credential expired or revoked")
     if not actor:
         raise HTTPException(401, "valid authenticated identity required")
     context = store.actor_context(actor)
-    if request.method != "GET" and context["role"] == "viewer":
+    if request.method != "GET" and not read_only and context["role"] == "viewer":
         raise HTTPException(403, "read-only account")
-    if request.query_params:
+    query_keys = [key for key, _ in request.query_params.multi_items()]
+    if query_keys and not (allow_project and query_keys == ["project"]):
         raise HTTPException(422, "query parameters are not supported")
     return context["tenant"], str(actor)
+
+
+def _device_context(request: Request) -> dict[str, str]:
+    # Only authentication middleware/domain resolution may bind this context.
+    # Payload fields and caller-selected headers never select a device scope.
+    device = getattr(request.state, "verified_device", None)
+    if device is None:
+        return {}
+    if not isinstance(device, dict) or not all(device.get(key) for key in ("device_id", "credential_id")):
+        raise HTTPException(401, "verified device identity required")
+    return {key: device[key] for key in ("device_id", "credential_id")}
 
 
 def _fields(value: Any, required: set[str], optional: set[str] | None = None) -> dict[str, Any]:
@@ -198,7 +333,9 @@ def _fields(value: Any, required: set[str], optional: set[str] | None = None) ->
     return value
 
 
-async def _body(request: Request) -> Any:
+async def _body(request: Request, max_bytes: int | None = None) -> Any:
+    if max_bytes is None:
+        max_bytes = MAX_BODY
     length = request.headers.get("content-length")
     if length is not None:
         try:
@@ -207,17 +344,31 @@ async def _body(request: Request) -> Any:
             raise HTTPException(422, "invalid content length") from None
         if size < 0:
             raise HTTPException(422, "invalid content length")
-        if size > MAX_BODY:
+        if size > max_bytes:
             raise HTTPException(413, "request too large")
     data = bytearray()
     async for chunk in request.stream():
-        if len(data) + len(chunk) > MAX_BODY:
+        if len(data) + len(chunk) > max_bytes:
             raise HTTPException(413, "request too large")
         data.extend(chunk)
     try:
         return json.loads(data)
     except (ValueError, UnicodeError, RecursionError):
         raise HTTPException(422, "invalid JSON") from None
+
+
+def decode_object(content: Any) -> bytes:
+    if not isinstance(content, str):
+        raise HTTPException(422, "object content must be base64 or null")
+    if len(content) > 4 * ((MAX_OBJECT + 2) // 3):
+        raise HTTPException(413, "object too large")
+    try:
+        value = base64.b64decode(content, validate=True)
+    except (ValueError, binascii.Error):
+        raise HTTPException(422, "invalid base64") from None
+    if len(value) > MAX_OBJECT:
+        raise HTTPException(413, "decoded object too large")
+    return value
 
 
 def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
@@ -250,24 +401,17 @@ def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
                 raise HTTPException(422, "object name must be valid Unicode") from None
             if content is None:
                 continue
-            if not isinstance(content, str):
-                raise HTTPException(422, "object content must be base64 or null")
-            if len(content) > 4 * ((MAX_OBJECT + 2) // 3):
-                raise HTTPException(413, "object too large")
-            try:
-                value = base64.b64decode(content, validate=True)
-            except (ValueError, binascii.Error):
-                raise HTTPException(422, "invalid base64") from None
+            value = decode_object(content)
             decoded += len(value)
-            if len(value) > MAX_OBJECT or decoded > MAX_DECODED:
+            if decoded > MAX_DECODED:
                 raise HTTPException(413, "decoded content too large")
             edits[name] = value
     return payload["request_key"], changes
 
 
-async def _call(function: Callable[..., Any], *args: Any) -> Any:
+async def _call(function: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     try:
-        return await run_in_threadpool(function, *args)
+        return await run_in_threadpool(function, *args, **kwargs)
     except Conflict:
         raise HTTPException(409, "candidate conflicts with stored inputs or request key") from None
     except NativeStoreError:
@@ -278,11 +422,6 @@ async def _call(function: Callable[..., Any], *args: Any) -> Any:
         if code in {5, 6}:
             raise HTTPException(503, "native storage busy", headers={"Retry-After": "1"}) from None
         raise HTTPException(500, "native storage failure") from None
-
-
-def _module_read(domain: Any, actor: str, module: str) -> None:
-    if module.startswith("requirement-"):
-        domain.require_native_module_read(actor, module)
 
 
 def _compose(store: NativeStore, domain: Any, tenant: str, actor: str, selected: dict[str, str]) -> dict[str, Any]:
@@ -339,7 +478,15 @@ def _source(domain: Any, actor: str, doc_id: str) -> dict[str, Any]:
 
 
 def _snapshot(
-    store: NativeStore, domain: Any, tenant: str, actor: str, doc_id: str, payload: dict[str, Any]
+    store: NativeStore,
+    domain: Any,
+    tenant: str,
+    actor: str,
+    doc_id: str,
+    payload: dict[str, Any],
+    *,
+    device_id: str | None = None,
+    credential_id: str | None = None,
 ) -> dict[str, Any]:
     # Recheck current ACL even on historical replay; never rebuild historical bytes.
     domain.get_doc_shared(actor, doc_id, write=True)
@@ -360,13 +507,9 @@ def _snapshot(
     except UnicodeError:
         raise HTTPException(422, "request_key must be valid Unicode") from None
     module = domain.bind_native_requirement(actor, doc_id)
-    with store._connection() as db:
-        receipt = db.execute(
-            "SELECT result FROM native_receipts WHERE tenant=? AND actor=? AND request_key=?",
-            (tenant, actor, native_key),
-        ).fetchone()
+    receipt = store.batch_receipt(tenant, actor, native_key, device_id=device_id, credential_id=credential_id)
     if receipt:
-        result = json.loads(receipt[0])
+        result = receipt
         revision = result["revisions"].get(module)
         if not revision:
             raise Conflict("operation key reused for another requirement")
@@ -385,6 +528,8 @@ def _snapshot(
             actor,
             native_key,
             [{"module": module, "base": payload["base"], "reads": None, "edits": {"snapshot.json": content}}],
+            device_id=device_id,
+            credential_id=credential_id,
         )
         revision = result["revisions"][module]
     composition = store.compose(tenant, {module: revision})
@@ -409,19 +554,30 @@ def create_native_router(store: NativeStore) -> APIRouter:
     async def snapshot(doc_id: str, request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         payload = _fields(await _body(request), {"request_key", "source_version", "base"})
-        return await _call(_snapshot, store, request.app.state.store, tenant, actor, doc_id, payload)
+        return await _call(
+            _snapshot, store, request.app.state.store, tenant, actor, doc_id, payload, **_device_context(request)
+        )
 
     @router.post("/batches")
     async def submit(request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         key, changes = _changes(await _body(request))
-        return await _call(store.submit, tenant, actor, key, changes)
+        return await _call(store.submit, tenant, actor, key, changes, **_device_context(request))
+
+    @router.get("/batches/{request_key}")
+    async def batch_receipt(request_key: str, request: Request) -> Any:
+        tenant, actor = await run_in_threadpool(_identity, request)
+        result = await _call(store.batch_receipt, tenant, actor, request_key, **_device_context(request))
+        if result:
+            for module in result["revisions"]:
+                await _call(_module_read, request.app.state.store, actor, module)
+        return {"tenant": tenant, "request_key": request_key, "receipt": result}
 
     @router.get("/modules/{module}/head")
     async def head(module: str, request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         await _call(_module_read, request.app.state.store, actor, module)
-        return {"revision": await _call(store.head, tenant, module)}
+        return {"revision": await _call(store.head, tenant, module), "tenant": tenant}
 
     @router.get("/modules/{module}/revisions/{revision}")
     async def revision(module: str, revision: str, request: Request) -> Any:

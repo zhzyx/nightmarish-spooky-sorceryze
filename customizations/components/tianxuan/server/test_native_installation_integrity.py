@@ -49,6 +49,27 @@ class InstallationIntegrityTests(unittest.TestCase):
         self.addCleanup(result.close)
         return result
 
+    def test_only_installed_deterministic_producer_can_declare_restart_checkpoint(self):
+        commands = self.spec["commands"]
+        self.spec.update(version=2, mode="deterministic-test")
+        commands["producer"] = {**commands["producer"], "restart_checkpoint": "immutable-inputs"}
+        self.write_manifest()
+        with ni.InstallationManifest(self.manifest, self.digest) as install:
+            self.assertEqual(install.command("producer")["restart_checkpoint"], "immutable-inputs")
+        for mode, role, checkpoint in (
+            ("production", "producer", "immutable-inputs"),
+            ("local-signed-validation", "producer", "immutable-inputs"),
+            ("deterministic-test", "checker", "immutable-inputs"),
+            ("deterministic-test", "producer", "unverified"),
+        ):
+            with self.subTest(mode=mode, role=role, checkpoint=checkpoint):
+                self.spec["mode"] = mode
+                commands[role] = {**commands[role], "restart_checkpoint": checkpoint}
+                self.write_manifest()
+                with self.assertRaisesRegex(NativeStoreError, "Fixed command required"):
+                    ni.InstallationManifest(self.manifest, self.digest)
+                del commands[role]["restart_checkpoint"]
+
     def test_repeated_and_concurrent_verification_streams_source_once(self):
         with patch.object(ni, "_digest_stream", wraps=ni._digest_stream) as hashed:
             install = self.install()
@@ -82,6 +103,17 @@ class InstallationIntegrityTests(unittest.TestCase):
             ni.InstallationManifest(self.manifest, self.digest)
         with self.assertRaises(NativeStoreError):
             install.command("planner")
+
+    def test_read_projection_does_not_admit_changed_executable(self):
+        with patch.object(ni, "_retainable", return_value=False):
+            install = self.install()
+            self.source.write_bytes(b"changed after initial admission")
+            install.verify_manifest()
+            with self.assertRaises(NativeStoreError):
+                install.command("producer")
+            self.manifest.write_bytes(self.manifest.read_bytes() + b" ")
+            with self.assertRaises(NativeStoreError):
+                install.verify_manifest()
 
     def test_manifest_change_is_detected_even_with_restored_mtime(self):
         install = self.install()

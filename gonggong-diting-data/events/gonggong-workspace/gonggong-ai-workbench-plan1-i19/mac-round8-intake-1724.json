@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-i19",
+  "event_id": "mac-round8-intake-1724",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1724",
+  "occurred_at": "2026-11-21T19:24:22.130619+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1724,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T19:10:02Z",
+    "scope": "对照 I01–I19 设计清单，逐项映射 Mac 原生控件、天璇接口、已验收证据和仍开放的具体缺口单。"
+  },
+  "evidence_refs": [],
+  "sha256": "4213d94ada367e04fd952054ca5c4fcf37fdf4ee8ced505afd6fb713b40b9b11"
+}

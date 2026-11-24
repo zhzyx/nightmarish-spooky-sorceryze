@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7a5b9e3f0711fdf72dd00601666f0c78b6a7c53b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-garment-split-20261122",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3bd2e67d4686b15eb3f8dd5ff6d9a0e22f51984056abb9b14f9dff8d07f81510",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2128",
+    "action": "validation",
+    "detection_head": "6cc96565c6d512e7622ccaf19be37641bde2ae98",
+    "context_sha256": "c9b7362d47f4c0e88776c387fea959847a5dd427b9adf9f8973d12597ec749bb",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "kimi-work:user:20261123:commit-relevant-changes-only-no-push",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45050152810",
+    "diagnosis": "当前工作区包含其他会话的未暂存修改，门禁按 WORKTREE_UNSTAGED 正确停止，尚未执行框架准入；不是衣服拆分实现回归。",
+    "next_action": "在相同 HEAD 基线的隔离工作树中只应用本次 23 个暂存文件，重跑同一门禁并提交；不 stash 或修改其他会话文件。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T17:33:51.023804+00:00",
+    "attempted": "已核对暂存清单和其他会话修改，保留原工作区不变。",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "隔离工作树门禁、本地提交及 committed 核验。"
+  },
+  "occurred_at": "2026-11-22T17:35:22.063863+00:00",
+  "sha256": "1f4fab4f3b30fc502dc85a6fdd3cf68c53b5f8778f16c840cb8e1622920f5bc7"
+}

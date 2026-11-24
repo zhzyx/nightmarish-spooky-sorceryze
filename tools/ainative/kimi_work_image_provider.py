@@ -43,6 +43,8 @@ MESSAGES = {
     "image_upload_failed": "参考图上传失败；本次生成未提交，不会自动重复上传。",
     "image_launch_failed": "图像任务未能启动；请检查私有诊断，系统不会自动重复提交。",
     "image_generation_failed": "Kimi Work 图像服务未返回成功结果；私有诊断已保留，未自动重发。",
+    "image_generation_unavailable": "Kimi Work 图像生成服务暂时不可用（HTTP 424），请稍后重试；本次未自动重发。",
+    "image_generation_rejected": "请求被版权或内容安全策略拒绝（HTTP 403）。请调整提示词或参考图后再试；本次未自动重发。",
     "image_timeout": "图像任务等待超时；已停止本地监视，远程回执可能不明，不会自动重发。",
     "image_output_invalid": "图像服务未返回可核验的本次新图像，未采用旧图或无效文件。",
     "image_result_unknown": "图像任务回执不明；已保留原意图，不会自动重复生成。",
@@ -194,6 +196,11 @@ class KimiWorkImageProvider(CodexProvider):
             context_types=["text", "image"],
             available=True,
         )
+
+    def public_failure_message(self, snapshot):
+        """Expose only reviewed Chinese summaries, never raw service responses."""
+        message = snapshot.get("error")
+        return message if message in set(self.MESSAGES.values()) else self.MESSAGES["image_result_unknown"]
 
     def finish(self, key, state, code=None, result=None):
         outputs = {"result": {k: result["artifacts"][-1][k] for k in ("id", "revision")}} if result else None
@@ -450,6 +457,13 @@ class KimiWorkImageProvider(CodexProvider):
             raise ValueError("image_dependency_missing")
         if code != 0:
             generation_log = log_path.read_text(encoding="utf-8", errors="replace")
+            if "[HTTP 424]" in generation_log and "Media generation is temporarily unavailable" in generation_log:
+                raise ValueError("image_generation_unavailable")
+            if (
+                "[HTTP 403]" in generation_log
+                and "Media generation rejected by copyright or moderation policy" in generation_log
+            ):
+                raise ValueError("image_generation_rejected")
             known_failure = any(
                 marker in generation_log
                 for marker in ("Error generating image:", "Error: ", "failed to download generated image from")

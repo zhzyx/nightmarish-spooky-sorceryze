@@ -1,5 +1,6 @@
 import unittest
 
+from issue_lifecycle_test_support import accept_current_issue
 from tianxuan_core import (
     Tianxuan,
     TianxuanError,
@@ -65,6 +66,8 @@ class TianxuanCoreTests(unittest.TestCase):
 
         child = next(i for i in issues if i["type"] == "task")
         for status in ("planned", "in-progress", "in-review", "done"):
+            if status == "done":
+                accept_current_issue(self.tx, self.actor, child["id"])
             child = self.tx.transition_issue(self.actor, child["id"], status)
         self.assertEqual(child["status"], "done")
         progress = self.tx.sync_progress(requirement["id"], actor=self.actor)
@@ -88,10 +91,14 @@ class TianxuanCoreTests(unittest.TestCase):
         )
         for issue in issues[1:]:
             for status in ("planned", "in-progress", "in-review", "done"):
+                if status == "done":
+                    accept_current_issue(self.tx, self.actor, issue["id"])
                 self.tx.transition_issue(self.actor, issue["id"], status)
         self.assertEqual(self.tx.get_issue(issues[0]["id"])["status"], "backlog")
         self.assertEqual(self.tx.get_doc(requirement["id"])["progress"], {"total": 251, "done": 250, "percent": 99})
         for status in ("planned", "in-progress", "in-review", "done"):
+            if status == "done":
+                accept_current_issue(self.tx, self.actor, issues[0]["id"])
             self.tx.transition_issue(self.actor, issues[0]["id"], status)
         self.assertEqual(self.tx.get_doc(requirement["id"])["progress"], {"total": 251, "done": 251, "percent": 100})
         self.tx.plan_tickets(

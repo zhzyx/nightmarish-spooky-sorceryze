@@ -23,6 +23,7 @@ import runner
 import uvicorn
 from fastapi import FastAPI
 from native_entry_context import EntryContexts, mount_entry_runtime
+from native_model_host import executable_sha256
 from test_native_entry_context import policy
 from test_native_model_producer import SCHEMA, framework, installed
 from test_native_workflow import fixture, reserve  # noqa: F401
@@ -107,9 +108,9 @@ def test_actual_broker_context_http(fixture, monkeypatch, broker_rpc):
         framework_sha256=hashlib.sha256((framework_root / "framework-manifest.json").read_bytes()).hexdigest(),
         runtime_sha256=runner.runtime_digest(),
         node=str(node),
-        node_sha256=hashlib.sha256(node.read_bytes()).hexdigest(),
+        node_sha256=executable_sha256(node),
         python=str(python),
-        python_sha256=hashlib.sha256(python.read_bytes()).hexdigest(),
+        python_sha256=executable_sha256(python),
         state=central["state_dir"],
         key_file=str(key_file),
         authority_ref="synthetic",

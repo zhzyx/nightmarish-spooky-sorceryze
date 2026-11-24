@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from issue_lifecycle_test_support import accept_current_issue
 
 SERVER = Path(__file__).resolve().parent
 WENQU = SERVER.parent / "wenqu"
@@ -65,6 +66,8 @@ def test_closed_loop() -> None:
 
     child = next(issue for issue in issues if issue["type"] == "task")
     for status in ("planned", "in-progress", "in-review", "done"):
+        if status == "done":
+            accept_current_issue(store, actor, child["id"])
         moved = client.patch(f"/api/v1/issues/{child['id']}", headers=headers, json={"to_status": status})
         assert moved.status_code == 200, moved.text
         assert moved.json()["status"] == status

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-86d22de9ab29753d63a9f6e86eaba21408b53bfe03c085a2a2bfd6ae12d92fdf",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1855",
+  "occurred_at": "2026-11-22T03:35:53.289828+00:00",
+  "evidence_refs": [
+    "wave22-windows-authority-1855",
+    "learn-bfc42148ea8dae825ee7d9992ef35e9a6bec4eed21bd7e57aebfa1b820b12310"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 30,
+    "previous": "b5a990e91bee6848d816aeb5aa0963f6881ebada3e7516b99eba3ab3353e9c9a",
+    "action": "applied",
+    "details": {
+      "task": "A03 #1855",
+      "observed": "Windows 原生界面只确认一张设计工单。已在同一天璇数据库核对工单、目标、确认修订与真实本机进程回执；重复执行只产生一次进程，相邻待确认工单没有工作者。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-a03.json",
+        "sha256": "805a9b6f268c9599780a05fde6b9d4e2f1621bd3b12dae2c5c891e829ff6c072"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-authority-combined.json",
+        "sha256": "294f589e2706119a2a21c6cd149e85c68fc75e712b282a990609653763ccc735"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a03/wave22-windows-authority-1855.json",
+      "sha256": "74443c19490b26ecc972f87f2862334fd31795697a585f9308808394d1671901"
+    }
+  },
+  "sha256": "294dbf1fb60b45a197001a8384b8974433222d6614da1eefcb9f07c8e9fd9558"
+}

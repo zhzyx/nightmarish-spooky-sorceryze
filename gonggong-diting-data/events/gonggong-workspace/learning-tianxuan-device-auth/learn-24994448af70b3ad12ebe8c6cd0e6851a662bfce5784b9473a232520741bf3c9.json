@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-tianxuan-device-auth",
+  "event_id": "learn-24994448af70b3ad12ebe8c6cd0e6851a662bfce5784b9473a232520741bf3c9",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-24T01:01:48.356962+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice"
+  ],
+  "payload": {
+    "scope": "tianxuan-device-auth",
+    "lesson": "await-server-logout-receipt",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "退出测试同时等待身份恢复、凭据存储队列和HTTP请求结束，并回读服务端派生会话撤销及共享来源仍有效。",
+      "when": "天璇编辑器异步退出或恢复期间取消，存储删除与服务端撤销独立完成。",
+      "counterexample": "仅凭存储队列清空或本地身份为空，不能证明服务端凭据撤销。",
+      "trial_plan": "在最终编译编辑器运行15阶段身份fixture，确认迁移、CAS竞争、保存时退出后所有Bob派生token均失效，shared root仍有效。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-identity-learning.json",
+        "sha256": "c2075ecd571330a72c9cab087b8d81cb6df6a38a612ed9daa8ac5e3f9336c597"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "bca253d11fd9b1bc7d0d588c1ac59ae3a793cd00db86bd49a7cc1ecbf9557971"
+}

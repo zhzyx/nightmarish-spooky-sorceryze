@@ -118,7 +118,7 @@ def test_limits_and_storage_errors(setup, monkeypatch):
     assert client.post(P + "/batches", headers=h, json=batch(value=b"abc")).status_code == 413
     monkeypatch.setattr(native_api, "MAX_DECODED", 100)
 
-    def busy(*args):
+    def busy(*args, **kwargs):
         error = sqlite3.OperationalError("secret/local/path")
         error.sqlite_errorcode = sqlite3.SQLITE_BUSY
         raise error

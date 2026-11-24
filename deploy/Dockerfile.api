@@ -47,6 +47,7 @@ RUN python -m pip install --no-cache-dir \
 
 # Keep the repository layout intact: the bridge modules resolve their siblings
 # with Path(__file__).resolve().parents[1] / "wenqu" and "duobao".
+COPY customizations/components/tianxuan/migration/ /app/customizations/components/tianxuan/migration/
 COPY customizations/components/tianxuan/server/ /app/customizations/components/tianxuan/server/
 COPY customizations/components/tianxuan/wenqu/ /app/customizations/components/tianxuan/wenqu/
 COPY customizations/components/tianxuan/duobao/ /app/customizations/components/tianxuan/duobao/

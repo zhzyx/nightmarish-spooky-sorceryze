@@ -1,0 +1,782 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "21885f8c13ebac2169527fd767806604c877674f",
+  "editor_sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "7a267f4f55d510a9ba7b977d418da6a86b619e0f",
+    "customizations/components/tianxuan/server/native_entry_context.py": "b87653c1c2f9b0628143a0a20184f9643793d376",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "6c6bdcfe2e56cd19b234b78c15a0ba6d507b0830",
+    "customizations/components/tianxuan/server/native_execution_host.py": "9939b7ccf6e4a7cdc31307af96b4088d0b018563",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "80c4b11d3f10d9996231a694e1e82eb95d8a60e5",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "5b8e4f4c60505663fab6308e8ba8866c68e04f82",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "07cd21435fa17e7b05397d4cd4a7dd8fb6ce8dcb",
+    "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py": "69dd540bad32dbc16eb1e8aa9f8e81a443fa960a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py": "1df60e1f5bc25e8434696cf974fb994563050e54",
+    "tests/editor/run_workbench_confirmed_native_stage.py": "45ac0195f20b243771227e4cd0d874fd2e591a73"
+  },
+  "checks": {
+    "s04": "cd6a1ed4201c1bc0fdf89ffbbdbd9d888c403f91ac157993b182b76d3dd0ecf3",
+    "s08": "ca023861f1c845d3a6bbf28456da9500b9ff5d978464c4fb80e6e39cd4868adb",
+    "s03": "209ce460795baf5c8d3d3155f9ae4275c45addad9b32d2255197a5aa5983b67e"
+  },
+  "issues": {
+    "s04": 1842,
+    "s08": 1792
+  },
+  "observed": "2026-11-22T08:55:32.549460+00:00",
+  "previous_delivery_recovery": {
+    "assessment": {
+      "incident": "0b93db03a884262309adc0a115ed47e256d5dea67a923eeda4403a96bc7bda0a",
+      "bug": 2034,
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-5479737025b8e6234cb9d1b728c4c23bf0127228.json",
+      "sha256": "4f368ee89343bcd9164924e3ef3da8e838f343a034580dd641c97610fa160ff0",
+      "event_sha256": "1d3ffd25ffd083ead2049579f0bb262803a4eba74c0ef10c1458758a9686d73a",
+      "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7075839976",
+      "observed": "2026-11-22T07:18:52.437228+00:00"
+    },
+    "receipt": {
+      "issue": 2034,
+      "incident": "0b93db03a884262309adc0a115ed47e256d5dea67a923eeda4403a96bc7bda0a",
+      "first_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2038",
+      "new_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2039",
+      "accepted": "21885f8c13ebac2169527fd767806604c877674f",
+      "disjoint": [
+        "data-collection/gonggong-ai-workbench-plan1-q01.json",
+        "design-docs/gonggong-ai-workbench-q01.md",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-request.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-verified-coverage.json",
+        "tests/editor/ai_chat_tab_order.gd",
+        "tests/editor/editor_shell_layout.gd"
+      ],
+      "checks": {
+        "old": "3a5b1fb2c36e1428275c59c8ca18705b39840698",
+        "signed": "85eddd37dc56a3fcc63979b3fce3d590b53f8248",
+        "tree": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+        "base": "430f032d674b2b306034bc038f142d0974fe0f5f",
+        "editor": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+        "scripts": {
+          "s03": [
+            "run_workbench_confirmed_native_stage.py"
+          ],
+          "k02": [
+            "run_workbench_design_milestone.py"
+          ],
+          "d10": [
+            "run_workbench_design_tasks.py"
+          ],
+          "u11": [
+            "run_workbench_issue_consultation.py"
+          ]
+        },
+        "hashes": {
+          "s03": "945ea805acddd87eced52032845c2757ccd391d480d9e835afea4a46f82dcfea",
+          "k02": "6b100bcabe468ce770d2a5fbbc722540c3fd819c3b732a23a9e72826e1b8c0f5",
+          "d10": "1b3434d3663935cf49e250c01e3d04d0b79ec9dd6e88c0b45cba0909348bc539",
+          "u11": "931e51ddbcd493fd024ee09cfcffab7393c0bcb9f35738f8e88cb5b7efd3d722"
+        },
+        "observed": "2026-11-22T07:23:02.701768+00:00"
+      },
+      "status": {
+        "incident": "0b93db03a884262309adc0a115ed47e256d5dea67a923eeda4403a96bc7bda0a",
+        "detected": {
+          "issue": 1709,
+          "request_id": "gonggong-ai-workbench-plan1",
+          "repository": "zhzyx/nightmarish-spooky-sorceryze",
+          "worktree": "D:\\GongGong-work\\w22-ship-milestone-trace",
+          "head": "9ada26e17823613f39f336f63b53e78bb63faf81",
+          "index_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "action": "delivery",
+          "observation_sha256": "4ab46a3e2e71e0fda08686ec5ac0dcd6bf20fcae14034855218ab214b6b798f7",
+          "occurred_at": "2026-11-22T07:13:32.546065+00:00"
+        },
+        "recovery": {
+          "first_failure_at": "2026-11-22T07:13:32.546065+00:00",
+          "condition_observed_at": "2026-11-22T07:19:00.292687+00:00",
+          "reverified_at": "2026-11-22T07:21:43.409660+00:00"
+        },
+        "condition": {
+          "state": "condition_observed",
+          "observed_at": "2026-11-22T07:19:00.292687+00:00",
+          "operator": "Sail-Li",
+          "worker": "codex-wave22-windows",
+          "evidence": "Exact authenticated GitHub handoff found and checked on the updated main with zero overlapping paths and unchanged S03/K02 test and runtime inputs."
+        },
+        "received": true,
+        "rechecks": [
+          {
+            "incident": "0b93db03a884262309adc0a115ed47e256d5dea67a923eeda4403a96bc7bda0a",
+            "state": "operation_reverified",
+            "head": "9ada26e17823613f39f336f63b53e78bb63faf81",
+            "index_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "operation": "delivery",
+            "validation_base": null,
+            "observed_at": "2026-11-22T07:21:43.409660+00:00",
+            "result_sha256": "eb59dc51a595c9cb65861782700dd24d563ddb028004cf6387561259b9ecbd7d"
+          }
+        ]
+      },
+      "observed": "2026-11-22T07:55:59.675480+00:00"
+    }
+  },
+  "previous_ci_recovery": {
+    "assessment": {
+      "bug": 2034,
+      "incident": "4989fc3efc26fa126ce11254bb9c95ca5b950295001d0a8a96d73440517e8c65",
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-e3dffd8b15d4a0e44741e339f6c4d6061b205ba0.json",
+      "sha256": "97e5d6aeacf399859f0559dc4b7e42d7261ddb0572e646b9925501feb3c11007",
+      "event_sha256": "e3f8b8e86df5eebac969ff06b4be4fd3f6bfd9e3b356ab3d391c88764572c58c",
+      "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7076058390",
+      "original_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44997868911/job/137132768425",
+      "original_binary": "f9abc4d346d640dfa1cc33a62dc8c6e4361b1f164f2406fdb4ec89bb383b0def",
+      "observed": "2026-11-22T07:40:59.601089+00:00"
+    },
+    "authoritative": {
+      "original": 137132768425,
+      "success_job": 137136044784,
+      "successful_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44997868911/job/137136044784",
+      "attempt": 2,
+      "signed": "85eddd37dc56a3fcc63979b3fce3d590b53f8248",
+      "step": {
+        "name": "Native reasoning session isolation and Codex wire regression",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24,
+        "started_at": "2026-11-22T07:42:08Z",
+        "completed_at": "2026-11-22T07:42:44Z"
+      },
+      "incident": "4989fc3efc26fa126ce11254bb9c95ca5b950295001d0a8a96d73440517e8c65",
+      "original_binary": "f9abc4d346d640dfa1cc33a62dc8c6e4361b1f164f2406fdb4ec89bb383b0def",
+      "local_phases": [
+        "full",
+        "reopen",
+        "legacy"
+      ],
+      "rechecks": [
+        {
+          "incident": "4989fc3efc26fa126ce11254bb9c95ca5b950295001d0a8a96d73440517e8c65",
+          "state": "operation_reverified",
+          "head": "9c70b51b362a843288623d7c19490f32c87b38fa",
+          "index_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "operation": "validation",
+          "validation_base": null,
+          "observed_at": "2026-11-22T07:56:11.939628+00:00",
+          "result_sha256": "a997f3021f33b40bc21889a6118dddb200fe4da2ae30a9e3030299bb1986cf6e"
+        }
+      ],
+      "observed": "2026-11-22T07:56:12.057537+00:00"
+    }
+  },
+  "verified_windows_build": {
+    "source_tree": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+      "godot.windows.editor.x86_64.console.exe": "ad5c45c692f11274d132bdb14c73bf6d3270e54621f1d97bdd9d88d52b7a374a",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": []
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py"
+    ],
+    "passed": 106,
+    "summary": "106 passed, 1 warning in 118.58s (0:01:58)",
+    "source_tree": "9037681ae200da55fa13e3e7d582b270d0eadd6a"
+  },
+  "asset_reservation_recovery": {
+    "source": {
+      "issue": 2041,
+      "original_pr": 2040,
+      "signed": "b8a647994dd06e0e906460102c6dc6c09d16746f",
+      "original_source": "20ffebfa74fbc17c4c79dcc9449f1793c7bf6652",
+      "repaired_source": "9037681ae200da55fa13e3e7d582b270d0eadd6a",
+      "changed": [
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+        "design-docs/gonggong-ai-workbench-s08.md"
+      ],
+      "incident": "63b528c46b32ff7f8be9bae57acf0251e730725533927e435b65098b36dad448",
+      "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74.json",
+      "event_sha256": "eaa1e79f6e6995e2f36fa0aaa6c9786fda5fe344683fb9424888245c577afaef",
+      "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7076734580",
+      "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45002761479/job/137147732036",
+      "local_before": 7,
+      "ci_before": 10,
+      "observed": "2026-11-22T08:50:01.408024+00:00"
+    },
+    "service_rechecks": {
+      "files": [
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py"
+      ],
+      "passed": 106,
+      "summary": "106 passed, 1 warning in 118.58s (0:01:58)",
+      "source_tree": "9037681ae200da55fa13e3e7d582b270d0eadd6a"
+    },
+    "shared_asset_rechecks": {
+      "files": [
+        "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py"
+      ],
+      "passed": 8,
+      "summary": "8 passed, 1 warning in 7.97s",
+      "source_tree": "9037681ae200da55fa13e3e7d582b270d0eadd6a",
+      "observations": {
+        "test_signed_waiter_refills_released_asset_while_peer_runs": {
+          "workers": {
+            "first": {
+              "pid": 113200,
+              "execution": "f0443b5e3a8583eed4e6622bd198e302e3c40a30d839f8ef7828d140dc53f56d",
+              "started_ns": 501296040444300,
+              "ended_ns": 501296051621400,
+              "issue": "iss_44452d86e0eb4525bfcc320bd7ddf853",
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "state": "stage-reached",
+              "exit_code": 0
+            },
+            "waiter": {
+              "pid": 132328,
+              "execution": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+              "started_ns": 501296410985600,
+              "ended_ns": 501296431972500,
+              "issue": "iss_c37b74ee555a442bb36da9d9cb4562d6",
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "state": "stage-reached",
+              "exit_code": 0
+            },
+            "peer": {
+              "pid": 131140,
+              "execution": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+              "started_ns": 501296040442900,
+              "ended_ns": 501296426996900,
+              "issue": "iss_4e921f021e63476bb0cdf98f68534b31",
+              "candidate": "b8d418f22b509e8217e9c07bdeb8d014c8c13ec68636f8c7bd1ccdc4dcbca0cd",
+              "state": "stage-reached",
+              "exit_code": 0
+            }
+          },
+          "waiting": {
+            "key": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+            "source": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+            "dispatchCandidate": false,
+            "waitReason": "resource_conflict"
+          },
+          "active": [
+            {
+              "ticket": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+              "terminalObservable": true,
+              "reads": [],
+              "writes": [
+                "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/peer.svg"
+              ]
+            },
+            {
+              "ticket": "f0443b5e3a8583eed4e6622bd198e302e3c40a30d839f8ef7828d140dc53f56d",
+              "terminalObservable": true,
+              "reads": [],
+              "writes": [
+                "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/preview.svg"
+              ]
+            }
+          ],
+          "after_release": [
+            {
+              "ticket": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+              "terminalObservable": true,
+              "reads": [],
+              "writes": [
+                "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/preview.svg"
+              ]
+            },
+            {
+              "ticket": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+              "terminalObservable": true,
+              "reads": [],
+              "writes": [
+                "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/peer.svg"
+              ]
+            }
+          ],
+          "final_active": [],
+          "dispatcher_errors": [],
+          "deferred_at_exit": []
+        },
+        "test_scoped_entry_observes_external_holder_with_spare_capacity": {
+          "holder": "0d367f07c786cae4fe4c530cf2a5fbb4575e6f9a171ff809e4e289bcaa84efaf",
+          "waiter": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+          "observed": [
+            {
+              "key": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+              "source": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+              "dispatchCandidate": false,
+              "waitReason": "resource_conflict"
+            }
+          ],
+          "result": "stage-reached",
+          "dispatcher_exit": 0
+        }
+      }
+    }
+  },
+  "historical_method_evidence": [
+    {
+      "card": "s04",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-9e23614ecb32b477c66f66278276f3b096febd5c1a5d63e1f69b97ff7ecb7fc7",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842",
+        "occurred_at": "2026-11-22T08:15:01.526242+00:00",
+        "evidence_refs": [
+          "dispatch-2cae6b3b3f294376a11dcbd0cdbc71a4",
+          "learn-b0865898470af1a0f5a236e412edcea0231b031bd890a7bfa8069f06403ed1e6"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "await-terminal-observers",
+          "revision": 10,
+          "previous": "54e9285c3b15aae873e65d460cf008ff2090b2c00ceee970ca36d11d088ed07b",
+          "action": "applied",
+          "details": {
+            "task": "S04 #1842 reconnect during a real local producer, close the process, collect output, then replay the earlier workspace receipt.",
+            "observed": "One physical process exited 0. The reconnected issue kept the same run, the 8 received events and the exact produced candidate. A separate same-database reopen retained the checked stage and all 9 events after an exact old tool receipt."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s04.json",
+              "sha256": "621277762f7e3b7727c94e2ba9215fb4b9972520fb8dece5ac74fe79a3896fcc"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s04/dispatch-2cae6b3b3f294376a11dcbd0cdbc71a4.json",
+            "sha256": "8bf637090c336d8a198f8789aedba560b43e8aced14d08d3b56c5736712f1a1a"
+          }
+        },
+        "sha256": "fc1687215276feb14799a2b42d7e8adae2869ccefa414400fb56f1a8de9e2cb3"
+      },
+      "admitted_event": "fc1687215276feb14799a2b42d7e8adae2869ccefa414400fb56f1a8de9e2cb3",
+      "admitted_revision": 10,
+      "source_tree": "6969686f7106b1c5766cc03ec1c14ed3b5824cf8",
+      "normalizations": []
+    },
+    {
+      "card": "s08",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-9e23614ecb32b477c66f66278276f3b096febd5c1a5d63e1f69b97ff7ecb7fc7",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792",
+        "occurred_at": "2026-11-22T08:15:48.936391+00:00",
+        "evidence_refs": [
+          "dispatch-6ee22e41689845a3942b98c132ff7032",
+          "learn-b0865898470af1a0f5a236e412edcea0231b031bd890a7bfa8069f06403ed1e6"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "await-terminal-observers",
+          "revision": 10,
+          "previous": "54e9285c3b15aae873e65d460cf008ff2090b2c00ceee970ca36d11d088ed07b",
+          "action": "applied",
+          "details": {
+            "task": "S08 #1792 signed asset waiter and scoped entry event-driven refill",
+            "observed": "Three physical worker intervals and the authenticated wait snapshot show that the later writer launches after its holder settles. A scoped driver waits for the other entry's actual terminal with a spare slot and starts only its own signed ticket. Editor replay after a disconnect saw one process."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s08.json",
+              "sha256": "0836eb6b53c6b389c16894b55f5eff9e8c03b03ba77fffe7c2a1e3081161eb5e"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/dispatch-6ee22e41689845a3942b98c132ff7032.json",
+            "sha256": "4098eb17bd24d30ecefc829d28a78f0c33e4a489d171de7474475651c1c877a3"
+          }
+        },
+        "sha256": "0e0d0a5a45014e2b00745b24f10470035831678158185a4628d66d206c498f8d"
+      },
+      "admitted_event": "40d97da9203067299f873f6e03943cbe1ddc0c1021fc6d7c5b6d63ac704fcdf7",
+      "admitted_revision": 11,
+      "source_tree": "c1a01ee109cb64ad78d1278be367c50190bf7a49",
+      "normalizations": []
+    }
+  ],
+  "validation_scripts": {
+    "s03": [
+      "run_workbench_confirmed_native_stage.py"
+    ]
+  },
+  "card_service_tests": {
+    "s04": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py"
+    ],
+    "s08": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py"
+    ]
+  },
+  "worker_sources": {
+    "s04": "6969686f7106b1c5766cc03ec1c14ed3b5824cf8",
+    "s08": "c1a01ee109cb64ad78d1278be367c50190bf7a49"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2039",
+  "results": {
+    "s04": {
+      "state": "passed",
+      "issue": 1842,
+      "request_id": "gonggong-ai-workbench-plan1-s04",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py"
+        ],
+        "passed": 6,
+        "summary": "6 passed, 1 warning in 6.61s",
+        "source_tree": "9037681ae200da55fa13e3e7d582b270d0eadd6a"
+      },
+      "native_probe": {
+        "passed": true,
+        "editor_sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+        "selected": [
+          "#1 程序",
+          "#2 动画"
+        ],
+        "confirmed": {
+          "issue_id": "iss_11b203a62cbc426695daab220e8b71fa",
+          "document_id": "doc_33dd5b891a8a49b3a210b3883accb557",
+          "version": 1,
+          "stage": "可运行原型",
+          "target_revision": 1,
+          "issue_revision": "316de5ca7df55ef63834e93886d6abc603dfadf40811a1032c3d337884aa89de",
+          "revision": 1,
+          "status": "confirmed",
+          "responsible_user": "usr_444ea634e8e940e9b9ba59c90e2e7013",
+          "confirmed_by": "usr_444ea634e8e940e9b9ba59c90e2e7013"
+        },
+        "sibling": {
+          "issue_id": "iss_0f6c14587afc4123adf3f31c4386226d",
+          "document_id": "doc_33dd5b891a8a49b3a210b3883accb557",
+          "version": 1,
+          "stage": "动画预览",
+          "target_revision": 1,
+          "issue_revision": "6725066c4c7f01ef2aff685cd6dbd8e7f6aa433ac175614754986919f8ca29f8",
+          "revision": 0,
+          "status": "pending",
+          "responsible_user": "usr_444ea634e8e940e9b9ba59c90e2e7013",
+          "confirmed_by": null
+        },
+        "revoked": {
+          "issue_id": "iss_11b203a62cbc426695daab220e8b71fa",
+          "document_id": "doc_33dd5b891a8a49b3a210b3883accb557",
+          "version": 1,
+          "stage": "可运行原型",
+          "target_revision": 1,
+          "issue_revision": "316de5ca7df55ef63834e93886d6abc603dfadf40811a1032c3d337884aa89de",
+          "revision": 2,
+          "status": "revoked",
+          "responsible_user": "usr_444ea634e8e940e9b9ba59c90e2e7013",
+          "confirmed_by": null
+        },
+        "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+        "grant": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_444ea634e8e940e9b9ba59c90e2e7013",
+          "criteria": "拉杆切换一次",
+          "document_id": "doc_33dd5b891a8a49b3a210b3883accb557",
+          "issue_id": "iss_11b203a62cbc426695daab220e8b71fa",
+          "issue_revision": "316de5ca7df55ef63834e93886d6abc603dfadf40811a1032c3d337884aa89de",
+          "responsible_user": "usr_444ea634e8e940e9b9ba59c90e2e7013",
+          "stage": "可运行原型",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+        "profile": "local",
+        "process_exit": 0,
+        "process_count": 1,
+        "replay": {
+          "duplicate": {
+            "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "worker_ref": "native-worker:23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "state": "running",
+            "starts": [
+              {
+                "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+                "pid": 114392
+              }
+            ]
+          },
+          "reconnected": {
+            "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "worker_ref": "native-worker:23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "state": "running",
+            "starts": [
+              {
+                "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+                "pid": 114392
+              }
+            ]
+          },
+          "after_exit": {
+            "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "worker_ref": "native-worker:23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "state": "produced",
+            "starts": [
+              {
+                "execution": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+                "pid": 114392
+              }
+            ]
+          },
+          "progress": {
+            "id": "23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "worker_ref": "native-worker:23409e6be2c7932e2c4710c9285c10420cd717d470db29aa4610334ab390351a",
+            "issue": "iss_11b203a62cbc426695daab220e8b71fa",
+            "source_revision": "3f75187d87c4b35fe1defbdb58febb6bd33746f09f040fe0a2add6cce35af778",
+            "stage": "可运行原型",
+            "state": "produced",
+            "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+            "provider_model": null,
+            "usage": null,
+            "events": [
+              {
+                "sequence": 1,
+                "recorded_at": "2026-11-22T08:55:28.033Z",
+                "state": "ready",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 2,
+                "recorded_at": "2026-11-22T08:55:28.047Z",
+                "state": "reserved",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 3,
+                "recorded_at": "2026-11-22T08:55:28.054Z",
+                "state": "running",
+                "step": "state",
+                "details": {}
+              },
+              {
+                "sequence": 4,
+                "recorded_at": "2026-11-22T08:55:28.072Z",
+                "state": "running",
+                "step": "workspace.materialize",
+                "details": {
+                  "modules": {
+                    "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                  }
+                }
+              },
+              {
+                "sequence": 5,
+                "recorded_at": "2026-11-22T08:55:28.296Z",
+                "state": "running",
+                "step": "process.closed",
+                "details": {
+                  "exit_code": 0,
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              {
+                "sequence": 6,
+                "recorded_at": "2026-11-22T08:55:28.306Z",
+                "state": "running",
+                "step": "workspace.collect",
+                "details": {
+                  "changed_modules": [
+                    "a"
+                  ]
+                }
+              },
+              {
+                "sequence": 7,
+                "recorded_at": "2026-11-22T08:55:28.343Z",
+                "state": "running",
+                "step": "candidate.compose",
+                "details": {
+                  "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+                  "modules": {
+                    "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+                  }
+                }
+              },
+              {
+                "sequence": 8,
+                "recorded_at": "2026-11-22T08:55:28.344Z",
+                "state": "produced",
+                "step": "state",
+                "details": {
+                  "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+                  "modules": {
+                    "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+                  }
+                }
+              }
+            ]
+          },
+          "replayed_step": {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T08:55:28.072Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          "replay_result": {
+            "state": "produced"
+          }
+        },
+        "process_closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "sibling_tasks": 0
+      }
+    },
+    "s08": {
+      "state": "passed",
+      "issue": 1792,
+      "request_id": "gonggong-ai-workbench-plan1-s08",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py"
+        ],
+        "passed": 8,
+        "summary": "8 passed, 1 warning in 7.97s",
+        "source_tree": "9037681ae200da55fa13e3e7d582b270d0eadd6a",
+        "observations": {
+          "test_signed_waiter_refills_released_asset_while_peer_runs": {
+            "workers": {
+              "first": {
+                "pid": 113200,
+                "execution": "f0443b5e3a8583eed4e6622bd198e302e3c40a30d839f8ef7828d140dc53f56d",
+                "started_ns": 501296040444300,
+                "ended_ns": 501296051621400,
+                "issue": "iss_44452d86e0eb4525bfcc320bd7ddf853",
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                "state": "stage-reached",
+                "exit_code": 0
+              },
+              "waiter": {
+                "pid": 132328,
+                "execution": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+                "started_ns": 501296410985600,
+                "ended_ns": 501296431972500,
+                "issue": "iss_c37b74ee555a442bb36da9d9cb4562d6",
+                "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+                "state": "stage-reached",
+                "exit_code": 0
+              },
+              "peer": {
+                "pid": 131140,
+                "execution": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+                "started_ns": 501296040442900,
+                "ended_ns": 501296426996900,
+                "issue": "iss_4e921f021e63476bb0cdf98f68534b31",
+                "candidate": "b8d418f22b509e8217e9c07bdeb8d014c8c13ec68636f8c7bd1ccdc4dcbca0cd",
+                "state": "stage-reached",
+                "exit_code": 0
+              }
+            },
+            "waiting": {
+              "key": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+              "source": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+              "dispatchCandidate": false,
+              "waitReason": "resource_conflict"
+            },
+            "active": [
+              {
+                "ticket": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+                "terminalObservable": true,
+                "reads": [],
+                "writes": [
+                  "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/peer.svg"
+                ]
+              },
+              {
+                "ticket": "f0443b5e3a8583eed4e6622bd198e302e3c40a30d839f8ef7828d140dc53f56d",
+                "terminalObservable": true,
+                "reads": [],
+                "writes": [
+                  "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/preview.svg"
+                ]
+              }
+            ],
+            "after_release": [
+              {
+                "ticket": "2f179b2085bdedba54624009a25a4a09bed6667a6fa8c4d509ff8b2ecf53d37d",
+                "terminalObservable": true,
+                "reads": [],
+                "writes": [
+                  "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/preview.svg"
+                ]
+              },
+              {
+                "ticket": "47817876a5f439ccb9e9a4036f1060109537d55312916d97055449fdc92ee165",
+                "terminalObservable": true,
+                "reads": [],
+                "writes": [
+                  "/native-assets/ten_e504b2df4fd6443c8aceee5a04eb3177/a/peer.svg"
+                ]
+              }
+            ],
+            "final_active": [],
+            "dispatcher_errors": [],
+            "deferred_at_exit": []
+          },
+          "test_scoped_entry_observes_external_holder_with_spare_capacity": {
+            "holder": "0d367f07c786cae4fe4c530cf2a5fbb4575e6f9a171ff809e4e289bcaa84efaf",
+            "waiter": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+            "observed": [
+              {
+                "key": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+                "source": "d074cd5137eb44cc0121a901590bd2ab476e0df500353496beb86a0b9ee307df",
+                "dispatchCandidate": false,
+                "waitReason": "resource_conflict"
+              }
+            ],
+            "result": "stage-reached",
+            "dispatcher_exit": 0
+          }
+        }
+      }
+    }
+  }
+}

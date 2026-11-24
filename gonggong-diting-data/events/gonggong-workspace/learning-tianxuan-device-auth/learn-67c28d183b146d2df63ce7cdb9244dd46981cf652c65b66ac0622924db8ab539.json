@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-tianxuan-device-auth",
+  "event_id": "learn-67c28d183b146d2df63ce7cdb9244dd46981cf652c65b66ac0622924db8ab539",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-24T00:36:48.112423+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice"
+  ],
+  "payload": {
+    "scope": "tianxuan-device-auth",
+    "lesson": "register-devices-before-authenticated-reads",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "设备标识在会话签发事务内登记，历史会话在启动迁移补齐；有效凭据的身份回读只SELECT，并用写锁和数据库前后快照验证。",
+      "when": "为已有身份服务增加审计维度，且其只读回查必须在并发写入时可用。",
+      "counterexample": "INSERT OR IGNORE即使无新增行也需要写锁；过期无效会话原有清理及真实业务变更不属于有效凭据只读保证。",
+      "trial_plan": "运行历史会话迁移/重启/写锁测试、私有对话只读快照测试、执行回执busy测试，预期3项通过；ID稳定、数据库快照不变、有效只读回查可用，真实写入仍503。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-readonly-failure.json",
+        "sha256": "3f2c0df153ca3c69d6b6ad6436b39c20e158c98ae97ff77e294fbfa89e761ee9"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "422e05593fc34b7ede6585a54857d09ce59870b5ec967f70fb806528f19a0124"
+}

@@ -1,0 +1,123 @@
+{
+  "issue_number": 1733,
+  "request_id": "gonggong-ai-workbench-plan1-q10",
+  "passed": true,
+  "observed_utc": "2026-11-22T19:18:14.951701+00:00",
+  "source_commit": "35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+  "upstream_receipt": "data-collection/gonggong-ai-workbench-plan1-q06.json",
+  "installation": {
+    "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+    "godot.windows.editor.x86_64.console.exe": "f66652036b8453e7337d3948464218cc3b5fd1622e3e9905170e91d3b27732d3",
+    "godot.windows.editor.x86_64.exe": "2147dfb85d4b03a1d088c7e738301f1b81c7f74fa2509d19e15dcbbff494891f",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+  },
+  "host": "Windows-11-10.0.26200-SP0",
+  "replay": "python tests/editor/run_workbench_windows_acceptance.py --installed-bin <Q06 bin> --scratch-parent <private scratch> --report <new JSON file>",
+  "input_delivery": "Godot InputEventKey via Window.push_input and native control signals on a private Win32 desktop",
+  "fixture_sha256": {
+    "run_workbench_windows_acceptance.py": "0f6fa6d3f47a00656297da6c76dbac3a9b953b29969cd8aebbcfbeac0368317b",
+    "workbench_windows_acceptance.gd": "0baa5937f0c31d6f70b3da7c845081eb8221477617334637a915ad43383d9f59",
+    "ai_chat_tab_order.gd": "a7fcfc208ad32d2974c55511e8d274008405d22cbb567fe32480d6990651ae32"
+  },
+  "display": {
+    "backend": "Windows",
+    "editor_pid": 78444,
+    "hwnd": 30216268,
+    "renderer": "gl_compatibility",
+    "version": "4.8-beta (custom_build)"
+  },
+  "editor_window": {
+    "hwnd": 30216268,
+    "pid": 78444,
+    "desktop": "GongGong-Q10-50c36c5501ab477386043e2c34568dc5"
+  },
+  "keyboard": {
+    "chat_select_all": "workbench selection",
+    "composer": 618928311534,
+    "default": "Ctrl+Shift+M",
+    "old_binding_inactive": true,
+    "rebound": "Alt+Shift+P",
+    "sidebar": 624129248781,
+    "source_select_all": "source draft"
+  },
+  "modal": {
+    "caret": 9,
+    "composer_after_insert": "Explain the selection.\nWindow reference (重命名会话):\nsaved-s",
+    "dialog_hwnd": 42408926,
+    "field": 603409385814,
+    "restored_focus": 603409385814,
+    "selection": "saved-s",
+    "shortcut": "Ctrl+Shift+P",
+    "source": "重命名会话",
+    "source_hwnd": 2887858,
+    "source_text": "unsaved-session-name"
+  },
+  "dock": {
+    "caret": 9,
+    "composer_after_insert": "Explain the selection.\nWindow reference (重命名会话):\nsaved-s\nWindow reference (文件系统 - Godot 引擎):\n0-filte",
+    "dialog_hwnd": 3018930,
+    "dock": "FileSystemDock",
+    "field": 439663748029,
+    "original_slot": "/root/@EditorNode@22558/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitLeftR/DockSlotLeftBR",
+    "restored_focus": 439663748029,
+    "restored_slot": "/root/@EditorNode@22558/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitLeftR/DockSlotLeftBR",
+    "selection": "0-filte",
+    "shortcut": "Ctrl+Alt+I",
+    "source": "文件系统 - Godot 引擎",
+    "source_hwnd": 111876378,
+    "source_text": "q10-filter-selection"
+  },
+  "before_preview": {
+    "scene": "res://part.tscn",
+    "scene_id": 1660189488029,
+    "selected": "LocalPreview"
+  },
+  "preview_request": {
+    "request_id": "preview-current-scene",
+    "source": "external.q10",
+    "routing_status": "awaiting_confirmation",
+    "confirmation_required": true,
+    "manual_confirmation_required": true
+  },
+  "child": {
+    "display": "Windows",
+    "embedded": true,
+    "hwnd": 42539998,
+    "main_scene": "res://main.tscn",
+    "pid": 137764,
+    "root": "LocalPreview",
+    "scene": "res://part.tscn",
+    "score": 37,
+    "sha256": "7d3d2a762f74aa4af928925a04b3185613590d0f96194fa8b8f94e7fe2eb6bfb"
+  },
+  "embedded_view": {
+    "hwnd": 30216268,
+    "rect": "[P: (196.0, 157.0), S: (1999.0, 935.0)]",
+    "view": "/root/@EditorNode@22558/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/@VBoxContainer@38/DockVSplitCenter/@VSplitContainer@102/@VBoxContainer@103/@EditorMainScreen@176/Game/@WindowWrapper@13404/@GameView@13403/@Panel@13399/@EmbeddedProcess@13400"
+  },
+  "preview_window": {
+    "hwnd": 42539998,
+    "pid": 137764,
+    "desktop": "GongGong-Q10-50c36c5501ab477386043e2c34568dc5",
+    "owner_or_parent_hwnd": 30216268
+  },
+  "preview_approval": {
+    "ok": true,
+    "request_id": "preview-current-scene",
+    "source": "external.q10",
+    "routing_status": "completed",
+    "run_requested": true,
+    "target": "res://part.tscn"
+  },
+  "after_preview": {
+    "playing": false,
+    "scene": "res://part.tscn",
+    "scene_id": 1660189488029,
+    "selected": "LocalPreview"
+  },
+  "exit_code": 0,
+  "diagnostics": []
+}

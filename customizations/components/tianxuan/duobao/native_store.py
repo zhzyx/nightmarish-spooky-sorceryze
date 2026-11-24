@@ -79,6 +79,13 @@ CREATE TABLE IF NOT EXISTS native_receipts (
   request_digest TEXT NOT NULL, result TEXT NOT NULL,
   PRIMARY KEY (tenant,actor,request_key)
 );
+-- Keep legacy receipts unchanged so older hosts cannot read a device's receipt
+-- as an account-wide replay. Installation is additive and restart-safe.
+CREATE TABLE IF NOT EXISTS native_device_receipts (
+  tenant TEXT NOT NULL, actor TEXT NOT NULL, device_id TEXT NOT NULL,
+  request_key TEXT NOT NULL, request_digest TEXT NOT NULL, result TEXT NOT NULL,
+  PRIMARY KEY (tenant,actor,device_id,request_key)
+);
 CREATE TABLE IF NOT EXISTS native_compositions (
   tenant TEXT NOT NULL, id TEXT NOT NULL, payload TEXT NOT NULL,
   PRIMARY KEY (tenant,id)
@@ -176,6 +183,39 @@ class NativeStore:
         result: dict[str, Any] = json.loads(row["payload"])
         return result
 
+    @staticmethod
+    def _receipt_scope(
+        tenant: str, actor: str, request_key: str, device_id: str | None, credential_id: str | None
+    ) -> tuple[str, tuple[str, ...]]:
+        for part in (tenant, actor, request_key):
+            _identifier(part)
+        if device_id is None and credential_id is None:
+            return "native_receipts", (tenant, actor, request_key)
+        if device_id is None or credential_id is None:
+            raise NativeStoreError("Device and credential identity must be supplied together")
+        _identifier(device_id)
+        _identifier(credential_id)
+        # Credential rotation must retain the device's idempotency namespace.
+        return "native_device_receipts", (tenant, actor, device_id, request_key)
+
+    def batch_receipt(
+        self,
+        tenant: str,
+        actor: str,
+        request_key: str,
+        *,
+        device_id: str | None = None,
+        credential_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        table, scope = self._receipt_scope(tenant, actor, request_key, device_id, credential_id)
+        predicate = "tenant=? AND actor=? AND " + ("device_id=? AND " if device_id is not None else "")
+        with self._connection() as db:
+            row = db.execute(
+                f"SELECT result FROM {table} WHERE {predicate}request_key=?",
+                scope,
+            ).fetchone()
+            return json.loads(row["result"]) if row else None
+
     def head(self, tenant: str, module: str) -> str | None:
         _identifier(tenant)
         _identifier(module)
@@ -208,7 +248,16 @@ class NativeStore:
                 raise NativeStoreError("Object integrity failure")
             return content
 
-    def submit(self, tenant: str, actor: str, request_key: str, changes: list[dict[str, Any]]) -> dict[str, Any]:
+    def submit(
+        self,
+        tenant: str,
+        actor: str,
+        request_key: str,
+        changes: list[dict[str, Any]],
+        *,
+        device_id: str | None = None,
+        credential_id: str | None = None,
+    ) -> dict[str, Any]:
         """Atomically receive module changes, rebasing only unchanged read/write sets.
 
         Each change: module, base (null for creation), reads (list or null for
@@ -216,16 +265,17 @@ class NativeStore:
         dependencies (module -> immutable revision or @batch for this batch).
         Hosts must establish read-set completeness; an empty list is an explicit
         claim, not proof. Omitted dependencies retain the base dependency set.
+        Device/credential IDs come only from the host's authenticated context;
+        credentials themselves are never accepted or recorded here.
         """
-        _identifier(tenant)
-        _identifier(actor)
-        _identifier(request_key)
+        table, scope = self._receipt_scope(tenant, actor, request_key, device_id, credential_id)
+        predicate = "tenant=? AND actor=? AND " + ("device_id=? AND " if device_id is not None else "")
         prepared, blobs = prepare_changes(changes)
         request_digest = _digest(_json(prepared).encode("utf-8"))
         with self._connection(write=True) as db:
             prior = db.execute(
-                "SELECT request_digest,result FROM native_receipts WHERE tenant=? AND actor=? AND request_key=?",
-                (tenant, actor, request_key),
+                f"SELECT request_digest,result FROM {table} WHERE {predicate}request_key=?",
+                scope,
             ).fetchone()
             if prior is not None:
                 if prior["request_digest"] != request_digest:
@@ -315,10 +365,28 @@ class NativeStore:
                 db.execute("INSERT OR IGNORE INTO native_blobs VALUES (?,?,?)", (tenant, digest, content))
             for module in states:
                 save(module)
-            result = {"state": "received", "revisions": revisions, "request_digest": request_digest}
+            result = {
+                "state": "received",
+                "revisions": revisions,
+                "request_digest": request_digest,
+                "actor": actor,
+                "device_id": device_id,
+                "credential_id": credential_id,
+                "request_key": request_key,
+                "changes": {
+                    module: {
+                        "base": prepared[module]["base"],
+                        "applied_base": state["parent"],
+                        "reads": prepared[module]["reads"],
+                        "writes": prepared[module]["edits"],
+                        "revision": revisions[module],
+                    }
+                    for module, state in states.items()
+                },
+            }
             db.execute(
-                "INSERT INTO native_receipts VALUES (?,?,?,?,?)",
-                (tenant, actor, request_key, request_digest, _json(result)),
+                f"INSERT INTO {table} VALUES ({','.join('?' for _ in range(len(scope) + 2))})",
+                (*scope, request_digest, _json(result)),
             )
             return result
 

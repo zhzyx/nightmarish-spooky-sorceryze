@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-2b1828713f5ddd2ef64d389ce4fd608ebab38422406c045aec68dab6a0159894",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+  "occurred_at": "2026-11-22T14:23:09.6665180+00:00",
+  "evidence_refs": [
+    "dispatch-c7be03f64d2b4e4d802c800cc1933ab7",
+    "learn-d38e1f30da8653b624be9965889278631cd4d1eedbef5be2e2c9d4bffb4eebc7"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 17,
+    "previous": "fc483d7240341b2ff4662bec9381e7545616b84481f62fd31f1df741723ab0ba",
+    "action": "applied",
+    "details": {
+      "observed": "监听真实工单版本 GET，在响应返回编辑器前写入人工 PNG。核对两侧像素和摘要、模型网格和选用记录。Windows venv launcher 等待独立生产夹具解释器退出，记录启动 PID、实际 PID、父 PID 和退出码。",
+      "task": "E09 原生工单版本下载遇到本机已保存的纹理和模型时保留候选并显式选用。"
+    },
+    "evidence": [
+      {
+        "sha256": "7c76b4419afde00070fcbb7a483e6c1020885a68539abffabd5977e95ac208bd",
+        "path": "data-collection/gonggong-ai-workbench-plan1-e09.json"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-e09/dispatch-c7be03f64d2b4e4d802c800cc1933ab7.json",
+      "sha256": "74f841120c187267a0a6b23150bddb05306517f57ef2d1df3c82b885fdba436b"
+    }
+  },
+  "sha256": "4f0d87dc9849d4015058675960c1537de2f41d9db187dadd8646eda5712fa949"
+}

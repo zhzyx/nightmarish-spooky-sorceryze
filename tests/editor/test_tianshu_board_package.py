@@ -5,11 +5,13 @@ import copy
 import hashlib
 import io
 import json
+import runpy
 import sys
 import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
@@ -131,6 +133,48 @@ class BoardPackage(unittest.TestCase):
             data["entries"] = {name: hashlib.sha256(b"# test\n").hexdigest() for name in package.NAMES}
             with self.subTest(kind=kind), self.assertRaises((ValueError, zipfile.BadZipFile)):
                 package.validate(encode(data))
+
+    def test_macos_bundle_installs_matching_ui_and_board_packages(self):
+        repo = Path(__file__).resolve().parents[2]
+        with patch.object(sys, "path", [str(repo), *sys.path]):
+            build_bundle = runpy.run_path(str(repo / "platform/macos/platform_macos_builders.py"))["generate_bundle"]
+            bin_dir = self.root / "bin"
+            bin_dir.mkdir()
+
+            class BundleEnvironment(dict):
+                editor_build = True
+                dev_build = False
+                module_version_string = ""
+
+                def Dir(self, name):
+                    path = name.removeprefix("#")
+                    return SimpleNamespace(
+                        abspath=str((bin_dir.parent if path.split("/")[0] == "bin" else repo) / path)
+                    )
+
+            for slot in ("", "self_update_a", "self_update_b"):
+                with self.subTest(slot=slot):
+                    suffix = "." + slot if slot else ""
+                    env = BundleEnvironment(
+                        platform="macos",
+                        target="editor",
+                        precision="single",
+                        extra_suffix=slot,
+                        bundle_sign_identity="",
+                    )
+                    env.extra_suffix = suffix
+                    (bin_dir / f"godot.macos.editor.arm64{suffix}").write_bytes(b"editor")
+                    ui_bytes = ("ui" + suffix).encode()
+                    (bin_dir / f"tianshu-ui{suffix}.json").write_bytes(ui_bytes)
+                    pin = package.pack(self.source, slot or "default", bin_dir / f"tianshu-board{suffix}.json")
+
+                    build_bundle(None, None, env)
+
+                    app = bin_dir / ("godot_macos_editor" + suffix.replace(".", "_") + ".app")
+                    executable = app / "Contents/MacOS/Godot"
+                    self.assertEqual(executable.read_bytes(), b"editor")
+                    self.assertEqual((app / "Contents/Resources/tianshu-ui.json").read_bytes(), ui_bytes)
+                    package.verify_candidate_package({"executable": str(executable), "tianshu_board_sha256": pin})
 
     def test_slots_and_manifest_pin(self):
         self.assertEqual(

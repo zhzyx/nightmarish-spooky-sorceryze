@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1683-20261120",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "submission-audit-scope-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-20T11:33:38.777295+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1683,
+    "title": "修复阎罗重复审查与旧分级 CI 门禁",
+    "body": "<!-- gonggong-request:submission-audit-scope-20261120 -->\n\n需求文档：`design-docs/submission-audit-scope-20261120.md`\n\n# 按实际构建影响核验提交，复用同一候选审查\n\n2026-11-20，用户授权优化普通业务提交被升级为 tier3、要求额外人工审批的问题。当前责任者为本次 Codex 会话，GitHub 操作者 Sail-Li。来源为 PR #1682 / Issue #1679；关联分级设计 #1151。本任务独立修复公共交付入口，不接管 kaiyunxue 的在途候选或替其合入业务 PR。\n\n## 问题与范围\n\n`submission_audit.py` 将未命中已登记宿主文件的差异直接归为 tier3，并要求 Windows 编辑器全量 CI，与已上线的 `tools/ci/modules.json` 模块选择形成两套规则。`editor/SCsub` 确实嵌入工作台插件脚本和非测试 Python，不能按后缀豁免；独立测试则不应另加全仓审查。阎罗应消费同一模块选择与候选证据，不因发布阶段或协作者身份另开审查；GitHub 原生 approval 仅由实际保护规则决定。远端 main 回读 protected=false，#1682 reviewDecision 为空。\n\n## 验收\n\n- 以 #1682 的真实差异复现旧分级与现行模块 CI 不一致；使用现有模块注册表确定公共与模块必需检查，保留马良模块已有原生构建和会话验证，不另加无关全量 CI。\n- 新增、修改、删除均按真实路径归属；未知路径失败关闭，不能由候选修改注册表来豁免基线要求；缺失或跳过任何适用必需检查均不放行。\n- 保留必要独立审查、冻结治理、精确候选、正式工单门禁和服务器分支保护；同一候选复用已有证据，新增差异仅复核受影响范围。\n- 分类单测、真实 Git 差异集成测试和构建边界验证通过，独立核查后按本人 PR 路径交付并回读 main。\n\n## 验证与交付边界\n\n本地验证使用 macOS / Python，按实际依赖选择相关测试。通过 CI 绑定精确提交；不把模拟测试宣称为业务验收，不修改框架 Agent/Skill 定义或审批配置。原业务候选的恢复由原发布者接收修复后复验，保持 #1679 / #1682 的原责任关系。\n\n执行授权来源：codex:user-request:submission-audit-scope-20261120\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-20T11:33:02Z",
+    "authority_ref": "codex:user-request:submission-audit-scope-20261120",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and authorized isolated correction; not PR1682 acceptance."
+  },
+  "evidence_refs": [],
+  "sha256": "f4c27cf07ac0bc8731cc34f9d25e0c495eaf2b0da51bc87e9bca8f53210ccc7a"
+}

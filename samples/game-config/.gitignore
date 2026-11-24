@@ -1,0 +1,4 @@
+.godot/
+*.uid
+.acceptance-*/
+__pycache__/

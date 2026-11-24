@@ -35,6 +35,7 @@
 #include "core/object/class_db.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/workbench/AIWorkbenchPageField.h"
 
 void EditorDock::_set_default_slot_bind(DockSlot p_slot) {
 	ERR_FAIL_COND(p_slot < DOCK_SLOT_NONE || p_slot >= DOCK_SLOT_MAX);
@@ -68,9 +69,13 @@ void EditorDock::_notification(int p_what) {
 }
 
 void EditorDock::_bind_methods() {
+	ClassDB::bind_static_method("EditorDock", D_METHOD("validate_workbench_field", "field"), &AIWorkbenchPageField::Validate);
 	ClassDB::bind_method(D_METHOD("open"), &EditorDock::open);
 	ClassDB::bind_method(D_METHOD("make_visible"), &EditorDock::make_visible);
 	ClassDB::bind_method(D_METHOD("close"), &EditorDock::close);
+	ClassDB::bind_method(D_METHOD("set_auxiliary_expanded", "expanded"), &EditorDock::SetAuxiliaryExpanded);
+	ClassDB::bind_method(D_METHOD("toggle_auxiliary_expanded"), &EditorDock::ToggleAuxiliaryExpanded);
+	ClassDB::bind_method(D_METHOD("is_auxiliary_expanded"), &EditorDock::IsAuxiliaryExpanded);
 
 	ClassDB::bind_method(D_METHOD("set_title", "title"), &EditorDock::set_title);
 	ClassDB::bind_method(D_METHOD("get_title"), &EditorDock::get_title);
@@ -126,6 +131,7 @@ void EditorDock::_bind_methods() {
 
 	ADD_SIGNAL(MethodInfo("opened"));
 	ADD_SIGNAL(MethodInfo("closed"));
+	ADD_SIGNAL(MethodInfo("auxiliary_expansion_changed", PropertyInfo(Variant::BOOL, "expanded")));
 	ADD_SIGNAL(MethodInfo("_tab_style_changed"));
 	ADD_SIGNAL(MethodInfo("_focused"));
 
@@ -302,6 +308,10 @@ void EditorDock::update_tab_style() {
 	int index = parent_dock_container->get_tab_idx_from_control(this);
 	ERR_FAIL_COND(index == -1);
 
+	// Keep the original controls addressable to plugins and full-screen workbench users.
+	if (layout_key == "AIChatMainScreen" || layout_key == "DaqianMainScreen") {
+		parent_dock_container->get_tab_bar()->set_tab_hidden(index, parent_dock_container->dock_slot == DOCK_SLOT_MAIN_SCREEN);
+	}
 	parent_dock_container->get_tab_bar()->set_font_color_override_all(index, title_color);
 
 	const Ref<Texture2D> icon = get_effective_icon(callable_mp((Control *)this, &Control::get_editor_theme_icon));

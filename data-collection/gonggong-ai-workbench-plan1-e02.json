@@ -1,0 +1,146 @@
+{
+  "issue_number": 1815,
+  "request_id": "gonggong-ai-workbench-plan1-e02",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1815",
+  "baseline": "21885f8c13ebac2169527fd767806604c877674f",
+  "changed_sources": {
+    "apps/tianxuan/lib/workspace-conversations.ts": "21285a1b7f3652680e71c52b6f91d3cf16f5410cd98f60af7af53b2dbc535163",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "445b117b35fd90650b4938c2bfb0cb82824af81e768a6e277d72ad3e1cf1828e",
+    "customizations/components/tianxuan/wenqu/README.md": "32e86a80f9a4add9e0edf089e707d5960b908f6c3701caa05ff2b4bb3462b55b",
+    "editor/docks/workbench/business_session.gd": "33c59f86872acd0571a47522baed51d5741bdc3dd6c201f11e6393634006622d",
+    "editor/docks/workbench/module_selector.gd": "858bf3f68d7c5bbac450c3349e52175ab35b415f50ba6d6670e25dfa8e748f97",
+    "tests/editor/run_workbench_document_reference.py": "a959c93bdc8b397fb17ae7982c1667395c325a468d4e03720ba6434417aad394",
+    "tests/editor/workbench_document_reference.gd": "1720b5efd291fa8fcd97f4e0c6679dbeb9ebc5c0e0890269fad8587d9d079ce1",
+    "design-docs/gonggong-ai-workbench-e02.md": "73a878c0ca96c65b9f989dc3b47334641ed332de593ceee27f42a399ebe6c8c5"
+  },
+  "platform": "macOS arm64",
+  "build": "python -m SCons -j8 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+  "probe": "retest_native.py tests/editor/run_workbench_document_reference.py --godot bin/godot.macos.editor.arm64 --saved-edit --report e02-native.json",
+  "fixture": "Windowed isolated Mac editor, loopback Tianxuan/SQLite authenticated account, httpx.MockTransport at model endpoint.",
+  "native": {
+    "state": "passed",
+    "editor_sha256": "57b0bab28f0d28e15bf6f2fa7812158ecd6b457418fec31b3d6897039e6eb5c8",
+    "turn": "d0bdb38c-b282-49f6-8485-a516254403ac",
+    "received": {
+      "content": "<tianxuan-doc://doc_bd6c8f8bf87248d892d8fcd80e1b606a/1/2>\n<tianxuan-doc-edit://doc_bd6c8f8bf87248d892d8fcd80e1b606a/3>\n继续核对",
+      "context_snapshot": {
+        "project": "studio/game",
+        "module_id": "default",
+        "issue_id": null,
+        "references": [
+          {
+            "kind": "document",
+            "paragraph": 2,
+            "object_id": "doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+            "revision": 1
+          },
+          {
+            "kind": "document_edit",
+            "object_id": "doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+            "revision": 3
+          }
+        ]
+      },
+      "document_edits": [
+        {
+          "kind": "document_edit",
+          "object_id": "doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+          "revision": 3,
+          "author": "usr_627cdef717f8448987d49efc765b06a7",
+          "changes": [
+            {
+              "before": [
+                {
+                  "paragraph": 2,
+                  "text": "临时交付条件"
+                }
+              ],
+              "after": [
+                {
+                  "paragraph": 2,
+                  "text": "人改后的交付条件"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "http": [
+      [
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "/api/v1/business-modules",
+        200
+      ],
+      [
+        "/api/v1/business-modules/default/location",
+        200
+      ],
+      [
+        "/api/v1/issues",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/3",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_bd6c8f8bf87248d892d8fcd80e1b606a/versions/3",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations",
+        201
+      ],
+      [
+        "/api/v1/business-modules/default/location",
+        200
+      ],
+      [
+        "/api/v1/workspace/conversations/3a75de95-f84f-4aaf-885b-08590cee81f4/turns",
+        200
+      ]
+    ]
+  },
+  "server_tests": "python -m pytest -q customizations/components/tianxuan/server/test_workspace_conversations.py: 8 passed",
+  "review": "Independent parent operator reviewed editor + service scope and verified fixes for repeated saves and in-flight requests. Candidate passed repeated saves with old manual citation preserved and a busy conversation."
+}

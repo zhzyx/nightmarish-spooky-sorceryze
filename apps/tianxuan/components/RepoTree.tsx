@@ -62,15 +62,15 @@ const entryStyle = {
   alignItems: "center",
   justifyContent: "space-between",
   padding: "4px 0",
-  borderBottom: "1px solid rgba(245, 242, 234, 0.06)",
+  borderBottom: "1px solid var(--line-strong)",
 } as const;
 
-const mutedStyle = { color: "rgba(245, 242, 234, 0.55)", fontSize: "12px" } as const;
-const errorStyle = { color: "#D48B80" } as const;
+const mutedStyle = { color: "var(--paper-72)", fontSize: "12px" } as const;
+const errorStyle = { color: "var(--error-text)" } as const;
 const inputStyle = {
   padding: "6px 10px",
   borderRadius: "6px",
-  border: "1px solid rgba(245, 242, 234, 0.18)",
+  border: "1px solid var(--line-strong)",
   background: "transparent",
   color: "inherit",
   minWidth: "160px",
@@ -389,7 +389,6 @@ export function RepoTree() {
   return (
     <section className="panel" aria-labelledby="repo-tree-title">
       <header style={headingStyle}>
-        <p className="section-kicker">DUOBAO · TREE</p>
         <h2 id="repo-tree-title">{t("repos.treeTitle")}</h2>
       </header>
       <div style={panelBodyStyle}>

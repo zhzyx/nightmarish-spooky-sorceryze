@@ -19,8 +19,8 @@ import {
 import { useActor } from "@/lib/use-actor";
 
 const fieldStyle: CSSProperties = {
-  background: "rgba(245, 242, 234, 0.06)",
-  border: "1px solid rgba(245, 242, 234, 0.14)",
+  background: "var(--ink-3)",
+  border: "1px solid var(--line-strong)",
   borderRadius: 8,
   color: "inherit",
   font: "inherit",
@@ -229,7 +229,6 @@ export function MergeQueuePanel() {
     <section className="panel" aria-labelledby="merge-queue-title">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">DUOBAO · MERGE TRAIN</p>
           <h2 id="merge-queue-title">{t("queue.title")}</h2>
         </div>
         <span className="section-note">

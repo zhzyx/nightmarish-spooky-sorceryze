@@ -1,0 +1,42 @@
+{
+  "issue_number": 1846,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1846",
+  "request_id": "gonggong-ai-workbench-plan1-g04",
+  "observed_at": "2026-11-21T06:04:48.735056+00:00",
+  "source_baseline": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb",
+  "source_capture": {
+    "main": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+    "timestamp": "2026-11-21T04:43:01.384169+00:00",
+    "all_ref_count": 1640,
+    "source_index": "data-collection/gonggong-ai-workbench-g01-inventory.json"
+  },
+  "isolated_target": {
+    "project": "g04-source-snapshot",
+    "tenant": "migration-validation",
+    "revision": "fbf8f07104d4a6823e82f5b6d2b54151f7dda9cac7affc92238ea395a9d3228d",
+    "module": "migration-c999328ce31d4d655cc40e15319eb6d7e12a606f31e4489a656af842679fed27",
+    "commit_count": 2656,
+    "endpoint": "GET /api/v1/migration/history/branches",
+    "ai_tool": "migration.history.branches"
+  },
+  "verification": {
+    "sample": "G02 merge fixture with main, releases/shared, teams/shared and a tag named shared; HTTP first page and AI second page match their corresponding original tips; stale revision and other tenant unavailable.",
+    "published_branches": 683,
+    "page_size": 100,
+    "page_counts": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      83
+    ],
+    "missing": [],
+    "unexpected": [],
+    "changed_tips": [],
+    "main_tip": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+    "canonical_sorted_mapping_sha256": "7aa40b99e6110da3c989f9079e4965224932fecbf98dee8d23c52a30f13d6586",
+    "out_of_scope_tenant": "publication unavailable"
+  }
+}

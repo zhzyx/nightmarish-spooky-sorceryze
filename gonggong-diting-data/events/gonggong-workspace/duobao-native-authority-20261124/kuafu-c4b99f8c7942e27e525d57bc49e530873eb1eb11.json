@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c4b99f8c7942e27e525d57bc49e530873eb1eb11",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "82e1dbdb3ede80ff60917dc11e631c74bd2df18b8a43c51e2086ddcbd7658cf4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "validation",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "5b09dc00400798d12fe17727545a1ef0ab84dbf8425663ca6c6aa84bc72c6a9e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "module-impact-only:reviewed_modules-tianxuan:350-input-blobs",
+    "diagnosis": "新增构建证据误排除了子目录build-impact.json。已只排除当前模块根分类记录，绑定350个输入；正式同源模块门禁定向复验通过。",
+    "next_action": "在完整候选重新执行签发门禁并交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:13:44.925842+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T23:17:10.491532+00:00",
+  "sha256": "f3589afbdfa66a9b14601a7c21669105c7f34b5c4899e17f2336c39624ebe61b"
+}

@@ -118,6 +118,7 @@ func check_retired_gpt_mesh():
 	mode("comfy")
 	check(panel.node_run_blocker(historical.id).contains("已下线"), "changing mesh services does not reassign retired nodes")
 	DirAccess.remove_absolute(config)
+	DirAccess.remove_absolute(panel.service_profiles_path)
 	DirAccess.remove_absolute(state_path.path_join("local.cfg"))
 	panel.queue_free()
 	await process_frame
@@ -137,17 +138,35 @@ func run():
 		return
 	var available_modes: Array = []
 	for i in panel.service_choice.item_count: available_modes.append(panel.service_choice.get_item_metadata(i))
-	check(available_modes == ["offline", "comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], "settings retain image and independent mesh services")
-	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
-	check(panel.service_status.text.contains("离线") and panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show offline copying availability")
+	check(available_modes == ["comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], "settings remove the retired offline mode and retain real generation services")
+	check(panel._service_mode() == "comfy" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
+	check(panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show local copying availability")
 	set_node("text_to_image", "", "fixture prompt; do not submit")
 	var serial = panel.serial
 	panel.run_node_preview("fixture")
-	check(panel.serial == serial and panel.jobs.is_empty() and panel.status.text.contains("离线"), "direct generation is blocked before subprocess creation in offline mode")
+	check(panel.serial == serial and panel.jobs.is_empty() and panel.status.text.contains("尚未保存"), "direct generation is blocked before subprocess creation until settings are saved")
 	check(panel.service_config_link.visible, "blocked generation exposes an actionable configuration entry")
 	panel.service_config_link.pressed.emit()
 	await settle()
 	check(settings_requests.back() == 'ai' and not panel.native_sections.machine.visible, "configuration entry navigates to central AI settings without reopening an editable business form")
+	# Drafts belong to their service, persist before explicit activation, and survive reopening.
+	mode('kimi_native')
+	panel.model3d_tool_edit.text = state_path.path_join('unsaved-kimi/model3d_generation_tool.py')
+	panel.model3d_pythonw_edit.text = state_path.path_join('unsaved-kimi/python3')
+	panel.kimi_image_tool_edit.text = state_path.path_join('unsaved-kimi/image_generation_tool.py')
+	panel.kimi_image_pythonw_edit.text = state_path.path_join('unsaved-kimi/pythonw.exe')
+	mode('codex')
+	panel.cli_path_edit.text = state_path.path_join('unsaved-codex/codex')
+	mode('comfy')
+	panel.endpoint_edit.text = 'http://127.0.0.1:65432'
+	mode('kimi_native')
+	check(panel.model3d_tool_edit.text == state_path.path_join('unsaved-kimi/model3d_generation_tool.py') and panel.model3d_pythonw_edit.text == state_path.path_join('unsaved-kimi/python3') and panel.kimi_image_tool_edit.text == state_path.path_join('unsaved-kimi/image_generation_tool.py') and panel.kimi_image_pythonw_edit.text == state_path.path_join('unsaved-kimi/pythonw.exe'), 'switching services restores every unsaved Kimi tool path')
+	var profiles = JSON.parse_string(FileAccess.get_file_as_string(panel.service_profiles_path))
+	check(profiles is Dictionary and profiles.get('selected_mode') == 'kimi_native' and profiles.get('profiles', {}).get('codex', {}).get('cli_path') == state_path.path_join('unsaved-codex/codex') and profiles.get('profiles', {}).get('comfy', {}).get('endpoint') == 'http://127.0.0.1:65432' and not FileAccess.file_exists(panel.service_config_path), 'all service drafts persist without activating or starting a service')
+	panel.queue_free()
+	await settle()
+	await new_panel()
+	check(panel._service_mode() == 'kimi_native' and panel.service_saved.is_empty() and panel.model3d_tool_edit.text == state_path.path_join('unsaved-kimi/model3d_generation_tool.py') and panel.kimi_image_pythonw_edit.text == state_path.path_join('unsaved-kimi/pythonw.exe'), 'reopening restores the selected service and its unsaved configuration')
 	await check_retired_gpt_mesh()
 	set_node("text_to_image", "", "fixture prompt; do not submit")
 	check(traffic().is_empty(), "opening settings and rejecting unconfigured generation makes no HTTP calls")
@@ -225,7 +244,7 @@ func run():
 	check(not panel.jobs.is_empty(), "slow fixture check is actually pending")
 	panel.endpoint_edit.text = valid_endpoint
 	await idle()
-	check(panel.service_report.is_empty() and panel.service_status.text.contains("已改变"), "late discovery for an edited endpoint cannot replace current readiness")
+	check(panel.service_report.is_empty() and panel.service_status.text.contains("已改变"), "late discovery for an edited endpoint cannot replace current readiness; report=" + JSON.stringify(panel.service_report) + " status=" + panel.service_status.text + " run=" + panel.status.text)
 	# Unsafe address saves preserve the prior valid bytes and redact secrets.
 	var saved_hash = FileAccess.get_sha256(panel.service_config_path)
 	panel.endpoint_edit.text = "http://fixture-user:fixture-secret@127.0.0.1:1234/private?token=fixture-token"
@@ -248,31 +267,32 @@ func run():
 	check(panel.service_report.capabilities.text_to_image.ready and panel.service_report.capabilities.image_to_mesh.ready, "capability detection does not depend on a model being selected")
 	await configure_valid()
 	check(panel._service_blocker("text_to_image", {"model":image_model}).is_empty() and panel._service_blocker("image_to_mesh", {"model":mesh_model}).is_empty(), "corrected detected settings and explicit node models recover service eligibility without restarting")
-	# A mesh-only configuration is sufficient until an explicit redraw prompt is supplied.
+	# Image-to-Mesh is image-only and needs no auxiliary redraw model or text.
 	select_model(panel.image_model_choice, "")
 	panel.save_service_settings()
 	panel.check_service()
 	await idle()
 	panel.show_native_section("mesh")
 	set_node("image_to_mesh", ProjectSettings.globalize_path("res://fixtures/sample.png"))
-	check(panel.node_run_blocker("fixture").is_empty() and panel.service_report.capabilities.image_to_mesh.ready, "mesh-only settings allow image-to-mesh without an optional redraw prompt")
-	panel.parameter_form.prompt_edit.text = "redraw this source before mesh generation"
-	panel.parameter_form.prompt_edit.text_changed.emit()
-	panel.apply_fields()
-	check(panel.node_run_blocker("fixture").contains("图像模型"), "an explicit image-to-mesh redraw prompt requires an image model")
-	panel.path_edit.text = state_path.path_join("existing-redraw-workflow.json")
+	check(panel.node_run_blocker("fixture").is_empty() and panel.service_report.capabilities.image_to_mesh.ready, "mesh-only settings allow image-to-mesh without an image model or prompt")
+	check(not panel.parameter_form.prompt_edit.is_visible_in_tree(), "image-to-mesh has no text input")
+	panel.nodes[0].parameters.prompt = "legacy hidden redraw requirement"
+	panel.nodes[0].text = "legacy hidden node text"
+	panel.select_node("fixture")
+	check(panel.nodes[0].parameters.prompt.is_empty() and panel.nodes[0].text.is_empty() and panel.node_run_blocker("fixture").is_empty(), "legacy image-to-mesh text is cleared instead of triggering a hidden redraw")
+	panel.path_edit.text = state_path.path_join("existing-image-only-workflow.json")
 	panel.save_graph()
 	panel.open_graph()
 	panel.select_node("fixture")
-	check(panel.nodes[0].parameters.prompt == "redraw this source before mesh generation" and panel.parameter_form.prompt_edit.text == panel.nodes[0].parameters.prompt, "existing saved image-to-mesh prompts remain intact and visible")
+	check(panel.nodes[0].parameters.prompt.is_empty() and not panel.parameter_form.prompt_edit.is_visible_in_tree(), "saved image-to-mesh workflows reopen without text input or residual prompts")
 	for i in panel.generator_choice.item_count:
 		if panel.generator_choice.get_item_metadata(i) == "image_to_mesh": panel.generator_choice.select(i)
 	panel.add_generator()
-	check(panel.nodes.back().parameters.prompt.is_empty(), "new image-to-mesh nodes start without silently requesting image redraw")
+	check(panel.nodes.back().parameters.prompt.is_empty(), "new image-to-mesh nodes start with an empty prompt")
 	var count_before_context = panel.nodes.size()
 	panel.graph.popup_request.emit(panel.graph.size - Vector2(10,10))
 	panel.create_context_node("image_to_mesh")
-	check(panel.nodes.size() == count_before_context + 1 and panel.nodes.back().parameters.prompt.is_empty(), "context-created image-to-mesh nodes also start with an empty optional prompt")
+	check(panel.nodes.size() == count_before_context + 1 and panel.nodes.back().parameters.prompt.is_empty(), "context-created image-to-mesh nodes also start with an empty prompt")
 	panel.context_menu.hide()
 	# The original defect swallowed create exceptions. A fixture which becomes
 	# unavailable after discovery proves the actual create reply is actionable.
@@ -372,10 +392,10 @@ func run():
 	check(panel.nodes[0].type == "model_adjust" and panel.nodes[0].provider == "kimi_native" and panel.output_kind(panel.nodes[0]) == 2, "model adjustment node and Mesh output survive a real Workbench reopen")
 	check(panel.nodes[0].source_snapshots.size() == 1 and panel.nodes[0].image_context_snapshots.size() == 1 and panel.nodes[0].parameters.prompt.is_empty() and panel.node_run_blocker("fixture").is_empty(), "source model, guidance image and optional text survive save and reopen")
 	check(panel.nodes[1].model == "v3.1" and panel.nodes[2].model == "v3.0", "Tripo node models survive workflow reopening independently of access settings")
-	# Switching to offline remains usable for real local-copy preview/publication.
-	mode("offline")
+	# Local-copy preview/publication remains independent of the selected generator.
+	mode("comfy")
 	panel.save_service_settings()
-	check(JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path)).mode == "offline", "GUI can save and restore offline mode explicitly")
+	check(JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path)).mode == "comfy", "local copy uses the managed configuration without an offline service mode")
 	panel.show_native_section("mesh")
 	var source = ProjectSettings.globalize_path("res://fixtures/sample.png")
 	var source_hash = FileAccess.get_sha256(source)

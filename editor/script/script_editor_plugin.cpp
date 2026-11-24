@@ -4536,6 +4536,7 @@ void ScriptEditor::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_unsaved_files"), &ScriptEditor::get_unsaved_files);
 
+	ClassDB::bind_method(D_METHOD("save_current_script"), &ScriptEditor::save_current_script);
 	ClassDB::bind_method(D_METHOD("save_all_scripts"), &ScriptEditor::save_all_scripts);
 	ClassDB::bind_method(D_METHOD("close_file", "path"), &ScriptEditor::close_file);
 

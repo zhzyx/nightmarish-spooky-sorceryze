@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "issue": 2180,
+  "worker": "/root/local_chat_review",
+  "role": "independent implementation reviewer",
+  "implementation_participation": false,
+  "original_task_base": "8c7267f1d0c01dddd71ec93ea5da0fa08b478396",
+  "baseline": "cb6607f0d9f7f44ddf335948dd10b69976c21a45",
+  "upstream_integrated": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+  "baseline_scope": "The integrated upstream authentication/main changes are baseline inputs, not implementation authored or reviewed as part of this design-entry repair.",
+  "reviewed_at": "2026-11-24T02:12:26.248082+00:00",
+  "scope": "Native design-stage progress and explicit next actions; visible service execution prerequisites; confirmed local specification handoff through native host callables into Maliang; immutable project/account/conversation/revision binding, private persistence and append idempotency; truthful reserved/created states; isolated regressions and default CI invocation.",
+  "candidate_files_sha256": {
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "d19e25a10acc06f8aa41513746c56e00882ca5837a4d4df716e54ac3fadef419",
+    "editor/docks/tianxuan/design_page.gd": "2be0a04f17cf9dc699090eebaf565654c024ffc6a55eda5239990d1adfb6bb32",
+    "editor/docks/tianxuan/local_conversation_controller.gd": "f5fdfe1f63b488360cca79603741827bd2ecc1d134ac068a7d8c15ed2de0ff5b",
+    "editor/docks/tianxuan/locale.gd": "d30aaff4cf8b8ac16b4901b3747df5af3e3fa54f2f4db45ecd4ea9cf8600a707",
+    "editor/docks/tianxuan/workspace_controller.gd": "fcda377bc72a6f7cc2f255d51da8ea347a79df23849a22f192c73aefd6fb93c7",
+    "editor/plugins/ainative_editor_plugin.cpp": "161f2d84d8a62d8426d7185af2ec06748066a090604af1bb680cdbb3df33854e",
+    "editor/plugins/ainative_editor_plugin.h": "2a61875381fc2af300423d37ab8bae65c70a1f7d4658565514b99694d93034c4",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "251d0265398a7bb7e588d10c2755e7ec2e236ccf3979ad5860278f5b6873207e",
+    "samples/ainative-workbench/addons/ainative/spec_handoff.gd": "150135f427dd7d27e411afd5479bc4ffce786f6e8c3f2a9054a971b97259e6dd",
+    "tests/editor/run_tianxuan_controller.py": "5843bf9dbba6caf9eca927e8c6b326810e5a610d88194facde65224fcf773c14",
+    "tests/editor/tianxuan_layout.gd": "d3ee36158ace8ab47358afa0ac50b4c19ceb66d814dbfce902fb7155a55470d0",
+    "tests/editor/tianxuan_native_shell.gd": "9e0ef2c208bc74b18c410348febe23536149bcc92e9213a0ead0f057037159da",
+    "tests/editor/run_tianxuan_production_handoff.py": "89b49d6e2b81939aed7ab99bedd7ef1d925c8adeb4f8debcb7dac5db6bab399a",
+    "tests/editor/tianxuan_production_handoff.gd": "8b6a2e7c519cadf1e14dff3862cdffd20c152a68dc37ef8030346f0e727f8783",
+    "design-docs/tianxuan-chat-repair-20261124.md": "05ab48426cb222aaeac925838bbe8d39ff6f6b4d7e70c5343970044b8b5fa930"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/workspace_controller.gd",
+      "line": 412,
+      "problem": "The first implementation checked drafts only in the selected source stage, so an earlier unsaved stage could be ignored when preparing an older confirmed specification.",
+      "resolution": "All design stages are checked before choosing a confirmed direction or detailed design. The native regression covers an earlier unsaved direction after all saved stages were confirmed."
+    },
+    {
+      "id": "R2",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/design_page.gd",
+      "line": 185,
+      "problem": "The new top action targeted a hidden launch button when an execution already existed.",
+      "resolution": "Existing execution uses the progress caption and scrolls to the visible execution status; an unlaunched requirement still targets launch prerequisites."
+    },
+    {
+      "id": "R3",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/workspace_controller.gd",
+      "line": 419,
+      "problem": "Nullable title/acceptance became null marker strings; final native verification additionally found that an empty direction title did not fall back to the conversation title.",
+      "resolution": "Null or blank titles fall back to the conversation title; absent acceptance becomes an empty string. Nonblank authored titles retain their original text. Final integrated native verification passes the real service response case."
+    },
+    {
+      "id": "R4",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/design_page.gd",
+      "line": 441,
+      "problem": "A returned revision was offered for confirmation even though the service requires a new revision.",
+      "resolution": "Confirmation is disabled for returned revisions and Next explains revision/save requirements. The native HTTP regression returns a plan, edits it, saves a new revision and only then confirms."
+    },
+    {
+      "id": "R5",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "samples/ainative-workbench/addons/ainative/spec_handoff.gd",
+      "line": 193,
+      "problem": "The reservation was originally persisted as node_created before graph append, causing a crash window to falsely report successful creation.",
+      "resolution": "Durable node_reserved precedes append; node_created is persisted only after actual append. Unknown reservations never replay. Terminal write failure reports the actual in-memory append and retained unknown durable state. Final compiled regression covers both fault windows."
+    },
+    {
+      "id": "R6",
+      "severity": "P2",
+      "status": "resolved",
+      "file": "tests/editor/run_tianxuan_controller.py",
+      "line": 674,
+      "problem": "The new compiled handoff regression initially existed only as a standalone runner.",
+      "resolution": "The standard native-shell local-contract branch now invokes it, checks exit/result and exact binary digest, and includes its product/test inputs in source-drift verification."
+    },
+    {
+      "id": "R7",
+      "severity": "P3",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/workspace_controller.gd",
+      "line": 119,
+      "problem": "Using a null get_meta default for optional host callbacks produced three new missing-metadata errors in the standalone controller fixture.",
+      "resolution": "Both optional callbacks use an empty Callable default. Final source contract passes 43 checks without either missing-metadata error, and the final compiled handoff passes 27 checks."
+    }
+  ],
+  "review_checks": [
+    "Stage switching and Next re-read current controller state. Generation, saving, confirmation and publication remain separate explicit actions; server stage/version/approval gates remain intact.",
+    "Viewer, busy, unsaved-draft and missing-service states are explained. Existing execution navigates to visible status; historical revisions are folded without deleting content.",
+    "Native and Maliang preparation validate the entire frozen snapshot, including current project, identity scope, conversation, stage, revision, title, body and acceptance. Append revalidates the source; identity reset clears the temporary card including its title.",
+    "Persisted IDs bind project, scope, conversation, stage and revision. The digest binds the complete snapshot. Bounded schema validation, atomic replacement and an exclusive directory lock reject corrupt or conflicting records and cooperating concurrent writers.",
+    "The workbench preserves existing graph content and applies valid pending inspector edits before appending one normal text-to-mesh node. Busy execution, template editing and duplicate node IDs are rejected. Preparation and append do not start a job, overwrite model settings or grant consultation tools.",
+    "Preparation is distinct from production. Existing workspace-service execution remains a separate path and is labeled with its location; local chat availability is not treated as proof that the service or mesh backend is ready.",
+    "The optional real CLI probe remains isolated/read-only. This reviewer read its receipt and did not invoke a real provider or operate the user application."
+  ],
+  "independent_verification": [
+    {
+      "command": "Read the candidate diffs and dependent native entry, model host, workbench and persistence paths; compare final file fingerprints and validation inputs.",
+      "result": "passed",
+      "evidence_level": "independent source review; no implementation participation"
+    },
+    {
+      "command": "Python ast.parse on tests/editor/run_tianxuan_controller.py and tests/editor/run_tianxuan_production_handoff.py.",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "read_back_validation": [
+    {
+      "artifact": "tianxuan-design-final-native.json",
+      "sha256": "366ca7f5cb8de5494a791c4df813a756ab468ff75a1bd0d14df0398402e3face",
+      "passed": true,
+      "binary_sha256": "6c7aa5edfdedaf1ac0a0d18a3b7d70dc46636e1ae98f04bb9203e9e7e1f51ca3",
+      "check_count": 157,
+      "current_input_mismatches": [
+        "editor/docks/tianxuan/workspace_controller.gd"
+      ],
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "local_conversation_checks": 43,
+      "host_progress_checks": 16,
+      "compiled_handoff_checks": 27,
+      "cloud_inference_requests": 0,
+      "applicability": "Historical integrated native UI/HTTP and CI-wiring run. Only the two optional metadata defaults in workspace_controller.gd changed afterwards; the final targeted controller and compiled handoff runs below cover that change."
+    },
+    {
+      "artifact": "tianxuan-design-final-layout.json",
+      "sha256": "8032855f799f325e5751ac814ca527ec9529faa8e08f587ca26eb2ba3ce0e82c",
+      "passed": true,
+      "binary_sha256": "cce4599218a8cd88c4c6ba74048d37c39da4710869f74f876067380cb6ae6a83",
+      "check_count": 248,
+      "current_input_mismatches": [
+        "editor/docks/tianxuan/workspace_controller.gd"
+      ],
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "design_geometry_count": 18,
+      "applicability": "Historical layout binary. Every UI/layout source fingerprint still matches the final candidate. Subsequent changes were the controller fallback for an empty direction title, optional metadata defaults, and test synchronization/returned-revision coverage. No final-binary layout rerun is claimed."
+    },
+    {
+      "artifact": "tianxuan-design-real-cli.json",
+      "sha256": "22d2ad1daea77732b217fc3298d722c15ac0e9d46aee8c1db0fa6da490421219",
+      "passed": true,
+      "binary_sha256": "6c7aa5edfdedaf1ac0a0d18a3b7d70dc46636e1ae98f04bb9203e9e7e1f51ca3",
+      "check_count": 18,
+      "current_input_mismatches": [],
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "accepted": true,
+      "all_native_checks_passed": true,
+      "script_error_seen": false,
+      "reply_names_local_maliang": true,
+      "provider_observations_passed": true,
+      "reviewer_provider_invocations": 0,
+      "applicability": "Historical real read-only consultation/recovery run on the same binary as the integrated native test. The later optional metadata defaults do not change the model host, prompt, CLI isolation or recovery path. No additional provider invocation was made for that correction."
+    },
+    {
+      "artifact": "tianxuan-design-local-metadata.json",
+      "sha256": "e5b53233275f951210541fff15f609ef964dd0c88bbbf83cdb42bdab8c007a31",
+      "passed": true,
+      "binary_sha256": "f9e39ecf559b17e0d060ff6343bed436d0ab91df270c1e3f29bd6f386c16972c",
+      "check_count": 43,
+      "current_input_mismatches": [],
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "applicability": "Final-candidate source-loaded controller contract with an injected provider/session and private filesystem.",
+      "missing_optional_metadata_errors": false,
+      "expected_storage_failure_observed": true
+    },
+    {
+      "artifact": "tianxuan-design-handoff-final.json",
+      "sha256": "cadb72d02b88acdd82efddbbb9186c84a0f362ac9e568c25c500775e0bdfb699",
+      "passed": true,
+      "binary_sha256": "f9e39ecf559b17e0d060ff6343bed436d0ab91df270c1e3f29bd6f386c16972c",
+      "check_count": 27,
+      "current_input_mismatches": [],
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "source_mode": false,
+      "provider_commands": 0,
+      "script_error_seen": false,
+      "stale_sources": [],
+      "binary_changed": false,
+      "applicability": "Final compiled editor, native host callables and bundled Maliang scripts; private synthetic identity/specification. Preparation, append, stale rejection, reservation interruption and terminal-persistence failure only."
+    },
+    {
+      "artifact": "tianxuan-design-integrated-native.json",
+      "sha256": "f1e2556226455656486eb6395f2b2b14fcb82c85791b940784fb1936c9dcb54b",
+      "passed": true,
+      "binary_sha256": "b0ee8a60f186bdf7c60cc2e0d206ee807d47f07bdf1e74e9220a92842353c36c",
+      "check_count": 157,
+      "local_conversation_checks": 43,
+      "host_progress_checks": 16,
+      "compiled_handoff_checks": 27,
+      "cloud_inference_requests": 0,
+      "handoff_provider_commands": 0,
+      "source_fingerprints_match": true,
+      "handoff_stale_sources": [],
+      "handoff_binary_changed": false,
+      "handoff_script_error_seen": false,
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer",
+      "applicability": "Rebuilt integrated baseline after the actual session/auth/repository read dependency change. Covers the full native-shell flow and nested controller, compiled progress and compiled handoff contracts."
+    }
+  ],
+  "diagnostics": [
+    {
+      "source": "historical integrated native run",
+      "observed": [
+        "An empty-name engine condition error.",
+        "Canvas/CanvasItem/ObjectDB and PagedAllocator/dependency cleanup diagnostics at headless exit."
+      ],
+      "disposition": "Retained in the author receipt. This review does not claim these diagnostics were fixed or that the run was warning-free."
+    },
+    {
+      "source": "historical local controller contract",
+      "observed": [
+        "Three missing optional metadata errors.",
+        "Expected storage-blocker directory failure."
+      ],
+      "disposition": "The optional metadata errors were caused by this change and corrected; the final source receipt contains only the intentional storage failure diagnostic."
+    },
+    {
+      "source": "historical layout run",
+      "observed": [
+        "Canvas/CanvasItem/ObjectDB cleanup warnings at headless exit."
+      ],
+      "disposition": "Retained; layout geometry success is not a zero-warning claim."
+    },
+    {
+      "source": "final compiled handoff stdout/stderr",
+      "observed": [
+        "Canvas, CanvasItem, Viewport, texture, scenario, text/font and RichTextLabel RID cleanup diagnostics.",
+        "ObjectDB leak warning and one resource still in use at exit."
+      ],
+      "disposition": "Read back and retained; no SCRIPT ERROR was observed. Successful behavioral checks do not establish clean engine shutdown."
+    }
+  ],
+  "conclusion": "passed",
+  "unresolved_findings": [],
+  "limitations": [
+    "This independent code review does not replace exact-candidate CI, merge/main readback, installation or user acceptance.",
+    "Final targeted validation uses binary f9e39ecf559b17e0d060ff6343bed436d0ab91df270c1e3f29bd6f386c16972c. Integrated native/real CLI and layout receipts use earlier binaries with explicitly bounded applicability above; they are not relabeled as final-binary runs.",
+    "Headless geometry and synthetic identities do not establish native pixel/IME or real account authorization acceptance. Main/sidebar screenshots were inspected by the implementation task, not by this reviewer.",
+    "No pig model or other asset was generated, visually reviewed, imported or published by this review. The new local entry prepares a specification and appends a node; actual production still requires the existing user action and configured backend.",
+    "A reserved or lost unsaved node is not automatically recreated. Persistent unknown records and crash-left locks require explicit inspection rather than blind retry."
+  ],
+  "prior_review": {
+    "artifact": "data-collection/tianxuan-resume-layout-review-2180.json",
+    "sha256": "65ba8ff82a7fb1639cd79d1f08ca4dc801d05a8de19dab5aad504b2ffa1bef50",
+    "unchanged": true
+  },
+  "path_policy": "Repository paths are relative; external evidence references use artifact basenames. Machine-specific paths, account data and credentials are omitted.",
+  "baseline_updates": [
+    {
+      "recorded_at": "2026-11-24T02:15:11.202163+00:00",
+      "worker": "/root/local_chat_review",
+      "prior_review_sha256": "8de3f1c16bfdefa2f4755b9d0fe567af0dd55f65bd0bcd19130cf2f28f571822",
+      "original_review_baseline": "cb6607f0d9f7f44ddf335948dd10b69976c21a45",
+      "upstream_main": "b0fc60b42d2a21bb9cc2f8b887685b46f92d037a",
+      "integrated_baseline": "a9f69234b45bb7e8ce1ab7eb35217e54d94a09f7",
+      "candidate_write_overlap": [],
+      "reviewed_candidate_fingerprints_unchanged": true,
+      "reviewed_candidate_file_count": 15,
+      "read_overlap": [
+        "editor/docks/tianxuan/session_controller.gd",
+        "customizations/components/tianxuan/server/access_control.py",
+        "customizations/components/tianxuan/server/api.py",
+        "customizations/components/tianxuan/server/tianxuan_core.py",
+        "customizations/components/tianxuan/server/native_api.py",
+        "customizations/components/tianxuan/server/native_repository_api.py",
+        "customizations/components/tianxuan/duobao/native_repository.py",
+        "customizations/components/tianxuan/duobao/native_store.py"
+      ],
+      "read_dependency_sha256": {
+        "editor/docks/tianxuan/session_controller.gd": "c31aedbd47bc5f5918d61088d7b37302ee9e1c30d74d7a975c22b1936bfe119a",
+        "customizations/components/tianxuan/server/access_control.py": "ab2af0f80e059e1c9ca9eaa42ef38b44fc2548ea81b6e4b8ebf4dcb69471bb10",
+        "customizations/components/tianxuan/server/api.py": "d53e1a5a1fa87c15afe453062c336a37991305080ed3394ceb32725d8b67ceb9",
+        "customizations/components/tianxuan/server/tianxuan_core.py": "27ede26f7448c590b469a7c971164e5d9bf294acb0d3d0d27a093dea7e29b011",
+        "customizations/components/tianxuan/server/native_api.py": "9eb48d591265b704447668c803159ee3b1775e742d8fe2a583085e0f6a963380",
+        "customizations/components/tianxuan/server/native_repository_api.py": "516d420150da857aa593af315d6989591a02044c1a43415d35b414093b0544bf",
+        "customizations/components/tianxuan/duobao/native_repository.py": "25a620479f83d83c8131f2158f5ded865f50ecf6baf2ef5a47e25fb5ca53a0ce",
+        "customizations/components/tianxuan/duobao/native_store.py": "1def53225ab48fa671b20b0380581ed661be2e98308367f696ad9c3e4e7e4632"
+      },
+      "impact_review": "The upstream session controller changes device-session enrollment, legacy credential migration and same-account reauthentication retention. The native entry consumes its identity, scope and reset signals, so this is a read dependency overlap. The scope-key calculation and identity-reset/activation signal contract remain unchanged. The new handoff still compares the current full snapshot and clears on identity reset. Upstream server/auth/repository behavior retains its own review responsibility; this amendment does not independently reapprove that separate feature.",
+      "validation_status": "passed",
+      "provider_rerun_required": false,
+      "evidence_policy": "Prior validation receipts and review baseline remain historical. Append the rebuilt full native-shell result before claiming this integrated baseline verified; do not relabel earlier binaries as the merged build.",
+      "validated_at": "2026-11-24T02:16:33.754462+00:00",
+      "validation_artifact": "tianxuan-design-integrated-native.json",
+      "validation_sha256": "f1e2556226455656486eb6395f2b2b14fcb82c85791b940784fb1936c9dcb54b",
+      "validation_binary_sha256": "b0ee8a60f186bdf7c60cc2e0d206ee807d47f07bdf1e74e9220a92842353c36c",
+      "final_candidate_and_read_dependency_fingerprints_match": true,
+      "conclusion": "passed for the integrated baseline and unchanged candidate scope",
+      "provider_invocations_by_reviewer": 0,
+      "diagnostics": "The integrated run retains the empty-name condition and headless shutdown cleanup diagnostics from the prior native run. The controller contract contains its intentional storage-blocker failure but no missing optional metadata errors. These are not represented as a warning-free run."
+    }
+  ],
+  "effective_baseline": "a9f69234b45bb7e8ce1ab7eb35217e54d94a09f7",
+  "effective_upstream_main": "b0fc60b42d2a21bb9cc2f8b887685b46f92d037a",
+  "effective_validation_binary_sha256": "b0ee8a60f186bdf7c60cc2e0d206ee807d47f07bdf1e74e9220a92842353c36c",
+  "effective_conclusion": "passed",
+  "format_corrections": [
+    {
+      "recorded_at": "2026-11-24T02:24:14.802890+00:00",
+      "worker": "/root/local_chat_review",
+      "candidate_head_before_correction": "3f2f3b2ee6161a1e649fdace622d2f32e34bfb2c",
+      "prior_review_sha256": "ee55bb137f9aebb725eb4f5d45e2c3b64a2d61a7e5b047ddd53a5e3b9ce91c80",
+      "trigger": {
+        "source": "implementation task CI report",
+        "pull_request": 2208,
+        "run_id": 45311413315,
+        "job_id": 138167779261,
+        "failure": "The active formatter for the existing Godot plugin file requires opening braces on the declaration/control line."
+      },
+      "scope": [
+        "editor/plugins/ainative_editor_plugin.cpp"
+      ],
+      "change": "Join exactly six opening-brace lines: two newly added function bodies and four if blocks. No declaration, condition, string, call, statement or other source token changes.",
+      "file_sha256_before": "1132098aa3e6a6d9809ab36bd462f2840a36526ed76806d7292bc7c102ec1269",
+      "file_sha256_after": "161f2d84d8a62d8426d7185af2ec06748066a090604af1bb680cdbb3df33854e",
+      "independent_checks": {
+        "exact_six_line_join_transformation_matches": true,
+        "non_whitespace_bytes_identical": true,
+        "all_other_reviewed_candidate_fingerprints_match": true
+      },
+      "conclusion": "passed; formatting-only correction with unchanged behavior",
+      "evidence_policy": "Earlier source digests and binary receipts remain historical. This correction does not claim that the installed signed build contains the new source bytes. The requested exact installed-binary validation is owned by the implementation task and is separate from this static review. No model, provider, business test or user-application restart was performed by this reviewer.",
+      "reviewer_provider_invocations": 0
+    }
+  ]
+}

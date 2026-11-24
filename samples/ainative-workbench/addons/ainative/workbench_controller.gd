@@ -2,6 +2,7 @@
 extends RefCounted
 ## Owns workflow execution and its process transport without any UI nodes.
 
+signal command_started(command: String, request: Dictionary)
 signal command_completed(command: String, result: Dictionary, request: Dictionary)
 signal command_failed(command: String, failure: Dictionary)
 signal runtime_event(event: Dictionary)
@@ -226,9 +227,19 @@ func _launch(command: String, request: Dictionary, settings: Dictionary) -> bool
 		arguments = PackedStringArray(["-E", "-s", "-B"]) + arguments
 	if command in ["create", "step"] and settings.get("use_service", false):
 		arguments.append_array(PackedStringArray(["--service-config", str(settings.get("service_config", ""))]))
+	if command == "create" and settings.get("local_runtime", {}) is Dictionary:
+		var runtime_file = FileAccess.open(prefix + ".runtime.json", FileAccess.WRITE)
+		if runtime_file == null:
+			DirAccess.remove_absolute(prefix + ".json")
+			_fail(command, "request_write_failed", {"path": prefix + ".runtime.json"})
+			return false
+		runtime_file.store_string(JSON.stringify(settings.local_runtime, "", true, true))
+		runtime_file.close()
+		arguments.append_array(PackedStringArray(["--local-runtime", prefix + ".runtime.json"]))
 	var pid = OS.create_process(interpreter, arguments)
 	if pid < 0:
 		DirAccess.remove_absolute(prefix + ".json")
+		DirAccess.remove_absolute(prefix + ".runtime.json")
 		_fail(command, "process_start_failed", {"python": interpreter, "script": script})
 		return false
 	jobs[pid] = {
@@ -242,6 +253,7 @@ func _launch(command: String, request: Dictionary, settings: Dictionary) -> bool
 		"generation": _generation,
 		"result_epoch": _result_epoch
 	}
+	command_started.emit(command, request.duplicate(true))
 	return true
 
 func _job_is_current(job: Dictionary, allow_cancelled_create := false) -> bool:
@@ -340,6 +352,7 @@ func tick():
 		if FileAccess.file_exists(job.prefix + ".result"):
 			result = JSON.parse_string(FileAccess.get_file_as_string(job.prefix + ".result"))
 		DirAccess.remove_absolute(job.prefix + ".json")
+		DirAccess.remove_absolute(job.prefix + ".runtime.json")
 		DirAccess.remove_absolute(job.prefix + ".result")
 		if not _job_is_current(job, true):
 			continue

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-b8a69586fac7e70802c792f669108bd89d6e054d7d8899c9fe27240361003927",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1723",
+  "occurred_at": "2026-11-22T05:07:18.7997275Z",
+  "evidence_refs": [
+    "dispatch-b079c9c884ab4539925d26f21e418244",
+    "learn-62f77860ca7de44e42a02948aa487ed1439b06fa7c66202dc6570cebe96956fe"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 33,
+    "previous": "54960edc87ae26fa1db27bdef2f6d9449f0f0d746a6e75f8091acd9f1fb34e2e",
+    "action": "applied",
+    "details": {
+      "task": "Q13 #1723 接收 Windows 已签发编辑器与 I19 的历史能力清单。按 I01–I18 精确验收评论、主线修订和该修订下的回执 blob 核对，并在同一编辑器重跑组合验收与 I16。",
+      "observed": "Mac 原盘点 15 项关闭、3 项仍开放。I08/I18 在 #2011、I16 在 #2021 补全。重新打开天璇数据库后，子单详情、父子关系、依赖、评论及固定 v1 第 2 段与原生控件一致，历史显示同一文档 v1 到 v2。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-q13.json",
+        "sha256": "a8fbff7c5a0adebe8bdffcf7c0fdb2894f09ab05acb053bafd454a33485402cd"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q13/dispatch-b079c9c884ab4539925d26f21e418244.json",
+      "sha256": "1529aa3ef5534a953da59f7e504ee4cd980a5450cf0470d23365c6e5384c517d"
+    }
+  },
+  "sha256": "bde5385fbd4f11a9c403c06bb2d990670908f3bbae4b978182fc88aeb5c0e205"
+}

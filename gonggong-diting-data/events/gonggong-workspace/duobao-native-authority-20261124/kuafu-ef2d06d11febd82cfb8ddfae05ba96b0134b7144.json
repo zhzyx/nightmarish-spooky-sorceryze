@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ef2d06d11febd82cfb8ddfae05ba96b0134b7144",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b91373a7b5a901cc6fa8bc784f507b6b95210246920e6a23ffea1f023efdf5f3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "5b09dc00400798d12fe17727545a1ef0ab84dbf8425663ca6c6aa84bc72c6a9e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "receipt-index-byte-check:renormalized-4-files:mismatches-empty",
+    "diagnosis": "补充更正验证顺序：首次git add使用既有index缓存，字节断言尚未通过；随后对4个明确回执执行git add --renormalize，再逐字节对照index，mismatches=[]。先前根因成立，完成回执以本次定向复验为准。",
+    "next_action": "已按实际字节复验，重新执行正式签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:19:00.141642+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T23:21:04.236946+00:00",
+  "sha256": "b8dbdf8c78c7ce1ecbb4267445917af0de80905e849bbf776bd8e179da468edd"
+}

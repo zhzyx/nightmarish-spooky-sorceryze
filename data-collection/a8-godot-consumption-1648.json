@@ -1,0 +1,37 @@
+{
+  "cli_exit_codes": [
+    0,
+    2,
+    2
+  ],
+  "http": "loopback Uvicorn",
+  "endpoint": "/api/v1/issues/{id}/work/godot-inputs",
+  "godot": "4.8.beta.custom_build",
+  "executable_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+  "approved_revision": "edeef5cdb6eee99770b69214b9ff8be9661f5bbb95586b708ce1e6cde12d7c96",
+  "advanced_head": "972329a4b4f2d0d820c0374fecc511d0a0f12b4636a4cd4d446727de36e22d55",
+  "archive_entries": [
+    "project.godot",
+    "assets/concept.png",
+    "assets/model.glb"
+  ],
+  "input_sha256": {
+    "concept": "b139ce049f6211e5e39b7a1056fbba063de7360df224e89890c51b3af2e57c39",
+    "model": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+  },
+  "metrics": {
+    "meshes": 1,
+    "png_height": 256,
+    "png_width": 256,
+    "surfaces": 1,
+    "vertices": 1966
+  },
+  "http_statuses": [
+    200,
+    409,
+    409
+  ],
+  "issue_number": 1648,
+  "request_id": "tianxuan-a8-consumption",
+  "scope": "Isolated input-consumption evidence. Human visual signoff and deployment remain with parent."
+}

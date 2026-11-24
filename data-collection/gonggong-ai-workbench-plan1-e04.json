@@ -1,0 +1,55 @@
+{
+  "issue_number": 1817,
+  "request_id": "gonggong-ai-workbench-plan1-e04",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1817",
+  "baseline": "0198ae5c9b9360d62e8749f436ba98ef36eae90e",
+  "platform": "macOS arm64",
+  "build": "python -m SCons -j8 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+  "command": "retest_native.py tests/editor/run_workbench_saved_editor_changes.py --godot bin/godot.macos.editor.arm64 --report e03-e04-native.json",
+  "fixture": "Two windowed native editor processes, shared isolated project and editor settings, real authenticated loopback Tianxuan/SQLite, HTTP model transport substitute.",
+  "editor_sha256": "171ae0f71dc10f8f6902abcb2adb0090450f0aaea1a5bf9e3ec0e637f32996d4",
+  "trace": [
+    {
+      "content": "核对场景节点\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：无关联工单\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://level.tscn#Actor\",\"revision\":\"cd2bc9226d5e19ccc66c431f2c2e9da6770d77cfb4c9d13b5d50fbe04c1e2c63\"}]",
+      "context_snapshot": {
+        "project": "studio/game",
+        "module_id": "default",
+        "issue_id": null,
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://level.tscn#Actor",
+            "revision": "cd2bc9226d5e19ccc66c431f2c2e9da6770d77cfb4c9d13b5d50fbe04c1e2c63"
+          }
+        ]
+      }
+    },
+    {
+      "content": "重开后继续\n\n[已引用对象的保存修订]\n[{\"actor\":\"usr_f77367567a5e4156a79f3af0e41b4346\",\"dependencies\":{\"res://paint.tres\":\"3d7ef6eb04a0f42e5cb51993e048dabe7a824797c1ccd9f6f49c4136da9cafb2\"},\"object_id\":\"res://level.tscn#Actor\",\"previous_revision\":\"cd2bc9226d5e19ccc66c431f2c2e9da6770d77cfb4c9d13b5d50fbe04c1e2c63\",\"revision\":\"84fd15fab890fd355182297c717d21289502499c5c69fe3c9ea88363f5b5c8ca\",\"source\":\"editor_save\"}]",
+      "context_snapshot": {
+        "project": "studio/game",
+        "module_id": "default",
+        "issue_id": null,
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://level.tscn#Actor",
+            "revision": "84fd15fab890fd355182297c717d21289502499c5c69fe3c9ea88363f5b5c8ca"
+          }
+        ]
+      }
+    }
+  ],
+  "reopened_x": 37.5,
+  "unchanged_dependency": "3d7ef6eb04a0f42e5cb51993e048dabe7a824797c1ccd9f6f49c4136da9cafb2",
+  "missing_or_symlink_dependency": "null verified",
+  "source_sha256": {
+    "editor/SCsub": "0e3f868a83876c6392ad1efb9bee73fff659a49a3e9288556152e2c3f52aeb33",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f62944e8c3feea2b7e6effd31aa5e0c959a3232c617fbbf2818a9403015471c7",
+    "editor/docks/workbench/module_selector.gd": "8c78bb5161f3dcb88a4dcf6bdb3e57fc2252af19402839dc946b8b10a87ab39c",
+    "editor/docks/workbench/saved_editor_changes.gd": "f578eca048474d6b358f483a484389821f2dbafe8543d7bb7e27bb71cb6edea5",
+    "tests/editor/run_workbench_saved_editor_changes.py": "70ca259b9574adcf294525a8eea2acbd50b81c13ab410b285a6611ba89171506",
+    "tests/editor/workbench_saved_editor_changes.gd": "560aa695624249e940dd8e5db2eb9b183693e59b46972e2750c25d5bf228ad54"
+  },
+  "static": "ruff check/format, clang-format 22.1.5 --dry-run --Werror, mypy 2.4.0 and git diff --check passed"
+}

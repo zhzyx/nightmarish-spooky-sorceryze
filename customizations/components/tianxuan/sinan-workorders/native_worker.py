@@ -2,14 +2,40 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import math
+from collections.abc import Callable
+from contextvars import ContextVar
 from pathlib import Path
+from threading import Event
+from uuid import uuid4
 
 from native_candidates import NativeCandidates
 from native_check_runner import _process_helper
+from native_observations import OBSERVATION_PROTOCOL, model_observation, valid_producer_calls
 from native_store import NativeStoreError, _digest, _json
 from native_workspace import Limits, NativeWorkspace, absolute
+
+# A workflow scopes its reporter to its own synchronous worker invocation.
+# Standalone workers (including enrolled nodes) keep the existing run contract.
+worker_step_reporter: ContextVar[Callable[[str, str, dict[str, object]], None] | None] = ContextVar(
+    "worker_step_reporter", default=None
+)
+
+
+# Only a coordinator running the local producer installs this per-execution probe.
+worker_cancel_requested: ContextVar[Callable[[], bool] | None] = ContextVar("worker_cancel_requested", default=None)
+
+
+# Copied by asyncio.to_thread only into work started on this editor request.
+editor_connection_closed: ContextVar[Event | None] = ContextVar("editor_connection_closed", default=None)
+
+
+def _report_step(execution, step, details):
+    report = worker_step_reporter.get()
+    if report is not None:
+        report(execution, step, details)
 
 
 class NativeWorker:
@@ -44,6 +70,7 @@ class NativeWorker:
         self.profiles = json.loads(_json(profiles))
         self.verify = verify_installation
         self.helper = _process_helper(process_helper_path)
+        self.records_local_process_group = "on_start" in inspect.signature(self.helper.run_owned).parameters
         self.workspace = NativeWorkspace(store, limits)
         with store._connection(write=True) as db:
             db.execute(
@@ -56,7 +83,14 @@ class NativeWorker:
                 "CREATE TABLE IF NOT EXISTS native_worker_process_closures (execution TEXT PRIMARY KEY, task TEXT NOT NULL, payload TEXT NOT NULL, digest TEXT NOT NULL)"
             )
         for spec in self.profiles.values():
-            if set(spec) != {"argv", "env", "timeout", "log_bytes"}:
+            if "restart_checkpoint" in spec and spec["restart_checkpoint"] != "immutable-inputs":
+                raise NativeStoreError("Invalid installed worker restart checkpoint")
+            if set(spec) - {"observation_protocol", "restart_checkpoint"} != {
+                "argv",
+                "env",
+                "timeout",
+                "log_bytes",
+            } or ("observation_protocol" in spec and spec["observation_protocol"] != OBSERVATION_PROTOCOL):
                 raise NativeStoreError("Invalid trusted producer profile")
             if (
                 not isinstance(spec["argv"], list)
@@ -128,10 +162,30 @@ class NativeWorker:
         work = folder / "work"
         tenant = task["tenant"]
         self.workspace.materialize(tenant, task["selected"], work)
+        _report_step(execution, "workspace.materialize", {"modules": task["selected"]})
         context = folder / "context.json"
         context.write_text(_json(task["source"]["definition"]), encoding="utf-8")
         env = {**spec["env"], "NATIVE_WORKSPACE": str(work), "NATIVE_CONTEXT": str(context)}
         reasons = []
+        requested = worker_cancel_requested.get()
+        editor_closed = editor_connection_closed.get()
+        interrupted = False
+
+        def active():
+            nonlocal interrupted
+            if (cancel is not None and cancel.is_set()) or (requested and requested()):
+                return False
+            interrupted = editor_closed is not None and editor_closed.is_set()
+            return not interrupted
+
+        started = False
+
+        def on_start(pid):
+            nonlocal started
+            started = True
+            _report_step(execution, "process.started", {"pid": pid})
+
+        observer = {"on_start": on_start} if self.records_local_process_group else {}
         with (folder / "process.log").open("w+b") as log:
             code = self.helper.run_owned(
                 spec["argv"],
@@ -139,19 +193,50 @@ class NativeWorker:
                 env=env,
                 limit=spec["log_bytes"],
                 timeout=spec["timeout"],
-                active=lambda: cancel is None or not cancel.is_set(),
+                active=active,
                 fail=reasons.append,
                 cwd=work,
+                **observer,
             )
             log.flush()
             log.seek(0)
-            digest = _digest(log.read())
-        physical = _json({"exit_code": code, "reasons": reasons, "transcript": digest})
+            transcript = log.read()
+            digest = _digest(transcript)
+        if interrupted and not reasons:
+            if not started or spec.get("restart_checkpoint") == "immutable-inputs":
+                # Before launch the pinned inputs are always a safe boundary.
+                # After launch, replay requires an explicit installed guarantee.
+                archive = self.root / (execution + ".interrupted-" + uuid4().hex)
+                folder.rename(archive)
+                return {
+                    "state": "editor-interrupted",
+                    "checkpoint": "immutable-inputs" if started else "before-launch",
+                    "archive": archive.name,
+                    "transcript": digest,
+                }
+            reasons.append("editor-closed-without-restart-checkpoint")
+        record = {"exit_code": code, "reasons": reasons, "transcript": digest}
+        if spec.get("observation_protocol") == OBSERVATION_PROTOCOL and code == 0 and not reasons:
+            # This channel belongs to the fixed installed broker, not candidate files.
+            try:
+                observed = json.loads(transcript)
+            except (UnicodeError, ValueError):
+                observed = None
+            if (
+                isinstance(observed, dict)
+                and observed.get("execution") == execution
+                and observed.get("proposal_applied") is True
+            ):
+                record["observation"] = model_observation(observed.get("provider_model"), observed.get("usage"))
+                if "model_calls" in observed and valid_producer_calls(observed["model_calls"]):
+                    record["observation"]["model_calls"] = observed["model_calls"]
+        physical = _json(record)
         with self.store._connection(write=True) as db:
             db.execute(
                 "INSERT INTO native_worker_process_closures VALUES (?,?,?,?)",
                 (execution, _json(task), physical, _digest(physical.encode())),
             )
+        _report_step(execution, "process.closed", {"exit_code": code, "transcript": digest})
         if code != 0 or reasons or (cancel is not None and cancel.is_set()):
             self._close_output(task, execution, [], code, digest, cancel)
             return self.reconcile(task, execution)
@@ -167,6 +252,7 @@ class NativeWorker:
         # Only owned process closure + flushed transcript + bounded collection can
         # create this host database record. Workspace files never confer recovery.
         encoded = [{**c, "edits": {n: None if b is None else b.hex() for n, b in c["edits"].items()}} for c in changes]
+        _report_step(execution, "workspace.collect", {"changed_modules": [c["module"] for c in changes]})
         self._close_output(task, execution, encoded, code, digest, cancel)
         return self.reconcile(task, execution)
 
@@ -219,6 +305,36 @@ class NativeWorker:
                 raise NativeStoreError("Worker terminal integrity failure")
         return terminal
 
+    def verify_pause_checkpoint(self, task, execution, terminal):
+        """Read the worker's original side effects without starting a producer or redoing intake."""
+        if execution != _digest(_json(task).encode()):
+            raise NativeStoreError("Worker execution contract mismatch")
+        with self.store._connection() as db:
+            physical = db.execute(
+                "SELECT * FROM native_worker_process_closures WHERE execution=?", (execution,)
+            ).fetchone()
+            spool = db.execute("SELECT * FROM native_worker_closed WHERE execution=?", (execution,)).fetchone()
+            saved = db.execute(
+                "SELECT task,terminal FROM native_worker_terminals_v2 WHERE execution=?", (execution,)
+            ).fetchone()
+        process, output = self._history(task, physical, spool)
+        if not terminal:
+            if saved or process or output or (self.root / execution).exists():
+                raise NativeStoreError("Unresolved worker intent; cannot resume")
+        elif (
+            not saved
+            or saved["task"] != _json(task)
+            or saved["terminal"] != _json(terminal)
+            or not process
+            or not output
+            or output.get("cancelled")
+            or process["reasons"]
+            or process["exit_code"] != 0
+            or terminal.get("state") != "produced"
+            or process["transcript"] != terminal.get("transcript")
+        ):
+            raise NativeStoreError("Worker side effects differ from reviewed checkpoint")
+
     def process_closed(self, task, execution):
         """Trusted coordinator-only physical observation; grants no content access.
 
@@ -248,7 +364,7 @@ class NativeWorker:
         process, output = records
         if physical is not None and (
             not isinstance(process, dict)
-            or set(process) != {"exit_code", "reasons", "transcript"}
+            or set(process) - {"observation"} != {"exit_code", "reasons", "transcript"}
             or (process["exit_code"] is not None and type(process["exit_code"]) is not int)
             or not isinstance(process["reasons"], list)
             or not all(isinstance(reason, str) for reason in process["reasons"])
@@ -256,6 +372,21 @@ class NativeWorker:
             or len(process["transcript"]) != 64
         ):
             raise NativeStoreError("Worker physical closure integrity failure")
+        if process and "observation" in process:
+            obs = process["observation"]
+            if (
+                self.profiles.get(task["profile"], {}).get("observation_protocol") != OBSERVATION_PROTOCOL
+                or not isinstance(obs, dict)
+                or set(obs) - {"model_calls"} != {"provider_model", "usage"}
+                or {"provider_model": obs["provider_model"], "usage": obs["usage"]}
+                != model_observation(obs["provider_model"], obs["usage"])
+                or ("model_calls" in obs and not valid_producer_calls(obs["model_calls"]))
+                or (
+                    "model_calls" in obs
+                    and any(obs["model_calls"][-1][k] != obs[k] for k in ("provider_model", "usage"))
+                )
+            ):
+                raise NativeStoreError("Invalid producer observation")
         if closed is not None and (
             process is None
             or not isinstance(output, dict)
@@ -339,9 +470,11 @@ class NativeWorker:
             "intake": receipt,
             "origin": origin,
             "no_changes": not changes,
-            "usage": None,
-            "provider_model": None,
+            "usage": process.get("observation", {}).get("usage"),
+            "provider_model": process.get("observation", {}).get("provider_model"),
         }
+        if "model_calls" in process.get("observation", {}):
+            terminal["model_calls"] = process["observation"]["model_calls"]
         if context_receipt is not None:
             terminal["context_receipt"] = context_receipt
         return self._terminal(task, execution, terminal)

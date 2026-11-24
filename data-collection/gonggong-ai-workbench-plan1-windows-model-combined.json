@@ -1,0 +1,363 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "8ac06922b009d24a3af8feefad7ad95f3cd78988",
+  "editor_sha256": "17dfb3d375dca7d123954681710057ab645308305ca8dbb4ed5d5ed9d4e85590",
+  "source_git_blobs": {
+    "editor/docks/ai_chat_dock.h": "5b202ff1134a0b0611a2f41cbd768cf56cb98aa5",
+    "editor/docks/daqian/spatial_workbench.gd": "1e41f1d02affc6781e188897382a1dbc44060014",
+    "editor/docks/workbench/AIWorkbenchDraft.cpp": "b7a8266a08ef301f8ed3f9cf19d4a002197f1269",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "2411d78bb96f349a651d73b3274380ae652bef21",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "030bdd66fdfc705e4a39960353f2504cf7832eff",
+    "editor/docks/workbench/issue_detail.gd": "9d15b9cd2da2f88a25d883982ad3b257a2768a79",
+    "editor/docks/workbench/module_selector.gd": "56a9c84ecbf380353684d287a67392114d0cdf3d",
+    "tests/editor/run_workbench_compact_model_route.py": "7cfb19079aac1070ac643e96137aada979a8ddd8",
+    "tests/editor/tianshu_spatial.gd": "c0c662234be92fdb8e2fce4e6dac9b48c6ad1fcb",
+    "tests/editor/workbench_compact_model_route.gd": "93e4800603d32d033824acbd19c512931fd8783c",
+    "tests/editor/workbench_scene_selection.gd": "fc4c4d51998114d9bda4bc63dfcb006bf4367516"
+  },
+  "checks": {
+    "u14": "de86ae0c4e758367e86b7dc65e901f6b290ee5102771ce723db7efa5a41123f3",
+    "original_spatial": "dbbeb90a11c72a738c09a9ea211bb50bc72e4141fbb520611873b93e67ae4de4",
+    "original_reference_invalidation": "b773a43b4ee2fa13b329ef0c41c390a1c91b9812d5f085e5f7840e408e518ef3",
+    "original_scene_selection": "6ccff39eaca3bf6463bdb0f5144fb4fb069e9757f57d4024f92cfff6a8ca7f52",
+    "d12": "c5351af328d26b921c1056828d3655a756a0766c8747659a5a3a53568a52b8f3",
+    "u13": "ed57bc4ff5d9dfaca3edaa4f5e546f4db1f94e2f6c10ce8fafc074f5d765a81f",
+    "c07": "0e096009d47234e41bd7ae6858af472f41fb4568ec022f4510295908d3017f4c",
+    "k01": "1d7494112d6424a94b6a15fc62dd0f6d375647309f6f44bc61b5c2fbb3375d7f",
+    "d10": "3bf45aaaff4eeb292d692838ecc53dfba8a24a579d450fff0902d7efe807c308",
+    "d13": "b320da10d2627eec2707d11087f68ec4e9cc2184507aa8fed79c8531f72a07a3"
+  },
+  "issues": {
+    "u14": 1761
+  },
+  "observed": "2026-11-22T02:15:03.088278+00:00",
+  "verified_windows_build": {
+    "source_tree": "8cfd2b5aa2421bb2b3ef54e36c39d7fb76b5e26f",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "17dfb3d375dca7d123954681710057ab645308305ca8dbb4ed5d5ed9d4e85590",
+      "godot.windows.editor.x86_64.console.exe": "35ef9b230f1a2d7182116deb84706aebb9ae54078ec70639f960fdc43e996b38",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": []
+  },
+  "validation_scripts": {
+    "u14": [
+      "run_workbench_compact_model_route.py"
+    ],
+    "original_spatial": [
+      "run_tianshu_spatial.py"
+    ],
+    "original_reference_invalidation": [
+      "run_tianshu_spatial.py",
+      "--references"
+    ],
+    "original_scene_selection": [
+      "run_tianshu_spatial.py",
+      "--scene-selection"
+    ],
+    "d12": [
+      "run_workbench_module_drafts.py"
+    ],
+    "u13": [
+      "run_workbench_legacy_routes.py"
+    ],
+    "c07": [
+      "run_workbench_asset_ownership.py"
+    ],
+    "k01": [
+      "run_workbench_context_milestone.py"
+    ],
+    "d10": [
+      "run_workbench_design_tasks.py"
+    ],
+    "d13": [
+      "run_workbench_design_progress.py"
+    ]
+  },
+  "worker_sources": {
+    "u14": "0e57f1969a305f6bb092f8a68f59f218b33c7df4"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2014",
+  "linked_incident": {
+    "issue": 2015,
+    "incident": "02901fffd2913f99e21e4e4f2feb5c107d28b1a6000d5ff145a559e42f563575",
+    "source": 1761,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u14/kuafu-56fa12d217253bd8bfe64a9a350f810d272baac6.json",
+    "event_sha256": "9f418ce53a23dd34615d1ee9bddf8fcdbb534a05b53095e7822e9fe0c91f0de6",
+    "sha256": "0890facf42f7e3af3d14c111c75f21c4268520e0dbdb5e0b781edf1f907371c1",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1761#issuecomment-7072643114"
+  },
+  "results": {
+    "u14": {
+      "request_id": "gonggong-ai-workbench-plan1-u14",
+      "issue_number": 1761,
+      "result": "passed",
+      "mode": "headless",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "source_head": "8ac06922b009d24a3af8feefad7ad95f3cd78988",
+      "editor_sha256": "17dfb3d375dca7d123954681710057ab645308305ca8dbb4ed5d5ed9d4e85590",
+      "source_sha256": {
+        "editor/docks/ai_chat_dock.h": "5affbde9c06a35e2ed8b77bd1d503ff60355911b3dd1c07175c2d5c4cf73a8d6",
+        "editor/docks/daqian/spatial_workbench.gd": "4c278062ddce09d98533f6d8ff52e991ec31562ea29fc68d842d0b92900dd44f",
+        "editor/docks/workbench/AIWorkbenchDraft.cpp": "63bce9cb2868f99568660fc6ec0ff1f83499935e5e6ac8443dbf53692eefe46c",
+        "editor/docks/workbench/AIWorkbenchReference.cpp": "cfaf444d1ca77a050d2005d6d69a2b4f3df31b974a124ba8362862662b61797f",
+        "editor/docks/workbench/AIWorkbenchSidebar.cpp": "7f6b7dbc7e68f9ffe8666dc984b731f18ba0c9b685aa4757da205d6fec63fc7e",
+        "editor/docks/workbench/issue_detail.gd": "bb189f50dee7f2b8e7f9d92eb59729baf79533c19e07b898583e84f321536d82",
+        "editor/docks/workbench/module_selector.gd": "32c707d3e7db65119268a21f4fba0bc7870ee28a7c5783b0607c7e0d640afb5c",
+        "tests/editor/tianshu_spatial.gd": "ee628987e200745563cb018d57d1fa27c573f44cafcf6920eaef64c5e3fe9154",
+        "tests/editor/run_workbench_compact_model_route.py": "d953c740c6c89a185d310823ba021a709347880bec0347ee2519a1045700d8ca",
+        "tests/editor/workbench_compact_model_route.gd": "0e548bfde01c761a84884e3da2a6dbf5eeae215bb28efbf2a992955079f7de4f"
+      },
+      "inline_composer_geometry": [
+        {
+          "input_bottom": 818.0,
+          "input_top": 727.0,
+          "scroll_bottom": 850.0,
+          "scroll_top": 322.0,
+          "visible": true,
+          "window_height": 900,
+          "window_width": 1440
+        },
+        {
+          "input_bottom": 850.0,
+          "input_top": 759.0,
+          "scroll_bottom": 850.0,
+          "scroll_top": 358.0,
+          "visible": true,
+          "window_height": 900,
+          "window_width": 1100
+        }
+      ],
+      "workbench_project": "u11/studio",
+      "stored_executions": 0,
+      "models": [
+        {
+          "chat": "2cc9e966-fd25-53e8-83c7-ce6d0ba13f4a",
+          "issue": "iss_aee1c3bc242b491d8c293650429e6870",
+          "mode_label": "仅咨询 · #1 · e0c83311f0ad34749f41214bdee18d06387cf34af00a18fe655bec8e372b63a9",
+          "revision": "e0c83311f0ad34749f41214bdee18d06387cf34af00a18fe655bec8e372b63a9",
+          "turn": "6178080e-d40a-41c6-a3a6-951473720adc",
+          "url": "https://github.com/old/studio/issues/781",
+          "number": 781,
+          "title": "核对入口",
+          "side": "Left"
+        },
+        {
+          "chat": "fb2555b2-4479-56b9-babb-bd430763de11",
+          "issue": "iss_4fdc6f286a6b41498500ddc25ab35a78",
+          "mode_label": "仅咨询 · #2 · c9ae0d179e0dce4e3cbfccc783f03226f78af45ea173aa3730c7cb5a53d944c7",
+          "revision": "c9ae0d179e0dce4e3cbfccc783f03226f78af45ea173aa3730c7cb5a53d944c7",
+          "turn": "e68f1fa6-9078-4156-afa1-1faa0cafb410",
+          "url": "https://github.com/old/studio/issues/782",
+          "number": 782,
+          "title": "核对入口",
+          "side": "Right"
+        }
+      ],
+      "foreign_issue": "iss_18bdc2bc016e4eeaba1cb1d2a34d30b7",
+      "ambiguous": "当前项目没有唯一关联的天璇工单",
+      "model_links": {
+        "old/studio": {
+          "res://Left/Model.tres": {
+            "https://github.com/old/studio/issues/781": {
+              "contents": [],
+              "number": 781.0,
+              "request": "fixture-Left"
+            },
+            "https://github.com/old/studio/issues/783": {
+              "contents": [],
+              "number": 783.0,
+              "request": "ambiguous"
+            }
+          },
+          "res://Right/Model.tres": {
+            "https://github.com/old/studio/issues/782": {
+              "contents": [],
+              "number": 782.0,
+              "request": "fixture-Right"
+            }
+          }
+        }
+      },
+      "returned_from_full_view": true,
+      "routes": [
+        {
+          "action": "工单详情",
+          "asset": "res://Left/Model.tres",
+          "camera": "687161253068",
+          "camera_transform": "[X: (0.877583, 0.0, -0.479426), Y: (-0.229849, 0.877583, -0.420736), Z: (0.420735, 0.479426, 0.770151), O: (11.68294, 1.917702, 3.080605)]",
+          "chat": "2cc9e966-fd25-53e8-83c7-ce6d0ba13f4a",
+          "draft": "未发送 · Left",
+          "issue": "iss_aee1c3bc242b491d8c293650429e6870",
+          "node": "res://preview.tscn#Left/Model",
+          "references": "清空引用 · res://preview.tscn#Left/Model、res://Left/Model.tres",
+          "turn": "6178080e-d40a-41c6-a3a6-951473720adc",
+          "viewport": "687077366983"
+        },
+        {
+          "action": "工单聊天",
+          "asset": "res://Right/Model.tres",
+          "camera": "687161253068",
+          "camera_transform": "[X: (0.877583, 0.0, -0.479426), Y: (-0.229849, 0.877583, -0.420736), Z: (0.420735, 0.479426, 0.770151), O: (11.68294, 1.917702, 3.080605)]",
+          "chat": "fb2555b2-4479-56b9-babb-bd430763de11",
+          "draft": "未发送 · Right",
+          "issue": "iss_4fdc6f286a6b41498500ddc25ab35a78",
+          "node": "res://preview.tscn#Right/Model",
+          "references": "清空引用 · res://preview.tscn#Right/Model、res://Right/Model.tres",
+          "turn": "e68f1fa6-9078-4156-afa1-1faa0cafb410",
+          "viewport": "687077366983"
+        },
+        {
+          "action": "工单详情",
+          "asset": "res://Left/Model.tres",
+          "camera": "687161253068",
+          "camera_transform": "[X: (0.877583, 0.0, -0.479426), Y: (-0.229849, 0.877583, -0.420736), Z: (0.420735, 0.479426, 0.770151), O: (11.68294, 1.917702, 3.080605)]",
+          "chat": "2cc9e966-fd25-53e8-83c7-ce6d0ba13f4a",
+          "draft": "未发送 · Left",
+          "issue": "iss_aee1c3bc242b491d8c293650429e6870",
+          "node": "res://preview.tscn#Left/Model",
+          "references": "清空引用 · res://preview.tscn#Left/Model、res://Left/Model.tres",
+          "turn": "6178080e-d40a-41c6-a3a6-951473720adc",
+          "viewport": "687077366983"
+        },
+        {
+          "action": "工单聊天",
+          "asset": "res://Right/Model.tres",
+          "camera": "687161253068",
+          "camera_transform": "[X: (0.877583, 0.0, -0.479426), Y: (-0.229849, 0.877583, -0.420736), Z: (0.420735, 0.479426, 0.770151), O: (11.68294, 1.917702, 3.080605)]",
+          "chat": "fb2555b2-4479-56b9-babb-bd430763de11",
+          "draft": "未发送 · Right",
+          "issue": "iss_4fdc6f286a6b41498500ddc25ab35a78",
+          "node": "res://preview.tscn#Right/Model",
+          "references": "清空引用 · res://preview.tscn#Right/Model、res://Right/Model.tres",
+          "turn": "e68f1fa6-9078-4156-afa1-1faa0cafb410",
+          "viewport": "687077366983"
+        }
+      ],
+      "unreferenced_draft": "手工草稿 · 保留空引用",
+      "http": [
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/external-context",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/artifacts",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/2/artifacts",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/2/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/lifecycle",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870/lifecycle",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_aee1c3bc242b491d8c293650429e6870/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/issues/iss_4fdc6f286a6b41498500ddc25ab35a78/revisions",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/issues/iss_aee1c3bc242b491d8c293650429e6870/revisions",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/for-issue/iss_4fdc6f286a6b41498500ddc25ab35a78",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/for-issue/iss_aee1c3bc242b491d8c293650429e6870",
+          200
+        ]
+      ]
+    }
+  }
+}

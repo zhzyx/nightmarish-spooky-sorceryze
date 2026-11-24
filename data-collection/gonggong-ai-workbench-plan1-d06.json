@@ -1,0 +1,355 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d06",
+  "issue_number": 1861,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861",
+  "observed_at": "2026-11-21T17:46:17.530229+00:00",
+  "base": "bb053f34dd3f5ee4b23cee7fe3bd85e1efb4ce2c",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d06/dispatch-ecc97444ebf24138b7cf7a5becf75b54.json",
+  "source_sha256": {
+    "editor/SCsub": "eaa214010742832da48842acd7c2821ccde9fc03a87f654bcb6f590814d03d80",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "24b92430f54a418b8f1652039fa9a000afca946a113e01dc5bb54412408cf427",
+    "editor/docks/workbench/business_session.gd": "bd5f21bb9d8c30828092c1ede254d9a5ba727d40345ad5dd34efdb7d86d4afde",
+    "editor/docks/workbench/document_history.gd": "b9dfc20b807f43da0877b85a1cc8c1eac673586c4bd2c62103e6740a22517e83",
+    "tests/editor/workbench_documents.gd": "a2294f4b49a48e41069c911f4db9007b0bd92bace1f950b32aae1e20f35f5c5c",
+    "tests/editor/run_workbench_documents.py": "39b832c6d26cecf66b9bace23bf3bae7558e2790efbbd7e970a966547d299004",
+    "tests/editor/workbench_document_history.gd": "e4d14570a0c6c121afff06e960480848b85ed415cd312c306ba84633e6d13a7b",
+    "design-docs/gonggong-ai-workbench-d06.md": "4dc153e6f6720a150c669fbb2d4baa15f760d2287301c8b8a6063bace63a9588"
+  },
+  "intake": {
+    "state": "status:in-progress",
+    "issue_comment_count": 0,
+    "upstream_accepted": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863#issuecomment-7066298223",
+    "upstream_macos_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863#issuecomment-7065749950",
+    "macos_d06_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "compiler": "Visual Studio 14.5 / Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no --cache-readonly -j6",
+    "exit_code": 0,
+    "invalidation": {
+      "input_change": "Only native input changed between builds: the workbench document history script now names the exact source and resulting revisions on the restore action.",
+      "before": {
+        "script_sha256": "acf9c8b36a91688cb2b994a95a78f3ba04d5543df3432a60ae5fd70f41497339",
+        "header_sha256": "199ae8c84a10bd02c9594bcba200d7f6204f3106de679c317c163d1c6f41d6f0",
+        "object_sha256": "5bb23831230b8334510c1644b4a1129d587ed04873f20e387bc3193b6237c583",
+        "editor_sha256": "a248344ddeddf44d0820cd420758c2ffdf0ea9a1bf436a434591d6c6915dd7f2",
+        "native_test": "passed"
+      },
+      "after": {
+        "script_sha256": "b9dfc20b807f43da0877b85a1cc8c1eac673586c4bd2c62103e6740a22517e83",
+        "header_sha256": "377a7e5f3b497e51e1831be88d0429ef8d78fe5b9957d87c617eab52ff28a732",
+        "object_sha256": "6acf1efc1870b02bb9a6e5661ece2c52f4b859314fea2452fa5d47dcd327d278",
+        "editor_sha256": "435a471324ade1c1420a4c293d29cb5428dea2211d514fe59f6b32e25b7c823a",
+        "native_restore_label": "将 v1 恢复为新修订 v3",
+        "exit_code": 0
+      },
+      "build_actions": [
+        "Generate BusinessSession.gen.h",
+        "Compile AIWorkbenchSidebar.cpp",
+        "Link editor.windows.editor.x86_64.lib",
+        "Link godot.windows.editor.x86_64.exe",
+        "Link console wrapper"
+      ],
+      "changed": true
+    }
+  },
+  "tests": {
+    "service": {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_api_versions.py customizations/components/tianxuan/server/test_ai_document_tools.py -k \"restore or diff\"",
+      "result": "3 passed, 9 deselected",
+      "exit_code": 0
+    },
+    "native": {
+      "command": "python tests/editor/run_workbench_documents.py --history --godot <candidate-editor> --report <report>",
+      "fixture": "Temporary accounts service on loopback, SQLite database, independent private headless native editor and project.",
+      "exit_code": 0,
+      "report_sha256": "d69502002803acb87ad23bd9261829aed9946d3ea4bd6516d6ccf15a8dd7b906",
+      "editor_sha256": "435a471324ade1c1420a4c293d29cb5428dea2211d514fe59f6b32e25b7c823a",
+      "state": "passed",
+      "manual_design": {
+        "document_id": "doc_b9583012d7fc44f3bd8b49a8a49c32c7",
+        "reopened": [
+          {
+            "author": "usr_c701051acc3a4e89b62b59449ec792ad",
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "paragraph": 2,
+            "selected": "第二段 · 手写",
+            "version": 1
+          },
+          {
+            "author": "usr_c701051acc3a4e89b62b59449ec792ad",
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+            "paragraph": 3,
+            "selected": "第三段 · 复审",
+            "version": 2
+          }
+        ],
+        "stale_draft_retained": true,
+        "write_receipts": [
+          {
+            "method": "POST",
+            "path": "/api/v1/docs",
+            "service_status": 200,
+            "client_status": 200
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7",
+            "service_status": 200,
+            "client_status": 503
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7",
+            "service_status": 200,
+            "client_status": 200
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7",
+            "service_status": 409,
+            "client_status": 409
+          }
+        ],
+        "retry_after_lost_success": "one committed revision"
+      },
+      "history": {
+        "diff": "--- v1\n+++ v2\n@@ -2,3 +2,5 @@\n 保留换行\n \n 第二段 · 手写\n+\n+第三段 · 复审",
+        "document_id": "doc_b9583012d7fc44f3bd8b49a8a49c32c7",
+        "revisions": [
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "version": 1
+          },
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+            "version": 2
+          },
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "version": 3
+          }
+        ],
+        "project": "studio/game",
+        "restores": [
+          [
+            "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1/restore",
+            {
+              "call_id": "66eeecafbb287fe2850f3ab3c8ede385",
+              "expected_version": 2
+            },
+            200,
+            503
+          ],
+          [
+            "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1/restore",
+            {
+              "call_id": "66eeecafbb287fe2850f3ab3c8ede385",
+              "expected_version": 2
+            },
+            200,
+            200
+          ],
+          [
+            "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions/1/restore",
+            {
+              "call_id": "86318cf2804d61c7db22c6f560a760d4",
+              "expected_version": 2
+            },
+            409,
+            409
+          ]
+        ],
+        "concurrent_head_preserved": true
+      },
+      "native_selections": [
+        {
+          "document_id": "doc_95198f43363041818bfb6db619fa0807",
+          "paragraph": 2,
+          "selected_text": "第一个目标\n延续一行",
+          "version": 1
+        },
+        {
+          "document_id": "doc_dee5033f25f14035b3aa734168ae71a9",
+          "paragraph": 2,
+          "selected_text": "第二个目标",
+          "version": 2
+        },
+        {
+          "document_id": "doc_dee5033f25f14035b3aa734168ae71a9",
+          "paragraph": 2,
+          "selected_text": "原始段落",
+          "version": 1
+        }
+      ],
+      "service_reads": [
+        [
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "/api/v1/docs",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_95198f43363041818bfb6db619fa0807/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions/2",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions/99",
+          404
+        ],
+        [
+          "/api/v1/docs/doc_95198f43363041818bfb6db619fa0807/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/2",
+          200
+        ],
+        [
+          "/api/v1/docs",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/2",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/3",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/2",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/versions/3",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_b9583012d7fc44f3bd8b49a8a49c32c7/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions/2",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/versions",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_dee5033f25f14035b3aa734168ae71a9/diff",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_95198f43363041818bfb6db619fa0807/versions/1",
+          200
+        ],
+        [
+          "/api/v1/docs/doc_95198f43363041818bfb6db619fa0807/versions",
+          200
+        ]
+      ],
+      "same_title": true,
+      "readonly_body": true,
+      "invalid_targets_cleared": true,
+      "signout_cleared": true
+    },
+    "static": {
+      "ruff_check": "passed",
+      "ruff_format_check": "passed"
+    }
+  },
+  "handoff": {
+    "receiver": "Codex parent session for independent verification, main delivery and issue closure",
+    "candidate": "uncommitted files in D06 worktree on indicated base",
+    "downstream_issue": 1858
+  }
+}

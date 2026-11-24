@@ -1,0 +1,212 @@
+{
+  "issue_number": 1726,
+  "request_id": "gonggong-ai-workbench-plan1-q03",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1726",
+  "status": "technical_acceptance_passed",
+  "observed_at": "2026-11-22T17:53:09.316350+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "source_base": "91a78e9b17738cf187538e012f75f5e8302f085d",
+  "source_revision": "5d410ea2292e905d3a32f7d5a7ca15d59d58c8bb625afeda2e2e778c474259ef",
+  "handoff_event": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q03/dispatch-7dcffc6c2b6747d5a0ac93796578452a.json",
+    "sha256": "a8d7ea2d248d18704e8a513fb022ad96ec598700c6c709590337ebd72b81f998"
+  },
+  "dependencies": [
+    {
+      "issue": 1764,
+      "accepted_main": "488924c0e7bc0ec290f651fe554e21f3edc919ce",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764#issuecomment-7079184642"
+    },
+    {
+      "issue": 1765,
+      "accepted_main": "c3443d480a8447e02a830cea5897f7813b3c5abe",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765#issuecomment-7080104034"
+    },
+    {
+      "issue": 1766,
+      "accepted_main": "bdc51d4b13ee0d54eb19a98a038cd3f6ae5d8dbc",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766#issuecomment-7079184095"
+    },
+    {
+      "issue": 1768,
+      "accepted_main": "a1b06a1d42d05dcfb3de503f2b996a72f39bbce9",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768#issuecomment-7081897038"
+    },
+    {
+      "issue": 1769,
+      "accepted_main": "cde6d56a2f453a5502579ed45c246bdfc7cae74e",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769#issuecomment-7077524820"
+    },
+    {
+      "issue": 1770,
+      "accepted_main": "35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1770#issuecomment-7082117900"
+    },
+    {
+      "issue": 1771,
+      "accepted_main": "bdc51d4b13ee0d54eb19a98a038cd3f6ae5d8dbc",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1771#issuecomment-7079182873"
+    },
+    {
+      "issue": 1772,
+      "accepted_main": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1772#issuecomment-7079182999"
+    },
+    {
+      "issue": 1774,
+      "accepted_main": "60afaa6726f9f0ad2779f8370abf5acf88972289",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1774#issuecomment-7080609390"
+    },
+    {
+      "issue": 1813,
+      "accepted_main": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1813#issuecomment-7078241246"
+    }
+  ],
+  "editor": {
+    "source_receipt": "data-collection/plan1-v05-windows-integration.json",
+    "source_base": "57c1f4a45383071e2c78fa1ba9ec39490706a8fa",
+    "source_tree": "edcd1f732bcc699eb78b7223921081142776d085",
+    "package": "accepted-2121-editor",
+    "sha256": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+    "launcher_sha256": "d6a8f83c29d1f7df75f854be0cd278ab43848966d9be70e618142c75b36eb607",
+    "mode": "Windows headless native 2D editor SubViewport, timeline menu and inspector; fixture-owned editor, project, account and SQLite service."
+  },
+  "service_issue": {
+    "project": "studio",
+    "id": "iss_4017b3b1b39143cd93b8d6765b1cc693",
+    "number": 3,
+    "title": "Q03 · Animate the landing",
+    "environment": "isolated Tianxuan service, authenticated work APIs, real persisted revisions for this run"
+  },
+  "summary": "24 fps。原生时间线选中第 24 帧，经 Inspector 将落地点由 (250,79) 调到 (250,96) 并保存。当前 Codex 在预览授权回读后针对该修订选择将第 12 帧前的接近动作缩短一半。实际生产进程打开对应场景，在原生菜单生成新动作；服务从模块 a 收取字节并以提交 v2 接收。",
+  "revisions": {
+    "original": {
+      "path": "data-collection/plan1-q03-sample/original.tscn",
+      "module_revision": "b7e90f4eb170e04faee4cb268ebce5c122918212858d4aceae4e776e9bc54cd1",
+      "sha256": "25c8291b86ab1e8d157c3aa73355ab16b00c8fe2065b621bdc0dd19fce42e2d5"
+    },
+    "manual": {
+      "path": "data-collection/plan1-q03-sample/manual.tscn",
+      "module_revision": "844a0e0ac59c4cb0544e2271f96827403a77b4a0e6840a656f7e4e55c348e45e",
+      "sha256": "99146ce16008e0b73293a3ef603f6a3e497edae9861b20eb7eb6dd99191b7adf"
+    },
+    "candidate": {
+      "path": "data-collection/plan1-q03-sample/candidate.tscn",
+      "module_revision": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+      "sha256": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec"
+    }
+  },
+  "replay": {
+    "frames_per_second": 24,
+    "source_keys": [
+      0,
+      6,
+      12,
+      24
+    ],
+    "candidate_keys": [
+      0,
+      3,
+      12,
+      24
+    ],
+    "frame_3_xy": {
+      "manual": [
+        64,
+        71
+      ],
+      "candidate": [
+        93,
+        46
+      ]
+    },
+    "protected_frames_inclusive": [
+      12,
+      24
+    ],
+    "landing_xy": [
+      250,
+      96
+    ],
+    "all_protected_frames_equal": true,
+    "restored_cursor_seconds": 0.75,
+    "native_replay": {
+      "Landing": {
+        "label": "Landing | revision 098078c3277f | 0.0-1.0 s",
+        "time": 0.121960888888886,
+        "xy": [
+          91.5898513793945,
+          47.2156448364258
+        ]
+      },
+      "Walk": {
+        "label": "Walk | revision 7171aa44a2b9 | 0.0-1.0 s",
+        "time": 0.123511555555556,
+        "xy": [
+          63.6546783447266,
+          71.2976913452148
+        ]
+      }
+    },
+    "source_and_candidate_frame_table": "data-collection/plan1-q03-sample/run.json#/replay/frames",
+    "preview": {
+      "path": "data-collection/plan1-q03-sample/comparison.gif",
+      "sha256": "910ca9e45b5844faab630f7a961495a782f2502f80402e0d731bd79849ba8a42",
+      "description": "左侧手改版，右侧 AI 接续。25 帧按同一视口的实际节点坐标绘制，慢放方便逐帧核对。"
+    }
+  },
+  "target_receipt": {
+    "submission": 2,
+    "module_revision": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+    "account_scope": "isolated test account; operational example",
+    "example_editor_decision": "提交 v2 已采纳 · a @ 436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+    "stage": "preview",
+    "state": "stage-reached",
+    "service_candidate": "c133022829c6a5bd7032075ef0d85597f2b92b75419e7926f7b0a99ae18e46e5",
+    "stage_check_evidence": "708e5f04e271f8a264d71bf71f8b060b20d66161c62c76786e7472435862c818",
+    "publish_status": 409,
+    "publish_guard": "Signed task is limited to its authorized stage",
+    "approved_asset_readback_sha256": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec"
+  },
+  "sample_initiator_review": {
+    "issue": 1722,
+    "requested_account": "xuekaiyun",
+    "state": "awaiting_real_creative_judgment",
+    "review_material": "data-collection/plan1-q03-sample/comparison.gif",
+    "decision_prompt": "对照第 0–12 帧起跳节奏和第 24 帧落地，选择采纳候选或退回，并记录原因。",
+    "scope": "Q03 的工单判断与签认使用隔离账户完成；真实创意判断归 Q09。"
+  },
+  "evidence": {
+    "run": "data-collection/plan1-q03-sample/run.json",
+    "sha256": "cb4f208f52644f1d757674872192ea664cb9bfc55801adb26afdd458f22a56de",
+    "current_source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/test_q03_animation.py": "1ccca871f8b163620fc64b66ad64322f6f33facd00aae9d8bb1491b60132c7ce",
+      "tests/editor/run_q03_animation.py": "5d2f1e8bbebb15e3074405c16bbbebcb9a1a65462a59ddbcca2a58d7b44491df",
+      "tests/editor/workbench_q03_animation.gd": "e95d59d67ebc72c2c8d02a3b6d8433801c8f371e3580d86b46021bb83f6e59bc",
+      "tests/editor/workbench_approach_replay.gd": "07f05f459279fb7d5ab07ed4ec66278aa120ea3c6be1186b4de47344644cefaa",
+      "tests/editor/workbench_judgment_branches.gd": "3e9282c58b7dc85e49f998e7c0fbb9ee7bedf69b97593f492d8f09210651f153",
+      "editor/animation/animation_player_editor_plugin.cpp": "fdb9739aa58ff592fd8eb71f65e4db665db0932b8e303df120f5a21e48e03a8e"
+    }
+  },
+  "rerun": {
+    "cwd": "repository root on Windows",
+    "powershell": [
+      "$env:Q03_TEST_EDITOR='D:/GongGong/data-collection/receipts/1709-after-k03-20261122/accepted-2121-editor/godot.windows.editor.x86_64.console.exe'",
+      "D:/GongGong-work/tx-venv/Scripts/python.exe -X utf8 -m pytest -q -p no:cacheprovider -o tmp_path_retention_policy=none customizations/components/tianxuan/sinan-workorders/test_q03_animation.py"
+    ],
+    "mode": "With Q03_LIVE_HANDOFF and Q03_SAMPLE_DIR unset: first test replays the operator command on a fresh signed service issue. Second test reopens the archived candidate and verifies its exact file hashes, both track key lists, 25 paired poses and replay revision labels.",
+    "results": [
+      "Initial live Codex command bound to the signed revision and accepted at preview: 1 passed in 96.48 s.",
+      "Clean run: 2 passed in 45.53 s. Starlette TestClient emitted its httpx deprecation warning.",
+      "All 25 GIF frame centers matched both recorded poses; all five sample files matched their Git-clean bytes."
+    ]
+  },
+  "method": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "applied_revision": 38,
+    "observation": "工单附件重新下载的字节、对照回放、工单签认、预览阶段与获准读取的产物均绑定同一候选模块修订。修订混用会让前一张回执失去证明力。"
+  }
+}

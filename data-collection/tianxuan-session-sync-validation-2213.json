@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "issue": 2213,
+  "request_id": "tianxuan-session-sync-20261124",
+  "worker": "/root",
+  "validated_at": "2026-11-24T09:04:56.544785+00:00",
+  "baseline": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/README.md": "4e39e6be3d7b8c3cd7a1a2f6fa41a6842663c806154ceb6c0a442b766d61fc13",
+    "design-docs/tianxuan-session-sync-20261124.md": "e72f9c09da4d72d4c3de47ec61445745f437458aef25ef9c816f2db2e4245466",
+    "editor/docks/tianxuan/locale.gd": "2805cdb6b4c5fd19703206bbee6b4910b416b7c91d9708510b2a09863ca5256f",
+    "editor/docks/tianxuan/session_controller.gd": "938891243d23e7211ac02f8d88a102737fbf0b445b832b55029cc3f58cd8ee30",
+    "editor/docks/tianxuan/workspace_view.gd": "40b908f9875738292887ccabcdbfc0c99b872d6ec6e9ee1a340e25df22671b7a",
+    "editor/docks/workbench/business_session.gd": "dd9eb102e8545f542a7642ca2f4bea2a4a17ab3596d8c34d75de1a80a8a131cc",
+    "editor/docks/workbench/module_selector.gd": "412e5f068ca9f86094bea5406afbbb08f55f4775d106fbccbb5dbb91c49d31ce",
+    "tests/editor/run_tianxuan_controller.py": "96de5dfd35806b5e37b8d4c61978fe4fa508c1bc6d7362cc44a89e4ab87e0d0b",
+    "tests/editor/tianxuan_identity.gd": "a2bd2093915b41379eebbf1266cf8c21b9bb90ba85fe2eebf34f6219d15ae70a",
+    "tests/editor/tianxuan_legacy_key_identity.gd": "901ac87bf882caec9915a0a68c3a9ff3898c14a2d7712157a061cc420b7d2a95",
+    "tests/editor/tianxuan_session_sync.gd": "9de776bdb3018d43ea90754966ed20b77d98209b06c6db2761866db3d2a1ea47"
+  },
+  "build": {
+    "passed": true,
+    "platform": "macOS arm64",
+    "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+    "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+    "log_sha256": "92e69a2c88738fecd51deb5b2e7a106823629f41b15f3e8c9a877be1ac2434ea"
+  },
+  "reports": [
+    {
+      "artifact": "tianxuan-session-sync-after.json",
+      "sha256": "a842ad4d2469f754e14ea918f176cebe0bf3c7d4bba3d9817bca3d176414b5cb",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root/conversation_sync_path",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "checks": 34,
+      "distinct_origins": true,
+      "model_requests": 0,
+      "coverage": [
+        "双向登录和实际账号/项目显示文字",
+        "被动登录页解除与显式页面保留",
+        "未提交密码清除",
+        "失败认证保留旧身份和草稿",
+        "真实 origin 地址同步",
+        "旧格式歧义记录不迁移且保留",
+        "新格式 A/B 同 ID 草稿往返",
+        "项目切换与退出状态"
+      ],
+      "boundary": "无显示器编译控件、隔离 HTTP 服务；不证明用户当前服务的设备授权部署。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-identity-source-final.json",
+      "sha256": "e2274c743f3af0873cd2a2c53164e2e018ba5987e78185d1112ae9e7bd54a3eb",
+      "binary_sha256": "7577b6815cb88b84f400b0687059585a9085f91a7cba91f4d6fa5511d9b171e4",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "mode": "source_loaded",
+      "phases": 22,
+      "identity_checks": 127,
+      "legacy_checks": 70,
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "boundary": "使用先前二进制加载最终会话源码；不冒充最终编译产物的执行证据。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-identity-compiled.json",
+      "sha256": "81bfa049a03be4266625020c300b896cda362e9137dad750efa4897acd88adc0",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "mode": "compiled_native",
+      "phases": 22,
+      "identity_checks": 127,
+      "legacy_checks": 70,
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "stale_sources": [],
+      "coverage": [
+        "空库启动状态通知",
+        "设备授权保存及新进程恢复",
+        "失败登录保留已存设备状态",
+        "账号、项目、服务切换",
+        "取消和迟到回复",
+        "旧服务临时登录与共享凭据保护",
+        "并发凭据库更新及独立退出"
+      ],
+      "boundary": "隔离凭据库与合成账号；不是用户真实线上账号的重新登录验收。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-native-shell.json",
+      "sha256": "a2c7fc825da1c3dd484d181789f55e8f83741cc7cca170d5caf768c692c6d23e",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_nested_hashes",
+      "result": "passed",
+      "checks": {
+        "native_shell": 171,
+        "local_conversation": 43,
+        "host_progress": 16,
+        "production_handoff": 27,
+        "current_editor_context": 38,
+        "session_sync": 34
+      },
+      "native_local_fixture": {
+        "requests": 3,
+        "synchronized_turns": 2,
+        "cloud_inference_requests": 0
+      },
+      "current_local_fixture": {
+        "requests": 3,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      },
+      "handoff_provider_commands": 0,
+      "session_sync_model_requests": 0,
+      "boundary": "最终编译候选、隔离服务与回环模型 fixture；没有真实供应商或用户资产生产。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-native-layout.json",
+      "sha256": "2f2d382c1ed52e062aa31e3c0085210a978619f2e4c1bd06627bc67ffc47ad53",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "checks": 248,
+      "conversation_geometry_samples": 27,
+      "design_geometry_samples": 18,
+      "boundary": "控件几何与结构化断言，不代替像素、原生 OS 窗口或 IME 验收。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-business.json",
+      "sha256": "49eaad4010633780f605b5127c5a949db5eca208e0811646316039884a142c8c",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_saved_states",
+      "result": "passed",
+      "real_isolated_account_switch": true,
+      "isolated_identity_race_mode": false,
+      "coverage": [
+        "模块/工单草稿和历史切换",
+        "原位置保存",
+        "明确发送快照",
+        "第二合成账号实际激活后的隔离"
+      ],
+      "boundary": "报告没有嵌入完整源指纹；以其实际二进制摘要和冻结源码范围记录，不增加未运行模式。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-business-references.json",
+      "sha256": "1bf5e8201f2564dfa1efd9868666c6493255e1736634553160c41448795d8ad1",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_exact_sent_context",
+      "result": "passed",
+      "stored_turns": 2,
+      "redactions_per_turn": 2,
+      "coverage": [
+        "自动当前与手动保留引用独立",
+        "工单/模块/退出隔离",
+        "显式移除前保留手动引用",
+        "两项合成凭据脱敏",
+        "两模块实际 HTTP 发送"
+      ],
+      "boundary": "既有业务服务和模型 fixture；不能把此通道与天璇本地推理的 cloud_inference_requests 统计混为一谈。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-module-drafts.json",
+      "sha256": "a612f7128b9146f2f63d196b7b7c3416b4770a830390a83cd5a9d4f4e9b4f44b",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_restart_states",
+      "result": "passed",
+      "phases": [
+        "write",
+        "reopen",
+        "cleared",
+        "other-account",
+        "other-project"
+      ],
+      "model_fixture_calls": 1,
+      "credential_scan_files": 27,
+      "coverage": [
+        "新格式模块草稿与手动引用重启恢复",
+        "清空后不恢复",
+        "其他账号和项目隔离",
+        "凭据脱敏"
+      ],
+      "boundary": "报告未嵌入完整源指纹；隔离测试的业务数据与模型回复。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-saved-continuation.json",
+      "sha256": "eca1f528bac3eee26ceb3a51abed2ac7b04bb7e13948b760f1a5781dbccfce92",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_revision_payload",
+      "result": "passed",
+      "coverage": [
+        "已保存脚本与场景修订接续",
+        "动画轨道前后版本",
+        "明确发送中的保存来源及引用"
+      ],
+      "boundary": "现有接续测试的隔离资源；不是用户项目内资产生产或实际模型供应商验证。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-static.json",
+      "sha256": "eb20fdad1ea23181f50625ee47cfcfcf161ca13cde519fd43cde1d1ce5bf9dd4",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt",
+      "result": "passed",
+      "checks": [
+        "ruff-check",
+        "ruff-format",
+        "codespell",
+        "diff-check"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "independent_review": {
+    "path": "data-collection/tianxuan-session-sync-review-2213.json",
+    "sha256": "238d6611cb08942fd0e1f2df899d739963b2721b8e228c266f5bf65590e6bb1c"
+  },
+  "existing_delivery": {
+    "persistent_identity_issues": [
+      2183,
+      2184
+    ],
+    "independent_device_issue": 2190,
+    "production_rollout_issue": 2186,
+    "finding": "Existing source implements device-bound persistent identity. Issue 2190 explicitly did not update the running production service; actual deployment capability remains to be verified."
+  },
+  "historical_failure": {
+    "artifact": "tianxuan-session-sync-before.log",
+    "sha256": "0f66b462d49e13baae705239d94ba859804b6e20670029c28c2645e4250fc67d",
+    "reported_candidate_commit": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+    "observed_failure": "login in the left workspace releases both authentication gates without a second login",
+    "boundary": "日志实际显示前三项通过后双侧登录页解除失败；旧候选来源由实现者提供，日志没有独立二进制 SHA-256。"
+  },
+  "diagnostics_retained": {
+    "native_shell": [
+      "ERROR: Condition \"p_name.is_empty()\" is true.",
+      "WARNING: 20 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 5672 RIDs of type \"CanvasItem\" were leaked.",
+      "ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE",
+      "WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.",
+      "WARNING: 14313 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+    ],
+    "local_conversation": "故障注入预期触发 storage-blocker/not-a-directory 创建失败；不公开其临时绝对路径。",
+    "current_context": [
+      "6 Canvas RIDs leaked",
+      "270 CanvasItem RIDs leaked",
+      "1190 ObjectDB instances leaked at exit"
+    ],
+    "session_sync": [
+      "6 Canvas RIDs leaked",
+      "129 CanvasItem RIDs leaked",
+      "623 ObjectDB instances leaked at exit"
+    ],
+    "layout": [
+      "WARNING: 303 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 7574 RIDs of type \"CanvasItem\" were leaked.",
+      "WARNING: 23430 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+    ],
+    "module_drafts": "write/reopen/cleared/other-account/other-project 各保留 10 条渲染、文字资源及 ObjectDB 退出诊断；完整原始诊断保留在所列回执中。",
+    "assessment": "断言通过不等于无错误输出或无退出泄漏；这些诊断未被隐藏，本审查未把全部诊断归因于既有代码。"
+  },
+  "limits": [
+    "用户当前服务是否支持独立设备授权及是否已部署相关服务端版本，需要真实服务能力回执；隔离 fixture 通过不能证明线上已升级。",
+    "本机安装后的实际双向登录呈现、设备重启恢复与用户反馈尚待独立记录；本审查没有读取真实用户凭据或操控用户现有窗口。",
+    "Windows 新候选运行、原生窗口及输入法不由本机无显示器回归推定；CI 与正式交付也不由本审查代替。",
+    "来源不明的旧格式业务草稿仍保留，但本版不自动恢复或迁移；新格式草稿的持久和隔离已验证。",
+    "Formal signed candidate, required CI, main readback and installed application are separate receipts.",
+    "The previous chat expansion/context behavior was accepted by the user on macOS; this does not substitute for login acceptance."
+  ]
+}

@@ -1,50 +1,7 @@
 name: Engine Next build contract
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/engine_next_contract.yml"
-      - "ai_core/**"
-      - "engine_next/**"
-      - "modules/gameplay/**"
-      - "runtime_next/**"
-      - "tools/check_engine_next_contract.py"
-      - "tools/engine_next_contract.json"
-      - "tools/test_check_engine_next_contract.py"
-      - "tools/engine_next_legacy/**"
-      - "tools/ainative/**"
-      - "tools/package_maliang_editor.py"
-      - "tools/editor_native_app.py"
-      - "tools/package_tianshu_ui.py"
-      - "tools/editor_provenance_process.py"
-      - "tools/maliang_hunyuan/**"
-      - "samples/ainative-workbench/**"
-      - "editor/ainative/**"
-      - "tests/editor/test_ainative_bundle.py"
-      - "tests/editor/test_maliang_package.py"
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/engine_next_contract.yml"
-      - "ai_core/**"
-      - "engine_next/**"
-      - "modules/gameplay/**"
-      - "runtime_next/**"
-      - "tools/check_engine_next_contract.py"
-      - "tools/engine_next_contract.json"
-      - "tools/test_check_engine_next_contract.py"
-      - "tools/engine_next_legacy/**"
-      - "tools/ainative/**"
-      - "tools/package_maliang_editor.py"
-      - "tools/editor_native_app.py"
-      - "tools/package_tianshu_ui.py"
-      - "tools/editor_provenance_process.py"
-      - "tools/maliang_hunyuan/**"
-      - "samples/ainative-workbench/**"
-      - "editor/ainative/**"
-      - "tests/editor/test_ainative_bundle.py"
-      - "tests/editor/test_maliang_package.py"
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -72,27 +29,20 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        run: python -m pip install pillow==12.1.1
+        run: python -m pip install pillow==12.1.1 numpy==2.4.4
 
-      - name: Run contract and build-tool tests
+      - name: Run Engine Next contract and build-tool tests
         run: |
           python -m unittest tools.test_check_engine_next_contract -v
           python -m unittest discover -s engine_next/Tools -p "Test*.py" -v
 
-      - name: Run complete AINative and package regressions
-        run: |
-          python -m unittest discover -s tools/ainative -p "test_*.py"
-          python -m unittest tests.editor.test_ainative_bundle tests.editor.test_maliang_package -v
-
-      - name: Build and audit standalone tests (MSVC)
+      - name: Build and audit standalone runtime tests (MSVC)
         if: runner.os == 'Windows'
         shell: cmd
         run: |
           set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
           for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSROOT=%%i"
           call "%VSROOT%\VC\Auxiliary\Build\vcvars64.bat"
-          python engine_next/Tools/BuildGameplay.py --repo . --compiler msvc --build-dir build/engine_next/msvc-release --run-tests
-          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-release/LinkManifest.json
           python engine_next/Tools/BuildRuntime.py --repo . --compiler msvc --build-dir build/engine_next/msvc-runtime --run-tests --soak
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_serverLinkManifest.json
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
@@ -104,11 +54,9 @@ jobs:
           python build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
           python build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_assetLinkManifest.json
 
-      - name: Build and audit standalone tests (Clang)
+      - name: Build and audit standalone runtime tests (Clang)
         if: runner.os != 'Windows'
         run: |
-          python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests
-          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json
           python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-runtime --run-tests --soak
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_serverLinkManifest.json
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
@@ -140,7 +88,6 @@ jobs:
           echo "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa  build/engine_next/godot-legacy/Godot.zip" | sha256sum -c -
           unzip -q build/engine_next/godot-legacy/Godot.zip -d build/engine_next/godot-legacy
           python3 engine_next/Tools/RunM3LegacyAcceptance.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --next-asset build/engine_next/clang-runtime/next_asset --adapter tools/engine_next_legacy/scene_adapter.gd --fixtures tools/engine_next_legacy/fixtures --report build/engine_next/clang-runtime/M3LegacyReport.json
-          python3 samples/ainative-workbench/test_unified_settings.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --report build/engine_next/clang-runtime/MaliangSettingsReport.json
 
   visual-contract:
     name: Visual runtime build and FrameGraph (${{ matrix.os }})

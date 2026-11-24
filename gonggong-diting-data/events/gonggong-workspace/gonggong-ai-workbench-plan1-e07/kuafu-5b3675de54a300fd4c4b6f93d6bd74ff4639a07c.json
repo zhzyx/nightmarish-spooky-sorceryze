@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5b3675de54a300fd4c4b6f93d6bd74ff4639a07c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e07",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bf095e0741b0c54c7104b6d685b8cb2d8141c9d8a750d3767ed1f46c7f07cfe7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2060",
+    "action": "delivery",
+    "detection_head": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb",
+    "context_sha256": "b973548a468e5c20ea1df0e0ad658d0f4edf312920a347a90d8f4a47c30be5e5",
+    "operator": "Sail-Li",
+    "worker": "mac-round11-e07",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796",
+    "evidence": "writer_submit PR_EVIDENCE_BINDING rejected integer issue field",
+    "diagnosis": "验收数据用整数 issue，关联器的整数键为 issue_number；业务验证和候选内容已通过。",
+    "next_action": "补充同一候选的工单关联，重新运行同一签发入口并核对主线。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T09:54:51.460107+00:00",
+    "attempted": "已核对门禁中 issue、issue_url、issue_number 的具体匹配规则。",
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T09:57:03.799716+00:00",
+  "sha256": "a8c0d4c90687178e199f9e1beedca9f95c0ae1be8d423fe21ad8c4bd9267b767"
+}

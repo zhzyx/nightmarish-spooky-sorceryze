@@ -1,0 +1,54 @@
+{
+  "scope": "Isolated native database, restored bundle and source snapshot",
+  "production_import": false,
+  "native": {
+    "module": "migration-1bda0751dc87026dc33836a7e80ffbf9b94c70f79e5a3dce50c6eab829aa3e6a",
+    "revision": "2c0b73f43a81da33110cf10ce27a63f0a47c152f046b6eb7c060301adf85dd8c",
+    "counts": {
+      "commit": 1813,
+      "requirement": 399,
+      "issue": 698,
+      "pull_issue_projection": 857,
+      "pull": 857,
+      "issue_comment": 4120
+    },
+    "binary_count": 2
+  },
+  "restore": {
+    "counts": {
+      "commit": 1813,
+      "requirement": 399,
+      "issue": 698,
+      "pull_issue_projection": 857,
+      "pull": 857,
+      "issue_comment": 4120
+    },
+    "records_sha256": "8e0d6129a094ba229f9118e80cd675fc94d84259203858acaa55d9c62a2b5368",
+    "binaries": {
+      "github:zhzyx/nightmarish-spooky-sorceryze/git-report.json": {
+        "file": "binary-c3131492b8f9541fc87d8dc7f1907772caaa7827fbbb2b96af247292e4749e77",
+        "sha256": "a6923ad53da0a9eca789ffa66ec3681c3a2df6ee759e09c2eb80ce167eed392e"
+      },
+      "github:zhzyx/nightmarish-spooky-sorceryze/history.bundle": {
+        "file": "binary-de3570787dd216ed215fdb79c5620ca84ea0f7957613e46a9e3d4321cbf558da",
+        "sha256": "50d1e9f4df4492b7ffae814e560cd973fc4cdad20efc5e7c52ca04b9e6dff8d8"
+      }
+    }
+  },
+  "rerun_same_catalog": true,
+  "restored_git_fsck": true,
+  "relations": {
+    "complete": true,
+    "checked": 21301,
+    "resolved": 21301,
+    "unresolved": [],
+    "external": []
+  },
+  "refs": 1822,
+  "supplemental_refs": 324,
+  "commits": 2726,
+  "lfs_objects": 0,
+  "git_bundle_bytes": 148319896,
+  "new_tasks_routing": "selector exercised in isolation; host integration pending",
+  "migration_page": "Headless Chrome loaded git-report.json and displayed nine report fields"
+}

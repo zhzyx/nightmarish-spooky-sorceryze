@@ -17,7 +17,10 @@ def reservation(grant, state):
     budget = p.get("central_budget")
     if budget is None:
         require(
-            not any(m["protocol"] == "codex-native-proposal" for m in p["profiles"]),
+            not any(
+                m["protocol"] in {"codex-native-proposal", "codex-native-role", "local-agent-proposal"}
+                for m in p["profiles"]
+            ),
             "Native tasks require admitted central budget",
         )
         yield

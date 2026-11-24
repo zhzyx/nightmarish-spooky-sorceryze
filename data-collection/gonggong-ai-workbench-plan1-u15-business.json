@@ -1,0 +1,249 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u15",
+  "issue_number": 1810,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810",
+  "observed_at": "2026-11-21T15:17:46.006858+00:00",
+  "inputs": {
+    "reference_group_head": "326480e4e55ad7efddeb9d32e98efc1b7a8ebaa7",
+    "module_selector_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1936",
+    "module_selector_head": "ecd2ea5494fb5863914ddc24df5ad921233348d2",
+    "module_selector_patch_sha256": "3b2808ec33ab0489114e1203a8011e3996ad23310238a9f51801ae204a7ed9e0"
+  },
+  "supplemental_source_sha256": {
+    "design-docs/gonggong-ai-workbench-u15.md": "cedf171bf2f9b4e337aedc19068f2211286d76daac1f8ccd4c0ec3acb10831b0",
+    "editor/docks/ai_chat_dock.cpp": "7da4192a60d49a15c8d77939ac2599ce411f4b92537b98a3a0586f7f4e268a94",
+    "editor/docks/ai_chat_dock.h": "6ddfa44c60fed5567659fdc28d7c864274773c7318e2242cec761138338b7705",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "0080c87601c9f2a471568e4ad07f86980c1fe5c4ee13745ba7ab28d748be2365",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f4c0b45f0bbafd2b0bd7ca5d0cf418bc2f4a16f2b242dac5bf7355dabf7988fc",
+    "editor/docks/workbench/business_session.gd": "5dc247c85a22b75cc5a35c42b4d319943e3f79efd62e43fb2d78085cdba477ea",
+    "editor/docks/workbench/module_selector.gd": "353b554ef40536e0d201c7373925b8e01d68aa5c8dfbf4ba18e1d6bf75b5a84d",
+    "tests/editor/run_workbench_business_modules.py": "6ef366da1727dbe6e97f74efd4c6c7253f4cbae9f89da747434e18605e16bae7",
+    "tests/editor/workbench_business_modules.gd": "86f9a9663ac4c5ee681dcdd4cdfcd7c91ec2239107eb5a0fb4132757d7b1e3f0",
+    "tests/editor/workbench_business_references.gd": "325f5cc2180e9fe31cbb1979e984df3becab038048b0e32701cfcffa4f13b179"
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 24,
+    "application": "Verified the signed C06 patch bytes and receiving U15 group HEAD, then built and exercised the combined editor and the authenticated service receiver."
+  },
+  "build": {
+    "platform": "Windows x86_64, Visual Studio 14.5, SDK 10.0.26100.0",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared cache> cache_limit=0 --cache-readonly -j6",
+    "source_archive_identity": true,
+    "exit": 0,
+    "final_log_sha256": "14cbcefeaf5a3b5ee607c6f8860d1c8b5e8b32536d027092daf9399050352e95",
+    "engine_sha256": "e286bbb92e3555c7ac75451a59c14ff3a179bc7d6f8e82fae1c272b42670d9b7",
+    "console_wrapper_sha256": "18d33a14aacd3ef9af06c2160c51572548cb9570c541d9263a7f6b788d2d4ca5"
+  },
+  "scope": "Native Windows headless editor with private settings, two temporary test accounts, authenticated loopback Tianxuan API and temporary databases. Production credentials, external models and production work orders are outside this fixture.",
+  "business_test_command": "tests/editor/run_workbench_business_modules.py --references --godot <candidate> --report <result>",
+  "business_input_and_receiver": {
+    "state": "passed",
+    "editor_exit": 0,
+    "controls": {
+      "after": "移除 · res://beta/same.gd#L2:1-L2:112\nfeccb2f0b106d2ed4189fecd7e95cbc48987ef594032404e7ced6edd973c1be0\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "before": [
+        "移除 · res://alpha/same.gd#L2:1-L2:113\n2a2ed5748eedd8f0d7b6f6af8448822971fb28613a4dcba1a98bea67790cf0be\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+        "移除 · res://beta/same.gd#L2:1-L2:112\nfeccb2f0b106d2ed4189fecd7e95cbc48987ef594032404e7ced6edd973c1be0\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "context_before_and_after": "模块 · Lighting · mod_1a95715e3c954c049b2e78e784d3c90b\n工单 · #1  Review",
+      "input_rect": "[P: (1018.0, 746.0), S: (414.0, 70.0)]",
+      "issue_id": "iss_d6dec43aba104d21ae5b59befc576767",
+      "issue_switch_cleared": true,
+      "logout_cleared": true,
+      "module": "mod_1a95715e3c954c049b2e78e784d3c90b",
+      "module_switch_cleared": true,
+      "rows_rect": "[P: (1018.0, 598.0), S: (414.0, 130.0)]",
+      "second_account_project": "c06/other",
+      "selected": [
+        {
+          "kind": "editor",
+          "object_id": "res://alpha/same.gd#L2:1-L2:113",
+          "revision": "2a2ed5748eedd8f0d7b6f6af8448822971fb28613a4dcba1a98bea67790cf0be"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:112",
+          "revision": "feccb2f0b106d2ed4189fecd7e95cbc48987ef594032404e7ced6edd973c1be0"
+        }
+      ]
+    },
+    "stored_turns": [
+      {
+        "content": "keep beta\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1  Review\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:112\",\"revision\":\"feccb2f0b106d2ed4189fecd7e95cbc48987ef594032404e7ced6edd973c1be0\"}]\n选段 · res://beta/same.gd#L2:1-L2:112:\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+        "context_snapshot": {
+          "project": "c06/studio",
+          "module_id": "mod_1a95715e3c954c049b2e78e784d3c90b",
+          "issue_id": "iss_d6dec43aba104d21ae5b59befc576767",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://beta/same.gd#L2:1-L2:112",
+              "revision": "feccb2f0b106d2ed4189fecd7e95cbc48987ef594032404e7ced6edd973c1be0"
+            }
+          ]
+        }
+      },
+      {
+        "content": "module B clean",
+        "context_snapshot": {
+          "project": "c06/studio",
+          "module_id": "mod_9cb38da6296b44a7a3d970db87698be2",
+          "issue_id": "iss_32f5dc03aa304e68b734a14e7c8695cb",
+          "references": []
+        }
+      }
+    ],
+    "native_http": [
+      [
+        "GET",
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules/mod_1a95715e3c954c049b2e78e784d3c90b/location",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_d6dec43aba104d21ae5b59befc576767/comments",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations/88044454-78ed-444b-bd0e-2c9c78e94d11",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/88044454-78ed-444b-bd0e-2c9c78e94d11/turns",
+        200
+      ],
+      [
+        "PUT",
+        "/api/v1/business-modules/mod_1a95715e3c954c049b2e78e784d3c90b/location",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules/mod_9cb38da6296b44a7a3d970db87698be2/location",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_32f5dc03aa304e68b734a14e7c8695cb/comments",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/workspace/conversations/df40edab-904e-4597-bd4a-3184d1e94448",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/df40edab-904e-4597-bd4a-3184d1e94448/turns",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/auth/session",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules/default/location",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues",
+        200
+      ]
+    ],
+    "editor_sha256": "18d33a14aacd3ef9af06c2160c51572548cb9570c541d9263a7f6b788d2d4ca5"
+  },
+  "regressions": {
+    "c06": {
+      "command": "tests/editor/run_workbench_business_modules.py --godot <candidate> --report <result>",
+      "state": "passed",
+      "real_account_switch": true,
+      "explicit_send_snapshot": {
+        "project": "c06/studio",
+        "module_id": "default",
+        "issue_id": null,
+        "references": []
+      },
+      "observed_module_states": 4
+    },
+    "local_u15": {
+      "command": "tests/editor/run_workbench_reference_removal.py --godot <candidate> --report <result>",
+      "passed": true,
+      "exit": 0,
+      "restored_queue_exit": 0,
+      "scrubbed": true,
+      "received_messages": [
+        "retain beta\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+        "restore queued\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "issue_before": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "issue_after": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15"
+    },
+    "u07": {
+      "command": "tests/editor/run_tianshu_spatial.py --scene-selection",
+      "passed": true,
+      "exit": 0
+    },
+    "u09": {
+      "command": "tests/editor/run_workbench_resource_selection.py",
+      "passed": true,
+      "exit": 0
+    },
+    "u12": {
+      "command": "tests/editor/run_workbench_page_reference.py",
+      "exit": 0,
+      "history_matches_receiver": true
+    },
+    "c08": {
+      "command": "tests/editor/run_tianshu_spatial.py --references",
+      "passed": true,
+      "exit": 0
+    }
+  },
+  "report_sha256": {
+    "u15-business": "94999dea7cafc7efb66ebe474b1a3e863d57624bdc19b75e60ac22d99d82daa2",
+    "c06": "6e40df58b4e1df1f637f4cfff2debb214a67c68cf6d4d7db2896713ab165e099",
+    "u15-local": "e5facb0bf0365009eb730b2d8132bd728c61d25e257097fc3b010599c377ee3d",
+    "u07": "60efd29bfc2b21f65bb5b02280c35cf4d84cb5769a3fc8c67d6fb950adc589a0",
+    "u09": "5b1f43cef01cf86759e5041e521d3b5d9fd2f11ebc03bcdf515e2f70da1f659a",
+    "u12": "7a4f4c87aef8024d357be0ef0c7870c9ccdb0cc632b2e53521a44146ed678648",
+    "c08": "16f01e1fade8aa7266ee293692dd3ca4e4e1aaf969331872ad945932ccc28803"
+  },
+  "notes": "The local U15 editor emitted existing headless RID/ObjectDB teardown warnings. An early extra account/project probe failed to parse a dynamically typed geometry variable. Typed the row, checked the static script entry, and reran the final account/project and C06 probes to exit 0."
+}

@@ -103,7 +103,7 @@ class ApiNodeModelTests(unittest.TestCase):
                 )
                 with patch("generation_service._probe_api", return_value={"connected": True}):
                     run = dispatch(args, {"model": graph})["run_id"]
-                service_file.write_text(json.dumps({"mode": "offline"}))
+                service_file.write_text(json.dumps({"mode": "removed-after-create"}))
                 graph["nodes"][0]["model"] = "edited"
                 args.command = "status"
                 state = dispatch(args, {"run": run})

@@ -4,7 +4,7 @@ import { useActor } from "@/lib/use-actor";
 
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
-import { fetchDocDiff, fetchVersions, type ApiVersion } from "@/lib/api";
+import { fetchDocDiff, fetchVersions, MergeConflict, restoreDocVersion, type ApiVersion } from "@/lib/api";
 import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
 
@@ -40,7 +40,7 @@ const controlsStyle = {
   flexWrap: "wrap",
 } as const;
 
-const arrowStyle = { fontSize: "10px" } as const;
+const arrowStyle = { fontSize: ".875rem" } as const;
 
 const errorRowStyle = {
   display: "flex",
@@ -49,7 +49,7 @@ const errorRowStyle = {
   flexWrap: "wrap",
 } as const;
 
-const errorTextStyle = { color: "#D48B80" } as const;
+const errorTextStyle = { color: "var(--error-text)" } as const;
 
 const diffStyle = {
   maxHeight: "360px",
@@ -58,11 +58,11 @@ const diffStyle = {
   overflow: "auto",
   border: "1px solid var(--line)",
   borderRadius: "11px",
-  background: "rgba(8, 11, 14, 0.45)",
-  color: "rgba(245, 242, 234, 0.74)",
+  background: "var(--ink-3)",
+  color: "var(--paper-72)",
   fontFamily:
     "var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: "10px",
+  fontSize: ".875rem",
   lineHeight: 1.65,
   whiteSpace: "pre-wrap",
   overflowWrap: "anywhere",
@@ -94,6 +94,9 @@ export function DocVersions({ docId }: DocVersionsProps) {
   const [diff, setDiff] = useState("");
   const [diffState, setDiffState] = useState<DiffState>("idle");
   const [diffError, setDiffError] = useState("");
+
+  const [restoring, setRestoring] = useState(false);
+  const [restoreNote, setRestoreNote] = useState("");
 
   const resetDiff = useCallback(() => {
     setDiff("");
@@ -132,6 +135,29 @@ export function DocVersions({ docId }: DocVersionsProps) {
     void loadVersions();
   }, [loadVersions]);
 
+  async function restore(sourceVersion: number, expectedVersion: number) {
+    if (!actor || restoring) return;
+    const prompt = formatMessage(t("versions.confirmRestore"), { sourceVersion, expectedVersion });
+    if (!window.confirm(prompt)) return;
+    setRestoring(true);
+    setRestoreNote("");
+    try {
+      const updated = await restoreDocVersion(docId, actor, sourceVersion, expectedVersion);
+      window.dispatchEvent(new CustomEvent("tianxuan:doc-updated", { detail: updated }));
+      setRestoreNote(formatMessage(t("versions.restored"), { version: updated.version }));
+      await loadVersions();
+    } catch (error) {
+      if (error instanceof MergeConflict) {
+        setRestoreNote(t("versions.restoreConflict"));
+        await loadVersions();
+      } else {
+        setRestoreNote(t("versions.restoreError"));
+      }
+    } finally {
+      setRestoring(false);
+    }
+  }
+
   async function loadDiff() {
     if (!actor || fromVersion === null || toVersion === null) {
       return;
@@ -154,13 +180,12 @@ export function DocVersions({ docId }: DocVersionsProps) {
       <section aria-label={t("versions.title")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
-            <p className="section-kicker">WENQU · VERSIONS</p>
-            <h2>{t("versions.title")}</h2>
+            <h2 id="doc-versions">{t("versions.title")}</h2>
           </div>
           <span className="mono-key">{t("versions.disabled")}</span>
         </div>
         <div style={panelBodyStyle}>
-          <p className="section-note" style={{ fontSize: "10.5px", lineHeight: 1.6 }}>
+          <p className="section-note" style={{ fontSize: ".875rem", lineHeight: 1.6 }}>
             <Icon name="lock" size={14} />
             {t("versions.disabledNote")}
           </p>
@@ -179,8 +204,7 @@ export function DocVersions({ docId }: DocVersionsProps) {
     >
       <div className="section-heading" style={headingStyle}>
         <div>
-          <p className="section-kicker">WENQU · VERSIONS</p>
-          <h2>{t("versions.title")}</h2>
+          <h2 id="doc-versions">{t("versions.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading"
@@ -192,6 +216,12 @@ export function DocVersions({ docId }: DocVersionsProps) {
       </div>
 
       <div style={panelBodyStyle}>
+        {restoreNote && <p className="section-note" role="status">{restoreNote}</p>}
+        {loadState === "ready" && (
+          <button type="button" className="btn btn-ghost btn-sm" disabled={restoring} onClick={() => void loadVersions()}>
+            {t("versions.reload")}
+          </button>
+        )}
         {loadState === "loading" ? <p className="section-note">{t("versions.loading")}</p> : null}
 
         {loadState === "error" ? (
@@ -226,7 +256,16 @@ export function DocVersions({ docId }: DocVersionsProps) {
                   </span>
                   {item.version === latestVersion ? (
                     <span className="kind-tag">{t("versions.latest")}</span>
-                  ) : null}
+                  ) : latestVersion !== null && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      disabled={restoring}
+                      onClick={() => void restore(item.version, latestVersion)}
+                    >
+                      {formatMessage(t("versions.restore"), { version: item.version })}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

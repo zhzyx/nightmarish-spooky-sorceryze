@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2022-garment-split-20261122",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-garment-split-20261122",
+  "kind": "request",
+  "occurred_at": "2026-11-21T18:24:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261123",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "识别并提取马良已生成角色模型中的开放衣服集合，优先支持已绑骨 GLB，保留原骨架、Inverse Bind Matrices、JOINTS_0、WEIGHTS_0 和动画，提供衣服集合与单件 GLB 工作台节点，同时保留静态 GLB 支持；不覆盖源模型，不把表面拆分冒充真实视觉或布料动态验收",
+    "authorization_ref": "用户在原会话中明确授权请按你的预期落地、对请落地、这种聊清楚的按照原计划去做；本次仅追加本地提交授权",
+    "validation": "data-collection/maliang-garment-split-20261122-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "8bdc4e3456e2ec58a3bb1d2346f8c3a79785109b66d802e2f49d15022e4323dc"
+}

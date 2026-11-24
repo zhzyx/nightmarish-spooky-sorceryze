@@ -21,6 +21,9 @@ from functools import wraps
 from threading import RLock
 from typing import Any, Concatenate, ParamSpec, TypeVar, cast
 
+from wenqu_bridge import build_ai_index
+from wenqu_bridge import search as search_documents
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, created_at TEXT NOT NULL
@@ -33,9 +36,16 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS editor_devices (
+  id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL, created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS access_keys (
   id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL,
   name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, revoked_at TEXT
+);
+CREATE TABLE IF NOT EXISTS session_devices (
+  token_hash TEXT PRIMARY KEY, device_id TEXT UNIQUE NOT NULL, credential_id TEXT UNIQUE NOT NULL,
+  parent_hash TEXT, user_id TEXT NOT NULL, created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS invites (
   token_hash TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL,
@@ -67,11 +77,69 @@ CREATE TABLE IF NOT EXISTS doc_versions (
   id TEXT PRIMARY KEY, doc_id TEXT NOT NULL, version INTEGER NOT NULL,
   body_md TEXT NOT NULL, author TEXT NOT NULL, created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS design_signoffs (
+  document_id TEXT NOT NULL, version INTEGER NOT NULL, confirmed_by TEXT NOT NULL,
+  confirmed_at TEXT NOT NULL, acceptance TEXT NOT NULL, PRIMARY KEY(document_id, version)
+);
+CREATE TABLE IF NOT EXISTS design_task_sources (
+  issue_id TEXT PRIMARY KEY REFERENCES issues(id), document_id TEXT NOT NULL, version INTEGER NOT NULL,
+  paragraph INTEGER NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL, acceptance TEXT NOT NULL,
+  FOREIGN KEY(document_id,version) REFERENCES design_signoffs(document_id,version)
+);
+CREATE TABLE IF NOT EXISTS design_task_targets (
+  issue_id TEXT PRIMARY KEY REFERENCES design_task_sources(issue_id), revision INTEGER NOT NULL,
+  responsible_user TEXT NOT NULL REFERENCES users(id), stage TEXT NOT NULL, criteria TEXT NOT NULL,
+  return_comment_id TEXT REFERENCES issue_comments(id)
+);
+CREATE TABLE IF NOT EXISTS design_task_confirmations (
+  issue_id TEXT PRIMARY KEY REFERENCES design_task_targets(issue_id), target_revision INTEGER NOT NULL,
+  revision INTEGER NOT NULL, issue_revision TEXT, status TEXT NOT NULL, actor TEXT REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_design_tasks_revision ON design_task_sources(document_id,version,project);
 CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
   type TEXT NOT NULL, status TEXT NOT NULL, priority TEXT NOT NULL DEFAULT 'normal',
   title TEXT NOT NULL, body_md TEXT NOT NULL DEFAULT '', acceptance TEXT NOT NULL DEFAULT '',
-  requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  project TEXT NOT NULL DEFAULT 'workspace', module_id TEXT NOT NULL DEFAULT 'default'
+);
+CREATE INDEX IF NOT EXISTS idx_issues_tenant_number ON issues(tenant_id, number);
+CREATE TABLE IF NOT EXISTS project_issue_fields (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, key TEXT NOT NULL, label TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, key)
+);
+CREATE TABLE IF NOT EXISTS issue_labels (
+  issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE, name TEXT NOT NULL,
+  PRIMARY KEY (issue_id, name)
+);
+CREATE INDEX IF NOT EXISTS idx_issue_labels_name ON issue_labels(name, issue_id);
+CREATE TABLE IF NOT EXISTS issue_assignees (
+  issue_id TEXT PRIMARY KEY REFERENCES issues(id), user_id TEXT NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS business_modules (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, id)
+);
+CREATE TABLE IF NOT EXISTS module_work_locations (
+  tenant_id TEXT NOT NULL, actor TEXT NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL,
+  issue_id TEXT, conversation_id TEXT, position TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, actor, project, module_id)
+);
+CREATE TABLE IF NOT EXISTS business_module_assets (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL,
+  asset_id TEXT NOT NULL, source_module TEXT NOT NULL, revision TEXT NOT NULL, path TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, module_id, asset_id)
+);
+CREATE INDEX IF NOT EXISTS idx_business_asset_modules ON business_module_assets(tenant_id, project, asset_id);
+CREATE TABLE IF NOT EXISTS issue_revision_links (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, issue_id TEXT NOT NULL REFERENCES issues(id),
+  module TEXT NOT NULL, revision TEXT NOT NULL, tag TEXT,
+  PRIMARY KEY (tenant_id, project, issue_id, module, revision)
+);
+CREATE INDEX IF NOT EXISTS idx_revision_issues ON issue_revision_links(tenant_id, project, module, revision);
+CREATE TABLE IF NOT EXISTS project_revision_tags (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, module TEXT NOT NULL, tag TEXT NOT NULL, revision TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, module, tag)
 );
 CREATE TABLE IF NOT EXISTS doc_issue_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
@@ -90,6 +158,34 @@ CREATE TABLE IF NOT EXISTS import_jobs (
   path TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, created_at);
+CREATE TABLE IF NOT EXISTS issue_flows (
+    issue_id TEXT PRIMARY KEY REFERENCES issues(id), version INTEGER NOT NULL, definition TEXT
+);
+CREATE TABLE IF NOT EXISTS issue_lifecycle (
+    issue_id TEXT NOT NULL REFERENCES issues(id), version INTEGER NOT NULL, kind TEXT NOT NULL,
+    actor TEXT NOT NULL, previous TEXT NOT NULL, target TEXT NOT NULL, revision TEXT NOT NULL,
+    evidence TEXT, asset_version INTEGER NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(issue_id,version,kind,revision,asset_version)
+);
+CREATE TABLE IF NOT EXISTS issue_dependencies (
+    issue_id TEXT NOT NULL REFERENCES issues(id), dependency TEXT NOT NULL REFERENCES issues(id),
+    PRIMARY KEY(issue_id,dependency)
+);
+CREATE TABLE IF NOT EXISTS issue_judgment_dependencies (
+    issue_id TEXT NOT NULL, dependency TEXT NOT NULL, submission_version INTEGER NOT NULL,
+    PRIMARY KEY(issue_id,dependency),
+    FOREIGN KEY(issue_id,dependency) REFERENCES issue_dependencies(issue_id,dependency) ON DELETE CASCADE,
+    FOREIGN KEY(dependency,submission_version) REFERENCES issue_work_events(issue_id,version)
+);
+CREATE INDEX IF NOT EXISTS idx_judgment_source ON issue_judgment_dependencies(dependency,submission_version);
+CREATE TRIGGER IF NOT EXISTS native_excludes_ordinary_flow BEFORE INSERT ON native_managed_issues
+WHEN EXISTS (SELECT 1 FROM issue_flows WHERE issue_id=NEW.issue_id AND definition IS NOT NULL)
+  OR EXISTS (SELECT 1 FROM issue_dependencies WHERE issue_id=NEW.issue_id)
+BEGIN SELECT RAISE(ABORT, 'ordinary workflow owns this issue'); END;
+CREATE TABLE IF NOT EXISTS issue_work_events (
+    issue_id TEXT NOT NULL REFERENCES issues(id), version INTEGER NOT NULL,
+    action TEXT NOT NULL, data TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL,
+    PRIMARY KEY(issue_id, version)
+);
 CREATE TABLE IF NOT EXISTS tool_receipts (
   tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
   key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
@@ -100,6 +196,7 @@ CREATE TABLE IF NOT EXISTS events (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, type TEXT NOT NULL, actor TEXT NOT NULL,
   target TEXT NOT NULL, payload TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_issue_transition_events ON events(tenant_id,target) WHERE type='issue.transitioned';
 CREATE TABLE IF NOT EXISTS comments (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, doc_id TEXT NOT NULL, parent_id TEXT,
   author TEXT NOT NULL, body TEXT NOT NULL, resolved INTEGER NOT NULL DEFAULT 0,
@@ -109,6 +206,10 @@ CREATE INDEX IF NOT EXISTS idx_comments_doc ON comments(doc_id, created_at);
 CREATE TABLE IF NOT EXISTS issue_comments (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, issue_id TEXT NOT NULL,
   author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS issue_comment_replies (
+  comment_id TEXT PRIMARY KEY REFERENCES issue_comments(id),
+  parent_id TEXT NOT NULL REFERENCES issue_comments(id)
 );
 CREATE TABLE IF NOT EXISTS external_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
@@ -139,9 +240,19 @@ CREATE TABLE IF NOT EXISTS native_requirement_sources (
   tenant_id TEXT NOT NULL, module TEXT NOT NULL, doc_id TEXT NOT NULL,
   PRIMARY KEY (tenant_id, module), UNIQUE (tenant_id, doc_id)
 );
+CREATE TABLE IF NOT EXISTS game_config_clients (
+  id TEXT PRIMARY KEY, doc_id TEXT NOT NULL, actor TEXT NOT NULL,
+  name TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 0,
+  reported_version INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'pending', error TEXT NOT NULL DEFAULT '', last_seen REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS game_config_clients_doc ON game_config_clients(doc_id, last_seen);
 """
 
 _FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
+DEFAULT_PROJECT = "workspace"
+DEFAULT_MODULE_ID = "default"
+PROJECT_PATTERN = r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99}(/[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99})?$"
 _ROLE_RANK = {"viewer": 0, "editor": 1, "admin": 2}
 
 ISSUE_TRANSITIONS = {
@@ -225,6 +336,21 @@ def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+# Older implementations reject this non-date value on rollback. A missing or
+# malformed expiry is never interpreted as a persistent grant.
+UNTIL_REVOKED = "until-revoked"
+
+
+def session_active(expires_at: str) -> bool:
+    if expires_at == UNTIL_REVOKED:
+        return True
+    try:
+        expires = datetime.fromisoformat(expires_at)
+        return expires.tzinfo is not None and expires > datetime.now(timezone.utc)
+    except (TypeError, ValueError):
+        return False
+
+
 _REPO_PROVIDERS = frozenset({"gitea", "github"})
 _REPO_SEGMENT_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
@@ -286,6 +412,64 @@ def machine_view(body_md: str) -> dict[str, Any]:
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _F = TypeVar("_F", bound=Callable[..., Any])
+
+
+_ISSUE_COMMENT_SELECT = (
+    "SELECT c.*, u.name AS author_name, r.parent_id FROM issue_comments c "
+    "LEFT JOIN users u ON u.id=c.author AND u.tenant_id=c.tenant_id "
+    "LEFT JOIN issue_comment_replies r ON r.comment_id=c.id "
+)
+
+
+def require_native_source_read(domain: Any, actor: str, module: str) -> None:
+    _module_read_once(domain, actor, module, set())
+
+
+def _module_read_once(domain: Any, actor: str, module: str, seen: set[str]) -> None:
+    if module in seen:
+        return
+    seen.add(module)
+    if module.startswith("requirement-"):
+        domain.require_native_module_read(actor, module)
+        return
+    catalog_module = re.fullmatch(r"(entry-[a-f0-9]{64})-.+", module)
+    integration_module = re.fullmatch(r"integration-([a-f0-9]{64})", module)
+    if not catalog_module and not integration_module:
+        return
+    with domain._connection_lock:
+        db = domain.db
+        tenant = domain.actor_context(actor)["tenant"]
+        if (
+            integration_module
+            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_integrations'").fetchone()
+        ):
+            row = db.execute(
+                "SELECT plan FROM native_integrations WHERE id=? AND json_extract(plan,'$.tenant')=?",
+                (integration_module[1], tenant),
+            ).fetchone()
+            if row:
+                plan = json.loads(row["plan"])
+                for name in plan["base"]:
+                    _module_read_once(domain, actor, name, seen)
+                for original in plan["originals"]:
+                    contract = original["contract"]
+                    domain._require_tenant_issue(actor, contract["issue"])
+                    for requirement in contract["source"]["definition"]["requirements"]:
+                        domain.get_doc_shared(actor, requirement["id"])
+                    for name in contract["selected"]:
+                        _module_read_once(domain, actor, name, seen)
+        if (
+            catalog_module
+            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_entry_catalogs'").fetchone()
+        ):
+            row = db.execute(
+                "SELECT json_extract(origin,'$.requirement') AS requirement FROM native_entry_catalogs "
+                "WHERE product=? AND json_extract(origin,'$.tenant')=? "
+                "AND EXISTS (SELECT 1 FROM json_each(origin,'$.modules') WHERE value=?)",
+                (catalog_module[1], tenant, module),
+            ).fetchone()
+            if row:
+                domain._require_requirement(actor, row["requirement"])
 
 
 def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callable[Concatenate[Tianxuan, _P], _R]:
@@ -371,7 +555,35 @@ class Tianxuan:
         self._migrate_users()
         self._migrate_docs()
         self._migrate_doc_shares()
+        self._migrate_issue_modules()
+        self.db.execute("CREATE INDEX IF NOT EXISTS idx_issues_module ON issues(tenant_id, project, module_id, number)")
         self.db.commit()
+
+    def _migrate_issue_modules(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(issues)")}
+        if {"project", "module_id"} <= columns:
+            return
+        # Serialize the column check and the backfill across independent service starts.
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(issues)")}
+        if "project" not in columns:
+            self.db.execute("ALTER TABLE issues ADD COLUMN project TEXT NOT NULL DEFAULT 'workspace'")
+            if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='migration_starts'").fetchone():
+                self.db.execute(
+                    "UPDATE issues SET project=COALESCE(json_extract(s.request, '$.project'), 'workspace') "
+                    "FROM migration_starts AS s WHERE s.tenant=issues.tenant_id "
+                    "AND json_extract(s.result, '$.issue_id')=issues.id"
+                )
+                self.db.execute(
+                    "WITH RECURSIVE scoped(id, tenant_id, project) AS ("
+                    "SELECT id, tenant_id, project FROM issues WHERE project <> 'workspace' UNION "
+                    "SELECT child.id, child.tenant_id, scoped.project FROM issues child JOIN scoped "
+                    "ON child.parent_id=scoped.id AND child.tenant_id=scoped.tenant_id WHERE child.project='workspace') "
+                    "UPDATE issues SET project=scoped.project FROM scoped WHERE issues.id=scoped.id"
+                )
+        if "module_id" not in columns:
+            self.db.execute("ALTER TABLE issues ADD COLUMN module_id TEXT NOT NULL DEFAULT 'default'")
 
     def _migrate_doc_shares(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(doc_shares)")}
@@ -396,6 +608,15 @@ class Tianxuan:
                 "CREATE TABLE sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, "
                 "created_at TEXT NOT NULL, expires_at TEXT NOT NULL)"
             )
+        # Register pre-upgrade sessions at startup, never on authenticated reads.
+        self.db.execute(
+            "INSERT OR IGNORE INTO session_devices "
+            "SELECT s.token_hash,'device_'||lower(hex(randomblob(16))),"
+            "COALESCE(e.id,'credential_'||lower(hex(randomblob(16)))),NULL,s.user_id,s.created_at "
+            "FROM sessions s LEFT JOIN session_devices d ON d.token_hash=s.token_hash "
+            "LEFT JOIN editor_devices e ON e.token_hash=s.token_hash "
+            "WHERE d.token_hash IS NULL"
+        )
 
     # ---------- 租户与身份 ----------
 
@@ -454,19 +675,66 @@ class Tianxuan:
     @_connection_call
     def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
         self._tenant_of(user_id)
+        expires = datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)
+        return self._new_session(user_id, expires.isoformat(timespec="seconds"))
+
+    def _new_session(self, user_id: str, expires_at: str) -> str:
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
-        now = datetime.now(timezone.utc)
-        expires = now + timedelta(seconds=ttl_seconds)
         self.db.execute(
             "INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
-            (
-                _token_hash(token),
-                user_id,
-                now.isoformat(timespec="seconds"),
-                expires.isoformat(timespec="seconds"),
-            ),
+            (_token_hash(token), user_id, _now(), expires_at),
+        )
+        self.db.execute(
+            "INSERT INTO session_devices VALUES (?,?,?,?,?,?)",
+            (_token_hash(token), _id("device"), _id("credential"), None, user_id, _now()),
         )
         return token
+
+    @_connection_call
+    def login_editor_device(self, email: str, password: str) -> dict[str, Any] | None:
+        account = self.authenticate(email, password)
+        if account is None:
+            return None
+        actor = account["user_id"]
+        token = self._new_session(actor, UNTIL_REVOKED)
+        device_id = _id("device")
+        self.db.execute(
+            "INSERT INTO editor_devices (id,token_hash,user_id,created_at) VALUES (?,?,?,?)",
+            (device_id, _token_hash(token), actor, _now()),
+        )
+        self.db.execute(
+            "UPDATE session_devices SET credential_id=? WHERE token_hash=?", (device_id, _token_hash(token))
+        )
+        context = self.device_context(token)
+        if context is None:
+            raise PermissionDenied("device credential unavailable")
+        self._event(account["tenant_id"], "identity.editor_device.issued", actor, device_id, context)
+        return {**account, "token": token, **context}
+
+    @_connection_call
+    def list_editor_devices(self, actor: str) -> list[dict[str, Any]]:
+        rows = self.db.execute(
+            "SELECT d.id,d.user_id,d.created_at FROM editor_devices d JOIN users u ON u.id=d.user_id "
+            "WHERE u.tenant_id=? AND (d.user_id=? OR ?='admin') ORDER BY d.created_at,d.id",
+            (self._tenant_of(actor), actor, self.role_of(actor)),
+        )
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def revoke_editor_device(self, actor: str, device_id: str) -> bool:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        row = self.db.execute(
+            "SELECT d.token_hash FROM editor_devices d JOIN users u ON u.id=d.user_id "
+            "WHERE d.id=? AND u.tenant_id=? AND (d.user_id=? OR ?='admin')",
+            (device_id, self._tenant_of(actor), actor, self.role_of(actor)),
+        ).fetchone()
+        if row is None:
+            raise NotFound("editor device not found")
+        self.db.execute("DELETE FROM sessions WHERE token_hash=?", (row["token_hash"],))
+        self.db.execute("DELETE FROM editor_devices WHERE id=?", (device_id,))
+        self._event(self._tenant_of(actor), "identity.editor_device.revoked", actor, device_id, {})
+        return True
 
     @_connection_call
     def user_for_token(self, token: str) -> str | None:
@@ -474,40 +742,172 @@ class Tianxuan:
         row = self.db.execute("SELECT user_id, expires_at FROM sessions WHERE token_hash = ?", (token_hash,)).fetchone()
         if row is None:
             return None
-        try:
-            expires = datetime.fromisoformat(row["expires_at"])
-        except ValueError:
-            expires = datetime.now(timezone.utc)
-        if expires <= datetime.now(timezone.utc):
+        device = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (token_hash,)).fetchone()
+        if device and device["parent_hash"]:
+            parent = self.db.execute(
+                "SELECT user_id,expires_at FROM sessions WHERE token_hash=?", (device["parent_hash"],)
+            ).fetchone()
+            if parent is None or parent["user_id"] != row["user_id"]:
+                return None
+            if not session_active(parent["expires_at"]):
+                return None
+            key = self.db.execute(
+                "SELECT revoked_at FROM access_keys WHERE token_hash=?", (device["parent_hash"],)
+            ).fetchone()
+            if key and key["revoked_at"] is not None:
+                return None
+        if not session_active(row["expires_at"]):
             self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (token_hash,))
             return None
         return str(row["user_id"])
 
     @_connection_call
+    def device_context(self, token: str) -> dict[str, str] | None:
+        """Server-assigned session identity; never accept a device header as authority."""
+        actor = self.user_for_token(token)
+        if not actor:
+            return None
+        digest = _token_hash(token)
+        row = self.db.execute(
+            "SELECT device_id,credential_id FROM session_devices WHERE token_hash=?", (digest,)
+        ).fetchone()
+        return dict(row) if row else None
+
+    @_connection_call
+    def issue_device_session(self, token: str) -> dict[str, str]:
+        """Each enrollment receives its own token, bounded by its source grant."""
+        actor = self.user_for_token(token)
+        if not actor:
+            raise PermissionDenied("valid source credential required")
+        digest = _token_hash(token)
+        source = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (digest,)).fetchone()
+        if source and source["parent_hash"]:
+            raise PermissionDenied("device sessions cannot delegate another device")
+        parent = self.db.execute("SELECT expires_at FROM sessions WHERE token_hash=?", (digest,)).fetchone()
+        child = self.issue_session(actor)
+        self.db.execute("UPDATE sessions SET expires_at=? WHERE token_hash=?", (parent[0], _token_hash(child)))
+        self.db.execute("UPDATE session_devices SET parent_hash=? WHERE token_hash=?", (digest, _token_hash(child)))
+        context = self.device_context(child)
+        if context is None:
+            raise PermissionDenied("source credential expired during device enrollment")
+        self._event(self._tenant_of(actor), "identity.device.issued", actor, context["device_id"], context)
+        return {"token": child, "user_id": actor, **context}
+
+    @_connection_call
+    def list_devices(self, actor: str) -> list[dict[str, Any]]:
+        return [
+            dict(row)
+            for row in self.db.execute(
+                "SELECT d.device_id,d.credential_id,d.created_at,s.expires_at FROM session_devices d "
+                "JOIN sessions s ON s.token_hash=d.token_hash WHERE d.user_id=? ORDER BY d.created_at,d.device_id",
+                (actor,),
+            )
+        ]
+
+    @_connection_call
+    def revoke_device(self, actor: str, device_id: str) -> bool:
+        row = self.db.execute(
+            "SELECT token_hash FROM session_devices WHERE user_id=? AND device_id=?", (actor, device_id)
+        ).fetchone()
+        if row is None:
+            raise NotFound("device not found")
+        # Root personal keys have a separate administrator revocation endpoint.
+        if self.db.execute("SELECT 1 FROM access_keys WHERE token_hash=?", (row[0],)).fetchone():
+            raise PermissionDenied("revoke personal keys through key management")
+        editor = self.db.execute("SELECT id FROM editor_devices WHERE token_hash=?", (row[0],)).fetchone()
+        if editor:
+            return self.revoke_editor_device(actor, editor[0])
+        changed = self.db.execute("DELETE FROM sessions WHERE token_hash=?", (row[0],)).rowcount > 0
+        if changed:
+            self._event(self._tenant_of(actor), "identity.device.revoked", actor, device_id, {})
+        return changed
+
+    @_connection_call
     def revoke_session(self, token: str) -> bool:
-        cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        digest = _token_hash(token)
+        # A personal key may be shared by the owner's other clients. It has
+        # its own explicit administrator revocation endpoint and audit event.
+        if self.db.execute("SELECT 1 FROM access_keys WHERE token_hash=?", (digest,)).fetchone():
+            return False
+        device = self.db.execute("SELECT id,user_id FROM editor_devices WHERE token_hash=?", (digest,)).fetchone()
+        if device:
+            return self.revoke_editor_device(device["user_id"], device["id"])
+        cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (digest,))
         return cursor.rowcount > 0
 
     @_connection_call
-    def issue_access_key(self, actor: str, user_id: str, name: str, days: int = 90) -> dict[str, Any]:
+    def issue_access_key(
+        self,
+        actor: str,
+        user_id: str,
+        name: str,
+        days: int | None = None,
+        *,
+        admin_only: bool = False,
+        until_revoked: bool = False,
+        issuer_token: str | None = None,
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
         if self.role_of(actor) != "admin" or self._tenant_of(actor) != self._tenant_of(user_id):
             raise PermissionDenied("only a tenant administrator can issue access keys")
-        if not name.strip() or len(name) > 100 or not 1 <= days <= 365:
+        if admin_only and self.role_of(user_id) != "admin":
+            raise VersionConflict("recipient is not an administrator")
+        if until_revoked and days is not None:
+            raise TianxuanError("specify either days or until_revoked")
+        if not until_revoked and days is None:
+            days = 90
+        if not name.strip() or len(name) > 100 or (days is not None and not 1 <= days <= 365):
             raise TianxuanError("key name and lifetime (1–365 days) are required")
-        token = self.issue_session(user_id, days * 86400)
+        expires_at = UNTIL_REVOKED
+        if days is not None:
+            expires_at = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat(timespec="seconds")
+        if issuer_token is not None:
+            expires_at = self._delegated_expiry(actor, issuer_token, expires_at)
+        token = self._new_session(user_id, expires_at)
         key_id = _id("key")
         self.db.execute(
             "INSERT INTO access_keys VALUES (?, ?, ?, ?, ?, ?, NULL)",
             (key_id, _token_hash(token), user_id, name.strip(), actor, _now()),
         )
-        self._event(self._tenant_of(actor), "access_key.issued", actor, key_id, {"user_id": user_id})
-        return {"id": key_id, "key": token, "user_id": user_id, "name": name.strip(), "days": days}
+        self._event(
+            self._tenant_of(actor), "access_key.issued", actor, key_id, {"user_id": user_id, "expiry": expires_at}
+        )
+        return {
+            "id": key_id,
+            "key": token,
+            "user_id": user_id,
+            "name": name.strip(),
+            "days": days,
+            "expires_at": expires_at,
+        }
+
+    def _delegated_expiry(self, actor: str, issuer_token: str, requested: str) -> str:
+        # Recheck the presented credential inside the same transaction as issuance.
+        row = self.db.execute(
+            "SELECT s.expires_at,k.id FROM sessions s LEFT JOIN access_keys k ON k.token_hash=s.token_hash "
+            "AND k.revoked_at IS NULL WHERE s.token_hash=? AND s.user_id=?",
+            (_token_hash(issuer_token), actor),
+        ).fetchone()
+        if not row or not session_active(row["expires_at"]):
+            raise PermissionDenied("current administrator credential required")
+        issuer_expiry = str(row["expires_at"])
+        if requested == UNTIL_REVOKED and (issuer_expiry != UNTIL_REVOKED or row["id"] is None):
+            raise PermissionDenied("persistent administrator access key required")
+        if issuer_expiry != UNTIL_REVOKED and datetime.fromisoformat(issuer_expiry) < datetime.fromisoformat(requested):
+            return issuer_expiry
+        return requested
 
     @_connection_call
     def user_for_access_key(self, token: str) -> str | None:
+        digest = _token_hash(token)
+        device = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (digest,)).fetchone()
+        source_hash = device[0] if device and device[0] else digest
         row = self.db.execute(
             "SELECT user_id FROM access_keys WHERE token_hash = ? AND revoked_at IS NULL",
-            (_token_hash(token),),
+            (source_hash,),
         ).fetchone()
         if row is None:
             return None
@@ -694,6 +1094,19 @@ class Tianxuan:
         }
 
     # ---------- 文曲：文档 ----------
+    def _validate_game_config(self, actor: str, kind: str, body_md: str) -> None:
+        if kind != "game_config":
+            return
+        from game_config_schema import parse_config
+
+        try:
+            features = parse_config(body_md)
+        except ValueError as error:
+            raise TianxuanError(str(error)) from error
+        for feature in features:
+            if feature.get("document_id"):
+                self.get_doc_shared(actor, feature["document_id"])
+
     @_connection_call
     @_replayable("doc.create", legacy=False)
     def create_doc(
@@ -710,6 +1123,7 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
+        self._validate_game_config(actor, kind, body_md)
         space_id = (
             space_id
             or self.db.execute(
@@ -767,6 +1181,7 @@ class Tianxuan:
             raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
+        self._validate_game_config(actor, doc["kind"], body_md)
         if body_md != doc["body_md"]:
             self._require_field_write(actor, doc, "body_md")
         if title is not None and title != doc["title"]:
@@ -861,6 +1276,15 @@ class Tianxuan:
         if not allowed:
             raise PermissionDenied(f"no access to document: {doc_id}")
         return doc
+
+    @_connection_call
+    def editable_doc_body(self, actor: str, doc_id: str, expected_version: int) -> str:
+        self._require_editor(actor)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        self._require_field_write(actor, document, "body_md")
+        if document["version"] != expected_version:
+            raise VersionConflict("document revision has changed")
+        return str(document["body_md"])
 
     @_connection_call
     def set_visibility(self, actor: str, doc_id: str, visibility: str) -> dict[str, Any]:
@@ -986,9 +1410,28 @@ class Tianxuan:
         if _ROLE_RANK.get(self.role_of(actor), 0) < _ROLE_RANK.get(str(row["min_role"]), 0):
             raise PermissionDenied(f"{field} requires {row['min_role']} role")
 
-    def ai_view(self, doc_id: str) -> dict[str, Any]:
+    @_connection_call
+    def ai_view(
+        self,
+        doc_id: str,
+        *,
+        include_body: bool = True,
+        start_line: int = 1,
+        max_lines: int | None = None,
+        max_chars: int | None = None,
+        expected_version: int | None = None,
+    ) -> dict[str, Any]:
+        if not isinstance(include_body, bool):
+            raise TianxuanError("include_body must be boolean")
+        if type(start_line) is not int or start_line < 1:
+            raise TianxuanError("start_line must be a positive integer")
+        for value in (start_line, max_lines, max_chars, expected_version):
+            if value is not None and (type(value) is not int or value < 1):
+                raise TianxuanError("reading limits and version must be positive integers")
         doc = self.get_doc(doc_id)
-        return {
+        if expected_version is not None and doc["version"] != expected_version:
+            raise VersionConflict("document changed since requested version")
+        result = {
             "id": doc["id"],
             "title": doc["title"],
             "kind": doc["kind"],
@@ -996,9 +1439,91 @@ class Tianxuan:
             "request_id": doc["request_id"],
             "tags": doc["tags"],
             "version": doc["version"],
-            "machine": machine_view(doc["body_md"]),
-            "body_md": doc["body_md"],
+            "machine": build_ai_index(doc["body_md"]),
         }
+        if include_body:
+            lines = doc["body_md"].splitlines(keepends=True)
+            stop = None if max_lines is None else start_line - 1 + max_lines
+            body = "".join(lines[start_line - 1 : stop])
+            result["body_md"] = body if max_chars is None else body[:max_chars]
+            result["range"] = {
+                "start_line": start_line,
+                "total_lines": len(lines),
+                "returned_chars": len(result["body_md"]),
+                "truncated": result["body_md"] != doc["body_md"],
+            }
+        return result
+
+    @_connection_call
+    def search_docs(self, actor: str, q: str, limit: int = 20) -> dict[str, Any]:
+        if not isinstance(q, str) or not q.strip():
+            raise TianxuanError("search query must not be empty")
+        if type(limit) is not int or not 1 <= limit <= 100:
+            raise TianxuanError("limit must be between 1 and 100")
+        documents = [self.get_doc(row["id"]) for row in self.list_docs(actor)]
+        by_id = {document["id"]: document for document in documents}
+        return {
+            "results": [
+                {
+                    **item,
+                    "title": by_id[item["id"]]["title"],
+                    "kind": by_id[item["id"]]["kind"],
+                }
+                for item in search_documents(documents, q)[:limit]
+            ]
+        }
+
+    @_connection_call
+    @_replayable("doc.patch", legacy=False)
+    def patch_doc(
+        self,
+        actor: str,
+        doc_id: str,
+        expected_version: int,
+        patches: list[dict[str, str]],
+        *,
+        call_id: str | None = None,
+    ) -> dict[str, Any]:
+        if type(expected_version) is not int or expected_version < 1:
+            raise TianxuanError("expected_version must be a positive integer")
+        self._require_tenant_doc(actor, doc_id)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        if document["version"] != expected_version:
+            raise VersionConflict(f"version mismatch: expected {expected_version}, current {document['version']}")
+        if not isinstance(patches, list):
+            raise TianxuanError("patches must be a list")
+        body = document["body_md"]
+        for operation in patches:
+            if (
+                not isinstance(operation, dict)
+                or set(operation) != {"find", "replace"}
+                or any(not isinstance(value, str) for value in operation.values())
+            ):
+                raise TianxuanError("patch requires find and replace strings")
+            find = operation["find"]
+            if not find:
+                raise TianxuanError("patch find must not be empty")
+            occurrences = body.count(find)
+            if occurrences == 0:
+                raise TianxuanError(f"patch target not found: {find!r}")
+            if occurrences > 1:
+                raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {find!r}")
+            body = body.replace(find, operation["replace"], 1)
+        return self.update_doc(actor, doc_id, body, expected_version)
+
+    @_connection_call
+    @_replayable("doc.restore")
+    def restore_doc(
+        self, actor: str, doc_id: str, version: int, expected_version: int, *, call_id: str | None = None
+    ) -> dict[str, Any]:
+        if any(type(number) is not int or number < 1 for number in (version, expected_version)):
+            raise TianxuanError("version and expected_version must be positive integers")
+        self._require_editor(actor)
+        self._require_tenant_doc(actor, doc_id)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        self._require_field_write(actor, document, "body_md")
+        body = self.version(doc_id, version)["body_md"]
+        return self.update_doc(actor, doc_id, body, expected_version)
 
     def _version(self, doc_id: str, version: int, body_md: str, author: str) -> None:
         self.db.execute(
@@ -1022,6 +1547,294 @@ class Tianxuan:
         if row is None:
             raise NotFound(f"version not found: {doc_id}@{version}")
         return dict(row)
+
+    @_connection_call
+    def design_signoff(
+        self, actor: str, doc_id: str, version: int, acceptance: str | None = None
+    ) -> dict[str, Any] | None:
+        if type(version) is not int or not 1 <= version <= 2**63 - 1:
+            raise TianxuanError("version must be a positive SQLite integer")
+        if acceptance is not None:
+            if not self.db.in_transaction:
+                self.db.execute("BEGIN IMMEDIATE")
+            self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=acceptance is not None)
+        self.version(doc_id, version)
+        if acceptance is not None:
+            acceptance = acceptance.strip()
+            if not acceptance or len(acceptance) > 8000:
+                raise TianxuanError("acceptance criteria must contain 1 to 8000 characters")
+            self.db.execute(
+                "INSERT INTO design_signoffs(document_id,version,confirmed_by,confirmed_at,acceptance) "
+                "VALUES(?,?,?,?,?) ON CONFLICT(document_id,version) DO NOTHING",
+                (doc_id, version, actor, _now(), acceptance),
+            )
+        row = self.db.execute(
+            "SELECT document_id,version,confirmed_by,confirmed_at,acceptance FROM design_signoffs "
+            "WHERE document_id=? AND version=?",
+            (doc_id, version),
+        ).fetchone()
+        if row is None:
+            return None
+        if acceptance is not None and (row["acceptance"] != acceptance or row["confirmed_by"] != actor):
+            raise VersionConflict("this revision already has a signoff; reopen to read its receipt")
+        return dict(row)
+
+    @_connection_call
+    def split_design(
+        self, actor: str, doc_id: str, version: int, project: str, items: list[dict[str, Any]], call_id: str
+    ) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        if not self.design_signoff(actor, doc_id, version):
+            raise VersionConflict("sign off this design revision before splitting it")
+        self._validate_project(project)
+        if not call_id or not 1 <= len(items) <= 50:
+            raise TianxuanError("a split requires a request ID and 1 to 50 items")
+        body = self.version(doc_id, version)["body_md"]
+        # The document viewer numbers consecutive nonblank Markdown lines as one paragraph.
+        paragraph_count = 0
+        previous_blank = True
+        for line in body.split("\n"):
+            # String.strip_edges() in the Godot picker removes exactly code points 0 through 32.
+            blank = re.search(r"[^\x00-\x20]", line) is None
+            if previous_blank and not blank:
+                paragraph_count += 1
+            previous_blank = blank
+
+        def create() -> list[dict[str, Any]]:
+            created = []
+            for item in items:
+                index, module = item["paragraph"], item["module_id"]
+                title, acceptance = item["title"].strip(), item["acceptance"].strip()
+                if type(index) is not int or not 1 <= index <= paragraph_count:
+                    raise TianxuanError("source paragraph does not exist in the signed revision")
+                if not title or not acceptance:
+                    raise TianxuanError("each task requires a title and acceptance conditions")
+                issue = self.create_issue(actor, title, acceptance=acceptance, project=project, module_id=module)
+                self.link_doc_issue(actor, doc_id, issue["id"])
+                source = dict(
+                    document_id=doc_id,
+                    version=version,
+                    paragraph=index,
+                    project=project,
+                    module_id=module,
+                    acceptance=acceptance,
+                )
+                self.db.execute(
+                    "INSERT INTO design_task_sources(issue_id,document_id,version,paragraph,project,module_id,acceptance) "
+                    "VALUES(?,?,?,?,?,?,?)",
+                    (issue["id"], doc_id, version, index, project, module, acceptance),
+                )
+                created.append(dict(id=issue["id"], number=issue["number"], title=title, design_source=source))
+            return created
+
+        payload = dict(doc_id=doc_id, version=version, project=project, items=items)
+        return cast(list[dict[str, Any]], self._run_tool_once(actor, "design.split", payload, call_id, create))
+
+    @_connection_call
+    def design_tasks(self, actor: str, doc_id: str, version: int, project: str) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        self._validate_project(project)
+        self.design_signoff(actor, doc_id, version)
+        rows = self.db.execute(
+            "SELECT s.issue_id AS id,i.number,i.title,s.document_id,s.version,s.paragraph,s.project,s.module_id,"
+            "s.acceptance FROM design_task_sources s JOIN issues i ON i.id=s.issue_id "
+            "WHERE s.document_id=? AND s.version=? AND s.project=? ORDER BY i.number",
+            (doc_id, version, project),
+        )
+        return self._visible_issues(actor, list(rows))
+
+    def _design_task_source(self, actor: str, issue_id: str) -> dict[str, Any] | None:
+        row = self.db.execute(
+            "SELECT document_id,version,paragraph,project,module_id,acceptance FROM design_task_sources WHERE issue_id=?",
+            (issue_id,),
+        ).fetchone()
+        if row:
+            try:
+                self.get_doc_shared(actor, row["document_id"])
+            except (PermissionDenied, NotFound):
+                return None
+            return dict(row)
+        return None
+
+    def _task_target(self, issue_id: str) -> dict[str, Any] | None:
+        row = self.db.execute(
+            "SELECT t.issue_id,s.document_id,s.version,t.revision,t.responsible_user,t.stage,t.criteria,"
+            "t.return_comment_id,coalesce(c.body,'') AS return_reason,"
+            "CASE WHEN t.return_comment_id IS NULL THEN 'defined' ELSE 'returned' END AS status "
+            "FROM design_task_targets t JOIN design_task_sources s USING(issue_id) "
+            "LEFT JOIN issue_comments c ON c.id=t.return_comment_id WHERE t.issue_id=?",
+            (issue_id,),
+        ).fetchone()
+        return dict(row) if row else None
+
+    @_connection_call
+    def set_task_target(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        document_id: str,
+        version: int,
+        expected_revision: int,
+        stage: str,
+        criteria: str | None = None,
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        detail = self.read_issue_detail(actor, project, issue["number"])
+        source = detail["design_source"]
+        if source is None:
+            raise NotFound("signed design source unavailable")
+        if (document_id, version) != (source["document_id"], source["version"]):
+            raise VersionConflict("target must reference the task's signed design revision")
+        responsible = detail["assignee"]["id"] if detail["assignee"] else issue["created_by"]
+        if actor != responsible:
+            raise PermissionDenied("only the responsible user may define this target")
+        stage, criteria = stage.strip(), (criteria or "").strip()
+        if not 1 <= len(stage) <= 128 or len(criteria) > 8000:
+            raise TianxuanError("a stage (1 to 128 characters) and criteria of at most 8000 characters are required")
+        current: dict[str, Any] | None = detail["task_target"]
+        revision = current["revision"] if current else 0
+        if (
+            current
+            and (current["responsible_user"], current["stage"], current["criteria"]) == (actor, stage, criteria)
+            and expected_revision in (revision, revision - 1)
+        ):
+            return current
+        if expected_revision != revision:
+            raise VersionConflict("task target changed; reopen the issue")
+        comment_id = None
+        if not criteria:
+            comment = self.add_issue_comment(actor, issue_id, "阶段目标已退回：请填写可验证的到达条件。")
+            comment_id = comment["id"]
+        self.db.execute(
+            "INSERT INTO design_task_targets(issue_id,revision,responsible_user,stage,criteria,return_comment_id) "
+            "VALUES(?,?,?,?,?,?) ON CONFLICT(issue_id) DO UPDATE SET revision=excluded.revision,"
+            "responsible_user=excluded.responsible_user,stage=excluded.stage,criteria=excluded.criteria,"
+            "return_comment_id=excluded.return_comment_id",
+            (issue_id, revision + 1, actor, stage, criteria, comment_id),
+        )
+        target = self._task_target(issue_id)
+        assert target is not None
+        return target
+
+    def _task_confirmation(self, target: dict[str, Any], responsible: str, issue_revision: str) -> dict[str, Any]:
+        row = self.db.execute(
+            "SELECT * FROM design_task_confirmations WHERE issue_id=?", (target["issue_id"],)
+        ).fetchone()
+        status = "pending"
+        if row and (row["target_revision"], row["actor"], row["issue_revision"]) == (
+            target["revision"],
+            responsible,
+            issue_revision,
+        ):
+            status = row["status"]
+        return {
+            "issue_id": target["issue_id"],
+            "document_id": target["document_id"],
+            "version": target["version"],
+            "stage": target["stage"],
+            "target_revision": target["revision"],
+            "issue_revision": issue_revision,
+            "revision": row["revision"] if row else 0,
+            "status": status,
+            "responsible_user": responsible,
+            "confirmed_by": responsible if status == "confirmed" else None,
+        }
+
+    @_connection_call
+    def task_stage_authority(self, actor: str, issue: str, issue_revision: str) -> dict[str, Any] | None:
+        # Membership is independent of source visibility. A private design or a
+        # missing confirmation must never take the ordinary issue path.
+        record = self.db.execute(
+            "SELECT i.project,i.number FROM design_task_sources s JOIN issues i ON i.id=s.issue_id WHERE s.issue_id=?",
+            (issue,),
+        ).fetchone()
+        if record is None:
+            return None
+        detail = self.read_issue_detail(actor, record["project"], record["number"])
+        source = detail["design_source"]
+        if not source:
+            raise PermissionDenied("Signed task source unavailable")
+        target = detail["task_target"]
+        confirmation = detail.get("task_confirmation")
+        if not target or target["status"] != "defined" or not confirmation or confirmation["status"] != "confirmed":
+            raise VersionConflict("Current task stage confirmation required")
+        responsible = detail["assignee"]["id"] if detail["assignee"] else detail["created_by"]
+        binding = {
+            "issue_id": issue,
+            "issue_revision": issue_revision,
+            "document_id": source["document_id"],
+            "version": source["version"],
+            "target_revision": target["revision"],
+            "stage": target["stage"],
+            "responsible_user": responsible,
+            "confirmed_by": responsible,
+        }
+        if (
+            any(confirmation.get(name) != value for name, value in binding.items())
+            or any(target[name] != binding[name] for name in ("issue_id", "document_id", "version"))
+            or not target["criteria"]
+            or not confirmation["revision"]
+        ):
+            raise VersionConflict("Task stage confirmation changed")
+        return {**binding, "confirmation_revision": confirmation["revision"], "criteria": target["criteria"]}
+
+    @_connection_call
+    def set_task_confirmation(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        document_id: str,
+        version: int,
+        target_revision: int,
+        issue_revision: str,
+        expected_revision: int,
+        status: str,
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        detail = self.read_issue_detail(actor, project, issue["number"])
+        if detail["design_source"] is None:
+            raise NotFound("signed design source unavailable")
+        target = detail["task_target"]
+        current: dict[str, Any] | None = detail["task_confirmation"]
+        if not target or target["status"] != "defined" or current is None:
+            raise VersionConflict("define the stage and its criteria first")
+        if current["responsible_user"] != actor:
+            raise PermissionDenied("only the current responsible user may confirm this task")
+        if (document_id, version, target_revision) != (target["document_id"], target["version"], target["revision"]):
+            raise VersionConflict("task source or target changed")
+        if issue_revision != detail["revision"]:
+            raise VersionConflict("issue definition changed")
+        if status not in {"confirmed", "revoked"}:
+            raise TianxuanError("unsupported confirmation status")
+        revision = current["revision"]
+        if current["status"] == status and expected_revision in (revision, revision - 1):
+            return current
+        if expected_revision != revision or (status == "revoked" and current["status"] != "confirmed"):
+            raise VersionConflict("confirmation changed; reopen the task")
+        if status == "confirmed" and issue["status"] in {"done", "cancelled"}:
+            raise VersionConflict("terminal issue cannot start")
+        self.db.execute(
+            "INSERT INTO design_task_confirmations(issue_id,target_revision,revision,status,actor,issue_revision) VALUES(?,?,?,?,?,?) "
+            "ON CONFLICT(issue_id) DO UPDATE SET target_revision=excluded.target_revision,"
+            "revision=excluded.revision,status=excluded.status,actor=excluded.actor,issue_revision=excluded.issue_revision",
+            (issue_id, target_revision, revision + 1, status, actor, issue_revision),
+        )
+        record = self._task_confirmation(target, actor, issue_revision)
+        self._event(issue["tenant_id"], "task.confirmation", actor, issue_id, record)
+        return record
 
     # ---------- 文曲：评论 ----------
 
@@ -1125,6 +1938,131 @@ class Tianxuan:
 
     # ---------- 司南：工单 ----------
 
+    @staticmethod
+    def _validate_project(project: str) -> None:
+        if not isinstance(project, str) or not re.fullmatch(PROJECT_PATTERN, project):
+            raise TianxuanError("invalid project key")
+
+    @staticmethod
+    def _module_name(name: str) -> str:
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 200:
+            raise TianxuanError("module name must contain 1 to 200 characters")
+        return name.strip()
+
+    def _business_module(self, tenant: str, project: str, module_id: str) -> dict[str, Any]:
+        if not isinstance(module_id, str):
+            raise TianxuanError("invalid module ID")
+        row = self.db.execute(
+            "SELECT id, project, name FROM business_modules WHERE tenant_id=? AND project=? AND id=?",
+            (tenant, project, module_id),
+        ).fetchone()
+        if row:
+            return dict(row)
+        if module_id == DEFAULT_MODULE_ID:
+            return {"id": DEFAULT_MODULE_ID, "project": project, "name": "默认模块"}
+        raise NotFound("business module not found")
+
+    def _module_location_key(self, actor: str, project: str, module_id: str) -> tuple[str, str, str, str]:
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        self._business_module(tenant, project, module_id)
+        return tenant, actor, project, module_id
+
+    def _require_location_targets(
+        self, key: tuple[str, str, str, str], issue_id: str | None, conversation_id: str | None
+    ) -> None:
+        tenant, actor, project, module_id = key
+        if issue_id is not None:
+            issue = self._require_tenant_issue(actor, issue_id)
+            if (issue["project"], issue["module_id"]) != (project, module_id):
+                raise NotFound("issue not found in module")
+        if conversation_id is not None:
+            # Workspace conversations are provisioned on first creation and IDs are owner-scoped.
+            exists = self.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='workspace_conversations'"
+            ).fetchone()
+            if (
+                not exists
+                or not self.db.execute(
+                    "SELECT 1 FROM workspace_conversations WHERE tenant=? AND actor=? AND id=?",
+                    (tenant, actor, conversation_id),
+                ).fetchone()
+            ):
+                raise NotFound("conversation unavailable")
+
+    @_connection_call
+    def module_location(self, actor: str, project: str, module_id: str) -> dict[str, Any] | None:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        key = self._module_location_key(actor, project, module_id)
+        row = self.db.execute(
+            "SELECT issue_id, conversation_id, position FROM module_work_locations "
+            "WHERE tenant_id=? AND actor=? AND project=? AND module_id=?",
+            key,
+        ).fetchone()
+        if row is None:
+            return None
+        try:
+            self._require_location_targets(key, row["issue_id"], row["conversation_id"])
+        except (PermissionDenied, NotFound):
+            return None
+        return dict(row)
+
+    @_connection_call
+    def save_module_location(
+        self, actor: str, project: str, module_id: str, issue_id: str | None, conversation_id: str | None, position: str
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        key = self._module_location_key(actor, project, module_id)
+        if not isinstance(position, str) or not 1 <= len(position) <= 2048:
+            raise TianxuanError("position must contain 1 to 2048 characters")
+        self._require_location_targets(key, issue_id, conversation_id)
+        self.db.execute(
+            "INSERT INTO module_work_locations (tenant_id, actor, project, module_id, issue_id, conversation_id, position) "
+            "VALUES (?,?,?,?,?,?,?) ON CONFLICT (tenant_id, actor, project, module_id) DO UPDATE SET "
+            "issue_id=excluded.issue_id, conversation_id=excluded.conversation_id, position=excluded.position",
+            (*key, issue_id, conversation_id, position),
+        )
+        return {"issue_id": issue_id, "conversation_id": conversation_id, "position": position}
+
+    @_connection_call
+    def list_business_modules(self, actor: str, project: str) -> list[dict[str, Any]]:
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        rows = self.db.execute(
+            "SELECT id, project, name FROM business_modules WHERE tenant_id=? AND project=? AND id<>? ORDER BY name,id",
+            (tenant, project, DEFAULT_MODULE_ID),
+        )
+        return [self._business_module(tenant, project, DEFAULT_MODULE_ID), *map(dict, rows)]
+
+    @_connection_call
+    @_replayable("module.create")
+    def create_business_module(self, actor: str, project: str, name: str, *, call_id: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        module_id = _id("mod")
+        self.db.execute(
+            "INSERT INTO business_modules (tenant_id, project, id, name) VALUES (?,?,?,?)",
+            (tenant, project, module_id, self._module_name(name)),
+        )
+        return self._business_module(tenant, project, module_id)
+
+    @_connection_call
+    def rename_business_module(self, actor: str, project: str, module_id: str, name: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        self._business_module(tenant, project, module_id)
+        self.db.execute(
+            "INSERT INTO business_modules (tenant_id, project, id, name) VALUES (?,?,?,?) "
+            "ON CONFLICT (tenant_id, project, id) DO UPDATE SET name=excluded.name",
+            (tenant, project, module_id, self._module_name(name)),
+        )
+        return self._business_module(tenant, project, module_id)
+
     @_connection_call
     @_replayable("issue.create", legacy=False)
     def create_issue(
@@ -1138,11 +2076,20 @@ class Tianxuan:
         parent_id: str | None = None,
         body_md: str = "",
         *,
+        project: str | None = None,
+        module_id: str | None = None,
         call_id: str | None = None,
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
         self._require_issue_references(actor, requirement_id, parent_id, write=True)
+        parent = self.get_issue(parent_id) if parent_id else None
+        if project is None:
+            project = parent["project"] if parent else DEFAULT_PROJECT
+        self._validate_project(project)
+        if module_id is None:
+            module_id = parent["module_id"] if parent and parent["project"] == project else DEFAULT_MODULE_ID
+        self._business_module(tenant_id, project, module_id)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
         ).fetchone()[0]
@@ -1150,8 +2097,8 @@ class Tianxuan:
         now = _now()
         self.db.execute(
             "INSERT INTO issues (id, tenant_id, parent_id, number, type, status, priority, title, body_md, "
-            "acceptance, requirement_id, created_by, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, 'backlog', ?, ?, ?, ?, ?, ?, ?, ?)",
+            "acceptance, requirement_id, created_by, created_at, updated_at, project, module_id) "
+            "VALUES (?, ?, ?, ?, ?, 'backlog', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 issue_id,
                 tenant_id,
@@ -1166,6 +2113,8 @@ class Tianxuan:
                 actor,
                 now,
                 now,
+                project,
+                module_id,
             ),
         )
         self._event(tenant_id, "issue.created", actor, issue_id, {"number": number, "title": title})
@@ -1179,14 +2128,256 @@ class Tianxuan:
         return dict(row)
 
     @_connection_call
-    def list_issues(self, actor: str, requirement_id: str | None = None) -> list[dict[str, Any]]:
+    def read_issue(self, actor: str, issue_id: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        return self._require_tenant_issue(actor, issue_id)
+
+    @_connection_call
+    def read_issue_number(self, actor: str, project: str, number: int) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        self._validate_project(project)
+        if number < 1 or number > 2**63 - 1:
+            raise NotFound("issue number not found in project")
+        row = self.db.execute(
+            "SELECT id FROM issues WHERE tenant_id=? AND number=? AND project=?",
+            (self._tenant_of(actor), number, project),
+        ).fetchone()
+        if row is None:
+            raise NotFound("issue number not found in project")
+        return self._require_tenant_issue(actor, row["id"])
+
+    @_connection_call
+    def read_issue_detail(self, actor: str, project: str, number: int) -> dict[str, Any]:
+        """Resolve the numbered record, its assignee and definition in one read transaction."""
+        issue = self.read_issue_number(actor, project, number)
+        assignee = self.db.execute(
+            "SELECT u.id, u.name FROM issue_assignees a JOIN users u ON u.id=a.user_id "
+            "WHERE a.issue_id=? AND u.tenant_id=?",
+            (issue["id"], issue["tenant_id"]),
+        ).fetchone()
+        snapshot = self.issue_snapshot(actor, issue["id"])
+        try:
+            self._require_editor(actor)
+            self._require_issue_references(actor, issue["requirement_id"], issue["parent_id"], write=True)
+            can_classify = True
+        except PermissionDenied:
+            can_classify = False
+        source = self._design_task_source(actor, issue["id"])
+        target = self._task_target(issue["id"]) if source else None
+        responsible = assignee["id"] if assignee else issue["created_by"]
+        return issue | {
+            "can_classify": can_classify,
+            "design_source": source,
+            "task_target": target,
+            "task_confirmation": self._task_confirmation(target, responsible, snapshot["revision"]) if target else None,
+            "assignee": dict(assignee) if assignee else None,
+            "revision": snapshot["revision"],
+            "labels": self._issue_labels(issue["id"]),
+        }
+
+    def _issue_labels(self, issue_id: str) -> list[str]:
+        rows = self.db.execute("SELECT name FROM issue_labels WHERE issue_id=? ORDER BY name", (issue_id,))
+        return [row["name"] for row in rows]
+
+    @staticmethod
+    def _issue_capabilities(labels: list[str]) -> list[str]:
+        return [name.removeprefix("capability:") for name in labels if name.startswith("capability:")]
+
+    @_connection_call
+    def set_issue_classification(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        issue_type: str,
+        labels: list[str],
+        expected_type: str,
+        expected_labels: list[str],
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        issue_type = issue_type.strip()
+        if not issue_type or len(issue_type) > 128 or not issue_type.isprintable():
+            raise TianxuanError("issue type must be a single line of 1 to 128 characters")
+        names = sorted({name.strip() for name in labels})
+        if len(names) > 100 or any(not name or len(name) > 128 or not name.isprintable() for name in names):
+            raise TianxuanError("issue labels must contain up to 100 names of 1 to 128 characters")
+        required = self._issue_capabilities(names)
+        if len(required) > 32 or any(not name or name != name.strip() for name in required):
+            raise TianxuanError("Capability labels require up to 32 nonblank capability IDs")
+        previous = self._issue_labels(issue_id)
+        if (issue_type, names) != (issue["type"], previous):
+            if (expected_type, sorted(set(expected_labels))) != (issue["type"], previous):
+                raise VersionConflict("issue classification changed; reload issue")
+            self.db.execute("UPDATE issues SET type=?,updated_at=? WHERE id=?", (issue_type, _now(), issue_id))
+            self.db.execute("DELETE FROM issue_labels WHERE issue_id=?", (issue_id,))
+            self.db.executemany("INSERT INTO issue_labels(issue_id,name) VALUES (?,?)", ((issue_id, n) for n in names))
+            if required != self._issue_capabilities(previous):
+                # Reverting capability labels must not revive a prior stage grant.
+                self.db.execute(
+                    "UPDATE design_task_confirmations SET status='pending',revision=revision+1,actor=NULL,"
+                    "issue_revision=NULL WHERE issue_id=?",
+                    (issue_id,),
+                )
+        return {"type": issue_type, "labels": names}
+
+    def _project_issue(self, actor: str, issue_id: str, project: str, *, write: bool = False) -> dict[str, Any]:
+        issue = self._require_tenant_issue(actor, issue_id, write=write)
+        self._validate_project(project)
+        if issue["project"] != project:
+            raise NotFound("issue not found in project")
+        return issue
+
+    @_connection_call
+    def issue_hierarchy(self, actor: str, issue_id: str, project: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        issue = self._project_issue(actor, issue_id, project)
+        parent = self.get_issue(issue["parent_id"]) if issue["parent_id"] else None
+        rows = self.db.execute(
+            "SELECT * FROM issues WHERE tenant_id=? AND parent_id=? ORDER BY number",
+            (issue["tenant_id"], issue_id),
+        ).fetchall()
+
+        def summary(row: dict[str, Any]) -> dict[str, Any]:
+            return {field: row[field] for field in ("id", "number", "title")}
+
+        return {
+            "parent": summary(parent) if parent else None,
+            "children": [summary(row) for row in self._visible_issues(actor, rows)],
+        }
+
+    @_connection_call
+    def set_issue_parent(
+        self, actor: str, issue_id: str, project: str, parent_number: int | None, expected_parent_id: str | None
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        parent_id = None
+        if parent_number is not None:
+            proposed = self.read_issue_number(actor, issue["project"], parent_number)
+            parent_id = proposed["id"]
+            self._require_tenant_issue(actor, parent_id, write=True)
+            ancestor = proposed
+            while True:
+                if ancestor["id"] == issue_id:
+                    raise VersionConflict("Parent relationship would form a cycle")
+                if ancestor["parent_id"] is None:
+                    break
+                ancestor = self.get_issue(ancestor["parent_id"])
+        if issue["parent_id"] != parent_id:
+            if issue["parent_id"] != expected_parent_id:
+                raise VersionConflict("Parent relationship changed; reload issue")
+            self.db.execute("UPDATE issues SET parent_id=?,updated_at=? WHERE id=?", (parent_id, _now(), issue_id))
+        return self.issue_hierarchy(actor, issue_id, project)
+
+    @_connection_call
+    def set_issue_assignee(
+        self, actor: str, issue_id: str, project: str, assignee_id: str | None, expected_assignee_id: str | None
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._require_tenant_issue(actor, issue_id, write=True)
+        self._validate_project(project)
+        if issue["project"] != project:
+            raise NotFound("issue not found in project")
+        if assignee_id is not None:
+            self._require_tenant_object(actor, "users", assignee_id)
+        row = self.db.execute("SELECT user_id FROM issue_assignees WHERE issue_id=?", (issue_id,)).fetchone()
+        previous = row["user_id"] if row else None
+        if previous != assignee_id:
+            if previous != expected_assignee_id:
+                raise VersionConflict("issue assignee changed")
+            if assignee_id is None:
+                self.db.execute("DELETE FROM issue_assignees WHERE issue_id=?", (issue_id,))
+            else:
+                self.db.execute(
+                    "INSERT INTO issue_assignees(issue_id,user_id) VALUES (?,?) "
+                    "ON CONFLICT(issue_id) DO UPDATE SET user_id=excluded.user_id",
+                    (issue_id, assignee_id),
+                )
+            self.db.execute("UPDATE issues SET updated_at=? WHERE id=?", (_now(), issue_id))
+            # Compare against the edit seen before reassignment, including an A -> B -> A round trip.
+            self.db.execute(
+                "INSERT INTO design_task_confirmations(issue_id,target_revision,revision,status,actor) "
+                "SELECT issue_id,revision,1,'pending',NULL FROM design_task_targets WHERE issue_id=? "
+                "ON CONFLICT(issue_id) DO UPDATE SET revision=design_task_confirmations.revision+1,"
+                "status='pending',actor=NULL",
+                (issue_id,),
+            )
+            self._event(issue["tenant_id"], "issue.assigned", actor, issue_id, {"from": previous, "to": assignee_id})
+        return self.read_issue_detail(actor, project, issue["number"])
+
+    @_connection_call
+    def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        self._business_module(issue["tenant_id"], project, module_id)
+        if issue["module_id"] == module_id:
+            return issue
+        self.db.execute("UPDATE issues SET module_id=?, updated_at=? WHERE id=?", (module_id, _now(), issue_id))
+        return self.get_issue(issue_id)
+
+    @_connection_call
+    def list_issues(
+        self,
+        actor: str,
+        requirement_id: str | None = None,
+        *,
+        project: str | None = None,
+        module_id: str | None = None,
+        status: str | None = None,
+        assignee: str | None = None,
+        keyword: str | None = None,
+        label: str | None = None,
+    ) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
         tenant_id = self._tenant_of(actor)
         sql = "SELECT * FROM issues WHERE tenant_id = ?"
         args: list[str] = [tenant_id]
+        if project is None and (module_id is not None or label is not None):
+            project = DEFAULT_PROJECT
+        if project is not None:
+            self._validate_project(project)
+            sql += " AND project = ?"
+            args.append(project)
+            if module_id is not None:
+                self._business_module(tenant_id, project, module_id)
+                sql += " AND module_id = ?"
+                args.append(module_id)
+        if label is not None:
+            sql += " AND id IN (SELECT issue_id FROM issue_labels WHERE name=?)"
+            args.append(label.strip())
         if requirement_id:
             sql += " AND requirement_id = ?"
             args.append(requirement_id)
+        if status is not None:
+            sql += " AND status = ?"
+            args.append(status)
+        if assignee:
+            sql += (
+                " AND EXISTS (SELECT 1 FROM issue_assignees a JOIN users u ON u.id=a.user_id"
+                " WHERE a.issue_id=issues.id AND u.tenant_id=issues.tenant_id AND (u.id=? OR u.name=?))"
+            )
+            args.extend((assignee, assignee))
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
+        if keyword:
+            needle = keyword.casefold()
+            rows = [
+                row
+                for row in rows
+                if any(needle in row[field].casefold() for field in ("title", "body_md", "acceptance"))
+            ]
         return self._visible_issues(actor, rows)
 
     def _visible_issues(self, actor: str, rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
@@ -1208,6 +2399,10 @@ class Tianxuan:
         issue = self._require_tenant_issue(actor, issue_id, write=write)
         fields = ("id", "tenant_id", "parent_id", "type", "title", "body_md", "acceptance", "requirement_id")
         definition = {key: issue[key] for key in fields}
+        # Only explicit routing requirements participate in the signed issue revision.
+        required = self._issue_capabilities(self._issue_labels(issue_id))
+        if required:
+            definition["required_capabilities"] = required
         ancestors = []
         current: dict[str, Any] | None = issue
         while current:
@@ -1245,6 +2440,10 @@ class Tianxuan:
     @_connection_call
     def require_native_module_read(self, actor: str, module: str) -> None:
         """Use current source ACL, never a caller-authored native object binding."""
+        attachment = re.fullmatch(r"requirement-attachment-(iss_[0-9a-f]{32})-[0-9a-f]{64}", module)
+        if attachment:
+            self._require_tenant_issue(actor, attachment[1])
+            return
         tenant = self._tenant_of(actor)
         row = self.db.execute(
             "SELECT doc_id FROM native_requirement_sources WHERE tenant_id=? AND module=?", (tenant, module)
@@ -1445,23 +2644,38 @@ class Tianxuan:
     # ---------- 司南：工单评论 ----------
 
     @_connection_call
-    def add_issue_comment(self, actor: str, issue_id: str, body: str) -> dict[str, Any]:
+    @_replayable("issue.comment")
+    def add_issue_comment(
+        self, actor: str, issue_id: str, body: str, parent_id: str | None = None, *, call_id: str | None = None
+    ) -> dict[str, Any]:
         self._require_editor(actor)
         if not body.strip():
             raise TianxuanError("issue comment body is required")
         issue = self._require_tenant_issue(actor, issue_id, write=True)
+        if (
+            parent_id is not None
+            and not self.db.execute(
+                "SELECT 1 FROM issue_comments WHERE id=? AND tenant_id=? AND issue_id=?",
+                (parent_id, issue["tenant_id"], issue_id),
+            ).fetchone()
+        ):
+            raise NotFound("parent comment not found in issue")
         comment_id = _id("icmt")
         now = _now()
         self.db.execute(
             "INSERT INTO issue_comments (id, tenant_id, issue_id, author, body, created_at) VALUES (?, ?, ?, ?, ?, ?)",
             (comment_id, issue["tenant_id"], issue_id, actor, body, now),
         )
+        if parent_id is not None:
+            self.db.execute(
+                "INSERT INTO issue_comment_replies (comment_id, parent_id) VALUES (?, ?)", (comment_id, parent_id)
+            )
         self._event(issue["tenant_id"], "issue.comment_added", actor, comment_id, {"issue_id": issue_id})
         return self.get_issue_comment(comment_id)
 
     @_connection_call
     def get_issue_comment(self, comment_id: str) -> dict[str, Any]:
-        row = self.db.execute("SELECT * FROM issue_comments WHERE id = ?", (comment_id,)).fetchone()
+        row = self.db.execute(_ISSUE_COMMENT_SELECT + "WHERE c.id = ?", (comment_id,)).fetchone()
         if row is None:
             raise NotFound(f"issue comment not found: {comment_id}")
         return dict(row)
@@ -1470,7 +2684,7 @@ class Tianxuan:
     def list_issue_comments(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
         issue = self._require_tenant_issue(actor, issue_id)
         rows = self.db.execute(
-            "SELECT * FROM issue_comments WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, rowid",
+            _ISSUE_COMMENT_SELECT + "WHERE c.tenant_id = ? AND c.issue_id = ? ORDER BY c.created_at, c.rowid",
             (issue["tenant_id"], issue_id),
         ).fetchall()
         return [dict(row) for row in rows]
@@ -1522,6 +2736,8 @@ class Tianxuan:
     def transition_issue(
         self, actor: str, issue_id: str, to_status: str, *, call_id: str | None = None
     ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
         self._require_editor(actor)
         issue = self._require_tenant_issue(actor, issue_id, write=True)
         if (
@@ -1529,13 +2745,9 @@ class Tianxuan:
             and self.db.execute("SELECT 1 FROM native_managed_issues WHERE issue_id=?", (issue_id,)).fetchone()
         ):
             raise TransitionRejected("native managed completion requires trusted workflow acceptance")
-        current = issue["status"]
-        if to_status not in ISSUE_TRANSITIONS.get(current, set()):
-            raise TransitionRejected(f"{current} -> {to_status} is not allowed")
-        self.db.execute("UPDATE issues SET status = ?, updated_at = ? WHERE id = ?", (to_status, _now(), issue_id))
-        self._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, {"from": current, "to": to_status})
-        if issue["requirement_id"]:
-            self.sync_progress(issue["requirement_id"], actor=actor)
+        from issue_flow import transition
+
+        transition(self, actor, issue, to_status)
         return self.get_issue(issue_id)
 
     @_connection_call
@@ -1620,6 +2832,7 @@ class Tianxuan:
 
     # ---------- 跨系统：天枢 ↔ 天璇 ----------
 
+    @_connection_call
     def link_external(
         self,
         actor: str,
@@ -2082,6 +3295,11 @@ class Tianxuan:
     @staticmethod
     def _tool_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)
+        if name == "issue.create":
+            # Keep previously recorded call IDs and implicit replay keys valid.
+            for key in ("project", "module_id"):
+                if payload.get(key) is None:
+                    payload.pop(key, None)
         if name == "requirement.plan":
             defaults = {"title": "未命名工单", "type": "task", "acceptance": "", "priority": "normal", "body_md": ""}
             tickets = payload["tickets"]
@@ -2100,11 +3318,35 @@ class Tianxuan:
 
     def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
         self._require_editor(actor)
+        if name == "issue.comment":
+            self._require_tenant_issue(actor, payload["issue_id"], write=True)
+            return
+        if name == "module.create":
+            if result is not None:
+                self._business_module(self._tenant_of(actor), payload["project"], result["id"])
+            return
+        if name == "design.split":
+            self.get_doc_shared(actor, payload["doc_id"], write=True)
+        if name.startswith("lifecycle."):
+            self._project_issue(actor, payload["issue_id"], payload["project"], write=True)
+            return
+        if name.startswith("flow."):
+            from issue_flow import authorize
+
+            authorize(self, actor, payload, result)
+            return
+        if name.startswith("work."):
+            from work_management import authorize
+
+            authorize(self, actor, payload)
+            return
         if name == "doc.create" and payload["space_id"] is not None:
             self._require_tenant_object(actor, "spaces", payload["space_id"])
-        if name == "doc.update":
+        if name in ("doc.update", "doc.patch", "doc.restore"):
             self._require_tenant_doc(actor, payload["doc_id"])
-            self.get_doc_shared(actor, payload["doc_id"], write=True)
+            document = self.get_doc_shared(actor, payload["doc_id"], write=True)
+            if name in ("doc.patch", "doc.restore"):
+                self._require_field_write(actor, document, "body_md")
         if name == "requirement.plan":
             self._require_requirement(actor, payload["requirement_id"], write=True)
         if name == "issue.create":
@@ -2120,7 +3362,7 @@ class Tianxuan:
                 raise TransitionRejected("native managed completion requires trusted workflow acceptance")
         if result is None:
             return
-        if name in ("doc.create", "doc.update", "requirement.create"):
+        if name in ("doc.create", "doc.update", "doc.patch", "doc.restore", "requirement.create"):
             self._require_tenant_doc(actor, result["id"])
             self.get_doc_shared(actor, result["id"], write=True)
         else:
@@ -2181,9 +3423,29 @@ class Tianxuan:
     def dispatch_tool(
         self, actor: str, name: str, payload: dict[str, Any], *, call_id: str | None = None
     ) -> dict[str, Any]:
+        from issue_flow import TOOLS as FLOW_TOOLS
+        from issue_flow import execute_flow
+
+        if name in FLOW_TOOLS:
+            flow_result: dict[str, Any] = execute_flow(self, actor, name, payload, call_id=call_id)
+            return flow_result
+        if name == "work.roadmap":
+            from work_management import roadmap
+
+            if payload or call_id is not None:
+                raise TianxuanError("invalid roadmap arguments")
+            roadmap_result: dict[str, Any] = roadmap(self, actor)
+            return roadmap_result
+        if name in {"work.read", "work.plan", "work.log", "work.submit_asset"}:
+            from work_management import execute
+
+            work_result: dict[str, Any] = execute(self, actor, name, payload, call_id=call_id)
+            return work_result
         writes: dict[str, Callable[..., Any]] = {
             "doc.create": self.create_doc,
             "doc.update": self.update_doc,
+            "doc.patch": self.patch_doc,
+            "doc.restore": self.restore_doc,
             "requirement.create": self.create_requirement,
             "requirement.plan": self.plan_tickets,
             "issue.create": self.create_issue,
@@ -2222,9 +3484,18 @@ class Tianxuan:
         if name == "doc.read":
             self._require_tenant_doc(actor, payload["doc_id"])
             self.get_doc_shared(actor, payload["doc_id"])
-            return self.ai_view(payload["doc_id"])
+            return self.ai_view(**payload)
+        if name == "doc.search":
+            return self.search_docs(actor, **payload)
         if name == "doc.list":
             return {"docs": self.list_docs(actor, payload.get("kind"))}
         if name == "issue.list":
-            return {"issues": self.list_issues(actor, payload.get("requirement_id"))}
+            return {
+                "issues": self.list_issues(
+                    actor,
+                    payload.get("requirement_id"),
+                    project=payload.get("project"),
+                    module_id=payload.get("module_id"),
+                )
+            }
         raise UnknownTool(f"unknown tool: {name}")

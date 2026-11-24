@@ -1,0 +1,170 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d05",
+  "issue_number": 1786,
+  "base": "46c88f41e73d86a3804a3426b5ae7b4b2d9d5946",
+  "platform": "macOS arm64",
+  "sources_sha256": {
+    "apps/tianxuan/README.md": "15ce1ecf2378fdf04d6c45bd9dc30dbff28817930f859cdc49292989b45c89be",
+    "editor/SCsub": "a64020afc06b1f572e72bba93136a89fddf24ec9497b3f8254f6e2b1e8ec72c0",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "3bcc78e99c6ce1bd291237034c88b9552d395fdb7732f1503dd76c4f5bb33783",
+    "editor/docks/workbench/business_session.gd": "4e2145e08a10865ddbc7080bfff6a5155866ee5670d0186d6bb85d5489b90f8c",
+    "editor/docks/workbench/paragraph_suggestion.gd": "ce8fa8438787ccc0518450ad9a9f9c48bcbfe6f3860f5067030609c8622db791",
+    "customizations/components/tianxuan/server/api.py": "71f22d8d4e70b1b08178e42513bff99b143e4da4faeb0fe553bd61c37337e343",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "45840eea59b61c4567deac7d345c8597d32a95dd5d7c7c7040839d655881021d",
+    "customizations/components/tianxuan/server/paragraph_suggestion.py": "be0ef7adced4b810491c8a316ce722b1c1c68360eb615de4c306397fffcefe38",
+    "customizations/components/tianxuan/server/test_paragraph_suggestion.py": "e2b5a240a340a1aa4d4dcb68b988bbe2e5573edefacfff9aae65b985cfea4967",
+    "tests/editor/run_workbench_paragraph_suggestion.py": "796762ee30bb25e7cce86c80c2f86df317d70bd0dab3130ba677ef0e7dbba2ba",
+    "tests/editor/workbench_paragraph_suggestion.gd": "bf6905c553bd4dacbb65e840707b0d7538500030d3dd412bd60a7f632e358f23"
+  },
+  "model_transport": "Local deterministic HTTP model transport",
+  "model_latency_test_seconds": 13.010015208041295,
+  "regression": {
+    "documents": "passed",
+    "document_reference": "passed",
+    "consultation_design": "passed"
+  },
+  "editor_sha256": "99fafec0c94c67ad56990b32893324f174617219a56a40d660177a2d324b09d1",
+  "paragraph_previews": [
+    {
+      "state": "passed",
+      "host": "compiled native sidebar",
+      "display": "headless",
+      "model_transport": "fixture",
+      "trace": [
+        {
+          "paragraph": 3,
+          "preview": "点亮整座桥\n持续三秒",
+          "selected": "照亮桥面\n持续两秒",
+          "version_before_accept": 1
+        }
+      ],
+      "editor_sha256": "99fafec0c94c67ad56990b32893324f174617219a56a40d660177a2d324b09d1",
+      "previews": [
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 2,
+          "writes_seen": 2
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 2,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 1,
+          "revision_seen": 1,
+          "writes_seen": 3
+        }
+      ],
+      "saved_v2": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+      "patch_statuses": [
+        [
+          200,
+          503
+        ],
+        [
+          200,
+          200
+        ],
+        [
+          409,
+          409
+        ]
+      ],
+      "same_call_id_on_retry": true,
+      "conflict_preserved_external_write": true,
+      "stale_selection_document_identity_cleared": true
+    },
+    {
+      "state": "passed",
+      "host": "compiled native sidebar",
+      "display": "windowed",
+      "model_transport": "fixture",
+      "trace": [
+        {
+          "paragraph": 3,
+          "preview": "点亮整座桥\n持续三秒",
+          "selected": "照亮桥面\n持续两秒",
+          "version_before_accept": 1
+        }
+      ],
+      "editor_sha256": "99fafec0c94c67ad56990b32893324f174617219a56a40d660177a2d324b09d1",
+      "previews": [
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 2,
+          "writes_seen": 2
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 2,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 1,
+          "revision_seen": 1,
+          "writes_seen": 3
+        }
+      ],
+      "saved_v2": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+      "patch_statuses": [
+        [
+          200,
+          503
+        ],
+        [
+          200,
+          200
+        ],
+        [
+          409,
+          409
+        ]
+      ],
+      "same_call_id_on_retry": true,
+      "conflict_preserved_external_write": true,
+      "stale_selection_document_identity_cleared": true
+    }
+  ],
+  "python_tests": "19 passed: paragraph previews, replay-safe AI document patches, workspace conversations"
+}
