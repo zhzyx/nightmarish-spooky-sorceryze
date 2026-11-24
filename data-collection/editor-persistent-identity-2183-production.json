@@ -1,0 +1,126 @@
+{
+  "issue_number": 2183,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "related_issues": [
+    2184,
+    2186
+  ],
+  "verified_at": "2026-11-24T00:37:32.187053+00:00",
+  "production": {
+    "handoff": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178#issuecomment-7118055737",
+    "image": "sha256:92b9c0a7fdf2acac639ad5c0ff54cbd1c07fa7c20f8991369445bef5860f34b7",
+    "previous_image": "sha256:0aa0019af432bacdce5757ccf1e2a8d50bb4f0bdd1934c3282debd8f09d6fee5",
+    "health": 200,
+    "anonymous_http": {
+      "identity": 401,
+      "git": 401,
+      "native_repository": 401
+    },
+    "source_sha256": "5d4dce19eab4620514023f7d148a3550f946ca6617046971bb375f2f6c7822d0",
+    "deployment_tests": {
+      "preexisting_routes_checked_offline": 214,
+      "passed": 89,
+      "subtests": 7,
+      "rollback_databases_reopened": 3
+    },
+    "git_refs_preserved": true,
+    "database_identity_counts_preserved": true
+  },
+  "windows": {
+    "binary_sha256": "3ea466383b4f616b4f6a5b41854444268eb938449e9a56167fba87d6788c6c98",
+    "credential_store": "Windows Credential Manager",
+    "expires": "until-revoked",
+    "verified_principal_matches_approved_account": true,
+    "native_lifecycle_assertions": 58,
+    "native_process_scenarios": [
+      "login",
+      "same_account",
+      "restart",
+      "precedence",
+      "offline",
+      "logout",
+      "legacy",
+      "early_logout",
+      "rebind",
+      "concurrent",
+      "logout_during_update"
+    ],
+    "default_connection_scenarios": [
+      "environment_over_saved",
+      "saved_address",
+      "default_address"
+    ],
+    "native_shell_checks": 131,
+    "local_conversation_checks": 28,
+    "normal_editor_identity_http": 200,
+    "project": "gonggong",
+    "optional_project_workflow_http": 404,
+    "initial_binary_sha256": "fcd9b3651715d9b04a55738a2a80e6b263cadff6641d219d578e73ede0c8e04b",
+    "verified_source_base": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+    "corrected_source_blobs": {
+      "editor/docks/tianxuan/session_controller.gd": "d38600cff33e3737fac1a8d627091fedb8064d82",
+      "tests/editor/run_tianxuan_identity.py": "4c8eaa8263b302571ca305aaf5ed91fb34bd0476",
+      "tests/editor/tianxuan_identity.gd": "ce3f2f77ce3f8b4f21004ee17bcb98071cba5878"
+    },
+    "normal_editor_restarts_verified": 2,
+    "credential_matches_single_active_device_grant": true,
+    "source_commit_before_correction": "b06eca00e5ca144ce994a0492d9ed076c8e27fc8"
+  },
+  "authenticated_delivery": {
+    "compatibility_git_candidate": "779c2adc12a1765cfc3f5de90088f261522526cf",
+    "compatibility_git_main": "779c2adc12a1765cfc3f5de90088f261522526cf",
+    "compatibility_git_tree": "4929c2c49d0f62b60a2852993ad63529d1009abe",
+    "merge_request": "mr_f3863d45ca83b3a5ec8a0d030932562824d5a797c22303a6cfa2834c7eb72b8a",
+    "bound_to_current_editor_principal": true,
+    "closed_duobao_work_orders": [
+      {
+        "number": 8,
+        "status": "done",
+        "audited": true
+      },
+      {
+        "number": 9,
+        "status": "done",
+        "audited": true
+      },
+      {
+        "number": 10,
+        "status": "done",
+        "audited": true
+      }
+    ],
+    "source_branch_retired": true
+  },
+  "limits": [
+    "Production uses key-only authentication. Normal desktop identity restoration was verified on Windows.",
+    "The optional workflow recovery endpoints returned HTTP 404 on this deployment. Authentication returned HTTP 200 and the formal work-order operations were verified."
+  ],
+  "same_account_correction": {
+    "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183#issuecomment-7118497515",
+    "old_binary_reproduced": true,
+    "behavior": "A valid same-account login preserves the original verified binding. Changing accounts or replacing a withdrawn credential is checked against the server and the current vault revision.",
+    "corrected_binary_tests": {
+      "native_lifecycle": 58,
+      "native_shell": 131,
+      "connection_scenarios": 3
+    },
+    "production": {
+      "new_durable_authorization_matches_windows_entry": true,
+      "active_persistent_grants_for_this_editor": 1,
+      "superseded_device_grant_retired": true,
+      "independent_personal_authorization_preserved": true,
+      "restarts": [
+        {
+          "login_status": 200,
+          "clean_exit": true,
+          "optional_recovery_status": 404
+        },
+        {
+          "login_status": 200,
+          "clean_exit": true,
+          "optional_recovery_status": 404
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b47994cff4fb7d301e28d477c846ff21c0dc5920",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "95710ca9bea916f8a377a14b4cbbde33f208fd1f8ff58979733842514e16ce4a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "validation",
+    "detection_head": "779c2adc12a1765cfc3f5de90088f261522526cf",
+    "context_sha256": "c5d2fd8dbab6c739fb296ee6e902b11b80c93e086a026e6bb60b2decf0e54786",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceUI-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45301797306",
+    "diagnosis": "Windows newlines on this one freshly generated JSON proof did not match the normalized Git object. Wrote the proof as LF and checked raw bytes against the index.",
+    "next_action": "Rerun the exact gate and submit the corrected editor without changing service or credentials.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T01:01:09.702067+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-24T01:02:04.797220+00:00",
+  "sha256": "a3180fbfd61e34d9579c005b7af157b462a98ddf86810a08ef7164c60b7bc93b"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3a7ae9997efe273ad57674f42b6572e30b38d671",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c1fc363347b6abc6968ef44a256773a67e4349e5d32f10e8f2d3bcd365f7633a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "user-report",
+    "detection_head": "b06eca00e5ca144ce994a0492d9ed076c8e27fc8",
+    "context_sha256": "e89b0916aed063ea3f4ed9666470721225f95245393425ed6a8b53841ed0eb2b",
+    "operator": "Sail-Li",
+    "worker": "heqi_2183_dual",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceDual-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2198",
+    "diagnosis": "The prior editor authenticated the input, then unconditionally stored it with a new binding, including when the original device authorization remained valid for the same user at the same service.",
+    "next_action": "Verify both identities at the bound origin and preserve the live original grant using a conditional write. Run the native account, project, revocation and concurrent-update fixtures and repeat the production readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:45:04.397215+00:00",
+    "attempted": "Read back the production operation, compare the save path in 39baf5ca, and check script parsing after implementing the correction. Native fixture and production retest pending.",
+    "repair_owner": "heqi_2183_dual",
+    "continuable": "Prior Git and native repository reception remain verified."
+  },
+  "occurred_at": "2026-11-24T00:50:53.533609+00:00",
+  "sha256": "59263d2e38ee6648ec4bbd9ef964ed0691e604a87b0452fed71e658cb2be6923"
+}
