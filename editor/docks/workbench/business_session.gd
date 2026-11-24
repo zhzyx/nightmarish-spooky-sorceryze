@@ -4,6 +4,7 @@ extends VBoxContainer
 signal identity_resetting
 signal identity_changed
 signal authenticated
+signal origin_changed
 
 var _controller: Node:
 	get:
@@ -12,6 +13,8 @@ var _origin: String:
 	get:
 		return _controller.origin if is_instance_valid(_controller) else ""
 var _status := Label.new()
+var _login_persistence := Label.new()
+var _service := Label.new()
 var _form := VBoxContainer.new()
 var _email := LineEdit.new()
 var _secret := LineEdit.new()
@@ -26,6 +29,10 @@ func _ready() -> void:
 	_status.name = "SessionStatus"
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_status)
+	_login_persistence.name = "WorkbenchLoginPersistence"
+	_login_persistence.set_translation_domain(&"tianxuan-native")
+	_login_persistence.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	add_child(_login_persistence)
 	var actions := HBoxContainer.new()
 	add_child(actions)
 	var choose := Button.new()
@@ -47,10 +54,9 @@ func _ready() -> void:
 	_sign_out.pressed.connect(_sign_out_pressed)
 	actions.add_child(_sign_out)
 	add_child(_form)
-	var service := Label.new()
-	service.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	service.text = "服务地址 " + _origin
-	_form.add_child(service)
+	_service.name = "WorkbenchServiceAddress"
+	_service.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_form.add_child(_service)
 	_email.name = "AccountEmail"
 	_email.placeholder_text = "账号邮箱（使用个人密钥时留空）"
 	_form.add_child(_email)
@@ -74,6 +80,8 @@ func _ready() -> void:
 	_controller.identity_changed.connect(_identity_updated)
 	_controller.authenticated.connect(func(): authenticated.emit())
 	_controller.status_changed.connect(_update_status)
+	_controller.origin_changed.connect(_origin_updated)
+	_origin_updated()
 	_identity_updated()
 
 
@@ -89,6 +97,15 @@ func redact_credentials(text: String) -> String:
 
 func get_identity() -> Dictionary:
 	return _controller.get_identity()
+
+
+func get_origin() -> String:
+	return _origin
+
+
+func _origin_updated() -> void:
+	_service.text = "服务地址 " + get_origin()
+	origin_changed.emit()
 
 
 func _toggle_form() -> void:
@@ -114,12 +131,23 @@ func _sign_out_pressed() -> void:
 
 func _update_status() -> void:
 	_status.text = _controller.status_text
+	var messages := {
+		"signed_out": "尚未登录",
+		"restore_pending": "正在检查本设备保存的登录…",
+		"saved_device": "登录已保存在此设备；下次启动会自动核实并恢复。",
+		"temporary_legacy": "当前服务尚未支持独立设备登录；本次登录不会保存。",
+		"temporary_session": "本次登录未保存；关闭编辑器后需重新登录。",
+	}
+	# Retain the source key so this label's domain can retranslate it when the
+	# native language changes without requiring another identity event.
+	_login_persistence.text = messages[_controller.get_login_persistence()]
 	if "重新认证" in _status.text:
 		_form.show()
 
 
 func _identity_updated() -> void:
 	_update_status()
+	_secret.clear()
 	var identity := get_identity()
 	_sign_out.visible = not identity.is_empty()
 	if not identity.is_empty():

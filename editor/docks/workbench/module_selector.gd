@@ -173,12 +173,14 @@ func _bind_session() -> void:
 			detail.detail_changed.connect(_comment_context_changed)
 			detail.consultation_requested.connect(_open_issue_consultation.bind(detail))
 		session.connect("identity_changed", _identity_changed)
+		session.connect("origin_changed", _origin_changed)
 		if session.has_signal("identity_resetting"):
 			session.connect("identity_resetting", _save_draft)
 		_identity_changed()
 
 
 func _identity_changed() -> void:
+	_origin_changed()
 	_comment_context_changed()
 	identity_generation += 1
 	design.reset()
@@ -216,8 +218,15 @@ func _identity_changed() -> void:
 		restore_consultation_location(pending_consultation_location)
 
 
+func _origin_changed() -> void:
+	if managed_identity and is_instance_valid(session):
+		# The transport's actual origin also scopes drafts and restored targets.
+		# Never fall back to startup/environment keys from an unknown service.
+		api = session.get_origin()
+
+
 func _consultation_scope() -> String:
-	return JSON.stringify([api, session.get_identity().id, project, ProjectSettings.globalize_path("res://")]).sha256_text()
+	return JSON.stringify(["editor-session-origin-v1", api, session.get_identity().id, project, ProjectSettings.globalize_path("res://")]).sha256_text()
 
 
 func get_consultation_location() -> Dictionary:
@@ -374,6 +383,10 @@ func _save_location() -> bool:
 func _draft_key(issue_id: Variant) -> String:
 	var identity: Dictionary = session.get_identity() if managed_identity else {}
 	var scope := [api, identity.get("id"), project, ProjectSettings.globalize_path("res://"), module_id, issue_id]
+	if managed_identity:
+		# Old unversioned keys may have been written after switching service
+		# while still carrying a startup origin. Keep them, but never infer ownership.
+		scope.push_front("editor-session-origin-v1")
 	if not consultation_detail.is_empty() and consultation_detail.id == issue_id:
 		scope.append("issue_consultation")
 	return JSON.stringify(scope)

@@ -46,7 +46,9 @@ python -m unittest discover -s customizations/components/tianxuan/server -p "tes
 
 设备授权持续到撤销。编辑器以设备令牌调用 `POST /api/v1/auth/logout` 即可退出。设备丢失时，持有人或同租户管理员可在另一会话调用 `GET /api/v1/auth/editor-devices`，按回读的 ID 调用 `DELETE /api/v1/auth/editor-devices/{id}`。同租户管理员可从身份事件中核对签发、撤销的主体及设备 ID。
 
-`keys` 模式由管理员分配个人密钥，编辑器以原密钥直接调用业务端点。宿主首次签发长期个人密钥时沿用部署文档的受信管理员入口，调用 `store.issue_access_key(管理员ID, 接收者ID, 名称, until_revoked=True)`。持有长期管理员个人密钥的管理员也可向 `POST /api/v1/auth/keys` 显式提交 `{"user_id":"…","name":"…","until_revoked":true}`；此时省略 `days`。可在账户管理页或通过 `DELETE /api/v1/auth/keys/{id}` 撤销。编辑器退出个人密钥登录时清除本地凭据。
+`keys` 模式由管理员分配个人密钥，原生编辑器以此向 `POST /api/v1/auth/device-session` 登记独立设备授权，将返回的设备凭据保存在系统凭据库，再调用业务端点。设备授权继承来源密钥的期限及撤销状态；退出撤销当前设备授权，不撤销其他设备或来源个人密钥。旧服务明确不支持设备接口时，仅核实身份并临时登录，不保存共享密钥，也不声称已经建立独立设备授权。
+
+宿主首次签发长期个人密钥时沿用部署文档的受信管理员入口，调用 `store.issue_access_key(管理员ID, 接收者ID, 名称, until_revoked=True)`。持有长期管理员个人密钥的管理员也可向 `POST /api/v1/auth/keys` 显式提交 `{"user_id":"…","name":"…","until_revoked":true}`；此时省略 `days`。可在账户管理页或通过 `DELETE /api/v1/auth/keys/{id}` 撤销。
 
 原有按日签发的密钥默认 90 天，支持 1 至 365 天。通过 HTTP 委派时，有限期签发凭据同时限定新密钥的最晚到期时间，返回的 `expires_at` 给出实际期限。长期个人密钥返回 `until-revoked`。设备登录和个人密钥签发分别只返回一次原始令牌。
 

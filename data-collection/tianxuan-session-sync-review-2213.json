@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-session-sync-20261124",
+  "issue_number": 2213,
+  "reviewed_at": "2026-11-24T09:00:29.892Z",
+  "reviewer": {
+    "worker": "/root/local_chat_review",
+    "role": "independent_code_reviewer",
+    "implementation_participation": false,
+    "product_or_test_files_modified": [],
+    "only_written_artifact": "data-collection/tianxuan-session-sync-review-2213.json"
+  },
+  "baseline_commit": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+  "final_candidate_binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+  "scope": [
+    "左右原生天璇与 AI Workbench 的共享身份显示、登录门槛解除及页面位置保留。",
+    "只读设备登录持久状态、空凭据库通知、临时旧服务登录的准确说明。",
+    "实际服务地址传播、业务草稿与恢复位置的来源版本隔离、未提交密码清理。",
+    "本轮修改的测试、运行器、文档和隔离验证回执。"
+  ],
+  "rules": [
+    "AGENTS.md",
+    "Markdown/testing/README.md",
+    "Markdown/editor-control/README.md",
+    "Markdown/editor-control/ui-commands/README.md",
+    "Markdown/workflow/README.md",
+    "Markdown/workflow/repository/README.md",
+    "customizations/components/issue-workorders/yanluo.md"
+  ],
+  "candidate_files_sha256": {
+    "customizations/components/tianxuan/server/README.md": "4e39e6be3d7b8c3cd7a1a2f6fa41a6842663c806154ceb6c0a442b766d61fc13",
+    "design-docs/tianxuan-session-sync-20261124.md": "e72f9c09da4d72d4c3de47ec61445745f437458aef25ef9c816f2db2e4245466",
+    "editor/docks/tianxuan/locale.gd": "2805cdb6b4c5fd19703206bbee6b4910b416b7c91d9708510b2a09863ca5256f",
+    "editor/docks/tianxuan/session_controller.gd": "938891243d23e7211ac02f8d88a102737fbf0b445b832b55029cc3f58cd8ee30",
+    "editor/docks/tianxuan/workspace_view.gd": "40b908f9875738292887ccabcdbfc0c99b872d6ec6e9ee1a340e25df22671b7a",
+    "editor/docks/workbench/business_session.gd": "dd9eb102e8545f542a7642ca2f4bea2a4a17ab3596d8c34d75de1a80a8a131cc",
+    "editor/docks/workbench/module_selector.gd": "412e5f068ca9f86094bea5406afbbb08f55f4775d106fbccbb5dbb91c49d31ce",
+    "tests/editor/run_tianxuan_controller.py": "96de5dfd35806b5e37b8d4c61978fe4fa508c1bc6d7362cc44a89e4ab87e0d0b",
+    "tests/editor/tianxuan_identity.gd": "a2bd2093915b41379eebbf1266cf8c21b9bb90ba85fe2eebf34f6219d15ae70a",
+    "tests/editor/tianxuan_legacy_key_identity.gd": "901ac87bf882caec9915a0a68c3a9ff3898c14a2d7712157a061cc420b7d2a95",
+    "tests/editor/tianxuan_session_sync.gd": "9de776bdb3018d43ea90754966ed20b77d98209b06c6db2761866db3d2a1ea47"
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "subject": "空凭据库恢复完成缺少呈现通知",
+      "locations": [
+        {
+          "path": "editor/docks/tianxuan/session_controller.gd",
+          "line": 119
+        },
+        {
+          "path": "editor/docks/tianxuan/session_controller.gd",
+          "line": 126
+        }
+      ],
+      "resolution": "恢复开始与空记录结束发出状态通知；仅实际恢复运行中返回 restore_pending。凭据库不可用明确说明，不把等待重连伪装为正在读取。",
+      "proof": "源码与编译身份测试在实际空库启动时捕获通知，要求包含 restore_pending 且最终为 signed_out。"
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "subject": "非发起视图保留未提交密码",
+      "locations": [
+        {
+          "path": "editor/docks/tianxuan/workspace_view.gd",
+          "line": 368
+        },
+        {
+          "path": "editor/docks/workbench/business_session.gd",
+          "line": 150
+        }
+      ],
+      "resolution": "真实身份变化时清除各视图密码字段；不通过认证发起或失败冒充身份切换。",
+      "proof": "双向登录探针预填非发起侧秘密，成功后验证另一原生视图及 AI Workbench 字段为空；失败登录仍保留旧有效身份、页面与草稿。"
+    },
+    {
+      "id": "R3",
+      "priority": "P2",
+      "subject": "旧草稿与恢复位置可能携带历史错误来源",
+      "locations": [
+        {
+          "path": "editor/docks/workbench/module_selector.gd",
+          "line": 229
+        },
+        {
+          "path": "editor/docks/workbench/module_selector.gd",
+          "line": 389
+        }
+      ],
+      "resolution": "真实 origin 加 editor-session-origin-v1 共同作用于受管草稿键与咨询恢复摘要。来源不明的旧格式不自动读取或迁移，原始记录保留。",
+      "proof": "34 项探针预埋旧格式歧义草稿与恢复摘要，验证不载入且原字节仍在；同账号和模块 ID 的 A/B origin 草稿隔离，返回 A 只恢复 A 的新格式草稿。"
+    }
+  ],
+  "review_assessment": [
+    {
+      "subject": "登录同步与页面意图",
+      "result": "共享身份验证成功后，仅此前自动拦到 account 的视图进入 home；用户明确打开的连接设置和现有业务页保留。失败认证不改变原身份代数，不清除原业务草稿。"
+    },
+    {
+      "subject": "异步与服务切换顺序",
+      "result": "沿用共享控制器的代数、取消与迟到回复保护。切换服务先在旧 origin 保存旧身份草稿，再清除身份，随后发布真实新 origin；新增业务监听不重放请求，也不引入凭据协议。"
+    },
+    {
+      "subject": "持久状态准确性",
+      "result": "getter 仅返回五种呈现状态，不返回凭据或凭据库摘要。saved_device 需要当前会话持有独立授权且有已保存摘要；旧服务临时登录优先显示 temporary_legacy，不能借其他已存授权伪称本次已保存。"
+    },
+    {
+      "subject": "服务与草稿来源",
+      "result": "AI Workbench 通过共享会话 get_origin 更新服务说明与 api；受管草稿不回退到启动环境地址。未受管原有草稿路径保持原契约。"
+    },
+    {
+      "subject": "旧记录兼容边界",
+      "result": "来源无法核实的历史业务草稿仍存于本机，但本版不自动显示它们；没有猜测归属或执行隐式迁移。新格式草稿在重启、模块与账号/项目切换中接受回归验证。"
+    },
+    {
+      "subject": "测试接线",
+      "result": "--session-sync 使用两个回环端口提供相同合成账号和模块 ID，并禁止模型补全或会话写入；默认 native-shell 串联该契约且纳入输入指纹。两端口由同一隔离应用提供，证据用于客户端 origin 隔离，不证明两个独立服务端鉴权域。"
+    },
+    {
+      "subject": "权限与模型边界",
+      "result": "没有把共享个人密钥写为独立设备授权，没有扩大工具权限，没有改变编辑器本机 CLI/API 推理路径，也没有部署线上服务。"
+    }
+  ],
+  "reviewer_executed_checks": [
+    {
+      "check": "冻结输入 SHA-256",
+      "files": 11,
+      "result": "matched"
+    },
+    {
+      "check": "修改的 Python 运行器 AST 解析",
+      "files": 1,
+      "result": "passed"
+    },
+    {
+      "check": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "check": "最终回执内全部源指纹回读",
+      "session_sync": 58,
+      "compiled_identity": 12,
+      "source_identity": 12,
+      "native_shell": 77,
+      "native_layout": 58,
+      "mismatches": []
+    }
+  ],
+  "validation_readback": [
+    {
+      "artifact": "tianxuan-session-sync-after.json",
+      "sha256": "a842ad4d2469f754e14ea918f176cebe0bf3c7d4bba3d9817bca3d176414b5cb",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root/conversation_sync_path",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "checks": 34,
+      "distinct_origins": true,
+      "model_requests": 0,
+      "coverage": [
+        "双向登录和实际账号/项目显示文字",
+        "被动登录页解除与显式页面保留",
+        "未提交密码清除",
+        "失败认证保留旧身份和草稿",
+        "真实 origin 地址同步",
+        "旧格式歧义记录不迁移且保留",
+        "新格式 A/B 同 ID 草稿往返",
+        "项目切换与退出状态"
+      ],
+      "boundary": "无显示器编译控件、隔离 HTTP 服务；不证明用户当前服务的设备授权部署。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-identity-source-final.json",
+      "sha256": "e2274c743f3af0873cd2a2c53164e2e018ba5987e78185d1112ae9e7bd54a3eb",
+      "binary_sha256": "7577b6815cb88b84f400b0687059585a9085f91a7cba91f4d6fa5511d9b171e4",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "mode": "source_loaded",
+      "phases": 22,
+      "identity_checks": 127,
+      "legacy_checks": 70,
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "boundary": "使用先前二进制加载最终会话源码；不冒充最终编译产物的执行证据。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-identity-compiled.json",
+      "sha256": "81bfa049a03be4266625020c300b896cda362e9137dad750efa4897acd88adc0",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "mode": "compiled_native",
+      "phases": 22,
+      "identity_checks": 127,
+      "legacy_checks": 70,
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "stale_sources": [],
+      "coverage": [
+        "空库启动状态通知",
+        "设备授权保存及新进程恢复",
+        "失败登录保留已存设备状态",
+        "账号、项目、服务切换",
+        "取消和迟到回复",
+        "旧服务临时登录与共享凭据保护",
+        "并发凭据库更新及独立退出"
+      ],
+      "boundary": "隔离凭据库与合成账号；不是用户真实线上账号的重新登录验收。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-native-shell.json",
+      "sha256": "a2c7fc825da1c3dd484d181789f55e8f83741cc7cca170d5caf768c692c6d23e",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_nested_hashes",
+      "result": "passed",
+      "checks": {
+        "native_shell": 171,
+        "local_conversation": 43,
+        "host_progress": 16,
+        "production_handoff": 27,
+        "current_editor_context": 38,
+        "session_sync": 34
+      },
+      "native_local_fixture": {
+        "requests": 3,
+        "synchronized_turns": 2,
+        "cloud_inference_requests": 0
+      },
+      "current_local_fixture": {
+        "requests": 3,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      },
+      "handoff_provider_commands": 0,
+      "session_sync_model_requests": 0,
+      "boundary": "最终编译候选、隔离服务与回环模型 fixture；没有真实供应商或用户资产生产。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-native-layout.json",
+      "sha256": "2f2d382c1ed52e062aa31e3c0085210a978619f2e4c1bd06627bc67ffc47ad53",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_verify_input_hashes",
+      "result": "passed",
+      "checks": 248,
+      "conversation_geometry_samples": 27,
+      "design_geometry_samples": 18,
+      "boundary": "控件几何与结构化断言，不代替像素、原生 OS 窗口或 IME 验收。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-business.json",
+      "sha256": "49eaad4010633780f605b5127c5a949db5eca208e0811646316039884a142c8c",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_saved_states",
+      "result": "passed",
+      "real_isolated_account_switch": true,
+      "isolated_identity_race_mode": false,
+      "coverage": [
+        "模块/工单草稿和历史切换",
+        "原位置保存",
+        "明确发送快照",
+        "第二合成账号实际激活后的隔离"
+      ],
+      "boundary": "报告没有嵌入完整源指纹；以其实际二进制摘要和冻结源码范围记录，不增加未运行模式。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-business-references.json",
+      "sha256": "1bf5e8201f2564dfa1efd9868666c6493255e1736634553160c41448795d8ad1",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_exact_sent_context",
+      "result": "passed",
+      "stored_turns": 2,
+      "redactions_per_turn": 2,
+      "coverage": [
+        "自动当前与手动保留引用独立",
+        "工单/模块/退出隔离",
+        "显式移除前保留手动引用",
+        "两项合成凭据脱敏",
+        "两模块实际 HTTP 发送"
+      ],
+      "boundary": "既有业务服务和模型 fixture；不能把此通道与天璇本地推理的 cloud_inference_requests 统计混为一谈。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-module-drafts.json",
+      "sha256": "a612f7128b9146f2f63d196b7b7c3416b4770a830390a83cd5a9d4f4e9b4f44b",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_restart_states",
+      "result": "passed",
+      "phases": [
+        "write",
+        "reopen",
+        "cleared",
+        "other-account",
+        "other-project"
+      ],
+      "model_fixture_calls": 1,
+      "credential_scan_files": 27,
+      "coverage": [
+        "新格式模块草稿与手动引用重启恢复",
+        "清空后不恢复",
+        "其他账号和项目隔离",
+        "凭据脱敏"
+      ],
+      "boundary": "报告未嵌入完整源指纹；隔离测试的业务数据与模型回复。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-saved-continuation.json",
+      "sha256": "eca1f528bac3eee26ceb3a51abed2ac7b04bb7e13948b760f1a5781dbccfce92",
+      "binary_sha256": "15705177324caeb67cb3aa21b4616d322dda0a6f0b839e39b145ab9f88706170",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_revision_payload",
+      "result": "passed",
+      "coverage": [
+        "已保存脚本与场景修订接续",
+        "动画轨道前后版本",
+        "明确发送中的保存来源及引用"
+      ],
+      "boundary": "现有接续测试的隔离资源；不是用户项目内资产生产或实际模型供应商验证。"
+    },
+    {
+      "artifact": "tianxuan-session-sync-static.json",
+      "sha256": "eb20fdad1ea23181f50625ee47cfcfcf161ca13cde519fd43cde1d1ce5bf9dd4",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt",
+      "result": "passed",
+      "checks": [
+        "ruff-check",
+        "ruff-format",
+        "codespell",
+        "diff-check"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "historical_failure": {
+    "artifact": "tianxuan-session-sync-before.log",
+    "sha256": "0f66b462d49e13baae705239d94ba859804b6e20670029c28c2645e4250fc67d",
+    "reported_candidate_commit": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+    "observed_failure": "login in the left workspace releases both authentication gates without a second login",
+    "boundary": "日志实际显示前三项通过后双侧登录页解除失败；旧候选来源由实现者提供，日志没有独立二进制 SHA-256。"
+  },
+  "diagnostics_retained": {
+    "native_shell": [
+      "ERROR: Condition \"p_name.is_empty()\" is true.",
+      "WARNING: 20 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 5672 RIDs of type \"CanvasItem\" were leaked.",
+      "ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE",
+      "WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.",
+      "WARNING: 14313 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+    ],
+    "local_conversation": "故障注入预期触发 storage-blocker/not-a-directory 创建失败；不公开其临时绝对路径。",
+    "current_context": [
+      "6 Canvas RIDs leaked",
+      "270 CanvasItem RIDs leaked",
+      "1190 ObjectDB instances leaked at exit"
+    ],
+    "session_sync": [
+      "6 Canvas RIDs leaked",
+      "129 CanvasItem RIDs leaked",
+      "623 ObjectDB instances leaked at exit"
+    ],
+    "layout": [
+      "WARNING: 303 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 7574 RIDs of type \"CanvasItem\" were leaked.",
+      "WARNING: 23430 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+    ],
+    "module_drafts": "write/reopen/cleared/other-account/other-project 各保留 10 条渲染、文字资源及 ObjectDB 退出诊断；完整原始诊断保留在所列回执中。",
+    "assessment": "断言通过不等于无错误输出或无退出泄漏；这些诊断未被隐藏，本审查未把全部诊断归因于既有代码。"
+  },
+  "decision": {
+    "status": "code_review_passed_with_validation_limits",
+    "unresolved_code_findings": [],
+    "code_delivery_review_complete": true,
+    "actual_user_login_acceptance": "pending",
+    "production_device_session_availability": "not_inferred_from_fixtures"
+  },
+  "acceptance_limits": [
+    "用户当前服务是否支持独立设备授权及是否已部署相关服务端版本，需要真实服务能力回执；隔离 fixture 通过不能证明线上已升级。",
+    "本机安装后的实际双向登录呈现、设备重启恢复与用户反馈尚待独立记录；本审查没有读取真实用户凭据或操控用户现有窗口。",
+    "Windows 新候选运行、原生窗口及输入法不由本机无显示器回归推定；CI 与正式交付也不由本审查代替。",
+    "来源不明的旧格式业务草稿仍保留，但本版不自动恢复或迁移；新格式草稿的持久和隔离已验证。"
+  ],
+  "conclusion": "最终冻结差异未发现尚未修复的代码阻断项，三项审查发现均已修复并有对应回归。可用于本轮代码交付审查；不据此宣称实际服务部署或用户本机登录验收已完成。"
+}

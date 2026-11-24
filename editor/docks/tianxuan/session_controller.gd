@@ -117,6 +117,7 @@ func _restore(serial: int) -> void:
 	if serial != _login_serial or not _restore_pending or _restore_running or not valid_origin(origin):
 		return
 	_restore_running = true
+	status_changed.emit()
 	var target := origin
 	var reply := await _store("load", target)
 	if serial != _login_serial:
@@ -125,6 +126,10 @@ func _restore(serial: int) -> void:
 	if record.is_empty():
 		_restore_running = false
 		_restore_pending = reply.get("status") == "unavailable"
+		if _restore_pending:
+			_set_status("无法访问系统凭据库，请检查后重新连接服务。")
+		else:
+			status_changed.emit()
 		return
 	_stored_digest = str(reply.secret).sha256_text()
 	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", record.token, {}, 12.0, "", target)
@@ -232,6 +237,17 @@ func set_origin(value: String) -> bool:
 
 func get_identity() -> Dictionary:
 	return _identity.duplicate(true)
+
+
+func get_login_persistence() -> String:
+	# Public presentation state only: never expose the credential or vault digest.
+	if _identity.is_empty():
+		return "restore_pending" if _restore_running else "signed_out"
+	if _memory_only_login:
+		return "temporary_legacy"
+	if _owned_session and not _stored_digest.is_empty():
+		return "saved_device"
+	return "temporary_session"
 
 
 func scope_key() -> String:
