@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7feb3f2fcc36600b363c3c8d2a92602b6dd58e3c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7c5fd69d3311d2835ba997ce7f0d94f5cb6c18776b282055c712a422a9227208",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "delivery",
+    "detection_head": "889e1eadd6365ba1bad8d969ce395a45cc340c95",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "data-collection/engine-apple-gray-ui-2222-ci-correction.json",
+    "diagnosis": "Correcting spelling inside a committed collection receipt violates append-only evidence. Restored original committed bytes, recorded corrected text separately, and added one exact codespell skip matching existing immutable-evidence convention.",
+    "next_action": "Rerun the original submission gate on the corrected index; preserve original receipt and reviewer hashes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T17:55:31.139030+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T18:00:09.150864+00:00",
+  "sha256": "ea8ba55601aab62a2f77d8a99fa6bd4e26a159fbcc96f4d4e875745eee90ec52"
+}

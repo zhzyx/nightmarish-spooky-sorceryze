@@ -1271,6 +1271,12 @@
 			- [b]Selected Only[/b] will only draw them for selected items.
 			- [b]All[/b] will always draw them for all items.
 		</member>
+		<member name="interface/theme/reduce_motion" type="bool" setter="" getter="">
+			Disables editor foldable container and Inspector section height transitions.
+		</member>
+		<member name="interface/theme/reduce_transparency" type="bool" setter="" getter="">
+			Disables backdrop sampling on editor glass panels, restoring their opaque style.
+		</member>
 		<member name="interface/theme/follow_system_theme" type="bool" setter="" getter="">
 			If [code]true[/code], the editor theme preset will attempt to automatically match the system theme.
 		</member>

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "collected_at": "2026-11-24T18:06:08.321888+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-022831394d93442d88b0c24e7302c36b.json",
+      "sha256": "6743c2c43d41cea0d97f24e03e536a7337a751a1c8e4290159234eaef257ff54",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-022831394d93442d88b0c24e7302c36b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-272109391bb24e329e3f5e91bc9aaada.json",
+      "sha256": "d9aa21e57bf648589ea280372184307011f530a251fdf4db258c0aa776c26cfd",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-272109391bb24e329e3f5e91bc9aaada",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-2ce20219f66940deaaafb90e53618c46.json",
+      "sha256": "2a4aadd1ecb3365a49d70cb67390bd48a17aa80007919d37b46ea92a3c8bdd14",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2ce20219f66940deaaafb90e53618c46",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-4075adc5096641379707762539af8efe.json",
+      "sha256": "f2c5565b44ebc358ee5c94ab05d1b46ddc17445baeb08d16fc01a16ad1288056",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-4075adc5096641379707762539af8efe",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-57e3d2b7bd3b4608adfce2f3dd2dbc56.json",
+      "sha256": "2c37ec59a8ee04d63aedfee66afae3d8296cddfaa120478d4ecbde0580ef4f44",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-57e3d2b7bd3b4608adfce2f3dd2dbc56",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/dispatch-b5348fe51f144a9c95001d4fb3210d4a.json",
+      "sha256": "f4e38a0e0556492ed4e4c32a2683a1a501caf2bb46307e827c857b44a899bc75",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b5348fe51f144a9c95001d4fb3210d4a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/kuafu-15009ab44ebc2893ca1c775d47d0111eef447d28.json",
+      "sha256": "e5aa3d90fe6c99b74ae15530e08ba80e0ae1424e4eeaa86fcc9c75fde959fdd0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-15009ab44ebc2893ca1c775d47d0111eef447d28",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/kuafu-7feb3f2fcc36600b363c3c8d2a92602b6dd58e3c.json",
+      "sha256": "1c5891565148a6dcff3c39be2c7a4acaf73a627b42735d7dac3b0e5855b1d201",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7feb3f2fcc36600b363c3c8d2a92602b6dd58e3c",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/kuafu-ad545b9ccb6159012c8f8e05d3c95492ffdd5600.json",
+      "sha256": "657580d668c01bba44673e349c5df703df1d53a345e35bf83c40b3c146c88b7d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ad545b9ccb6159012c8f8e05d3c95492ffdd5600",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/kuafu-d56de3e478dcf1c06c2ee4452d111f5014d213d0.json",
+      "sha256": "17c20fdcd84c4d86e6a0ade8e8e6db39678e5c9ee8a4142735b871fdf333c1e2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-d56de3e478dcf1c06c2ee4452d111f5014d213d0",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/request-engine-apple-gray-ui-20261124.json",
+      "sha256": "072ad80441d61da056fe348aeefacc3f10e7e49a060bb1ef9e086d73a015b318",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-engine-apple-gray-ui-20261124",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2222,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222"
+}

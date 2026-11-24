@@ -115,7 +115,7 @@ func prepare_launch() -> bool:
 			return false
 	main.find_child("PublishTianxuanRequirement", true, false).pressed.emit()
 	var design = main._page_instances.design
-	if not check(await wait_until(func(): return not controller.chat_busy() and controller.conversation().get("requirement_id") != null and design._scopes.get_child_count() > 0), "published requirement reads the installed execution capabilities"):
+	if not check(await wait_until(func(): return not controller.chat_busy() and controller.conversation().get("requirement_id") != null and design._scopes.get_child_count() > 0 and not controller.cache.get("requirement-review:" + str(controller.conversation().id), {}).is_empty()), "published requirement reads execution capabilities and the saved version review"):
 		return false
 	if design._approve.visible:
 		design._approve.pressed.emit()

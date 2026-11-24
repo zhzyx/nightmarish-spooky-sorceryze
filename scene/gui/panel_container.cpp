@@ -31,6 +31,7 @@
 #include "panel_container.h"
 
 #include "scene/theme/theme_db.h"
+#include "servers/rendering/rendering_server.h"
 
 Size2 PanelContainer::get_minimum_size() const {
 	Size2 ms = Container::_get_minimum_size();
@@ -91,8 +92,47 @@ Vector<int> PanelContainer::get_allowed_size_flags_vertical() const {
 
 void PanelContainer::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_THEME_CHANGED: {
+			// Opt-in only. A user-provided material always takes precedence.
+			if (theme_cache.background_blur > 0 && (get_material().is_null() || get_material() == background_material)) {
+				if (background_material.is_null()) {
+					Ref<Shader> shader;
+					shader.instantiate();
+					shader->set_code(R"(
+shader_type canvas_item;
+render_mode unshaded;
+uniform sampler2D backdrop : hint_screen_texture, repeat_disable, filter_linear;
+uniform float radius = 3.0;
+void fragment() {
+    vec2 offset = SCREEN_PIXEL_SIZE * radius;
+    vec3 blurred = texture(backdrop, SCREEN_UV).rgb * 0.25;
+    blurred += texture(backdrop, SCREEN_UV + vec2(offset.x, 0.0)).rgb * 0.125;
+    blurred += texture(backdrop, SCREEN_UV - vec2(offset.x, 0.0)).rgb * 0.125;
+    blurred += texture(backdrop, SCREEN_UV + vec2(0.0, offset.y)).rgb * 0.125;
+    blurred += texture(backdrop, SCREEN_UV - vec2(0.0, offset.y)).rgb * 0.125;
+    blurred += texture(backdrop, SCREEN_UV + offset).rgb * 0.0625;
+    blurred += texture(backdrop, SCREEN_UV - offset).rgb * 0.0625;
+    blurred += texture(backdrop, SCREEN_UV + vec2(offset.x, -offset.y)).rgb * 0.0625;
+    blurred += texture(backdrop, SCREEN_UV + vec2(-offset.x, offset.y)).rgb * 0.0625;
+    COLOR.rgb = mix(blurred, COLOR.rgb, 0.82);
+}
+)");
+					background_material.instantiate();
+					background_material->set_shader(shader);
+				}
+				background_material->set_shader_parameter("radius", CLAMP(theme_cache.background_blur, 1, 12));
+				set_material(background_material);
+			} else if (get_material().is_valid() && get_material() == background_material) {
+				set_material(Ref<Material>());
+				background_material.unref();
+			}
+		} break;
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
+			// Screen-texture auto copies are shared by the viewport. Refresh before
+			// each glass panel so intervening and overlapping items are included.
+			const bool copy_backdrop = background_material.is_valid() && get_material() == background_material;
+			RS::get_singleton()->canvas_item_set_copy_to_backbuffer(ci, copy_backdrop, Rect2());
 			theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
 		} break;
 
@@ -118,6 +158,7 @@ void PanelContainer::_notification(int p_what) {
 
 void PanelContainer::_bind_methods() {
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, PanelContainer, panel_style, "panel");
+	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, PanelContainer, background_blur);
 }
 
 PanelContainer::PanelContainer() {

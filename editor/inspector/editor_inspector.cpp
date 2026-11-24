@@ -2271,6 +2271,23 @@ int EditorInspectorSection::_get_header_height() {
 
 void EditorInspectorSection::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_INTERNAL_PROCESS: {
+			if (!section_animating) {
+				break;
+			}
+			section_elapsed += get_process_delta_time();
+			const double progress = bool(EDITOR_GET("interface/theme/reduce_motion")) ? 1.0 : MIN(1.0, section_elapsed / 0.18);
+			const real_t eased = 1.0 - Math::pow(1.0 - progress, 3.0);
+			section_height = Math::lerp(section_from_height, section_target_height, eased);
+			if (progress >= 1.0 || !is_visible_in_tree()) {
+				section_animating = false;
+				set_clip_contents(section_restore_clip);
+				set_process_internal(false);
+			}
+			update_minimum_size();
+			queue_sort();
+			queue_redraw();
+		} break;
 		case NOTIFICATION_ACCESSIBILITY_UPDATE: {
 			RID ae = get_accessibility_element();
 			ERR_FAIL_COND(ae.is_null());
@@ -2510,7 +2527,7 @@ void EditorInspectorSection::_notification(int p_what) {
 				}
 
 				// - Label.
-				float text_offset_y = font->get_ascent(font_size) + (header_height - font->get_height(font_size)) / 2;
+				float text_offset_y = (header_height - font->get_height(font_size)) / 2;
 				Point2 text_offset = Point2(margin_start, text_offset_y).round();
 				if (rtl) {
 					text_offset.x = margin_end;
@@ -2520,7 +2537,16 @@ void EditorInspectorSection::_notification(int p_what) {
 				}
 				const Color string_color = header_hover ? theme_cache.font_hover_mono_color : font_color;
 				HorizontalAlignment text_align = rtl ? HORIZONTAL_ALIGNMENT_RIGHT : HORIZONTAL_ALIGNMENT_LEFT;
-				draw_string(font, text_offset, label, text_align, available, font_size, string_color, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS);
+				if (available > 0) {
+					Ref<TextLine> title_line;
+					title_line.instantiate();
+					title_line->set_direction(rtl ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
+					title_line->add_string(label, font, font_size);
+					title_line->set_width(available);
+					title_line->set_horizontal_alignment(text_align);
+					title_line->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+					title_line->draw(get_canvas_item(), text_offset, string_color);
+				}
 			}
 
 			// Draw section indentation.
@@ -2596,6 +2622,9 @@ Size2 EditorInspectorSection::get_minimum_size() const {
 		ms.width += theme_cache.indent_box->get_margin(SIDE_LEFT) + theme_cache.indent_box->get_margin(SIDE_RIGHT);
 	}
 
+	if (section_animating) {
+		ms.y = section_height;
+	}
 	return ms;
 }
 
@@ -2775,11 +2804,34 @@ void EditorInspectorSection::_accessibility_action_expand(const Variant &p_data)
 	unfold();
 }
 
+void EditorInspectorSection::_animate_section(real_t p_previous_height) {
+	if (!section_animating) {
+		section_restore_clip = is_clipping_contents();
+	}
+	section_animating = false;
+	section_target_height = get_minimum_size().y;
+	if (!is_visible_in_tree() || bool(EDITOR_GET("interface/theme/reduce_motion"))) {
+		set_clip_contents(section_restore_clip);
+		set_process_internal(false);
+		update_minimum_size();
+		return;
+	}
+	section_height = p_previous_height;
+	section_from_height = p_previous_height;
+	section_elapsed = 0;
+	section_animating = true;
+	set_clip_contents(true);
+	set_process_internal(true);
+	update_minimum_size();
+	queue_sort();
+}
+
 void EditorInspectorSection::unfold() {
 	if ((!foldable && !checkable) || (!checkbox_only && checkable && !checked)) {
 		return;
 	}
 
+	const real_t previous_height = get_minimum_size().y;
 	_test_unfold();
 
 	if (foldable) {
@@ -2787,6 +2839,7 @@ void EditorInspectorSection::unfold() {
 	}
 
 	vbox->show();
+	_animate_section(previous_height);
 	queue_redraw();
 }
 
@@ -2795,8 +2848,10 @@ void EditorInspectorSection::fold() {
 		return;
 	}
 
+	const real_t previous_height = get_minimum_size().y;
 	object->editor_set_section_unfold(section, false);
 	vbox->hide();
+	_animate_section(previous_height);
 	queue_redraw();
 }
 

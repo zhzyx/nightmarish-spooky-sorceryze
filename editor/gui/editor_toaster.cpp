@@ -375,6 +375,7 @@ void EditorToaster::_repop_old() {
 Control *EditorToaster::popup(Control *p_control, Severity p_severity, double p_time, const String &p_tooltip) {
 	// Create the panel according to the severity.
 	PanelContainer *panel = memnew(PanelContainer);
+	panel->set_theme_type_variation("EditorGlassPanel");
 	panel->set_tooltip_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	panel->set_tooltip_text(p_tooltip);
 	switch (p_severity) {

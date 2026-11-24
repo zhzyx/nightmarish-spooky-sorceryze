@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-engine-apple-gray-ui-20261124",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "request",
+  "occurred_at": "2026-11-24T16:55:37.676099+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "operator": "Sail-Li",
+    "design": "design-docs/engine-apple-gray-ui-20261124.md",
+    "scope": "Engine-wide neutral gray UI, interaction states, typography/scaling, glass materials and folding motion",
+    "recording_note": "Authorized request recorded after implementation began; original Issue intake passed before implementation. This event does not certify acceptance.",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "1d8221c193c90c8b03fe0b72b92f8518adb340d72493dbe216951cfd13d31734"
+}
