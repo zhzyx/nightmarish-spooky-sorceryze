@@ -67,6 +67,7 @@ void TianxuanModelHost::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("configuration"), &TianxuanModelHost::Configuration);
 	ClassDB::bind_method(D_METHOD("start", "scope", "request_id", "messages"), &TianxuanModelHost::Start);
+	ClassDB::bind_method(D_METHOD("progress", "request_id"), &TianxuanModelHost::Progress);
 	ClassDB::bind_method(D_METHOD("cancel", "request_id"), &TianxuanModelHost::Cancel);
 	ADD_SIGNAL(MethodInfo("finished", PropertyInfo(Variant::STRING, "request_id"), PropertyInfo(Variant::DICTIONARY, "result")));
 }
@@ -214,6 +215,35 @@ Dictionary TianxuanModelHost::Start(const String &strScope, const String &strReq
 	mapResult["ok"] = true;
 	mapResult["model"] = mapModel;
 	return mapResult;
+}
+
+Dictionary TianxuanModelHost::Progress(const String &strRequestId) const
+{
+	Dictionary mapProgress;
+	mapProgress["active"] = false;
+	mapProgress["phase"] = "idle";
+	const ObjectID *pWorkerId = mapWorkers.getptr(strRequestId);
+	if (!is_inside_tree() || pWorkerId == nullptr)
+	{
+		return mapProgress;
+	}
+	const AIChatDock *pWorker = ObjectDB::get_instance<AIChatDock>(*pWorkerId);
+	if (pWorker == nullptr || !pWorker->is_inside_tree() || pWorker->get_parent() != this || !pWorker->bLocalConsultationWorker || !pWorker->IsAiBusy())
+	{
+		return mapProgress;
+	}
+	const Dictionary mapSnapshot = pWorker->GetAiWorkflowSnapshot();
+	const Dictionary mapBinding = mapSnapshot.get("binding", Dictionary());
+	const Dictionary mapConsultation = mapBinding.get("local_consultation", Dictionary());
+	if (mapConsultation.is_empty() || mapConsultation.get("request_id", String()) != Variant(strRequestId) || mapConsultation != pWorker->mapLocalConsultationBinding)
+	{
+		return mapProgress;
+	}
+	// CLI and HTTP expose different progress events. A live authoritative run proves
+	// waiting, but never a percentage, generated asset, or a safe partial answer.
+	mapProgress["active"] = true;
+	mapProgress["phase"] = "waiting";
+	return mapProgress;
 }
 
 void AIChatDock::FinishLocalConsultation()

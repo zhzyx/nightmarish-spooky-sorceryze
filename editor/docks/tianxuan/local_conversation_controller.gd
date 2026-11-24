@@ -40,6 +40,65 @@ func configuration() -> Dictionary:
 	return host.configuration() if is_instance_valid(host) else {"ok": false, "error": "本机模型入口尚未准备完成。"}
 
 
+func progress() -> Dictionary:
+	if job.is_empty():
+		return {"active": false}
+	var phase: String = job.get("phase", "starting")
+	if is_instance_valid(host) and host.has_method("progress"):
+		var state: Dictionary = host.progress(job.request_id)
+		if state.get("active", false):
+			phase = str(state.get("phase", "waiting"))
+	return {"active": true, "request_id": job.request_id, "conversation": job.conversation, "kind": job.kind, "phase": phase, "elapsed_seconds": maxi(0, int((Time.get_ticks_msec() - int(job.started_at)) / 1000))}
+
+
+func resume_state(turn_id: String) -> Dictionary:
+	var state := {"available": false, "reason": "原消息已变化，请刷新会话。", "resumed": false}
+	var current: Dictionary = workspace.conversation()
+	var original := {}
+	for turn in current.get("turns", []):
+		if turn.id == turn_id and turn.state == "unanswered":
+			original = turn
+	if original.is_empty():
+		return state
+	for turn in _record(workspace.active_conversation).get("turns", []):
+		if turn.get("continued_from", "") == turn_id:
+			return {"available": false, "reason": "已继续处理，请查看后续消息。", "resumed": true}
+	if not workspace.can_edit():
+		state.reason = "继续处理需要编辑权限。"
+	elif workspace.chat_busy():
+		state.reason = "请等待当前操作完成。"
+	elif not str(workspace.load_draft(workspace.chat_draft_key(workspace.active_conversation)).get("pending_id", "")).is_empty():
+		state.reason = "请先核对已提交消息的回执。"
+	elif current.get("turns", []).size() >= 100:
+		state.reason = "此会话已达到消息上限，请新建对话。"
+	elif str(original.get("content", "")).strip_edges().is_empty() or str(original.content).length() > 8000:
+		state.reason = "原消息内容无效，请编辑后重新发送。"
+	elif original.get("context_snapshot") != null and (not original.context_snapshot is Dictionary or original.context_snapshot.get("project", "") != workspace.identity().get("project", "")):
+		state.reason = "原消息引用不属于当前项目，无法继续处理。"
+	else:
+		for turn in current.get("turns", []):
+			if turn.state == "pending":
+				state.reason = "请先等待或停止当前回复。"
+				return state
+		state.available = true
+		state.reason = "使用本机模型继续原消息，保留当前草稿。"
+	return state
+
+
+func resume(turn_id: String) -> void:
+	var state := resume_state(turn_id)
+	if not state.available:
+		workspace.errors.chat = state.reason
+		workspace.changed.emit("chat")
+		return
+	for turn in workspace.conversation().get("turns", []):
+		if turn.id == turn_id:
+			# Historical references are immutable context, never fresh editor authority.
+			var references: Dictionary = turn.get("context_snapshot", {}) if turn.get("context_snapshot") is Dictionary else {}
+			_send(str(turn.content), references, turn_id)
+			return
+
+
 func _key(id: String) -> String:
 	return "local-conversation:" + id
 
@@ -133,7 +192,7 @@ func _publish(id: String) -> void:
 
 
 func messages(current: Dictionary) -> Array:
-	var result := []
+	var result := [{"role": "system", "content": "你正在 Godot 编辑器的天璇工作台中协助用户。这一轮用于讨论和整理任务；原生界面的‘整理为需求’入口会进入方向、策划与设计确认，再由既有执行入口处理任务。对于模型资产或代码制作请求，澄清必要规格并给出可用于需求草稿的具体下一步；不要把本轮咨询没有工具权限解释为整个工作台不能执行，也不要声称已经生成、导入、确认或启动了实际任务。只有实际执行回执能证明完成。若用户要求输出某阶段的草稿或补充正文，仅按该要求输出正文。"}]
 	for turn in current.get("turns", []).slice(-12):
 		var content := str(turn.content)
 		if turn.get("context_snapshot") is Dictionary:
@@ -145,6 +204,10 @@ func messages(current: Dictionary) -> Array:
 
 
 func send(text: String, references: Dictionary) -> void:
+	_send(text, references)
+
+
+func _send(text: String, references: Dictionary, continued_from := "") -> void:
 	if busy() or not workspace.can_edit() or text.strip_edges().is_empty() or text.length() > 8000:
 		return
 	var id: String = workspace.active_conversation
@@ -166,6 +229,8 @@ func send(text: String, references: Dictionary) -> void:
 	var turn_id: String = workspace.new_id()
 	var model := configuration()
 	var turn := {"model_snapshot": model.duplicate(true), "id": turn_id, "content": text, "state": "pending", "answer": null, "model": null, "error": null, "reply_source": "editor-local"}
+	if not continued_from.is_empty():
+		turn.continued_from = continued_from
 	if not references.is_empty():
 		turn.context_snapshot = references.duplicate(true)
 	record.turns.append(turn)
@@ -176,8 +241,9 @@ func send(text: String, references: Dictionary) -> void:
 	workspace.active_conversation = id
 	if previous.is_empty() and workspace.editor_context:
 		workspace.editor_context.move_new_conversation(id)
-	workspace.clear_draft(workspace.chat_draft_key(previous))
-	job = {"request_id": turn_id, "conversation": id, "kind": "chat", "generation": generation}
+	if continued_from.is_empty():
+		workspace.clear_draft(workspace.chat_draft_key(previous))
+	job = {"request_id": turn_id, "conversation": id, "kind": "chat", "generation": generation, "started_at": Time.get_ticks_msec(), "phase": "starting"}
 	workspace.errors.erase("chat")
 	_publish(id)
 	workspace.changed.emit("conversation_selection")
@@ -185,6 +251,8 @@ func send(text: String, references: Dictionary) -> void:
 	var started: Dictionary = host.start(workspace.session.scope_key(), turn_id, input) if is_instance_valid(host) else {"ok": false, "error": "本机模型入口尚未准备完成。"}
 	if not started.get("ok", false):
 		_finished(turn_id, started)
+	elif not job.is_empty() and job.request_id == turn_id:
+		job.phase = "waiting"
 
 
 func _finished(request_id: String, result: Dictionary) -> void:
@@ -354,11 +422,13 @@ func suggest(stage: String) -> void:
 	input.append({"role": "user", "content": "已确认的前置阶段：\n" + JSON.stringify(confirmed)})
 	input.append({"role": "user", "content": "请根据以上讨论补充设计草稿。阶段：%s；语言：%s。仅输出已有草稿缺少的补充内容，不重复或改写已有段落，不声称已经批准或执行任务。\n\n已有草稿：\n%s" % [stage, workspace.language, body]})
 	var request_id: String = workspace.new_id()
-	job = {"request_id": request_id, "conversation": current.id, "kind": "design", "stage": stage, "key": key, "draft": draft, "saved": saved, "body": body, "source": _design_source(current), "generation": generation}
+	job = {"request_id": request_id, "conversation": current.id, "kind": "design", "stage": stage, "key": key, "draft": draft, "saved": saved, "body": body, "source": _design_source(current), "generation": generation, "started_at": Time.get_ticks_msec(), "phase": "starting"}
 	workspace.changed.emit("design")
 	var started: Dictionary = host.start(workspace.session.scope_key(), request_id, input) if is_instance_valid(host) else {"ok": false, "error": "本机模型入口尚未准备完成。"}
 	if not started.get("ok", false):
 		_finished(request_id, started)
+	elif not job.is_empty() and job.request_id == request_id:
+		job.phase = "waiting"
 
 
 func _design_source(current: Dictionary) -> Dictionary:

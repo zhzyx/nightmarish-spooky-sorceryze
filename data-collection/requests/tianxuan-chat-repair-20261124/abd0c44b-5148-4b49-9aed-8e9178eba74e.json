@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "collected_at": "2026-11-23T23:57:38.523849+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-chat-repair-20261124/kuafu-51c21d5820f696bd1e66d7d6cccc3e0a3ab3d3cc.json",
+      "sha256": "d55dac56f13c780c7c38768141037f513c64d99716b72c9075a983c767fa693f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-51c21d5820f696bd1e66d7d6cccc3e0a3ab3d3cc",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-chat-repair-20261124/kuafu-5bbd76d3dff62f0b13b83bd435fe108b7a4d2786.json",
+      "sha256": "100ce3bbe8b6c55c93137be8024b8993f66c6b411a6678864f75b181d685d98f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5bbd76d3dff62f0b13b83bd435fe108b7a4d2786",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-chat-repair-20261124/kuafu-d2eec3e5636bcf8dc58039aa2c73877d574c30ec.json",
+      "sha256": "46279fc4d677d8cd4a904514b32550c2a3b9b89c3465638c4ef723e4689e2285",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-d2eec3e5636bcf8dc58039aa2c73877d574c30ec",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-chat-repair-20261124/request-2180-tianxuan-chat-repair-20261124.json",
+      "sha256": "49f1d2b956154de6766d94e314f150d84ae0c0f97cdfd0e52ce99de446613a63",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-2180-tianxuan-chat-repair-20261124",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2180,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180"
+}

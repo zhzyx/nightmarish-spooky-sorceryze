@@ -335,6 +335,15 @@ func send_message(text: String, references: Dictionary = {}, _source_text := "")
 	local_chat.send(text, references)
 
 
+func resume_message(turn_id: String, conversation_id := "", scope := "") -> void:
+	if not conversation_id.is_empty() and active_conversation != conversation_id:
+		return
+	if not scope.is_empty() and session.scope_key() != scope:
+		return
+	if local_chat:
+		local_chat.resume(turn_id)
+
+
 func retry_pending_message() -> void:
 	# Reconcile historical cloud requests; never submit them for remote inference.
 	var id := active_conversation

@@ -1,0 +1,176 @@
+{
+  "issue": 2180,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "base": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+  "scope": "Native historical-request recovery and readable conversation/progress layout; Web unchanged",
+  "candidate_binary_sha256": "af4307d3729b8e607a5e3043eb1cb75dc2b3ff78e70dd60a60efdb0798ea34f3",
+  "evidence": [
+    {
+      "level": "compiled native shell with isolated real business service and local HTTP provider",
+      "passed": true,
+      "checks": 131,
+      "report_sha256": "3a48c78ff8860f07f9ea5a750323f3c7a404f653fc6b69285e06b5a252c7fc65"
+    },
+    {
+      "level": "source local conversation persistence and recovery with fake provider/session and real private disk",
+      "passed": true,
+      "checks": 43
+    },
+    {
+      "level": "compiled native host with actual delayed loopback HTTP transport",
+      "passed": true,
+      "checks": 16,
+      "assertions": [
+        "configure only the private editor's existing model controls",
+        "compiled model host exposes the request-scoped progress API",
+        "unknown and empty IDs disclose only inactive status",
+        "start isolated request progress-cancel",
+        "start isolated request progress-complete",
+        "each live request exposes only truthful waiting status",
+        "query results are detached and do not fall back to another active request",
+        "cancelled request actually reached its isolated provider",
+        "cancelling one request immediately clears only its status",
+        "second request completes normally",
+        "successful terminal result removes progress without leaking the answer",
+        "late cancelled provider output cannot revive or duplicate progress",
+        "start isolated request progress-fail",
+        "failed provider request remains visible while actually pending",
+        "failed terminal status exposes no provider diagnostics",
+        "status polling does not alter the ordinary AIChat session, transcript or draft"
+      ]
+    },
+    {
+      "level": "compiled native layout and UI interactions",
+      "passed": true,
+      "checks": 218,
+      "report_sha256": "005edddb5c1a472959d365e915b5756f2ecfa67cab428c5e7f8a2f33459bbec2",
+      "vertical_cases": 27,
+      "baseline_failures": 27
+    },
+    {
+      "level": "real installed Codex CLI, private historical pig-request recovery through compiled controller",
+      "passed": true,
+      "checks": {
+        "auto_execute_disabled": true,
+        "auto_write_disabled": true,
+        "completed_progress_is_private": true,
+        "consultation_only": true,
+        "draft_preserved": true,
+        "independent_worker": true,
+        "ordinary_session_unchanged": true,
+        "ordinary_transcript_unchanged": true,
+        "original_request_preserved": true,
+        "private_editor_paths": true,
+        "progress_finished": true,
+        "real_answer_in_history": true,
+        "real_answer_received": true,
+        "recovery_not_duplicated": true,
+        "recovery_progress_visible": true,
+        "running_progress_is_truthful": true,
+        "tools_disabled": true,
+        "unknown_progress_is_private": true
+      },
+      "report_sha256": "2986a3da5ef4f63ae45969ed798ddc181370afa85ededa959b798265a5a5ca42",
+      "elapsed_seconds": 29.46,
+      "observed": {
+        "installed_codex_process_seen": true,
+        "read_only_sandbox": true,
+        "no_approval_or_shell_tools": true
+      },
+      "user_data": "No real business identity, project mutations, or live user conversation changes"
+    },
+    {
+      "level": "non-headless macOS native rendering inspected visually with synthetic private history",
+      "passed": true,
+      "geometry": [
+        {
+          "composer": "(854.0, 68.0)",
+          "history": "(920.0, 405.0)",
+          "name": "main-recovery",
+          "window": "(960, 620)"
+        },
+        {
+          "composer": "(234.0, 68.0)",
+          "history": "(300.0, 405.0)",
+          "name": "sidebar-recovery",
+          "window": "(340, 620)"
+        },
+        {
+          "composer": "(234.0, 68.0)",
+          "history": "(300.0, 397.0)",
+          "name": "sidebar-progress",
+          "window": "(340, 620)"
+        }
+      ],
+      "images_sha256": {
+        "sidebar-progress.png": "ba387a94fab0f668109576e6ac49fb13219391a31e31fad5e6bfc89e0f5f61c4",
+        "sidebar-recovery.png": "67078193298657c862d4bdd2598242799841e8aca9f22572bcf8e797b7e6fc81",
+        "main-recovery.png": "3aa6973b9cc0babf43f03b33eea60ceccd4e45d3cb2479d40ab58f026092c6b9"
+      }
+    }
+  ],
+  "input_sha256": {
+    "editor/docks/tianxuan/.clang-format": "80e3f12172224b4df9038dab0d861bb75d087f30578e5f4b095157943a91a8e3",
+    "editor/docks/tianxuan/TianxuanModelHost.cpp": "ae4ba043c7cd1031407f2c2195e1d94562671d7da6436b638be3df854188e422",
+    "editor/docks/tianxuan/TianxuanModelHost.h": "df375bc60fa54bb5bdb822913a707e0ba3875a06604e831c0534ea20f0822528",
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "63024c3b2087ac76b2ce3e31353d09aa52f5750ed884f8153fdbf2c64e0002f1",
+    "editor/docks/tianxuan/TianxuanWorkbench.h": "f69fa6440339f2f82464b16b482712dd614d9aad0ae148ec22e580fd38d49b84",
+    "editor/docks/tianxuan/accounts_controller.gd": "13c8052c548b28316c55f5f37fe0e7da1c02011c8638816da6e3d6dc470ea332",
+    "editor/docks/tianxuan/accounts_page.gd": "b44d3954bcd26863c231d40415f7d983c0758f8341a05b13a019f784e7c5d4c7",
+    "editor/docks/tianxuan/asset_decoder.gd": "fc5eb2dfcbbfad82e5d8176212c98b9c55955a5733bb04447f0c95750bc517a3",
+    "editor/docks/tianxuan/build-impact.json": "db9fa90256bede5dadec3195d27eea61c2fccb17fdf8968db3d98fad472dfd12",
+    "editor/docks/tianxuan/design_page.gd": "f29b0f9cc6dd16fd4f834bfd7c173ccdb27c9816223aecd4b85fd278d3d04caf",
+    "editor/docks/tianxuan/document_controller.gd": "87f22a0f84502988682e625dd4c3d65ce4bbefb89f68e07c3acdb56dbc99d991",
+    "editor/docks/tianxuan/documents_page.gd": "7abab3332a19ee89f2c366642caa759aeba1e23affa232345a0dda95b0ed9035",
+    "editor/docks/tianxuan/editor_controller.gd": "86648ecb029e02371aacdcbb3162011676fb8c934ef3fb914e8b7e812598c44f",
+    "editor/docks/tianxuan/execution_controller.gd": "5a1e48c217f35e08c18867040d91f3321c852e40e75274e49c879c1d397c31ee",
+    "editor/docks/tianxuan/execution_page.gd": "7c0acfd3eb810d62b9ba1981677a6d9d61fa59f8d9ce47e5af2f038e25d7dc69",
+    "editor/docks/tianxuan/game_config_controller.gd": "b0ba8f423b6796147c105f0d83918b3ee476d3ad747e297b5148ac697f271ba0",
+    "editor/docks/tianxuan/game_config_page.gd": "585a9ac1e805ab42418079fdf69493bd813bd24f7fabeeecd543e083926f392f",
+    "editor/docks/tianxuan/home_page.gd": "2cc0a41012f44d9f7ebf7a140101ad4d08b53404815ba511ea6f90f3abc20be8",
+    "editor/docks/tianxuan/issue_assets.gd": "7f1184d31536675e17c5a2df3b6a6c2650d1d5a4fb4daef9f89a026ac3172655",
+    "editor/docks/tianxuan/issue_controller.gd": "0c7ac88196ce64175dcb2328629e4a442eaf4fb5086ec541591a27eb958f00f6",
+    "editor/docks/tianxuan/issue_flow.gd": "0e7b1143f87a06b52ca1eeedce4dac19220f59998d6c7b76f38cf58352df82ca",
+    "editor/docks/tianxuan/issues_page.gd": "5673477fbd4c8a400f56c9e5703106f4ecfa2fdea118da0d4c75674391120dad",
+    "editor/docks/tianxuan/library_page.gd": "144e93527615fa6d3a28eb7d3b8fed1388403fd1133899cd7a16bdd557e45c19",
+    "editor/docks/tianxuan/local_conversation_controller.gd": "ee2f52323a5f2478b2d055a4b7a0a9d35b68d6420d3e282a5a61d1eacf34b770",
+    "editor/docks/tianxuan/locale.gd": "1b7c38b63f4a0e67229463b78739f2c1a2fd3c388c12b1d238985efb23806999",
+    "editor/docks/tianxuan/markdown_view.gd": "5899a31bf963bcfee93c09268d82ba274f918b917c9f94e0d33236e5db849d11",
+    "editor/docks/tianxuan/migration_controller.gd": "a602ca8cb6de4306c986155142036227e3dbb83766d0e44da55a71ef8d8c18be",
+    "editor/docks/tianxuan/migration_page.gd": "fd779004ed0065fd76fe420199c61fc7bf875a033e0a674905158053768d5b6b",
+    "editor/docks/tianxuan/native_theme.gd": "e631fdb7b8d701c823839f94a8e7fcca68f524170c38dfca4cd2e698e376c2c0",
+    "editor/docks/tianxuan/repositories_controller.gd": "aca27a4fd6f791f0b41ce2ab78cafe1be85e936426b2aa802e7cde3be0c6ae50",
+    "editor/docks/tianxuan/repositories_page.gd": "69eb6d526c49deacd1ea6893f5d1b197a770c1e8bc6508a20572daab3d6dfa57",
+    "editor/docks/tianxuan/repository_collaboration_controller.gd": "6c7de8d5c1023786395c923b143a5528d20c92b3802a51acb8e2e38d306069df",
+    "editor/docks/tianxuan/repository_collaboration_page.gd": "f98d348e894821622f9ea980b543abd3605ca028c548cf48a9ceeb3ad524566a",
+    "editor/docks/tianxuan/session_controller.gd": "1dc57f97509b79df550944c5103797fb54dfc257529543261f2f1781e9f56a60",
+    "editor/docks/tianxuan/workspace_controller.gd": "3a92b2c810eed14f5b6d01beeea4931481be4c2d83dc08e8ffdb08b04beb6115",
+    "editor/docks/tianxuan/workspace_view.gd": "23e058530031b13e77f37b46a12e0454887191676e0b4f5194767f53854ae485",
+    "editor/docks/workbench/business_session.gd": "bc8ff3439bb947d18b6e9c996bb7fff71b0ed4f2014ad1bfeaf0b88aede28a21",
+    "tests/editor/tianxuan_controller.gd": "ad3ac4de1f346abf3659e41f8d87afcb44925562fa8c7195f64dd339411686f9",
+    "tests/editor/tianxuan_native_shell.gd": "04ca1ccaf1dfffebf60983441370bdfea7646c060f367a1129e49781d17c4a82",
+    "tests/editor/tianxuan_local_model_fixture.gd": "c9d63642b706ddff87bc0149003fc631d16bd07c065aa28ddf6f67f9f2939aaa",
+    "tests/editor/run_tianxuan_controller.py": "8dfa4fc026ba0eb417003ed43fec7763506398035a451b94d23c3336bea862a4",
+    "editor/SCsub": "43c30eb4d1be579ced6f728963aa784f4773271d98ce7916a5242160a9f2860f",
+    "editor/docks/SCsub": "c9d1e57065f3ee3ce66b0e401864b9973e0a26ba49fe1e78a4f0f5d733856a2b",
+    "editor/docks/ai_chat_dock.cpp": "b603423d482277878a87b433006bb6e7eced61a6f05a7db6aec78390b5e6a563",
+    "editor/docks/ai_chat_dock.h": "fc79312af2319c19c873ef53a64d7f581121429e4252b21f795e4358bf1f2403",
+    "editor/docks/AIChatController.cpp": "f801e199c1558221e5fb2e32ee9e50c9e2c065f9cb91bb4083c8d9b427f5f609",
+    "editor/docks/AIChatController.h": "888fc8abb9d89a208ea8c5b49956d40c249bd91563a7811de2991c8d35fbc143",
+    "editor/editor_node.cpp": "5da712945615560fb47c5e6a029a2965b5854d8d8bc2cd0830d3b14f81cb3e46",
+    "editor/editor_builders.py": "e1d716927d7515a5625414bdd5dbb362651585a138432643c897cfdcc7ff5fa7",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "06fb1b254d8bbe901c8cf6bcf1c50563199b705e6927277f1ddf6662f801d289",
+    "tests/editor/tianxuan_local_conversation.gd": "13666b8be63e9a25368ea52d5cb31bf4978593ed0d854a77362efa349a1c5b60",
+    "tests/editor/run_tianxuan_host_progress.py": "e541018fd08799378b317a86009c4360735ed9ea1a9885d738da663252356212",
+    "tests/editor/tianxuan_host_progress.gd": "2144c1a31f386de24a2c82b539de3248fe29bbdcc91788ee2ee40b525327073f",
+    "tests/editor/tianxuan_layout.gd": "7f265132e45ed928695422bf2c08a0b3b11a9494f722eb8db70af13e2a2a193f",
+    "tests/editor/run_tianxuan_real_cli.py": "f90d447a1298d967c289459c296f5e409c75ff7a971c98cbce08a9085c474131",
+    "tests/editor/tianxuan_real_cli.gd": "3c408c495a58f5d4c5cecc5ca3a733c7b513bfb559fd189d33cee33029abdf9c"
+  },
+  "limits": [
+    "Headless and isolated rendering do not replace live installed-window readback; installation receipt follows in the original issue.",
+    "Real-provider validation verifies restored reply, not completed 3D asset production; existing requirement and execution confirmation remains.",
+    "Windows exact-candidate CI remains pending at local evidence creation.",
+    "Existing editor shutdown Canvas/ObjectDB/renderer diagnostics retained in private logs; no GDScript error in the reported passed checks."
+  ]
+}
