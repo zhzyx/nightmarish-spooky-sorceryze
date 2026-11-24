@@ -70,6 +70,10 @@ def local_chat_model():
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 messages = body["messages"]
                 user = next(message for message in reversed(messages) if message["role"] == "user")
+                if "LAYOUT_DELAYED_REPLY" in user["content"]:
+                    # Private layout probe observes the actual HTTP worker while
+                    # waiting, then cancels before the late response is released.
+                    time.sleep(3.0)
                 design = "请根据以上讨论补充设计草稿" in user["content"]
                 requests.append({"body": body, "kind": "design" if design else "chat"})
                 answer = (
@@ -85,6 +89,8 @@ def local_chat_model():
                 }
                 # AIChat's existing HTTP request explicitly uses stream=false.
                 self.respond(200, json.dumps(payload, ensure_ascii=False).encode())
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                pass  # The layout probe deliberately cancels its delayed request.
             except Exception as exc:
                 errors.append(type(exc).__name__)
                 self.respond(500, b"{}")
@@ -611,6 +617,8 @@ def main():
     include_local_contract = args.native_shell and not any((args.layout, args.races, args.controls, args.execution))
     if args.local_conversation or include_local_contract:
         files += ["tests/editor/tianxuan_local_conversation.gd"]
+    if include_local_contract:
+        files += ["tests/editor/run_tianxuan_host_progress.py", "tests/editor/tianxuan_host_progress.gd"]
     fingerprints = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in files}
     with tempfile.TemporaryDirectory(prefix="tianxuan-native-controller-") as temporary:
         if args.local_conversation:
@@ -631,6 +639,28 @@ def main():
                     report["local_conversation_contract"] = exercise_local_conversation(
                         Path(contract_directory).resolve(), args.godot.resolve()
                     )
+                progress_receipt = Path(temporary) / "host-progress.json"
+                progress_result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "tests/editor/run_tianxuan_host_progress.py"),
+                        "--godot",
+                        str(args.godot.resolve()),
+                        "--out",
+                        str(progress_receipt),
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    timeout=90,
+                )
+                if progress_result.returncode or not progress_receipt.is_file():
+                    raise AssertionError((progress_result.stdout + progress_result.stderr)[-12000:])
+                progress_report = json.loads(progress_receipt.read_text(encoding="utf-8"))
+                assert progress_report.get("ok") is True, progress_report
+                assert progress_report.get("editor_sha256") == report["binary_sha256"], progress_report
+                report["host_progress_contract"] = progress_report
     if any(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() != fingerprints[p] for p in files):
         raise AssertionError("Candidate source changed during validation; rerun the affected check")
     level = (

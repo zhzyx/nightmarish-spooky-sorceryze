@@ -7,6 +7,19 @@ var finished_result := {}
 var request_id := "tianxuan-real-cli-" + str(Time.get_ticks_usec())
 
 
+class OfflineSession extends Node:
+	signal identity_resetting
+	signal identity_changed
+	signal authenticated
+	signal connection_changed
+	func get_identity() -> Dictionary:
+		return {"id": "private-probe", "project": "private-probe", "role": "admin"}
+	func scope_key() -> String:
+		return "private-real-cli-recovery"
+	func api_request(_method: int, _route: String, _payload := {}) -> Dictionary:
+		return {"status": 0, "data": {}}
+
+
 func _initialize() -> void:
 	run.call_deferred()
 
@@ -77,7 +90,33 @@ func run() -> void:
 		finish("The private editor did not select the existing Codex CLI default model.")
 		return
 	host.finished.connect(receive)
-	var accepted: Dictionary = host.start("isolated-real-provider-smoke", request_id, [{"role": "user", "content": "仅回答：本机天璇连接正常"}])
+	report.checks.unknown_progress_is_private = host.progress("unknown-request") == {"active": false, "phase": "idle"}
+	var recovery: Node
+	var original := {"id": "original-unanswered-pig-request", "content": "给我生成一头猪的写实模型", "state": "unanswered", "answer": null, "error": "provider_unavailable"}
+	var accepted := {}
+	if OS.get_environment("TX_REAL_CLI_RESUME") == "yes":
+		var session := OfflineSession.new()
+		root.add_child(session)
+		# Use the compiled controller scripts, with private storage and no real
+		# business identity. Only the existing local provider transport is real.
+		recovery = controller.get_script().new()
+		recovery.storage_root = OS.get_environment("TX_REAL_CLI_ROOT").path_join("recovery-drafts")
+		recovery.set_meta("session_controller", session)
+		recovery.set_meta("model_host", host)
+		recovery.set_meta("local_conversation_script", controller.get_meta("local_conversation_script"))
+		root.add_child(recovery)
+		recovery.active_conversation = "private-pig-conversation"
+		recovery.cache["conversation:private-pig-conversation"] = {"id": recovery.active_conversation, "title": original.content, "version": 1, "turns": [original.duplicate(true)], "current": {}, "revisions": [], "requirement_id": null}
+		recovery.save_draft(recovery.chat_draft_key(recovery.active_conversation), {"text": "未发送的补充规格"})
+		recovery.resume_message(original.id, recovery.active_conversation, session.scope_key())
+		if recovery.local_chat.busy():
+			request_id = recovery.local_chat.job.request_id
+			accepted = {"ok": true}
+			report.checks.recovery_progress_visible = recovery.local_chat.progress().active
+			recovery.resume_message(original.id)
+			report.checks.recovery_not_duplicated = recovery.conversation().turns.size() == 2
+	else:
+		accepted = host.start("isolated-real-provider-smoke", request_id, [{"role": "user", "content": "仅回答：本机天璇连接正常"}])
 	report.accepted = accepted.get("ok", false)
 	if not report.accepted:
 		finish(str(accepted.get("error", "The local request was not accepted.")))
@@ -93,6 +132,7 @@ func run() -> void:
 	report.checks.auto_write_disabled = not settings.find_child("AutoApplyFileChanges", true, false).button_pressed
 	report.checks.auto_execute_disabled = not settings.find_child("AutoExecuteCommands", true, false).button_pressed
 	report.checks.independent_worker = worker != dock
+	report.checks.running_progress_is_truthful = host.progress(request_id) == {"active": true, "phase": "waiting"}
 	var deadline := Time.get_ticks_msec() + 180000
 	while finished_result.is_empty() and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
@@ -101,8 +141,17 @@ func run() -> void:
 		finish("The real provider did not finish within 180 seconds.")
 		return
 	report.result = finished_result
+	report.checks.completed_progress_is_private = host.progress(request_id) == {"active": false, "phase": "idle"}
 	report.checks.ordinary_session_unchanged = before == dock.get_ai_session_snapshot()
 	report.checks.ordinary_transcript_unchanged = before_transcript == transcript(dock)
-	report.checks.real_answer_received = finished_result.get("ok", false) and str(finished_result.get("text", "")).strip_edges().contains("本机天璇连接正常")
+	if recovery:
+		var current: Dictionary = recovery.conversation()
+		report.checks.real_answer_received = finished_result.get("ok", false) and not str(finished_result.get("text", "")).strip_edges().is_empty()
+		report.checks.original_request_preserved = current.turns.size() == 2 and current.turns[0] == original and current.turns[1].content == original.content and current.turns[1].continued_from == original.id
+		report.checks.real_answer_in_history = current.turns.back().state == "answered" and current.turns.back().answer == finished_result.get("text")
+		report.checks.draft_preserved = recovery.load_draft(recovery.chat_draft_key(recovery.active_conversation)).text == "未发送的补充规格"
+		report.checks.progress_finished = not recovery.local_chat.progress().active
+	else:
+		report.checks.real_answer_received = finished_result.get("ok", false) and str(finished_result.get("text", "")).strip_edges().contains("本机天璇连接正常")
 	report.ok = report.checks.values().all(func(value): return value == true)
 	finish("" if report.ok else str(finished_result.get("error", "The real provider probe failed an isolation or response check.")))

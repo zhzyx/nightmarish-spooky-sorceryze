@@ -208,6 +208,77 @@ func run() -> void:
 	model.complete("新增验收条件")
 	if not check(workspace.load_draft(workspace.design_key("plan")).body == "当前方向对应的策划\n\n新增验收条件", "suggestions append to existing authored draft without replacing its text"):
 		return
+	# Recover the actual class of legacy request reported by the user. Keep the
+	# original failure as evidence, preserve an unrelated draft, and start locally.
+	var legacy_id: String = workspace.new_id()
+	var original_id: String = workspace.new_id()
+	var snapshot := {"project": "project", "module_id": "original-module", "issue_id": null, "references": [{"kind": "editor", "object_id": "res://pig.tscn", "revision": "original-snapshot"}]}
+	var original := {"id": original_id, "content": "给我生成一头猪的写实模型", "state": "unanswered", "answer": null, "error": "provider_unavailable", "context_snapshot": snapshot.duplicate(true)}
+	var legacy := {"id": legacy_id, "title": original.content, "version": 1, "turns": [original.duplicate(true)], "current": {}, "revisions": [], "requirement_id": null}
+	session.remote[legacy_id] = legacy.duplicate(true)
+	workspace.active_conversation = legacy_id
+	workspace.cache["conversation:" + legacy_id] = legacy.duplicate(true)
+	var draft_key: String = workspace.chat_draft_key(legacy_id)
+	workspace.save_draft(draft_key, {"text": "尚未发送的补充要求"})
+	var before_resume := model.inputs.size()
+	workspace.resume_message(original_id, "another-conversation", session.scope)
+	workspace.resume_message(original_id, legacy_id, "another-account")
+	if not check(model.inputs.size() == before_resume, "stale recovery action rejects a changed conversation or account"):
+		return
+	workspace.save_draft(draft_key, {"text": "尚未发送的补充要求", "pending_id": "unknown-receipt"})
+	workspace.resume_message(original_id)
+	if not check(model.inputs.size() == before_resume and not local.resume_state(original_id).available, "unknown submission receipt must reconcile before recovering a historical request"):
+		return
+	workspace.save_draft(draft_key, {"text": "尚未发送的补充要求"})
+	session.role = "viewer"
+	workspace.resume_message(original_id)
+	session.role = "admin"
+	if not check(model.inputs.size() == before_resume, "viewers cannot recover a historical request"):
+		return
+	workspace.cache["conversation:" + legacy_id].turns[0].context_snapshot.project = "other-project"
+	workspace.resume_message(original_id)
+	if not check(model.inputs.size() == before_resume, "recovery rejects a snapshot from a different project"):
+		return
+	workspace.cache["conversation:" + legacy_id] = legacy.duplicate(true)
+	workspace.resume_message(original_id, legacy_id, session.scope)
+	workspace.resume_message(original_id, legacy_id, session.scope)
+	var resumed: Dictionary = workspace.conversation().turns.back()
+	if not check(model.inputs.size() == before_resume + 1 and resumed.id != original_id and resumed.continued_from == original_id and resumed.content == original.content and resumed.context_snapshot == snapshot, "recover original pig request exactly once with its frozen context and a new local turn"):
+		return
+	if not check(workspace.conversation().turns[0] == original and workspace.load_draft(draft_key).text == "尚未发送的补充要求", "recovery preserves the historical failure and unrelated unsent draft"):
+		return
+	if not check(original.content in model.inputs.back().messages.back().content and "original-snapshot" in model.inputs.back().messages.back().content, "local provider receives the original request and historical references"):
+		return
+	if not check(model.inputs.back().messages[0].role == "system" and "整理为需求" in model.inputs.back().messages[0].content, "local task discussion knows the native requirement-to-execution path"):
+		return
+	local.job.started_at -= 2500
+	var progress: Dictionary = local.progress()
+	if not check(progress.active and progress.conversation == legacy_id and progress.request_id == resumed.id and progress.phase == "waiting" and progress.elapsed_seconds >= 2, "recovered request exposes scoped waiting state and monotonic elapsed time"):
+		return
+	model.complete("先确认写实猪模型的用途、面数和贴图要求，然后整理为需求。")
+	await settle()
+	if not check(not local.progress().active and workspace.conversation().turns[0] == original and workspace.conversation().turns.back().state == "answered" and session.remote[legacy_id].turns.size() == 2, "completed recovery remains visible and syncs without overwriting original failure"):
+		return
+	local.records.clear()
+	workspace._drafts.clear()
+	workspace.resume_message(original_id)
+	if not check(model.inputs.size() == before_resume + 1 and local.resume_state(original_id).resumed, "restart preserves recovery linkage and prevents replaying an already continued request"):
+		return
+	workspace.suggest_design("direction")
+	if not check(original.content in JSON.stringify(model.inputs.back().messages) and "面数和贴图" in JSON.stringify(model.inputs.back().messages), "recovered request and answer continue into existing requirement drafting"):
+		return
+	model.complete("生成写实猪模型，先确认资产规格与验收要求。")
+	if not check(workspace.load_draft(workspace.design_key("direction")).body.contains("写实猪模型"), "recovered conversation can create its native direction draft without executing production"):
+		return
+	workspace.send_message("可取消的新请求")
+	var cancelled_id: String = model.inputs.back().id
+	local.cancel()
+	if not check(not local.progress().active and local.resume_state(cancelled_id).available, "cancel ends progress and leaves the stopped request recoverable"):
+		return
+	workspace.resume_message(cancelled_id)
+	if not check(local.busy() and workspace.conversation().turns.back().continued_from == cancelled_id, "a stopped local request can continue explicitly"):
+		return
+	local.cancel()
 	workspace.send_message("身份切换期间")
 	var old_request: String = model.inputs.back().id
 	session.identity_resetting.emit()
