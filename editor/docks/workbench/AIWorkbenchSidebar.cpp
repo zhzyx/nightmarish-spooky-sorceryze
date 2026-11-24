@@ -56,6 +56,11 @@
 
 static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
 
+static void UpdateWorkbenchExpansion(bool bExpanded, Button *pButton)
+{
+	pButton->set_text(bExpanded ? TTR("Return to Sidebar") : TTR("Expand AI Workbench"));
+}
+
 static Ref<Resource> OpenOriginalText(const String &strPath)
 {
 	return ScriptEditor::get_singleton()->open_file(strPath);
@@ -108,7 +113,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pWorkbenchSidebar->set_icon_name("AIChatWave");
 	// Share the right column with Inspector so narrow windows retain their editing viewport.
 	pWorkbenchSidebar->set_default_slot(DOCK_SLOT_RIGHT_UL);
-	pWorkbenchSidebar->set_available_layouts(DOCK_LAYOUT_VERTICAL);
+	pWorkbenchSidebar->set_available_layouts(DOCK_LAYOUT_VERTICAL | DOCK_LAYOUT_FLOATING);
 	pWorkbenchSidebar->set_global(false);
 	pWorkbenchSidebar->set_transient(true);
 	pWorkbenchSidebar->set_closable(true);
@@ -128,6 +133,8 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pExpand->set_name("ExpandWorkbench");
 	pExpand->set_text(TTR("Expand AI Workbench"));
 	pExpand->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::ExpandWorkbenchSidebar));
+	pWorkbenchSidebar->connect(SNAME("auxiliary_expansion_changed"), callable_mp_static(&UpdateWorkbenchExpansion).bind(pExpand));
+	pWorkbenchSidebar->connect(SNAME("auxiliary_expansion_changed"), callable_mp(this, &AIChatDock::CaptureWorkbenchCurrentContext).unbind(1), CONNECT_DEFERRED);
 	pSidebarLayout->add_child(pExpand);
 	// The editor owns this session for the lifetime of the sidebar.
 	VBoxContainer *pSession = MountWorkbenchControl(pSidebarLayout, "WorkbenchBusinessSession", daqian_business_session, GetTianxuanSessionController());
@@ -253,6 +260,8 @@ void AIChatDock::CaptureWorkbenchSource()
 		Control *pFocus = get_viewport()->gui_get_focus_owner();
 		idSidebarSource = pFocus ? pFocus->get_instance_id() : ObjectID();
 	}
+	// Read registered source fields before the title button or palette takes focus.
+	ReadWorkbenchCurrentContext();
 }
 
 void AIChatDock::PrepareWorkbenchConsultation()
@@ -281,19 +290,7 @@ void AIChatDock::ShowWorkbenchSidebar(bool p_capture_source)
 {
 	if (p_capture_source && idWorkbenchReturnScreen.is_null() && !WorkbenchReferenceLocked())
 	{
-		if (nConversationIndex < 0)
-		{
-			StageWorkbenchPageReference();
-		}
-		Control *pScreen = EditorNode::get_editor_main_screen()->get_current_tab_control();
-		if (pScreen && (pScreen->get_name() == SNAME("2D") || pScreen->get_name() == SNAME("3D")))
-		{
-			StageWorkbenchSelection();
-		}
-		else
-		{
-			CaptureWorkbenchScriptSelection();
-		}
+		CaptureWorkbenchCurrentContext();
 	}
 	if (idWorkbenchReturnScreen.is_valid())
 	{
@@ -335,12 +332,14 @@ void AIChatDock::ShowWorkbenchSidebar(bool p_capture_source)
 	{
 		composer->grab_focus();
 	}
+	CaptureWorkbenchCurrentContext();
 }
 
 void AIChatDock::save_layout_to_config(Ref<ConfigFile> &p_layout, const String &p_section) const
 {
 	EditorDock::save_layout_to_config(p_layout, p_section);
 	p_layout->set_value(p_section, "sidebar_visible", pWorkbenchSidebar && pWorkbenchSidebar->is_visible_in_tree());
+	p_layout->set_value(p_section, "sidebar_expanded", pWorkbenchSidebar && pWorkbenchSidebar->IsAuxiliaryExpanded());
 	if (pBusinessModules)
 	{
 		p_layout->set_value(p_section, "consultation", pBusinessModules->call("get_consultation_location"));
@@ -372,20 +371,16 @@ void AIChatDock::RestoreWorkbenchLayout(bool p_full, const Dictionary &p_locatio
 
 void AIChatDock::ExpandWorkbenchSidebar()
 {
-	if (nConversationIndex < 0)
+	if (nConversationIndex < 0 || !pSidebarLayout->is_ancestor_of(pConversationView))
 	{
 		return;
 	}
-	Control *pScreen = EditorNode::get_editor_main_screen()->get_current_tab_control();
-	ERR_FAIL_NULL(pScreen);
-	idWorkbenchReturnScreen = pScreen->get_instance_id();
+	CaptureWorkbenchCurrentContext();
 	// Store the displayed offset before reflow. The conversation's scroll handler
-	// retains it through layout clamps and tracks subsequent scrolling in the full view.
+	// retains it through layout clamps and subsequent scrolling in the auxiliary view.
 	_chat_scrolled();
-	pWorkbenchSidebar->close();
-	EditorDockManager::get_singleton()->force_focus_dock(this);
-	workspace_pages->set_current_tab(chat_layout->get_parent() == timer_chat_host ? 1 : 0);
-	pRestoreSidebar->show();
+	pWorkbenchSidebar->ToggleAuxiliaryExpanded();
+	CaptureWorkbenchCurrentContext();
 	if (input->is_visible_in_tree())
 	{
 		input->grab_focus();

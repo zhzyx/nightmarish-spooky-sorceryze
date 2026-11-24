@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-56097556e652b90d862285e8641d28291fc70865",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-session-sync-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "feab20f1469ca594f6fd5602171dae9e528828278be9fbb640fcf806c9a5d340",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+    "action": "user-report",
+    "detection_head": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+    "context_sha256": "3fe1b3a91df15412a76271104ab983ecc44586371e13118706ec6e3f8cae2acb",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-session-sync",
+    "authority_ref": "issue:2213; user authorized shared login synchronization and device persistence verification",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+    "diagnosis": "Native views share one identity controller but only the submitting view leaves the sign-in page. AI Workbench retains its startup service address in presentation and draft scope. Device persistence is already delivered in 2183/2184/2190; actual fallback and OS-store state must be distinguished without copying shared keys.",
+    "next_action": "Repair synchronized view state and verified origin scoping, add safe persistence-state presentation, reproduce with isolated services, preserve device-grant and vault safeguards, then review and install.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T08:21:26.595354+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T08:29:18.252886+00:00",
+  "sha256": "efeffe8c2b7228c4cf4d65fb0768697ab9f3a21a8cbf7c75de514dea66c9c1e1"
+}

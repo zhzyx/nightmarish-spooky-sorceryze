@@ -309,10 +309,13 @@ EditorDock *CreateTianxuanDock(AIChatDock *pModelSettings)
 	pSidebar->set_available_layouts(EditorDock::DOCK_LAYOUT_VERTICAL | EditorDock::DOCK_LAYOUT_FLOATING);
 	pSidebar->set_default_slot(EditorDock::DOCK_SLOT_RIGHT_UL);
 	pSidebar->set_closable(true);
+	pSidebarView->set_meta("auxiliary_dock", pSidebar);
 	pSidebar->add_child(pSidebarView);
 	pMainView->connect("companion_requested", callable_mp(pSidebar, &EditorDock::make_visible));
-	// Explicit navigation must also leave screens that suppress automatic switching.
-	pSidebarView->connect("companion_requested", callable_mp(EditorDockManager::get_singleton(), &EditorDockManager::force_focus_dock).bind(pMain));
+	pSidebarView->connect("companion_requested", callable_mp(pSidebar, &EditorDock::ToggleAuxiliaryExpanded));
+	pSidebar->connect("auxiliary_expansion_changed", Callable(pSidebarView, "auxiliary_expansion_changed"));
+	// Full workspace navigation is distinct from expanding the current chat.
+	pSidebarView->connect("workspace_requested", callable_mp(EditorDockManager::get_singleton(), &EditorDockManager::force_focus_dock).bind(pMain));
 	EditorDockManager::get_singleton()->add_dock(pSidebar);
 	pSidebar->close();
 	return pMain;

@@ -257,16 +257,7 @@ void EditorDockManager::_docks_menu_option(int p_id) {
 }
 
 void EditorDockManager::_window_close_request(WindowWrapper *p_wrapper) {
-	// Give the dock back to the original owner.
-	EditorDock *dock = _close_window(p_wrapper);
-	ERR_FAIL_COND(!all_docks.has(dock));
-
-	if (dock->dock_slot_index != EditorDock::DOCK_SLOT_NONE) {
-		dock->is_open = false;
-		force_focus_dock(dock);
-	} else {
-		close_dock(dock);
-	}
+	RestoreDockFromWindow(Object::cast_to<EditorDock>(p_wrapper->get_wrapped_control()));
 }
 
 EditorDock *EditorDockManager::_close_window(WindowWrapper *p_wrapper) {
@@ -276,6 +267,7 @@ EditorDock *EditorDockManager::_close_window(WindowWrapper *p_wrapper) {
 	ERR_FAIL_COND_V(!all_docks.has(dock), nullptr);
 
 	dock->dock_window = nullptr;
+	dock->emit_signal(SNAME("auxiliary_expansion_changed"), false);
 	dock_windows.erase(p_wrapper);
 	p_wrapper->queue_free();
 	return dock;
@@ -303,6 +295,7 @@ void EditorDockManager::_open_dock_in_window(EditorDock *p_dock, bool p_show_win
 	wrapper->set_wrapped_control(p_dock);
 
 	p_dock->dock_window = wrapper;
+	p_dock->emit_signal(SNAME("auxiliary_expansion_changed"), true);
 	p_dock->is_open = true;
 	p_dock->show();
 
@@ -344,6 +337,9 @@ void EditorDockManager::_move_dock(EditorDock *p_dock, Control *p_target, int p_
 			p_dock->set_tab_index(p_tab_index, p_set_current);
 		}
 		return;
+	}
+	if (p_dock->get_instance_id() == idInlineExpandedDock) {
+		RestoreAuxiliarySplit();
 	}
 
 	// Remove dock from its existing parent.
@@ -518,7 +514,9 @@ void EditorDockManager::save_docks_to_config(Ref<ConfigFile> p_layout, const Str
 			}
 		}
 
-		PackedInt32Array split_offsets = main_hsplit->get_split_offsets();
+		PackedInt32Array split_offsets = idInlineExpandedDock.is_valid() && GetAuxiliaryColumns() == arrAuxiliaryColumns
+				? arrAuxiliarySplitOffsets
+				: main_hsplit->get_split_offsets();
 		int index = 0;
 		for (int i = 0; i < vsplits.size(); i++) {
 			int value = 0;
@@ -669,6 +667,12 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 		AIChatDock *chat = Object::cast_to<AIChatDock>(dock_map["AIChatMainScreen"]);
 		if (chat) {
 			chat->RestoreWorkbenchLayout(restore_full_workbench, p_layout->get_value(chat_section, "consultation", Dictionary()));
+			if (!restore_full_workbench && bool(p_layout->get_value(chat_section, "sidebar_expanded", false))) {
+				EditorDock *sidebar = dock_map.has("AIWorkbenchSidebar") ? dock_map["AIWorkbenchSidebar"] : nullptr;
+				if (sidebar) {
+					sidebar->SetAuxiliaryExpanded(true);
+				}
+			}
 		}
 	}
 
@@ -710,6 +714,9 @@ void EditorDockManager::close_dock(EditorDock *p_dock) {
 
 	if (!p_dock->is_open) {
 		return;
+	}
+	if (p_dock->get_instance_id() == idInlineExpandedDock) {
+		RestoreAuxiliarySplit();
 	}
 
 	p_dock->is_open = false;

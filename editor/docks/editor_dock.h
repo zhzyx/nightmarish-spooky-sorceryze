@@ -96,6 +96,7 @@ private:
 	WindowWrapper *dock_window = nullptr;
 	DockTabContainer *parent_dock_container = nullptr;
 	int dock_slot_index = DOCK_SLOT_NONE;
+	bool bAuxiliaryInlineExpanded = false;
 
 	void _set_default_slot_bind(DockSlot p_slot);
 	DockSlot _get_default_slot_bind() const { return default_slot; }
@@ -120,6 +121,10 @@ public:
 	void open();
 	void make_visible();
 	void make_floating(int p_screen = -1);
+	// Main-thread auxiliary presentation; never changes the selected main screen.
+	void SetAuxiliaryExpanded(bool bExpanded);
+	void ToggleAuxiliaryExpanded();
+	bool IsAuxiliaryExpanded() const;
 	void close();
 	bool is_dock_open() { return is_open; }
 

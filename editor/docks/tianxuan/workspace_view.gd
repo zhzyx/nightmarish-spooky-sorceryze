@@ -2,6 +2,7 @@
 extends PanelContainer
 
 signal companion_requested
+signal workspace_requested
 
 var controller: Node
 var session: Node
@@ -13,6 +14,7 @@ var _body := VBoxContainer.new()
 var _pages := VBoxContainer.new()
 var _login := VBoxContainer.new()
 var _status := Label.new()
+var _login_persistence := Label.new()
 var _address := LineEdit.new()
 var _project := LineEdit.new()
 var _email := LineEdit.new()
@@ -31,9 +33,13 @@ var _nav := VBoxContainer.new()
 var _navigation_scroll := ScrollContainer.new()
 var _columns := HBoxContainer.new()
 var _current_page := "home"
+var _authentication_gate := false
 var _config_serial := 0
 var _config_message := ""
 var _layout_pending := false
+var _companion := Button.new()
+var _last_content_focus: WeakRef
+var _focus_viewport: WeakRef
 
 
 func _ready() -> void:
@@ -53,6 +59,7 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(280 if compact else 430, 240) * ui_scale
 	add_child(_body)
 	_build_header()
+	_watch_content_focus()
 	_body.add_child(_columns)
 	_columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_build_navigation()
@@ -93,11 +100,18 @@ func _build_header() -> void:
 	_language_choice.add_item("English")
 	_language_choice.item_selected.connect(func(index: int): controller.set_language("zh" if index == 0 else "en"))
 	row.add_child(_language_choice)
-	var companion := Button.new()
-	companion.name = "ExpandTianxuan" if compact else "OpenTianxuanSidebar"
-	companion.text = "展开" if compact else "打开侧栏"
-	companion.pressed.connect(func(): companion_requested.emit())
-	row.add_child(companion)
+	_companion.name = "ExpandTianxuan" if compact else "OpenTianxuanSidebar"
+	_companion.text = "展开" if compact else "打开侧栏"
+	_companion.pressed.connect(_request_companion)
+	row.add_child(_companion)
+	if compact:
+		var workspace := Button.new()
+		workspace.name = "OpenTianxuanWorkspace"
+		workspace.theme_type_variation = "TianxuanCompactHeaderButton"
+		workspace.text = "打开天璇工作区"
+		workspace.tooltip_text = "切换主工作区，查看完整天璇功能"
+		workspace.pressed.connect(func(): workspace_requested.emit())
+		_body.add_child(workspace)
 	_connection.theme_type_variation = "TianxuanCaption"
 	_connection.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.add_child(_connection)
@@ -106,6 +120,43 @@ func _build_header() -> void:
 	_body.add_child(_page_picker)
 	var divider := HSeparator.new()
 	_body.add_child(divider)
+
+
+func _request_companion() -> void:
+	controller.editor_context.capture_current_context()
+	companion_requested.emit()
+
+
+func auxiliary_expansion_changed(expanded: bool) -> void:
+	_companion.text = "收回" if expanded else "展开"
+	if controller and controller.editor_context:
+		controller.editor_context.capture_current_context()
+	_restore_expansion_focus.call_deferred()
+
+
+func _watch_content_focus() -> void:
+	var previous: Viewport = _focus_viewport.get_ref() if _focus_viewport else null
+	if previous and previous.gui_focus_changed.is_connected(_remember_content_focus):
+		previous.gui_focus_changed.disconnect(_remember_content_focus)
+	var current := get_viewport()
+	_focus_viewport = weakref(current)
+	current.gui_focus_changed.connect(_remember_content_focus)
+
+
+func _remember_content_focus(control: Control) -> void:
+	if control and is_ancestor_of(control) and not control is BaseButton:
+		_last_content_focus = weakref(control)
+
+
+func _restore_expansion_focus() -> void:
+	if not is_inside_tree():
+		return
+	_watch_content_focus()
+	if controller and controller.editor_context:
+		controller.editor_context.capture_current_context()
+	var control: Control = _last_content_focus.get_ref() if _last_content_focus else null
+	if control and not control.is_queued_for_deletion() and control.is_visible_in_tree():
+		control.grab_focus()
 
 
 func _build_navigation() -> void:
@@ -216,6 +267,10 @@ func _build_login() -> void:
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.theme_type_variation = "TianxuanMuted"
 	_login.add_child(_status)
+	_login_persistence.name = "TianxuanLoginPersistence"
+	_login_persistence.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_login_persistence.theme_type_variation = "TianxuanCaption"
+	_login.add_child(_login_persistence)
 	_update_auth_fields()
 	_connect_service()
 
@@ -292,6 +347,14 @@ func _update_session_status() -> void:
 	var identity: Dictionary = session.get_identity()
 	_status.text = session.status_text if _config_message.is_empty() else tr(_config_message)
 	_connection.text = tr("尚未登录") if identity.is_empty() else "%s · %s%s" % [identity.get("name", identity.id), identity.project, "" if session.online else tr(" · 离线")]
+	var messages := {
+		"signed_out": "尚未登录",
+		"restore_pending": "正在检查本设备保存的登录…",
+		"saved_device": "登录已保存在此设备；下次启动会自动核实并恢复。",
+		"temporary_legacy": "当前服务尚未支持独立设备登录；本次登录不会保存。",
+		"temporary_session": "本次登录未保存；关闭编辑器后需重新登录。",
+	}
+	_login_persistence.text = tr(messages[session.get_login_persistence()])
 
 
 func _changed(topic: String) -> void:
@@ -302,15 +365,20 @@ func _changed(topic: String) -> void:
 		_update_session_status()
 	elif topic == "identity":
 		_update_session_status()
+		_secret.clear()
 		if session.get_identity().is_empty():
-			_secret.clear()
+			var gated := _authentication_gate or _current_page != "account"
 			_navigate("account", "")
+			_authentication_gate = gated
 		else:
 			_project.text = str(session.get_identity().project)
-			_navigate(_current_page, "")
+			_navigate("home" if _authentication_gate else _current_page, "")
 
 
 func _navigate(page: String, _object_id: String) -> void:
+	# Only an automatic authentication gate is released by another view's
+	# login. Explicit connection/settings navigation remains the user's choice.
+	_authentication_gate = session.get_identity().is_empty() and page != "account"
 	if session.get_identity().is_empty():
 		page = "account"
 	if page in ["home", "documents", "design", "requirements", "issues", "repos", "repository_collaboration", "game_config", "runs", "search", "migration", "accounts", "execution"] and not _page_instances.has(page):

@@ -64,6 +64,8 @@ func run() -> void:
 	if not check(session.test_helper_source != helper and session.credential_transport != null, "isolated native helper embedded"):
 		return
 	session.test_python = OS.get_environment("TX_PYTHON")
+	var persistence_states: Array[String] = []
+	session.status_changed.connect(func(): persistence_states.append(session.get_login_persistence()))
 	root.add_child(session)
 	if phase == "authenticate_migrate":
 		session._cancel_login()
@@ -82,6 +84,8 @@ func run() -> void:
 	var token := OS.get_environment("TX_FIXTURE_KEY")
 	var password := OS.get_environment("TX_FIXTURE_PASSWORD")
 	if phase == "login":
+		if not check(persistence_states.has("restore_pending") and persistence_states.back() == "signed_out", "empty vault startup notifies views when the persistence check finishes"):
+			return
 		var memory := root.find_child("AIConnectionMemory", true, false)
 		if not check(memory != null, "existing AI credential consumer is mounted"):
 			return
@@ -95,6 +99,8 @@ func run() -> void:
 		if not check(await session.authenticate("user@example.test", password, "project-a"), "ordinary password login"):
 			return
 		if not check(session.get_identity().id == "alice" and not session._stored_digest.is_empty(), "verified device grant saved"):
+			return
+		if not check(session.get_login_persistence() == "saved_device", "login presentation reports the device grant actually saved by the OS vault"):
 			return
 	elif phase == "authenticate_migrate":
 		if not check(session.get_identity().is_empty(), "explicit login begins before legacy restore"):
@@ -122,6 +128,32 @@ func run() -> void:
 		var audited: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/measure")
 		if not check(audited.data.get("actor") == "alice", "server audits original account after project change"):
 			return
+		var scoped_assets := [
+			"/api/v1/native/asset-context/source/revision/models/pig.tres",
+			"/api/v1/native/business-modules/module/assets",
+			"/api/v1/native/business-modules/module/assets/object",
+			"/api/v1/native/assets/object/business-modules",
+		]
+		for route: String in scoped_assets:
+			var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route + "?limit=2")
+			if not check(reply.status == 200 and reply.data.query == {"limit": ["2"], "project": ["project-b"]}, "native asset route preserves its query and carries the verified project: " + route):
+				return
+		for operation in [[HTTPClient.METHOD_POST, scoped_assets[1]], [HTTPClient.METHOD_DELETE, scoped_assets[2]]]:
+			var reply: Dictionary = await session.api_request(operation[0], operation[1])
+			if not check(reply.status == 200 and reply.data.query == {"project": ["project-b"]}, "asset link writes use the same verified project scope: " + operation[1]):
+				return
+		for route: String in ["/api/v1/native/modules/source/branches", "/api/v1/native/workflow/status", "/api/v1/native/business-modules/module/assets-extra", "/api/v1/native/business-modules/module/assets/object/extra", "/api/v1/native/assets/object/business-modules/extra", "/api/v1/native/asset-context/source/revision"]:
+			var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route)
+			if not check(reply.status == 200 and reply.data.query.is_empty(), "unrelated or incomplete native routes retain the query-free contract: " + route):
+				return
+		for action in ["pause", "resume", "cancel", "recover-project"]:
+			var reply: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/" + action)
+			if not check(reply.status == 200 and reply.data.query == {"project": ["project-b"]}, "existing workflow project scope remains intact: " + action):
+				return
+		for query in ["project=another", "%70roject=another", "limit=2&project=another"]:
+			var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, scoped_assets[0] + "?" + query)
+			if not check(reply.status == 0, "callers cannot override asset ownership project: " + query):
+				return
 	elif phase == "rebind":
 		var short_key := OS.get_environment("TX_SAME_ACCOUNT_KEY")
 		if not check(await session.authenticate("", short_key, "project-a"), "initial finite personal key enrolls an independent device"):
@@ -154,10 +186,14 @@ func run() -> void:
 	elif phase == "restart":
 		if not check(session.get_identity().id == "alice" and session.get_identity().project == "project-b", "new process restored verified actor and updated project"):
 			return
+		if not check(session.get_login_persistence() == "saved_device", "restarted editor reports verified saved device identity"):
+			return
 		var denied: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/denied")
 		if not check(denied.status == 403 and session.get_identity().id == "alice", "business permission refusal keeps login"):
 			return
 		if not check(not await session.authenticate("", "invalid", "project-b") and session.get_identity().id == "alice", "failed account switch retains actor"):
+			return
+		if not check(session.get_login_persistence() == "saved_device", "failed authentication preserves the existing persisted-login presentation"):
 			return
 		var original: Dictionary = await session._store("load", session.origin)
 		for failure in ["invalid_me", "failed_enrollment"]:

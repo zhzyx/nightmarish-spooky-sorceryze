@@ -405,6 +405,16 @@ class AIChatDock : public EditorDock {
 	String WorkbenchIssueContext() const;
 	void AddWorkbenchResourceSelection(int nSource);
 	void RefreshWorkbenchReference();
+	Dictionary ReadWorkbenchCurrentContext(bool bVerify = false);
+	String RedactWorkbenchCurrentText(const String &strText) const;
+	String CurrentContextFileRevision(const String &strPath, bool bVerify);
+	void CaptureWorkbenchCurrentContext();
+	bool ValidateWorkbenchCurrentContext(const Dictionary &mapSnapshot);
+	Array MergeWorkbenchCurrentReferences(const AIChatSessionData &stSession) const;
+	Label *pWorkbenchCurrentContext = nullptr;
+	ObjectID idWorkbenchContextSource;
+	ObjectID idWorkbenchContextMain;
+	Dictionary mapCurrentContextFileCache;
 	bool RedactWorkbenchDraft(AIChatSessionData &pSession) const;
 	void CaptureWorkbenchScriptSelection();
 	void WorkbenchSceneChanged();

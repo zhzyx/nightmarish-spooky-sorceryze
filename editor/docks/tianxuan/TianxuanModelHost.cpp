@@ -66,10 +66,21 @@ TianxuanModelHost::TianxuanModelHost(AIChatDock *pSettingsOwner)
 void TianxuanModelHost::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("configuration"), &TianxuanModelHost::Configuration);
+	ClassDB::bind_method(D_METHOD("editor_context", "verify"), &TianxuanModelHost::EditorContext, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("start", "scope", "request_id", "messages"), &TianxuanModelHost::Start);
 	ClassDB::bind_method(D_METHOD("progress", "request_id"), &TianxuanModelHost::Progress);
 	ClassDB::bind_method(D_METHOD("cancel", "request_id"), &TianxuanModelHost::Cancel);
 	ADD_SIGNAL(MethodInfo("finished", PropertyInfo(Variant::STRING, "request_id"), PropertyInfo(Variant::DICTIONARY, "result")));
+}
+
+Dictionary TianxuanModelHost::EditorContext(bool bVerify) const
+{
+	AIChatDock *pOwner = ObjectDB::get_instance<AIChatDock>(idSettingsOwner);
+	if (pOwner == nullptr)
+	{
+		return Failure(TTR("The editor context is unavailable."));
+	}
+	return pOwner->ReadWorkbenchCurrentContext(bVerify);
 }
 
 Dictionary TianxuanModelHost::Configuration() const

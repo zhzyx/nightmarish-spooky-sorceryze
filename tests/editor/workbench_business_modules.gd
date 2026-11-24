@@ -176,14 +176,16 @@ func _run() -> void:
 		account.find_child("AccountSecret", true, false).text = OS.get_environment("C06_SECOND_PASSWORD")
 		account.find_child("BusinessProject", true, false).text = panel.project
 		account.find_child("Authenticate", true, false).pressed.emit()
-		if not panel.module_id.is_empty() or not input.text.is_empty() or not panel.drafts.is_empty() or not panel.history.text.is_empty():
-			_fail("Old account data survived the account change")
-			return
 		var until := Time.get_ticks_msec() + 10000
 		while account.get_identity().get("id", "") != OS.get_environment("C06_SECOND_ID") and Time.get_ticks_msec() < until:
 			await process_frame
-		if account.get_identity().get("id", "") != OS.get_environment("C06_SECOND_ID") or not await _choose(1):
+		if account.get_identity().get("id", "") != OS.get_environment("C06_SECOND_ID"):
 			_fail("Second real business account unavailable")
+			return
+		if not panel.module_id.is_empty() or not input.text.is_empty() or not panel.drafts.is_empty() or not panel.history.text.is_empty():
+			_fail("Old account data survived the account change")
+			return
+		if not await _choose(1):
 			return
 		var second_default := _index("default")
 		if second_default < 1 or not await _choose(second_default) or panel.page.text != "second-account-private-position" or not input.text.is_empty() or not panel.conversation.is_empty() or not panel.history.text.is_empty():

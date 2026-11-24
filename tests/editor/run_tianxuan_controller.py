@@ -301,7 +301,16 @@ def exercise_local_conversation(directory, binary):
 
 
 def exercise(
-    directory, binary, native_shell=False, execution=False, node=None, layout=False, controls=False, races=False
+    directory,
+    binary,
+    native_shell=False,
+    execution=False,
+    node=None,
+    layout=False,
+    controls=False,
+    races=False,
+    current_context=False,
+    session_sync=False,
 ):
     project = directory / "project"
     project.mkdir()
@@ -319,7 +328,11 @@ def exercise(
     )
     model_source = model_fixture(directory)
     probe = (
-        "tianxuan_races.gd"
+        "tianxuan_session_sync.gd"
+        if session_sync
+        else "workbench_current_context.gd"
+        if current_context
+        else "tianxuan_races.gd"
         if races
         else "tianxuan_execution_controls.gd"
         if controls
@@ -367,9 +380,22 @@ def exercise(
         TIANXUAN_REPO_ROOT=str(repo_root),
         TIANXUAN_IMPORT_ALLOW_LOCAL="1",
     )
-    with patch.dict(os.environ, modes, clear=True), socket.socket() as sock, local_chat_model() as model:
+    with (
+        patch.dict(os.environ, modes, clear=True),
+        socket.socket() as sock,
+        socket.socket() as second_sock,
+        local_chat_model() as model,
+    ):
         sock.bind(("127.0.0.1", 0))
         api = "http://127.0.0.1:" + str(sock.getsockname()[1])
+        sockets = [sock]
+        second_api = ""
+        if session_sync:
+            # Identical fixture actors and modules under a distinct HTTP origin
+            # expose a draft-key collision that random identifiers would mask.
+            second_sock.bind(("127.0.0.1", 0))
+            sockets.append(second_sock)
+            second_api = "http://127.0.0.1:" + str(second_sock.getsockname()[1])
         queue = MergeQueue(str(directory / "queue.sqlite"), git, role_resolver=store.role_of)
         native = NativeStore(directory / "native.sqlite")
         entry = deterministic_entry(directory, store, native, node) if execution else None
@@ -439,7 +465,7 @@ def exercise(
                 return response
 
         server = uvicorn.Server(uvicorn.Config(app, log_level="error", access_log=False))
-        thread = threading.Thread(target=server.run, kwargs={"sockets": [sock]}, daemon=True)
+        thread = threading.Thread(target=server.run, kwargs={"sockets": sockets}, daemon=True)
         thread.start()
         try:
             deadline = time.monotonic() + 20
@@ -451,6 +477,7 @@ def exercise(
             env.update(
                 TX_SOURCE=str(ROOT),
                 TX_API=api,
+                TX_SECOND_API=second_api,
                 TX_PASSWORD=password,
                 TX_VIEWER_KEY=key,
                 TX_DRAFTS=str(directory / "drafts"),
@@ -473,15 +500,24 @@ def exercise(
                 "--script",
                 "res://probe.gd",
             ]
-            result = subprocess.run(
-                command,
-                env=env,
-                cwd=directory,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                timeout=300 if controls else 180 if execution else 90,
-            )
+            try:
+                result = subprocess.run(
+                    command,
+                    env=env,
+                    cwd=directory,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    timeout=300 if controls else 180 if execution else 90,
+                )
+            except subprocess.TimeoutExpired as error:
+                output = b"\n".join(
+                    value if isinstance(value, bytes) else (value or "").encode()
+                    for value in (error.stdout, error.stderr)
+                ).decode("utf-8", errors="replace")
+                for credential in (password, key, model["key"]):
+                    output = output.replace(credential, "[REDACTED]")
+                raise AssertionError("Isolated editor timed out:\n" + output[-12000:]) from error
             output = result.stdout + result.stderr
             for credential in (password, key, model["key"]):
                 if credential in output:
@@ -492,7 +528,13 @@ def exercise(
             report = next((value for value in reports if value.get("passed") is True), None)
             if report is None:
                 raise AssertionError("Missing native controller completion receipt:\n" + output[-12000:])
-            if native_shell and not layout and not races and (not execution or controls):
+            if session_sync:
+                assert not model["requests"] and not model["errors"], "Session synchronization must not invoke a model"
+                assert not any(
+                    entry["path"].endswith(("/turns", "/suggest", "/local-turns")) for entry in conversation_requests
+                )
+                report["session_fixture"] = {"distinct_origins": api != second_api, "model_requests": 0}
+            elif native_shell and not layout and not races and (not execution or controls):
                 assert not model["errors"], model["errors"]
                 assert model["requests"], "The native conversation never reached the editor's local HTTP model"
                 for request in model["requests"]:
@@ -503,7 +545,7 @@ def exercise(
                 cloud = [entry for entry in conversation_requests if entry["path"].endswith(("/turns", "/suggest"))]
                 assert synchronized and all(entry["status"] == 200 for entry in synchronized), synchronized
                 assert not cloud, "Native model requests reached cloud inference routes: " + repr(cloud)
-                if not controls:
+                if not controls and not current_context:
                     assert any(request["kind"] == "design" for request in model["requests"])
                 report["local_model"] = {
                     "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
@@ -544,6 +586,16 @@ def main():
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--native-shell", action="store_true")
     parser.add_argument(
+        "--session-sync",
+        action="store_true",
+        help="Verify shared login views and per-origin drafts without invoking a model",
+    )
+    parser.add_argument(
+        "--current-context",
+        action="store_true",
+        help="Exercise separate live editor context and retained references through both native chat surfaces",
+    )
+    parser.add_argument(
         "--local-conversation",
         action="store_true",
         help="Exercise local reply persistence, unavailable sync, restart and identity races without a provider",
@@ -568,9 +620,21 @@ def main():
         help="Reproduce focused merge, comment acknowledgement and initial configuration races",
     )
     args = parser.parse_args()
-    if args.local_conversation and any((args.native_shell, args.layout, args.execution, args.controls, args.races)):
+    if args.local_conversation and any((
+        args.native_shell,
+        args.layout,
+        args.execution,
+        args.controls,
+        args.races,
+        args.current_context,
+        args.session_sync,
+    )):
         parser.error("--local-conversation selects its own source-level probe")
-    if args.layout or args.races:
+    if args.current_context and any((args.layout, args.races, args.controls, args.execution, args.session_sync)):
+        parser.error("--current-context selects its own compiled probe")
+    if args.session_sync and any((args.layout, args.races, args.controls, args.execution)):
+        parser.error("--session-sync selects its own compiled probe")
+    if args.layout or args.races or args.current_context or args.session_sync:
         args.native_shell = True
     if args.races and (args.layout or args.execution or args.controls):
         parser.error("--races selects its own probe")
@@ -587,6 +651,7 @@ def main():
     ]
     files += [
         "editor/docks/workbench/business_session.gd",
+        "editor/docks/workbench/module_selector.gd",
         "tests/editor/tianxuan_controller.gd",
         "tests/editor/tianxuan_native_shell.gd",
         "tests/editor/tianxuan_local_model_fixture.gd",
@@ -602,9 +667,19 @@ def main():
         "editor/editor_node.cpp",
         "editor/editor_builders.py",
         "editor/docks/workbench/AIWorkbenchSidebar.cpp",
+        "editor/docks/workbench/AIWorkbenchReference.cpp",
+        "editor/docks/workbench/AuxiliaryDockLayout.cpp",
+        "editor/docks/editor_dock.cpp",
+        "editor/docks/editor_dock.h",
+        "editor/docks/editor_dock_manager.cpp",
+        "editor/docks/editor_dock_manager.h",
     ]
     if args.layout:
         files += ["tests/editor/tianxuan_layout.gd"]
+    if args.current_context:
+        files += ["tests/editor/workbench_current_context.gd"]
+    if args.session_sync:
+        files += ["tests/editor/tianxuan_session_sync.gd"]
     if args.execution:
         files += [
             "tests/editor/tianxuan_execution.gd",
@@ -614,10 +689,18 @@ def main():
         files += ["tests/editor/tianxuan_execution_controls.gd"]
     if args.races:
         files += ["tests/editor/tianxuan_races.gd"]
-    include_local_contract = args.native_shell and not any((args.layout, args.races, args.controls, args.execution))
+    include_local_contract = args.native_shell and not any((
+        args.layout,
+        args.races,
+        args.controls,
+        args.execution,
+        args.current_context,
+        args.session_sync,
+    ))
     if args.local_conversation or include_local_contract:
         files += ["tests/editor/tianxuan_local_conversation.gd"]
     if include_local_contract:
+        files += ["tests/editor/workbench_current_context.gd", "tests/editor/tianxuan_session_sync.gd"]
         files += ["tests/editor/run_tianxuan_host_progress.py", "tests/editor/tianxuan_host_progress.gd"]
         files += [
             "tests/editor/run_tianxuan_production_handoff.py",
@@ -643,6 +726,8 @@ def main():
                 args.layout,
                 args.controls,
                 args.races,
+                args.current_context,
+                args.session_sync,
             )
             if include_local_contract:
                 with tempfile.TemporaryDirectory(prefix="local-conversation-", dir=temporary) as contract_directory:
@@ -693,6 +778,16 @@ def main():
                 assert handoff_report.get("ok") is True, handoff_report
                 assert handoff_report.get("editor_sha256") == report["binary_sha256"], handoff_report
                 report["production_handoff_contract"] = handoff_report
+                with tempfile.TemporaryDirectory(prefix="current-context-", dir=temporary) as context_directory:
+                    report["current_editor_context_contract"] = exercise(
+                        Path(context_directory).resolve(), args.godot.resolve(), native_shell=True, current_context=True
+                    )
+                assert report["current_editor_context_contract"]["binary_sha256"] == report["binary_sha256"]
+                with tempfile.TemporaryDirectory(prefix="session-sync-", dir=temporary) as session_directory:
+                    report["session_sync_contract"] = exercise(
+                        Path(session_directory).resolve(), args.godot.resolve(), native_shell=True, session_sync=True
+                    )
+                assert report["session_sync_contract"]["binary_sha256"] == report["binary_sha256"]
     if any(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() != fingerprints[p] for p in files):
         raise AssertionError("Candidate source changed during validation; rerun the affected check")
     level = (

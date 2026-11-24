@@ -14,6 +14,7 @@ import time
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
 
 from editor_test_isolation import copy_editor
 from run_tianxuan_connect import digest, fixture
@@ -22,6 +23,22 @@ from run_unified_settings_native import sanitized_environment
 
 ROOT = Path(__file__).resolve().parents[2]
 HELPER = ROOT / "customizations/components/godot-host/session_credentials.py"
+ROUTE_PROBES = {
+    "/api/v1/native/asset-context/source/revision/models/pig.tres",
+    "/api/v1/native/business-modules/module/assets",
+    "/api/v1/native/business-modules/module/assets/object",
+    "/api/v1/native/assets/object/business-modules",
+    "/api/v1/native/modules/source/branches",
+    "/api/v1/native/workflow/status",
+    "/api/v1/native/workflow/pause",
+    "/api/v1/native/workflow/resume",
+    "/api/v1/native/workflow/cancel",
+    "/api/v1/native/workflow/recover-project",
+    "/api/v1/native/business-modules/module/assets-extra",
+    "/api/v1/native/business-modules/module/assets/object/extra",
+    "/api/v1/native/assets/object/business-modules/extra",
+    "/api/v1/native/asset-context/source/revision",
+}
 
 
 def exercise(base, binary, source_loaded):
@@ -84,7 +101,12 @@ def exercise(base, binary, source_loaded):
             elif path == "/api/v1/issues/slow":
                 time.sleep(2)
                 status = 401
+            elif actor and path in ROUTE_PROBES:
+                status, payload = 200, {"query": parse_qs(urlsplit(self.path).query)}
             self.reply(status, payload)
+
+        def do_DELETE(self):
+            self.do_GET()
 
         def do_POST(self):
             path = self.path.partition("?")[0]
@@ -138,6 +160,8 @@ def exercise(base, binary, source_loaded):
                 status, payload = 200, {"actor": actor}
             elif path == "/api/v1/issues/denied":
                 status = 403
+            elif actor and path in ROUTE_PROBES:
+                status, payload = 200, {"query": parse_qs(urlsplit(self.path).query)}
             self.reply(status, payload)
 
         def reply(self, status, data):

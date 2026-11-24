@@ -10,7 +10,7 @@ var milestone: LineEdit
 var approval: ConfirmationDialog
 var send: Button
 var input: TextEdit
-var reference: Button
+var reference: Label
 
 func stage(field: LineEdit) -> bool:
 	if sidebar.is_visible_in_tree():
@@ -25,13 +25,13 @@ func stage(field: LineEdit) -> bool:
 
 func send_field(field: LineEdit, name_of_field: String) -> bool:
 	if not await stage(field): return false
-	if not _check(reference.text.contains(name_of_field) and reference.text.contains(field.text), "Missing field preview: " + reference.text): return false
+	if not _check(reference.text.contains(name_of_field) and reference.tooltip_text.contains(field.text), "Missing field preview: " + reference.text): return false
 	input.text = "Read " + name_of_field
 	var deadline := Time.get_ticks_msec() + 15000
 	while send.disabled and Time.get_ticks_msec() < deadline: await create_timer(0.05).timeout
 	send.pressed.emit()
 	while (not input.text.is_empty() or not sidebar.find_child("Stop", true, false).disabled) and Time.get_ticks_msec() < deadline: await create_timer(0.05).timeout
-	return _check(input.text.is_empty() and not reference.visible, "Field message did not finish")
+	return _check(input.text.is_empty() and not sidebar.find_child("WorkbenchReference", true, false).visible, "Field message did not finish or automatic context became a manual reference")
 
 func _run():
 	root.size = Vector2i(1440, 1000)
@@ -49,7 +49,7 @@ func _run():
 	private_note.text = "LOCAL_ONLY_1793"
 	input = root.find_child("ChatInput", true, false)
 	send = root.find_child("Send", true, false)
-	reference = root.find_child("WorkbenchReference", true, false)
+	reference = root.find_child("WorkbenchCurrentContext", true, false)
 	approval = root.find_child("AIFileApproval", true, false)
 	var settings = chat.get_ai_settings_control()
 	var backend = chat.find_child("AIBackend", true, false)
@@ -67,20 +67,17 @@ func _run():
 		return
 	if not await send_field(milestone, "Brief/Milestone"): return
 	if not await stage(private_note): return
-	if not _check(not reference.text.contains("LOCAL_ONLY") and reference.text.ends_with("可读范围：页面名、模块标识"), "Private field was staged"): return
-	reference.pressed.emit()
+	if not _check(not reference.tooltip_text.contains("LOCAL_ONLY") and not reference.tooltip_text.contains("page_field"), "Private field was staged"): return
 	var before := summary.text
 	summary.text = "fixture key " + key.text
 	if not await stage(summary): return
-	if not _check(reference.text.ends_with("可读范围：页面名、模块标识"), "Credential-bearing field was staged"): return
-	reference.pressed.emit()
+	if not _check(not reference.tooltip_text.contains("page_field"), "Credential-bearing field was staged"): return
 	summary.text = before
 	if not await stage(summary): return
 	page.title = "Retitled"
 	input.text = "stale draft"
 	send.pressed.emit()
-	if not _check(reference.text.contains("失效") and input.text == "stale draft", "Renamed page draft sent"): return
-	reference.pressed.emit()
+	if not _check(reference.text.contains("已变化") and input.text == "stale draft", "Renamed page draft sent"): return
 	input.text = ""
 	page.title = "Project Brief"
 	var tools := root.find_child("AllowTools", true, false) as CheckBox

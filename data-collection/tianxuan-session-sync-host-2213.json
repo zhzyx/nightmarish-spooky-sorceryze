@@ -1,0 +1,15 @@
+{
+  "id": "codex-tianxuan-session-sync-host",
+  "version": "20261124",
+  "origin": "external-authorized-host",
+  "authority": "Current user request to prioritize left/right account state synchronization and verify device-based persistent sign-in",
+  "worker": "/root",
+  "scope": "Issue 2213 shared-login presentation, authenticated service scope, persistence diagnostics, isolated verification and installed acceptance",
+  "delegated_workers": {
+    "/root/conversation_sync_path": "Shared login UI synchronization and service-scoped draft implementation",
+    "/root/local_model_path": "Read-only persistence audit completed; separate Issue 2211 CI correction",
+    "/root/local_chat_review": "Independent review role; no implementation participation"
+  },
+  "model": null,
+  "usage": null
+}

@@ -82,6 +82,8 @@ func run() -> void:
 			return
 		if not check(session.get_identity().id == "bob" and session.get_identity().role == "viewer" and session._token == key and not session._owned_session and session._memory_only_login and session._stored_digest.is_empty(), "temporary key preserves the exact server identity and viewer permission without ownership"):
 			return
+		if not check(session.get_login_persistence() == "temporary_legacy", "legacy fallback is explicitly temporary even when another saved device binding exists"):
+			return
 		if not check(session.status_text.contains("仅本次登录有效") and not session.redact_credentials(key).contains(key), "temporary status is explicit and active personal key is redacted"):
 			return
 		await session.reset()

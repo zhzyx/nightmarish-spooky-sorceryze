@@ -24,6 +24,7 @@ var _editor_tools := MenuButton.new()
 var _modules := OptionButton.new()
 var _attachments := VBoxContainer.new()
 var _editor_status := Label.new()
+var _current_context := Label.new()
 var _attachment_signature := ""
 var _open_file := FileDialog.new()
 var _import_source := FileDialog.new()
@@ -128,6 +129,7 @@ func _ready() -> void:
 	composer_row.name = "TianxuanComposerRow"
 	add_child(composer_row)
 	composer.name = "TianxuanComposer"
+	composer.set_deselect_on_focus_loss_enabled(false)
 	composer.placeholder_text = "描述需求，或提出开发问题…"
 	composer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	composer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -159,8 +161,11 @@ func _ready() -> void:
 	add_child(_poll)
 	controller.changed.connect(_changed)
 	visibility_changed.connect(_visibility_changed)
+	controller.editor_context.observe_context(self)
 	_changed("identity")
 	_refresh()
+	if is_visible_in_tree():
+		controller.editor_context.capture_current_context()
 
 
 func _compact_button(button: BaseButton) -> void:
@@ -206,6 +211,10 @@ func _update_progress() -> void:
 		pending = pending or turn.get("state") == "pending"
 	_progress_row.visible = active or pending
 	_status_row.visible = not active
+	var context_row: HBoxContainer = _progress_row if active else _status_row
+	if _current_context.get_parent() != context_row:
+		_current_context.reparent(context_row)
+		context_row.move_child(_current_context, 0)
 	stop.visible = active or pending
 	stop.disabled = not controller.can_edit() or (controller.chat_busy() and not active)
 	if active:
@@ -263,6 +272,7 @@ func _poll_pending() -> void:
 
 func _visibility_changed() -> void:
 	if is_visible_in_tree():
+		controller.editor_context.capture_current_context()
 		_changed("visibility")
 		_refresh()
 	else:
@@ -339,6 +349,8 @@ func _changed(topic: String) -> void:
 		_poll.stop()
 	_updating = false
 	_update_progress()
+	if is_visible_in_tree():
+		controller.editor_context.capture_current_context()
 	_render_editor_context()
 	if topic == "identity":
 		_open_file.hide()
@@ -349,6 +361,13 @@ func _changed(topic: String) -> void:
 
 
 func _build_editor_tools(toolbar: HBoxContainer) -> void:
+	_current_context.name = "TianxuanCurrentContext"
+	_current_context.theme_type_variation = "TianxuanCaption"
+	_current_context.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_current_context.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_current_context.size_flags_stretch_ratio = 2.0
+	_status_row.add_child(_current_context)
+	_status_row.move_child(_current_context, 0)
 	_editor_tools.name = "TianxuanEditorActions"
 	_editor_tools.text = "上下文"
 	_editor_tools.tooltip_text = "编辑器联动"
@@ -418,6 +437,8 @@ func _build_editor_tools(toolbar: HBoxContainer) -> void:
 func _render_editor_context() -> void:
 	if not controller or not controller.editor_context:
 		return
+	_current_context.text = controller.editor_context.current_context_status()
+	_current_context.tooltip_text = str(controller.editor_context.current_context().get("text", ""))
 	_modules.clear()
 	_modules.add_item("选择引用所属模块")
 	_modules.set_item_metadata(0, "")
@@ -430,7 +451,7 @@ func _render_editor_context() -> void:
 	_editor_status.text = controller.editor_context.status
 	_editor_status.visible = not _editor_status.text.is_empty()
 	var items: Array = controller.editor_context.attachments()
-	_editor_tools.text = tr("上下文") if items.is_empty() else tr("引用 · %d") % items.size()
+	_editor_tools.text = tr("上下文") if items.is_empty() else tr("保留引用 · %d") % items.size()
 	var signature := JSON.stringify(items)
 	if signature == _attachment_signature:
 		return
