@@ -1,0 +1,32 @@
+{
+  "request_id": "engine-apple-gray-ui-20261124",
+  "issue_number": 2222,
+  "prior_candidate": "889e1eadd6365ba1bad8d969ce395a45cc340c95",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45450428764",
+  "changes": [
+    "Ruff import ordering and Python formatting",
+    "Windows STARTUPINFO guarded by sys.platform for Linux mypy",
+    "Repository copyright header on native test",
+    "Preserve immutable validation spelling; narrowly exclude the original receipt from codespell, following existing evidence exceptions."
+  ],
+  "checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "mypy_linux": "passed",
+    "actual_gl_render": "passed",
+    "codespell_explicit_readonly": "passed"
+  },
+  "source_sha256": {
+    "tests/editor/run_apple_gray_probes.py": "290538d3432c6254713881753e7b84233957896ea2e7cd4226de20942ec6f1d2",
+    "tests/editor/run_apple_gray_render.py": "99030afc15ac09b696f0697ae47f9b9f4d1697397c4348d0f0973a7be109288e",
+    "tests/editor/test_editor_visual_motion.cpp": "156c83c1e96d7ace7b5806cadefc948b8429c12b32d2f05f9cc7d94e2c17eefc"
+  },
+  "scope": "No engine behavior changed. Original implementation review and binary tests remain applicable; runner platform guard was re-executed on Windows.",
+  "corrected_review_limitation": "Source review does not replace whole-editor performance, other-renderer testing or physical-display judgment.",
+  "lint_recovery": {
+    "cause": "Calling codespell main without explicit positional arguments ignored sys.argv and scanned the worktree with write mode from project configuration.",
+    "action": "Stopped the exact owned process tree; restored 52 unintended tracked paths from the existing index; restored the original committed validation bytes; regenerated three generated headers from tracked authors/donors/license inputs.",
+    "verified": "Only intended correction evidence and pyproject changes remained unstaged; explicit-file read-only spelling check passed. No user main-worktree files were touched.",
+    "future_invocation": "Pass filenames directly to codespell main(*args), use a read-only config, and verify the file scope before invocation."
+  }
+}
