@@ -241,13 +241,11 @@ func _garment_items_changed():
 	if json.parse(garment_items_edit.text) != OK or not json.data is Array:
 		_set_error("衣服清单必须是有效 JSON 数组")
 		return
-	if json.data.is_empty():
-		_set_error("请至少配置一件衣服")
-		return
 	for entry in json.data:
 		if not entry is Dictionary:
 			_set_error("衣服清单中的每一项都必须是 JSON 对象")
 			return
+	# An empty array is a saveable draft; node_run_blocker rejects it only when run.
 	_set_parameter("items", json.data)
 
 func _landmarks_changed():
@@ -296,8 +294,10 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	rows.outputs.text = "图片数量、视角与局部细节由描述自动理解；多图从同一主图衍生" if _automatic_outputs else "输出数量，或每行一个视角／变体标签"
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
-	garment_items_label.visible = garment
-	garment_items_edit.visible = garment
+	# Component IDs and reviewed triangles remain in developer JSON only.
+	# Ordinary runs use AI visual recognition instead of exposing geometry configuration.
+	garment_items_label.visible = false
+	garment_items_edit.visible = false
 	copy_hint.visible = not generator
 	copy_hint.text = "使用解剖模板生成 17 根骨骼＋独立 root，按失败项迭代修正肩胸权重、腿部骨点或拓扑；只有完整验收通过才交付角色。轮次包含首次拟合，更多轮次不保证质量。" if kind == HUMANOID_RIG else "直接预览输入图像或模型，无需生成参数。"
 	advanced_toggle.visible = generator and not shape and not garment
@@ -350,14 +350,14 @@ func _apply_cli_controls():
 		rows.max_repair_attempts.show()
 		return
 	if kind == GARMENT_SPLIT:
-		cli_hint.text = '本节点只在本地复制选中几何，不调用生成服务。先用 garment_split.py inspect 获取组件 ID；分离组件可直接提取，融合表面必须明确审核源三角面。已绑骨输入会保留原骨架和蒙皮，但实际动画与布料动态仍需另行验收。'
+		cli_hint.text = '静态或已绑骨角色直接运行即可。AI 先识别独立衣服，再逐视角标记可见表面；本机按三角面证据去除人体并重建内侧厚度，只有完整覆盖且封闭的项才标为完整衣服。此步骤需要可用的 KIMI_API_KEY。已绑骨输入保留原骨架、Inverse Bind 和蒙皮权重，新增内侧与封口顶点继承蒙皮；局部或冲突项保持未完成，视觉、目标骨架适配、动画与布料动态另行验收。'
 		cli_hint.show()
 		advanced_toggle.hide()
 		advanced_box.hide()
 		for key in ['width', 'height', 'height_cm', 'height_m', 'max_repair_attempts', 'head_ratio', 'arm_length_scale', 'leg_length_scale', 'build', 'seed', 'steps', 'denoise', 'mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
 			rows[key].hide()
-		garment_items_label.show()
-		garment_items_edit.show()
+		garment_items_label.hide()
+		garment_items_edit.hide()
 		pose_row.hide()
 		landmarks_label.hide()
 		landmarks_edit.hide()
@@ -506,8 +506,8 @@ func parameters():
 	if kind == "copy": return result
 	if kind == GARMENT_SPLIT:
 		var json = JSON.new()
-		if json.parse(garment_items_edit.text) != OK or not json.data is Array or json.data.is_empty():
-			_set_error("衣服清单必须是非空的有效 JSON 数组")
+		if json.parse(garment_items_edit.text) != OK or not json.data is Array:
+			_set_error("衣服清单必须是有效 JSON 数组")
 			return null
 		for entry in json.data:
 			if not entry is Dictionary:

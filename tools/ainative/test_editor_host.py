@@ -354,6 +354,55 @@ class BridgeTests(unittest.TestCase):
             self.assertIs(type(params["denoise"]), float)
             self.assertIs(type(request["model"]["nodes"][0]["parameters"]["seed"]), float)
 
+    def test_human_shape_height_cm_run_records_and_legacy_migration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            base = dict(
+                head_ratio=7.5,
+                arm_length_scale=1.0,
+                leg_length_scale=1.0,
+                build=0.0,
+            )
+            nodes = [
+                dict(
+                    id=node_id,
+                    type="human_shape_adjust",
+                    provider="comfy",
+                    source=str(root / "sample.glb"),
+                    image_context="",
+                    text="",
+                    parameters=dict(base, height_cm=height_cm),
+                )
+                for node_id, height_cm in (("short", 170.0), ("tall", 190.0))
+            ]
+            args = argparse.Namespace(
+                db=str(root / "db"), factory="test_editor_host:integer_transport_factory", command="create"
+            )
+            run = dispatch(args, {"model": {"nodes": nodes, "edges": []}})["run_id"]
+            status_args = argparse.Namespace(db=args.db, command="status")
+            recorded = dispatch(status_args, {"run": run})["nodes"]
+            for node_id, expected in (("short", 170), ("tall", 190)):
+                parameters = recorded[node_id]["request"]["parameters"]
+                self.assertEqual(parameters["height_cm"], expected)
+                self.assertIs(type(parameters["height_cm"]), int)
+                self.assertNotIn("height_m", parameters)
+
+            legacy = dict(nodes[0], id="legacy", parameters=dict(base, height_m=1.9))
+            legacy_args = argparse.Namespace(
+                db=str(root / "legacy-db"), factory="test_editor_host:integer_transport_factory", command="create"
+            )
+            legacy_run = dispatch(legacy_args, {"model": {"nodes": [legacy], "edges": []}})["run_id"]
+            legacy_status_args = argparse.Namespace(db=legacy_args.db, command="status")
+            parameters = dispatch(legacy_status_args, {"run": legacy_run})["nodes"]["legacy"]["request"]["parameters"]
+            self.assertEqual(parameters["height_cm"], 190)
+            self.assertIs(type(parameters["height_cm"]), int)
+            self.assertNotIn("height_m", parameters)
+
+            invalid = dict(nodes[0], id="invalid", parameters=dict(base, height_m=1.805))
+            with self.assertRaisesRegex(ValueError, "editor integer"):
+                dispatch(args, {"model": {"nodes": [invalid], "edges": []}})
+
     def test_editor_integer_rejects_fraction_bool_nonfinite_and_unsafe(self):
         with tempfile.TemporaryDirectory() as tmp:
             args = argparse.Namespace(

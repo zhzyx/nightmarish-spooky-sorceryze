@@ -109,10 +109,44 @@ class Executor:
     def _read(self, run_id):
         row = self.db.execute("SELECT body FROM runs WHERE id=?", (run_id,)).fetchone()
         require(row is not None, "unknown run")
-        return json.loads(row[0])
+        run = json.loads(row[0])
+        artifacts = {(asset["id"], asset["revision"]): asset for asset in run["manifest"]["artifacts"]}
+        for node in run["nodes"].values():
+            stored = node.get("result")
+            if not isinstance(stored, dict) or stored.get("storage") != "run_manifest":
+                continue
+            require(
+                set(stored) == {"schema_version", "storage", "artifacts"},
+                "invalid stored node result",
+            )
+            restored = []
+            for reference in stored["artifacts"]:
+                key = (reference.get("id"), reference.get("revision"))
+                require(key in artifacts, "stored node result artifact missing")
+                restored.append(artifacts[key])
+            node["result"] = {"schema_version": stored["schema_version"], "artifacts": restored}
+        return run
 
     def _write(self, run):
-        self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(run), run["id"]))
+        # The run manifest already owns every result artifact. Persist only
+        # references in each node instead of duplicating large base64 payloads;
+        # _read restores the public status shape used by preview and the UI.
+        stored = dict(run)
+        stored["nodes"] = dict(run["nodes"])
+        for node_id, node in run["nodes"].items():
+            result = node.get("result")
+            if result is None:
+                continue
+            compact = dict(node)
+            compact["result"] = {
+                "schema_version": result["schema_version"],
+                "storage": "run_manifest",
+                "artifacts": [
+                    {"id": asset["id"], "revision": asset["revision"]} for asset in result["artifacts"]
+                ],
+            }
+            stored["nodes"][node_id] = compact
+        self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(stored), run["id"]))
 
     def _restore_cached_manifest(self, manifest):
         """Hydrate abbreviated cached snapshots from their immutable stored records."""

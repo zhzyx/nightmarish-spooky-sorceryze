@@ -100,13 +100,62 @@ class GarmentSplitProviderTests(unittest.TestCase):
             host.close()
 
     def test_invalid_items_fail_without_remote_or_partial_result(self):
-        host, _run, state, _providers, _snapshot = self.execute(self.model([]))
+        host, _run, state, _providers, _snapshot = self.execute(self.model([{}]))
         try:
             self.assertEqual(state["state"], "failed")
             node = state["nodes"]["split"]
             self.assertEqual(node["job"]["state"], "failed")
             self.assertEqual(node["result"], None)
             self.assertIn("衣服清单", node["public_error"])
+            self.assertEqual(self.source.read_bytes(), self.raw)
+        finally:
+            host.close()
+
+    def test_empty_items_use_complete_wearable_reconstruction(self):
+        selected = self.components[0]["component_id"]
+        receipt = dict(
+            schema_version=1,
+            mode="multiview_triangle_segmentation_and_shell_reconstruction",
+            source_sha256=self.geometry.sha256,
+            selected_item_count=1,
+            visual_review_passed=False,
+            human_confirmed=False,
+        )
+
+        def fake_complete(source, output, evidence, godot_path, render_script, planner=None):
+            from garment_split import split
+
+            record = split(
+                dict(
+                    schema_version=1,
+                    source=str(source),
+                    source_sha256=self.geometry.sha256,
+                    output=str(output),
+                    items=[item("cape", [selected])],
+                )
+            )
+            record.update(
+                schema_version=2,
+                operation="reconstruct_wearable_garment_shell",
+                status="wearable_shell",
+                automatic_recognition=receipt,
+                fit_validated=False,
+                animation_validated=False,
+            )
+            record["items"][0].update(state="wearable_shell", coverage_state="complete_visible", closed_position_welded=True)
+            return record
+
+        with patch("garment_complete.complete", side_effect=fake_complete) as reconstruct:
+            host, _run, state, _providers, _snapshot = self.execute(self.model([]))
+        try:
+            self.assertEqual(state["state"], "succeeded", state)
+            reconstruct.assert_called_once()
+            self.assertEqual(reconstruct.call_args.args[0].read_bytes(), self.raw)
+            provenance = state["nodes"]["split"]["result"]["artifacts"][-1]["payload"]["provenance"]
+            self.assertEqual(provenance["automatic_recognition"], receipt)
+            self.assertTrue(provenance["cloud_used"])
+            self.assertEqual(provenance["items"][0]["id"], "cape")
+            self.assertEqual(provenance["items"][0]["state"], "wearable_shell")
             self.assertEqual(self.source.read_bytes(), self.raw)
         finally:
             host.close()

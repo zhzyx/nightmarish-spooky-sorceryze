@@ -31,9 +31,9 @@ func finish():
 
 func wait_idle():
 	var deadline = Time.get_ticks_msec()+45000
-	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec()<deadline:
+	while (not panel.jobs.is_empty() or panel.auto_step or panel.is_preview_loading()) and Time.get_ticks_msec()<deadline:
 		await create_timer(.02).timeout
-	return check(panel.jobs.is_empty() and not panel.auto_step,'real host subprocess completed')
+	return check(panel.jobs.is_empty() and not panel.auto_step and not panel.is_preview_loading(),'real host subprocess completed')
 
 func run():
 	if OS.get_environment('AINATIVE_TEST_MODE')=='runtime':
@@ -229,6 +229,12 @@ func verify_context_controls():
 	panel.graph.popup_request.emit(panel.graph.size - Vector2(20, 20))
 	check(panel.context_menu.visible and panel.serial == serial, 'bundled blank-canvas context opens without executing providers')
 	panel.context_menu.hide()
+	panel.params_edit.text = '{broken'
+	panel.params_edit.text_changed.emit()
+	panel.graph.popup_request.emit(panel.graph.size - Vector2(20, 20))
+	check(panel.context_menu.visible and not panel.failure_dialog.visible, 'bundled blank-canvas context remains available with an invalid inspector draft')
+	panel.context_menu.hide()
+	panel.select_node(panel.nodes[0].id)
 	panel.create_context_node("copy")
 	await process_frame
 	var added = panel.nodes.back().id
@@ -543,6 +549,7 @@ func verify_mesh():
 	check(saved_workflow.get('output_history',{}).get(result_node,[]).size()==1,'builtin workflow embeds the generated GLB after execution')
 	panel.open_graph()
 	panel.select_node(result_node)
+	if not await wait_idle(): return
 	print('OUTPUT_PERSISTENCE_STATUS ',panel.status.text,' RUN ',panel.run_id,' HISTORY ',panel.preview_history.keys(),' PATH ',panel.preview_source_path)
 	check(panel.run_id.is_empty() and panel.preview_history.get(result_node,[]).size()==1,'builtin workflow restores generated-result history without another Executor run')
 	check(panel.preview_source_path.begins_with(panel.path_edit.text+'.assets/') and FileAccess.get_sha256(panel.preview_source_path)==before,'builtin restored GLB is a durable byte-identical content-addressed file')
@@ -643,10 +650,11 @@ func verify_garment_node():
 	panel.generator_choice.select(6)
 	panel.add_generator()
 	var data: Dictionary = panel.nodes.back()
+	check(panel.apply_fields() and data.parameters.items.is_empty(), 'bundled garment node applies and preserves an empty saveable draft')
 	data.parameters = {"items":[{"id":"cloth","label":"测试衣服","category":"garment","slot":"other","behavior":"skinned","confidence":1.0,"review_state":"confirmed","selection":{"mode":"reviewed_triangles","primitives":[{"node":0,"primitive":0,"triangles":[0]}]}}]}
 	panel.select_node(str(data.id))
 	panel.source_picker.file_selected.emit(source)
-	check(panel.parameter_form.garment_items_edit.visible and panel.apply_fields(),'bundled garment node applies its structured item selection')
+	check(not panel.parameter_form.garment_items_edit.visible and panel.apply_fields(),'bundled garment node keeps developer geometry JSON out of ordinary UI')
 	panel.run_node_preview(str(data.id))
 	if not await wait_idle(): return
 	details.garment_execution = {'current':panel.current.duplicate(true),'failure':panel.failure_text.text,'status':panel.status.text,'host':panel.host_edit.text,'selected':str(data.id)}
@@ -658,6 +666,33 @@ func verify_garment_node():
 	await settle()
 	var cards = panel.artifact_nodes.values().filter(func(record): return record.get('artifact_role','')=='garment')
 	check(cards.size()==1 and cards[0].entry.get('provenance',{}).get('garment_id','')=='cloth','bundled garment node creates its semantic independent artifact card')
+	if cards.size()==1:
+		panel.add_node()
+		var consumer_id = str(panel.nodes.back().id)
+		var garment_card = panel.graph.get_node(NodePath(str(cards[0].id))) as GraphNode
+		var thumbnail = garment_card.get_node('ArtifactMeshPreview')
+		var deadline = Time.get_ticks_msec()+10000
+		while thumbnail.is_loading() and Time.get_ticks_msec()<deadline: await process_frame
+		check(not thumbnail.is_loading(),'bundled garment thumbnail finishes its initial decode before connection')
+		var before_instances: Dictionary = {}
+		for child in panel.graph.get_children():
+			if child is GraphNode: before_instances[str(child.name)] = child.get_instance_id()
+		var before_decode: int = thumbnail.decode_count
+		panel.connect_nodes(str(cards[0].id),0,consumer_id,0)
+		var preserved = true
+		for id in before_instances:
+			var current = panel.graph.get_node_or_null(NodePath(id))
+			if current==null or current.get_instance_id()!=before_instances[id]: preserved = false
+		check(preserved,'bundled garment connection preserves every existing graph and artifact instance')
+		check(thumbnail.decode_count==before_decode,'bundled garment connection does not decode the GLB thumbnail again')
+		check(panel.graph.get_connection_list().any(func(edge): return str(edge.from_node)==str(cards[0].id) and str(edge.to_node)==consumer_id),'bundled garment connection adds only the selected artifact wire')
+		panel.disconnect_nodes(str(cards[0].id),0,consumer_id,0)
+		preserved = true
+		for id in before_instances:
+			var current = panel.graph.get_node_or_null(NodePath(id))
+			if current==null or current.get_instance_id()!=before_instances[id]: preserved = false
+		check(preserved and thumbnail.decode_count==before_decode,'bundled garment disconnect also preserves nodes and decoded previews')
+		check(not panel.edges.any(func(edge): return edge.to==consumer_id),'bundled garment disconnect removes only the consumer edge')
 	if not entry.is_empty():
 		panel.load_preview(entry,str(data.id),str(entry.get('run','')))
 		await settle()

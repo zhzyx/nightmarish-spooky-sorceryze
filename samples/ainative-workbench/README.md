@@ -4,7 +4,9 @@
 
 页面提供 **网格生成、骨骼绑定、角色工作台、其他工具、本机设置**，默认打开网格生成。按钮、输入提示、确认与状态使用中文，ComfyUI、Python、GLB、UE4、Mixamo 等专名及 JSON 字段保留。生成选项通过 metadata 使用原英文类型，已有工作流与本机数据路径不变。先预览生成的网格，再切到骨骼绑定；也可在骨骼绑定页浏览本地网格。真实生成仍需配置模型服务，离线复制节点仅用于演示。外部工具的原始失败详情保留在本机诊断日志，可从“本机设置”打开。
 
-The built-in native plugin embeds the shared workbench scripts and Python tools into the editor binary and installs a content-versioned bundle in editor data on first use. The default local host follows the current engine bundle when upgrading; explicit custom host settings are retained. Task state and settings are isolated by the absolute project path, outside project source. The sample below remains a standalone/regression harness and compatibility addon for older engines; on current engines its addon does not register a duplicate panel. See [the built-in entry and acceptance scope](../../design-docs/ainative-engine-builtin-20261107.md).
+- **AI 驱动原则**：马良是 AI 驱动的工作流，不应要求普通用户配置复杂的底层参数。以衣服拆分为例，应由 AI 根据模型和视觉证据识别衣服位置，自动生成可追溯的几何选择；`component_id`、审核三角面等属于内部或开发者契约，不应成为用户运行节点的前置负担。AI 无法可靠识别时，应明确说明不确定性并请求必要的参考或结果确认，而不是把复杂配置直接转交给用户。
+
+The built-in native plugin embeds the shared workbench scripts and Python tools into the editor binary and installs a content-versioned bundle in editor data on first use. The default local host follows the current engine bundle when upgrading; explicit custom host settings are retained. Task state and service choices are isolated by the absolute project path, outside project source. Machine-level Python and trusted host-script settings are also saved to `ainative/shared-host.cfg` and shared across projects, preventing a fresh project from silently resetting to a different Python. Saving a generation service does not overwrite the selected host Python, and only Codex/local-Mesh runtime management may adopt that runtime's Python. The sample below remains a standalone/regression harness and compatibility addon for older engines; on current engines its addon does not register a duplicate panel. See [the built-in entry and acceptance scope](../../design-docs/ainative-engine-builtin-20261107.md).
 
 **Character Workbench** edits one shared character: body/face shape, independent clothing, animation layers and handheld equipment, captured face animation, cloth, and hair. Choose **角色工作台**, select the trusted local character recipe, then edit, save a new complete version, and reopen it. Sources, model weights, and machine paths remain local. See [the integrated workflow and acceptance limits](../../design-docs/ainative-art/13-integration.md) for recipe fields and the verified sequence.
 
@@ -62,7 +64,7 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 
 绑骨后的最终检测使用**纯文本审核流程**：本地 Godot 先完成骨骼、Skin、Rest、权重和实际 ROM 数值检测，候选保存并重载后，只把 JSON 实测证据发送给 Kimi 文本模型，不发送截图或图片 Base64。文本回执包含结构化问题、节点／控件路由及白名单修复建议。最终通过必须同时满足本地硬门禁与文本审核通过；文本模型无权把结构无效、Rest／权重异常或超阈值候选改判为通过。该步骤同样需要 `KIMI_API_KEY`，服务或回执无效时停止，不静默退回简单检测结论。
 
-角色生成物显示实际网格和骨架。**双击生成物或右侧角色预览**进入“骨骼绑定”页签调整关节、权重和变形；“下载角色 .tscn”可另存产物。工作流会内嵌角色和对应源 GLB 快照，重开后仍可预览和进入绑定调整。
+角色生成物显示实际网格和骨架。**双击生成物或右侧角色预览**进入“骨骼绑定”页签调整关节、权重和变形；“下载角色 .tscn”可另存产物。节点同时保存通过重载验收的已绑骨 GLB，角色生成物的输出端口可连接“衣服拆分”，下游使用固定 GLB 快照；旧版只有 `.tscn` 的历史角色会在连接时自动补齐这份 GLB，无需重新绑骨。自动“完整衣服”重建接受静态或已绑骨角色，输出去除人体并带内侧厚度的独立封闭壳；已绑骨输入保留原骨架、Inverse Bind 和蒙皮权重，新增内侧与封口顶点继承蒙皮，仍需视觉、目标骨架适配与动画验收。开发者表面提取卡片明确标为表面片段，不冒充完整换装衣服。工作流会内嵌角色、对应源 GLB 和已绑骨 GLB 快照，重开后仍可预览、进入绑定调整或运行衣服拆分。
 
 后台回归：设置 `AINATIVE_PYTHON` 后运行 `--headless --path samples/ainative-workbench --script humanoid_rig_node_acceptance.gd`。默认使用明确标注的合成 T 形夹具和 `synthetic=true` 的文本回执，不调用真实 AI，只证明节点适配器、持久化、文本流程和实际 ROM 行为；真实人物与真实文本审核仍需分别留存业务证据。
 

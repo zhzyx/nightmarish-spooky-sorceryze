@@ -143,6 +143,26 @@ var preview_worker_task := -1
 var preview_worker_result: Dictionary = {}
 var preview_decode_count := 0
 var preview_continuous_render := false
+# Diagnostic counters also let regression tests prove that cached snapshots are not decoded repeatedly.
+var snapshot_validation_decode_count := 0
+var snapshot_materialize_decode_count := 0
+# Workflow JSON and embedded bytes are decoded in two background stages; only the latest path may apply.
+var workflow_open_serial := 0
+var workflow_open_pending_request: Dictionary = {}
+var workflow_open_active_request: Dictionary = {}
+var workflow_open_stage := ""
+var workflow_open_worker_task := -1
+var workflow_open_worker_result: Dictionary = {}
+var workflow_open_apply_count := 0
+var workflow_open_last_prepare_usec := 0
+var workflow_open_last_apply_usec := 0
+# Legacy character TSCN conversion is expensive; queue it off the UI thread and share the result.
+var character_mesh_pending_entries: Array = []
+var character_mesh_active_request: Dictionary = {}
+var character_mesh_worker_task := -1
+var character_mesh_worker_result: Dictionary = {}
+var character_mesh_prepare_count := 0
+var character_mesh_last_prepare_usec := 0
 var staged = ""
 var confirmation: Dictionary = {}
 var state_dir = ""
@@ -417,8 +437,7 @@ func _ready():
 	state_dir = state_dir.replace('\\', '/')
 	DirAccess.make_dir_recursive_absolute(state_dir)
 	db = state_dir.path_join("executor.sqlite")
-	var settings = ConfigFile.new()
-	settings.load(state_dir.path_join("local.cfg"))
+	var settings = _load_host_settings()
 	if builtin: bundled_runtime = ManagedComfyPanel.discover_bundle()
 	var machine = VBoxContainer.new()
 	machine.name = 'AINativeLocalSettings'
@@ -827,11 +846,11 @@ func _ready():
 		show_native_section('mesh')
 	var reopen_previous = settings.has_section_key("workflow", "last_path") and FileAccess.file_exists(path_edit.text)
 	if reopen_previous:
-		open_graph()
+		open_graph_async()
 	elif FileAccess.file_exists(state_dir.path_join("last_run.txt")):
 		_configure_controller()
 		controller.restore_run(FileAccess.get_file_as_string(state_dir.path_join("last_run.txt")))
-	if nodes.is_empty(): add_node()
+	if nodes.is_empty() and not is_workflow_opening(): add_node()
 	_setup_process_panel()
 	spec_handoff = SpecHandoff.new()
 	add_child(spec_handoff)
@@ -1076,23 +1095,45 @@ func reclaim_settings_sections():
 			else: control.reparent(self)
 		control.hide()
 
-func save_settings():
+func _shared_host_settings_path() -> String:
+	# Python and trusted host scripts belong to the machine, not one project.
+	# Project-local files remain as compatibility backups and task-local state.
+	if get_meta('ainative_builtin', false): return state_dir.get_base_dir().get_base_dir().path_join('shared-host.cfg')
+	return state_dir.get_base_dir().path_join('shared-host.cfg')
+
+func _load_host_settings() -> ConfigFile:
+	var settings = ConfigFile.new()
+	settings.load(state_dir.path_join("local.cfg"))
+	var shared = ConfigFile.new()
+	if shared.load(_shared_host_settings_path()) == OK:
+		for key in shared.get_section_keys('host'):
+			settings.set_value('host', key, shared.get_value('host', key))
+	return settings
+
+func save_settings(include_runtime: bool = true):
 	var c = ConfigFile.new()
 	c.load(state_dir.path_join("local.cfg"))
-	# Resolve shipped components again from the executable after a move.
-	var uses_bundled_python = bundled_runtime.has('python') and python_edit.text == bundled_runtime.python
-	c.set_value('host', 'use_bundled_python', uses_bundled_python)
-	c.set_value("host", "python", null if uses_bundled_python else python_edit.text)
-	var bundled = get_meta('ainative_builtin',false) and host_edit.text==str(get_meta('ainative_tools_dir','')).path_join('editor_host.py')
-	c.set_value('host','use_bundled_script',bundled)
-	if not bundled: c.set_value("host", "script", host_edit.text)
+	if include_runtime:
+		# Resolve shipped components again from the executable after a move.
+		var uses_bundled_python = bundled_runtime.has('python') and python_edit.text == bundled_runtime.python
+		c.set_value('host', 'use_bundled_python', uses_bundled_python)
+		c.set_value("host", "python", null if uses_bundled_python else python_edit.text)
+		var bundled = get_meta('ainative_builtin',false) and host_edit.text==str(get_meta('ainative_tools_dir','')).path_join('editor_host.py')
+		c.set_value('host','use_bundled_script',bundled)
+		if not bundled: c.set_value("host", "script", host_edit.text)
 	c.set_value("host", "factory", factory_edit.text)
 	c.set_value("interface", "developer_mode", developer_mode.button_pressed)
 	if blender_path_edit != null: c.set_value("service", "blender_path", blender_path_edit.text.strip_edges())
 	if kimi_image_tool_edit != null: c.set_value('service', 'image_tool_path', kimi_image_tool_edit.text.strip_edges())
 	if kimi_image_pythonw_edit != null: c.set_value('service', 'image_pythonw_path', kimi_image_pythonw_edit.text.strip_edges())
 	if _using_legacy_service(): c.set_value("service", "mode", "legacy")
-	c.save(state_dir.path_join("local.cfg"))
+	var local_error = c.save(state_dir.path_join("local.cfg"))
+	var shared = ConfigFile.new()
+	shared.load(_shared_host_settings_path())
+	var shared_keys = c.get_section_keys('host') if include_runtime else ['factory']
+	for key in shared_keys: shared.set_value('host', key, c.get_value('host', key))
+	var shared_error = shared.save(_shared_host_settings_path())
+	if local_error != OK or shared_error != OK: status.text = "运行环境配置保存失败，请检查本机用户目录是否可写。"
 
 func diagnostic_error(summary: String, raw_details) -> String:
 	var path = state_dir.path_join('diagnostics.log')
@@ -1220,10 +1261,54 @@ func _template_depends_on(candidate: String, target: String, visited: Array = []
 func _template_can_insert(template_id: String) -> bool:
 	return custom_templates.has(template_id) and not _template_depends_on(template_id, active_template_id)
 
+func _create_formal_node(data: Dictionary) -> GraphNode:
+	var node = GraphNode.new()
+	node.name = data.id
+	node.title = data.id + " / " + _template_display_name(data)
+	node.position_offset = Vector2(data.x, data.y)
+	node.set_meta("maliang_template_boundary", WorkflowTemplate.is_fixed_node(data))
+	var label = Label.new()
+	label.name = 'GeneratorDescription'
+	label.text = _generator_description(data)
+	node.add_child(label)
+	var type_row = HBoxContainer.new()
+	type_row.name = 'PortTypes'
+	node.add_child(type_row)
+	var input_label = Label.new()
+	input_label.name = 'InputType'
+	input_label.text = "输入：" + input_type_name(data)
+	input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if input_kind(data) == PORT_TEXT:
+		input_label.text += "（参数）"
+		input_label.tooltip_text = "文本由当前节点的提示词参数提供"
+	type_row.add_child(input_label)
+	var output_label = Label.new()
+	output_label.name = 'OutputType'
+	output_label.text = "输出：" + port_type_name(output_kind(data))
+	output_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	type_row.add_child(output_label)
+	var kind = str(data.get("type", "copy"))
+	node.set_slot(1, kind != TEMPLATE_INPUT and input_kind(data) != PORT_TEXT, input_kind(data), PORT_COLORS[input_kind(data)], kind != TEMPLATE_OUTPUT, output_kind(data), PORT_COLORS[output_kind(data)])
+	graph.add_child(node)
+	if not WorkflowTemplate.is_boundary_kind(kind):
+		var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
+		run_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	if _image_queue_node(data) and not _queue_only_node(data):
+		var set_label = Label.new()
+		set_label.name = 'ImageSetOutputType'
+		set_label.text = "输出：图片队列（有序）"
+		set_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		node.add_child(set_label)
+		node.set_slot(3, false, 0, PORT_COLORS[PORT_IMAGE], true, PORT_IMAGE_SET, PORT_COLORS[PORT_IMAGE_SET])
+	node.node_selected.connect(select_node.bind(data.id))
+	node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
+	return node
+
 func add_node():
 	var id = "n" + str(Time.get_ticks_usec())
-	nodes.append({"id": id, "type": "copy", "version": "1", "provider": "local-copy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
-	rebuild()
+	var data = {"id": id, "type": "copy", "version": "1", "provider": "local-copy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	nodes.append(data)
+	_create_formal_node(data)
 	select_node(id)
 
 func add_generator():
@@ -1233,7 +1318,7 @@ func add_generator():
 	if kind not in ['copy',HUMANOID_RIG,GARMENT_SPLIT] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
-	rebuild()
+	_create_formal_node(data)
 	select_node(id)
 
 func _migrate_node_models(data: Dictionary, legacy: Dictionary):
@@ -1353,6 +1438,110 @@ func _character_entry(node_id: String, token: String) -> Dictionary:
 		if entry is Dictionary and entry.get("type","")=="character" and str(entry.get("token",""))==token: return entry
 	return {}
 
+func _character_mesh_ready(entry: Dictionary) -> bool:
+	var snapshot = entry.get("mesh_snapshot", {})
+	return snapshot is Dictionary and not snapshot.is_empty() and str(snapshot.get("extension", "")).to_lower() == ".glb"
+
+func _character_mesh_request_key(entry: Dictionary) -> String:
+	var artifact = entry.get("artifact", {})
+	return "%s::%s::%s::%s" % [str(entry.get("node", "")), str(artifact.get("id", "")), str(artifact.get("revision", "")), str(entry.get("path", ""))]
+
+func is_character_mesh_preparing() -> bool:
+	return character_mesh_worker_task >= 0 or not character_mesh_pending_entries.is_empty()
+
+func _character_mesh_is_pending(entry: Dictionary) -> bool:
+	var key = _character_mesh_request_key(entry)
+	if str(character_mesh_active_request.get("key", "")) == key: return true
+	return character_mesh_pending_entries.any(func(candidate): return candidate is Dictionary and _character_mesh_request_key(candidate) == key)
+
+func _request_character_mesh(entry: Dictionary):
+	if _character_mesh_ready(entry) or _character_mesh_is_pending(entry): return
+	character_mesh_pending_entries.append(entry)
+	_start_next_character_mesh_preparation()
+
+func _character_preview_loading(path: String) -> bool:
+	if not is_instance_valid(graph): return false
+	for preview in graph.find_children("*", "SubViewportContainer", true, false):
+		if preview.has_method("is_loading") and str(preview.get("current_path")) == path and str(preview.get("current_kind")) == "character" and preview.is_loading(): return true
+	return false
+
+func _start_next_character_mesh_preparation():
+	if character_mesh_worker_task >= 0 or character_mesh_pending_entries.is_empty(): return
+	var source_entry: Dictionary = character_mesh_pending_entries[0]
+	if _character_preview_loading(str(source_entry.get("path", ""))): return
+	character_mesh_pending_entries.pop_front()
+	character_mesh_active_request = {"source_entry":source_entry, "working_entry":source_entry.duplicate(), "key":_character_mesh_request_key(source_entry), "started":Time.get_ticks_usec()}
+	character_mesh_worker_result = {}
+	status.text = "正在后台准备已绑骨 GLB；连线已保留，完成后即可运行衣服拆分"
+	character_mesh_worker_task = WorkerThreadPool.add_task(_character_mesh_worker_work.bind(character_mesh_active_request), false, "Maliang legacy character GLB export")
+
+func _character_mesh_worker_work(request: Dictionary):
+	var ok = _ensure_character_mesh(request.get("working_entry", {}))
+	character_mesh_worker_result = {"ok":ok}
+
+func _tick_character_mesh_preparation():
+	if character_mesh_worker_task < 0:
+		_start_next_character_mesh_preparation()
+		return
+	if not WorkerThreadPool.is_task_completed(character_mesh_worker_task): return
+	WorkerThreadPool.wait_for_task_completion(character_mesh_worker_task)
+	character_mesh_worker_task = -1
+	var request = character_mesh_active_request
+	var result = character_mesh_worker_result
+	character_mesh_active_request = {}
+	character_mesh_worker_result = {}
+	var source_entry: Dictionary = request.get("source_entry", {})
+	var converted: Dictionary = request.get("working_entry", {})
+	if result.get("ok", false) and not source_entry.is_empty():
+		source_entry["mesh_path"] = converted.get("mesh_path", "")
+		source_entry["mesh_snapshot"] = converted.get("mesh_snapshot", {})
+		character_mesh_prepare_count += 1
+		character_mesh_last_prepare_usec = Time.get_ticks_usec() - int(request.get("started", 0))
+		status.text = "已绑骨 GLB 后台准备完成，可以运行衣服拆分"
+	else:
+		status.text = "无法从现有角色生成已绑骨 GLB，请重新运行骨骼节点"
+	_start_next_character_mesh_preparation()
+
+func _ensure_character_mesh(entry: Dictionary) -> bool:
+	if entry.get("type", "") != "character": return false
+	var existing_snapshot = entry.get("mesh_snapshot", {})
+	if existing_snapshot is Dictionary and not existing_snapshot.is_empty() and str(existing_snapshot.get("extension", "")).to_lower() == ".glb": return true
+	var existing_path = str(entry.get("mesh_path", ""))
+	if not existing_path.is_empty() and FileAccess.file_exists(existing_path):
+		var existing = _snapshot_file(existing_path)
+		if not existing.is_empty() and str(existing.get("extension", "")) == ".glb":
+			entry["mesh_snapshot"] = existing
+			return true
+	var character_path = str(entry.get("path", ""))
+	if character_path.get_extension().to_lower() != "tscn" or not FileAccess.file_exists(character_path): return false
+	var packed = ResourceLoader.load(character_path,"PackedScene",ResourceLoader.CACHE_MODE_IGNORE)
+	if not packed is PackedScene: return false
+	var scene = packed.instantiate() as Node3D
+	if scene == null: return false
+	# Legacy characters only embedded the TSCN. Materialize their rigged GLB once,
+	# then store the snapshot back into the same preview-history entry.
+	var revision = str(entry.get("artifact", {}).get("revision", FileAccess.get_sha256(character_path)))
+	var directory = state_dir.path_join("character-mesh")
+	if DirAccess.make_dir_recursive_absolute(directory) != OK:
+		scene.free()
+		return false
+	var mesh_path = directory.path_join(revision.validate_filename()+".glb")
+	var document = GLTFDocument.new()
+	var state = GLTFState.new()
+	if not FileAccess.file_exists(mesh_path):
+		if document.append_from_scene(scene,state) != OK or document.write_to_filesystem(state,mesh_path) != OK:
+			scene.free()
+			return false
+	elif document.append_from_file(mesh_path,state) != OK:
+		scene.free()
+		return false
+	scene.free()
+	var snapshot = _snapshot_file(mesh_path)
+	if snapshot.is_empty(): return false
+	entry["mesh_path"] = mesh_path
+	entry["mesh_snapshot"] = snapshot
+	return true
+
 func _artifact_images(entry: Dictionary) -> Array:
 	var images = entry.get("images", [])
 	if images is Array and not images.is_empty(): return images
@@ -1448,15 +1637,39 @@ func _create_artifact_node(data: Dictionary, entry: Dictionary):
 func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: int):
 	var source_id = str(data.id)
 	var key = _mesh_artifact_key(source_id, entry)
-	var is_garment = str(entry.get("provenance", {}).get("artifact_role", "")) == "garment"
+	var provenance = entry.get("provenance", {})
+	var artifact_role = str(provenance.get("artifact_role", ""))
+	var is_garment = artifact_role == "garment"
+	var is_garment_collection = artifact_role == "garment_collection"
 	var garment_label = str(entry.get("label", entry.get("provenance", {}).get("garment_label", "衣服")))
+	var garment_state = str(entry.get("provenance", {}).get("garment_state", "surface_split"))
+	var is_wearable_shell = is_garment and garment_state == "wearable_shell"
+	var is_open_wearable = is_garment and garment_state == "wearable_open"
 	var artifact_id = "artifact_%s_garment_%03d" % [source_id, attempt] if is_garment else "artifact_%s_round_%03d" % [source_id, attempt]
 	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
 	var node = GraphNode.new()
 	node.name = artifact_id
-	node.title = "◇ 衣服生成物 · " + garment_label if is_garment else "◇ Mesh 生成物 · 第 %d 轮" % attempt
+	if is_wearable_shell:
+		node.title = "◇ 完整衣服 · " + garment_label
+	elif is_open_wearable:
+		node.title = "◇ 独立衣服 · 开放边界 · " + garment_label
+	elif is_garment:
+		node.title = "◇ 衣服表面片段 · " + garment_label
+	elif is_garment_collection:
+		node.title = "◇ 完整衣服集合" if str(provenance.get("operation", "")) == "reconstruct_wearable_garment_shell" else "◇ 衣服表面集合"
+	else:
+		node.title = "◇ Mesh 生成物 · 第 %d 轮" % attempt
 	node.position_offset = Vector2(data.x + 340, data.y + (attempt - 1) * 180)
-	node.tooltip_text = "双击放大这件衣服；可独立保存并作为固定衣服输入连接到下游节点" if is_garment else "双击放大本轮 Mesh；可独立保存并作为固定轮次输入连接到下游节点"
+	if is_wearable_shell:
+		node.tooltip_text = "独立封闭衣服壳；仍需视觉、目标骨架适配和动画验收"
+	elif is_open_wearable:
+		node.tooltip_text = "独立衣服表面，保留蒙皮；开放边界，不是封闭壳，仍需视觉与适配验收"
+	elif is_garment:
+		node.tooltip_text = "仅为源模型表面片段，不是可独立换装的完整衣服"
+	elif is_garment_collection:
+		node.tooltip_text = "集合仅包含已通过覆盖与封闭检查的项；未完成项保留在运行记录中"
+	else:
+		node.tooltip_text = "双击放大本轮 Mesh；可独立保存并作为固定轮次输入连接到下游节点"
 	node.set_meta("maliang_artifact", true)
 	node.set_meta("artifact_source", source_id)
 	node.set_meta("artifact_key", key)
@@ -1467,10 +1680,17 @@ func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: in
 	var review_text = "已生成 GLB"
 	if entry.get("review_passed", null) == true: review_text = "视觉审核通过"
 	elif entry.get("review_passed", null) == false: review_text = "视觉审核未通过"
-	if is_garment:
+	if is_wearable_shell:
 		var review_state = str(entry.get("provenance", {}).get("review_state", "needs_review"))
-		review_text = {"automatic":"自动识别 · 待视觉审核", "confirmed":"选择已确认 · 待视觉审核", "needs_review":"需要审核选择"}.get(review_state, "待视觉审核")
+		review_text = "需复核分割与外观" if review_state == "needs_review" else "封闭壳 · 待视觉/适配审核"
 		summary.text = garment_label + " · " + review_text
+	elif is_open_wearable:
+		summary.text = garment_label + " · 开放边界 · 待视觉/适配审核"
+	elif is_garment:
+		summary.text = garment_label + " · 表面片段 · 不是完整衣服"
+	elif is_garment_collection:
+		var unresolved_count = provenance.get("unresolved", []).size()
+		summary.text = "%d 件完整衣服 · %d 项未完成 · 待审核" % [provenance.get("garment_count", 0), unresolved_count]
 	else:
 		summary.text = "动态节点 · 来自 %s · %s" % [source_id, review_text]
 	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1490,7 +1710,14 @@ func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: in
 	var save_text = "保存衣服 GLB…" if is_garment else "保存本轮 GLB…"
 	var save_button = button(node, save_text, _save_mesh_artifact.bind(key))
 	save_button.name = "SaveMeshArtifact"
-	save_button.tooltip_text = "另存这件衣服的原始 GLB，不覆盖其他产物" if is_garment else "另存本轮原始 GLB，不覆盖其他轮次"
+	if is_wearable_shell:
+		save_button.tooltip_text = "另存独立封闭衣服壳；尚未验证目标骨架适配和动画"
+	elif is_open_wearable:
+		save_button.tooltip_text = "另存独立衣服表面；开放边界，尚未验证视觉、适配和动画"
+	elif is_garment:
+		save_button.tooltip_text = "另存源模型表面片段；不是完整换装衣服"
+	else:
+		save_button.tooltip_text = "另存本轮原始 GLB，不覆盖其他轮次"
 	graph.add_child(node)
 	thumbnail.show_mesh(str(entry.get("path", "")))
 	node.gui_input.connect(_artifact_preview_input.bind(key, 0, node))
@@ -1506,7 +1733,7 @@ func _create_character_artifact_node(data: Dictionary, entry: Dictionary):
 	node.name = artifact_id
 	node.title = "◇ 人形17骨骼生成物"
 	node.position_offset = Vector2(data.x + 340,data.y)
-	node.tooltip_text = "17 根解剖骨＋独立 root；双击进入骨骼绑定页签"
+	node.tooltip_text = "17 根解剖骨＋独立 root；双击进入骨骼绑定页签；输出已绑骨 GLB 到衣服拆分"
 	node.set_meta("maliang_artifact",true)
 	node.set_meta("artifact_source",source_id)
 	node.set_meta("artifact_key",key)
@@ -1517,7 +1744,7 @@ func _create_character_artifact_node(data: Dictionary, entry: Dictionary):
 	summary.text = "能力受限 · 可编辑但 ROM 未全通过" if limited else "ROM 已验证 · 可继续绑定调整"
 	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	node.add_child(summary)
-	node.set_slot(0,true,PORT_DYNAMIC,PORT_COLORS[PORT_CHARACTER],false,0,PORT_COLORS[PORT_CHARACTER])
+	node.set_slot(0,true,PORT_CHARACTER,PORT_COLORS[PORT_CHARACTER],true,PORT_MESH,PORT_COLORS[PORT_MESH])
 	var thumbnail = preload("res://addons/ainative/mesh_artifact_preview.gd").new()
 	thumbnail.name = "ArtifactCharacterPreview"
 	node.add_child(thumbnail)
@@ -1733,46 +1960,7 @@ func rebuild(layout_artifacts: bool = true):
 			graph.remove_child(child)
 			child.queue_free()
 	for data in nodes:
-		var node = GraphNode.new()
-		node.name = data.id
-		node.title = data.id + " / " + _template_display_name(data)
-		node.position_offset = Vector2(data.x, data.y)
-		node.set_meta("maliang_template_boundary", WorkflowTemplate.is_fixed_node(data))
-		var label = Label.new()
-		label.name = 'GeneratorDescription'
-		label.text = _generator_description(data)
-		node.add_child(label)
-		var type_row = HBoxContainer.new()
-		type_row.name = 'PortTypes'
-		node.add_child(type_row)
-		var input_label = Label.new()
-		input_label.name = 'InputType'
-		input_label.text = "输入：" + input_type_name(data)
-		input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		if input_kind(data) == PORT_TEXT:
-			input_label.text += "（参数）"
-			input_label.tooltip_text = "文本由当前节点的提示词参数提供"
-		type_row.add_child(input_label)
-		var output_label = Label.new()
-		output_label.name = 'OutputType'
-		output_label.text = "输出：" + port_type_name(output_kind(data))
-		output_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		type_row.add_child(output_label)
-		var kind = str(data.get("type", "copy"))
-		node.set_slot(1, kind != TEMPLATE_INPUT and input_kind(data) != PORT_TEXT, input_kind(data), PORT_COLORS[input_kind(data)], kind != TEMPLATE_OUTPUT, output_kind(data), PORT_COLORS[output_kind(data)])
-		graph.add_child(node)
-		if not WorkflowTemplate.is_boundary_kind(kind):
-			var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
-			run_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		if _image_queue_node(data) and not _queue_only_node(data):
-			var set_label = Label.new()
-			set_label.name = 'ImageSetOutputType'
-			set_label.text = "输出：图片队列（有序）"
-			set_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-			node.add_child(set_label)
-			node.set_slot(3, false, 0, PORT_COLORS[PORT_IMAGE], true, PORT_IMAGE_SET, PORT_COLORS[PORT_IMAGE_SET])
-		node.node_selected.connect(select_node.bind(data.id))
-		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
+		_create_formal_node(data)
 	var mesh_chains: Dictionary = {}
 	for data in nodes:
 		var source_id = str(data.id)
@@ -1815,21 +2003,44 @@ func rebuild(layout_artifacts: bool = true):
 		else:
 			graph.connect_node(source_id, 0, str(record.id), 0)
 	for edge in edges:
-		var source = nodes.filter(func(n): return n.id == edge.from)[0]
-		var from_port = 1 if edge.get("output", "result") == "image_set" and not _queue_only_node(source) else 0
-		if edge.has("artifact"):
-			var selected_key = _mesh_artifact_key(str(edge.from), {"artifact": edge.artifact})
-			if artifact_nodes.has(selected_key):
-				graph.connect_node(str(artifact_nodes[selected_key].id), 0, edge.to, 0)
-				continue
-		if artifact_nodes.has(edge.from):
-			graph.connect_node(str(artifact_nodes[edge.from].id), 0, edge.to, 0)
-		elif not mesh_chains.get(edge.from, []).is_empty() and str(source.get("type", "")) != GARMENT_SPLIT:
-			var chain: Array = mesh_chains[edge.from]
-			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
-		else:
-			graph.connect_node(edge.from, from_port, edge.to, 0)
+		_connect_workflow_edge(edge, mesh_chains)
 	if layout_artifacts: _schedule_artifact_layout()
+
+func _visible_mesh_chain(source_id: String) -> Array:
+	var chain: Array = []
+	var entry = _latest_mesh_entry(source_id)
+	if entry.is_empty(): return chain
+	for iteration in _mesh_iterations(entry):
+		var key = _mesh_artifact_key(source_id, iteration)
+		if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "") == "mesh": chain.append(key)
+	return chain
+
+func _visual_edge_endpoints(edge: Dictionary, mesh_chains: Dictionary = {}) -> Dictionary:
+	var source = nodes.filter(func(n): return n.id == edge.from)[0]
+	var from_id = str(edge.from)
+	var from_port = 1 if edge.get("output", "result") == "image_set" and not _queue_only_node(source) else 0
+	if edge.has("artifact"):
+		var selected_key = _mesh_artifact_key(str(edge.from), {"artifact": edge.artifact})
+		if artifact_nodes.has(selected_key):
+			from_id = str(artifact_nodes[selected_key].id)
+			from_port = 0
+	elif artifact_nodes.has(edge.from):
+		from_id = str(artifact_nodes[edge.from].id)
+		from_port = 0
+	elif str(source.get("type", "")) != GARMENT_SPLIT:
+		var chain: Array = mesh_chains.get(edge.from, _visible_mesh_chain(str(edge.from)))
+		if not chain.is_empty():
+			from_id = str(artifact_nodes[chain.back()].id)
+			from_port = 0
+	return {"from": from_id, "from_port": from_port, "to": str(edge.to), "to_port": 0}
+
+func _connect_workflow_edge(edge: Dictionary, mesh_chains: Dictionary = {}):
+	var endpoints = _visual_edge_endpoints(edge, mesh_chains)
+	graph.connect_node(endpoints.from, endpoints.from_port, endpoints.to, endpoints.to_port)
+
+func _disconnect_workflow_edge(edge: Dictionary):
+	var endpoints = _visual_edge_endpoints(edge)
+	graph.disconnect_node(endpoints.from, endpoints.from_port, endpoints.to, endpoints.to_port)
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -1960,10 +2171,15 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	for key in artifact_nodes:
 		var record: Dictionary = artifact_nodes[key]
 		if record.id != str(from): continue
-		if record.get("kind", "image") == "character":
-			status.text = "人形角色是终端预览产物，请双击进入骨骼绑定或使用下载按钮"
-			return
-		if record.get("kind", "image") == "image":
+		var artifact_kind = str(record.get("kind", "image"))
+		var character_preparing = false
+		if artifact_kind == "character":
+			if target_kind != GARMENT_SPLIT:
+				status.text = "已绑骨角色生成物只能连接到衣服拆分；绑定调整请双击生成物"
+				return
+			character_preparing = not _character_mesh_ready(record.entry)
+			if character_preparing: _request_character_mesh(record.entry)
+		elif artifact_kind == "image":
 			# Image artifacts adapt the latest formal output; keep the executable edge
 			# on the source node so queue typing, persistence and cache reuse stay intact.
 			source_node = nodes.filter(func(n): return n.id == str(record.source))
@@ -1971,8 +2187,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 			from = StringName(record.source)
 			from_port = 1 if record.entry.has("images") and not _queue_only_node(source_node[0]) else 0
 			break
-		if record.get("kind", "image") != "mesh": return
-		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
+		elif target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
 			status.text = "Mesh 生成物只能连接到 Mesh 输入"
 			return
 		for edge in edges:
@@ -1985,8 +2200,9 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 			"artifact": record.entry.get("artifact", {}).duplicate(true),
 			"iteration": int(record.get("attempt", 1))
 		})
-		rebuild()
-		status.text = "已连接第 %d 轮 Mesh；下游将使用这一轮的固定 GLB 快照" % int(record.get("attempt", 1))
+		_connect_workflow_edge(edges.back())
+		status.text = "已连接已绑骨角色；衣服拆分将使用固定 GLB 快照并保留骨架和蒙皮" if artifact_kind == "character" else "已连接第 %d 轮 Mesh；下游将使用这一轮的固定 GLB 快照" % int(record.get("attempt", 1))
+		if character_preparing: status.text = "已连接已绑骨角色；正在后台准备 GLB，完成后即可运行衣服拆分"
 		return
 	if source_node.is_empty(): return
 	if output_kind(source_node[0])==PORT_CHARACTER:
@@ -2003,7 +2219,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	for edge in edges:
 		if edge.to == to: return
 	edges.append({"from": str(from), "to": str(to), "input": "source", "output": output})
-	rebuild()
+	_connect_workflow_edge(edges.back())
 
 func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
 	var source_id = str(from)
@@ -2013,8 +2229,13 @@ func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
 		if artifact_nodes[key].id == source_id:
 			source_id = str(artifact_nodes[key].source)
 			break
-	edges = edges.filter(func(e): return not (e.from == source_id and e.to == target_id))
-	rebuild()
+	var remaining: Array = []
+	for edge in edges:
+		if edge.from == source_id and edge.to == target_id:
+			_disconnect_workflow_edge(edge)
+		else:
+			remaining.append(edge)
+	edges = remaining
 
 func delete_node():
 	if creating or auto_step or not jobs.is_empty():
@@ -2184,15 +2405,35 @@ func execution_model(reuse_cache: bool = true, rerun_node: String = "") -> Dicti
 		if not edge.has("artifact"): continue
 		var entry = _find_output_entry(str(edge.from), edge.artifact)
 		if entry.is_empty():
-			status.text = "所选 Mesh 轮次已不可用，请重新连接生成物"
+			status.text = "所选生成物已不可用，请重新连接"
 			return {}
-		var snapshot: Dictionary = entry.get("snapshot", {}).duplicate(true)
-		if snapshot.is_empty(): snapshot = _snapshot_file(str(entry.get("path", "")))
-		if snapshot.is_empty():
-			status.text = "无法读取所选 Mesh 轮次，请重新预览后再运行"
+		var character = entry.get("type", "") == "character"
+		if character and not _character_mesh_ready(entry):
+			_request_character_mesh(entry)
+			status.text = "正在后台准备已绑骨 GLB，请完成后重新运行衣服拆分"
 			return {}
+		var snapshot: Dictionary = entry.get("mesh_snapshot" if character else "snapshot", {}).duplicate(true)
+		if snapshot.is_empty(): snapshot = _snapshot_file(str(entry.get("mesh_path" if character else "path", "")))
+		if snapshot.is_empty() or character and str(snapshot.get("extension", "")).to_lower() != ".glb":
+			status.text = "无法读取所选已绑骨 GLB，请重新运行骨骼节点" if character else "无法读取所选 Mesh 轮次，请重新预览后再运行"
+			return {}
+		if character:
+			# The saved edge addresses the character; Executor consumes its GLB identity.
+			edge["artifact"] = {"id":str(entry.get("artifact",{}).get("id",""))+"-mesh","revision":str(snapshot.content_sha256)}
 		snapshot["provenance"] = entry.get("provenance", {}).duplicate(true)
 		edge["artifact_snapshot"] = snapshot
+	if reuse_cache:
+		var materialized_characters: Array = []
+		for data in executable.nodes:
+			if data.get("type", "") != HUMANOID_RIG: continue
+			var node_id = str(data.id)
+			if not executable.edges.any(func(edge): return str(edge.from) == node_id and edge.has("artifact")): continue
+			if _reusable_character_entry(node_id).is_empty():
+				status.text = "请先运行骨骼节点，生成已绑骨 GLB 后再运行衣服拆分"
+				return {}
+			materialized_characters.append(node_id)
+		executable.nodes = executable.nodes.filter(func(node): return str(node.id) not in materialized_characters)
+		executable.edges = executable.edges.filter(func(edge): return str(edge.to) not in materialized_characters)
 	if not reuse_cache: return executable
 	var cached: Dictionary = {}
 	for data in executable.nodes:
@@ -2277,6 +2518,9 @@ func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
 		var source_snapshot = entry.get("source_snapshot",{}).duplicate(true)
 		if source_snapshot.is_empty(): return {}
 		saved["source_snapshot"] = source_snapshot
+		var mesh_snapshot = entry.get("mesh_snapshot",{}).duplicate(true)
+		if mesh_snapshot.is_empty(): mesh_snapshot = _snapshot_file(str(entry.get("mesh_path","")))
+		if not mesh_snapshot.is_empty(): saved["mesh_snapshot"] = mesh_snapshot
 	if entry.has("images"):
 		if not entry.images is Array or entry.images.is_empty(): return {}
 		var images: Array = []
@@ -2432,6 +2676,9 @@ func _remember_workflow_path() -> bool:
 	return local.save(state_dir.path_join("local.cfg")) == OK
 
 func save_graph():
+	if is_workflow_opening():
+		status.text = "正在打开工作流，请完成后再保存"
+		return
 	if not apply_fields(): return
 	_capture_active_document()
 	if path_edit.text.get_extension().to_lower() != "json":
@@ -2483,7 +2730,7 @@ func clear_embedded():
 				data.erase(field + "_snapshots")
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
 
-func _valid_input_snapshots(value, uncapped: bool = false, extra_extensions: Array = []) -> bool:
+func _valid_input_snapshots(value, uncapped: bool = false, extra_extensions: Array = [], validation_cache: Dictionary = {}) -> bool:
 	if not value is Array or (not uncapped and value.size() > 8): return false
 	var allowed_extensions = [".png", ".jpg", ".jpeg", ".glb", ".gltf"]
 	allowed_extensions.append_array(extra_extensions)
@@ -2492,17 +2739,27 @@ func _valid_input_snapshots(value, uncapped: bool = false, extra_extensions: Arr
 		for key in ["content_base64", "content_sha256", "extension"]:
 			if not snapshot.get(key) is String: return false
 		if snapshot.extension.to_lower() not in allowed_extensions: return false
+		var cached: Array = validation_cache.get(snapshot.content_sha256, [])
+		var cache_hit = false
+		for valid in cached:
+			if valid is Dictionary and valid.get("extension", "").to_lower() == snapshot.extension.to_lower() and valid.get("content_base64", "") == snapshot.content_base64:
+				cache_hit = true
+				break
+		if cache_hit: continue
+		snapshot_validation_decode_count += 1
 		var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
 		if bytes.is_empty(): return false
 		var hash_context = HashingContext.new()
 		if hash_context.start(HashingContext.HASH_SHA256) != OK: return false
 		if hash_context.update(bytes) != OK or hash_context.finish().hex_encode() != snapshot.content_sha256: return false
+		cached.append(snapshot)
+		validation_cache[snapshot.content_sha256] = cached
 	return true
 
 func _valid_artifact_reference(value) -> bool:
 	return value is Dictionary and value.get("id") is String and value.get("revision") is String and not value.id.is_empty() and not value.revision.is_empty()
 
-func _valid_output_entry(entry, node_id: String) -> bool:
+func _valid_output_entry(entry, node_id: String, validation_cache: Dictionary = {}) -> bool:
 	if not entry is Dictionary or not entry.has_all(["type", "preview_token", "run", "node", "artifact", "snapshot"]): return false
 	for key in ["type", "preview_token", "run", "node"]:
 		if not entry.get(key) is String: return false
@@ -2510,33 +2767,35 @@ func _valid_output_entry(entry, node_id: String) -> bool:
 	if entry.has("cache_fingerprint") and not entry.cache_fingerprint is String: return false
 	if entry.has("provenance") and not entry.provenance is Dictionary: return false
 	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
-	if not _valid_input_snapshots([entry.snapshot],false,[".tscn"]): return false
+	if not _valid_input_snapshots([entry.snapshot], false, [".tscn"], validation_cache): return false
 	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
 	var mesh = entry.type == "mesh" and entry.snapshot.extension.to_lower() in [".glb", ".gltf"]
 	var character = entry.type == "character" and entry.snapshot.extension.to_lower()==".tscn"
 	if character:
-		if not entry.get("source_snapshot") is Dictionary or not _valid_input_snapshots([entry.source_snapshot]): return false
+		if not entry.get("source_snapshot") is Dictionary or not _valid_input_snapshots([entry.source_snapshot], false, [], validation_cache): return false
 		if entry.source_snapshot.extension.to_lower() not in [".glb",".gltf"] or entry.has("images") or entry.has("iterations"): return false
+		if entry.has("mesh_snapshot") and (not entry.mesh_snapshot is Dictionary or not _valid_input_snapshots([entry.mesh_snapshot], false, [], validation_cache) or entry.mesh_snapshot.extension.to_lower() != ".glb"): return false
 	if not image and not mesh and not character: return false
 	if entry.has("images"):
 		if not entry.images is Array or entry.images.is_empty(): return false
 		for item in entry.images:
-			if not item is Dictionary or item.has("images") or not item.get("label") is String or not _valid_output_entry(item, node_id): return false
+			if not item is Dictionary or item.has("images") or not item.get("label") is String or not _valid_output_entry(item, node_id, validation_cache): return false
 	if entry.has("iterations"):
 		if not mesh or not entry.iterations is Array or entry.iterations.is_empty(): return false
 		for item in entry.iterations:
 			if not item is Dictionary or item.has("images") or item.has("iterations") or not item.get("label") is String: return false
 			if not (item.get("attempt", 0) is int or item.get("attempt", 0) is float) or int(item.attempt) < 1: return false
 			if item.get("review_passed", null) != null and not item.review_passed is bool: return false
-			if not _valid_output_entry(item, node_id): return false
+			if not _valid_output_entry(item, node_id, validation_cache): return false
 	return true
 
 func _valid_output_history(value, by_id: Dictionary) -> bool:
 	if not value is Dictionary: return false
+	var validation_cache: Dictionary = {}
 	for node_id in value:
 		if not node_id is String or not by_id.has(node_id) or not value[node_id] is Array: return false
 		for entry in value[node_id]:
-			if not _valid_output_entry(entry, node_id): return false
+			if not _valid_output_entry(entry, node_id, validation_cache): return false
 	return true
 
 func _output_history_has_artifact(history: Dictionary, source_id: String, reference: Dictionary) -> bool:
@@ -2545,9 +2804,12 @@ func _output_history_has_artifact(history: Dictionary, source_id: String, refere
 	return false
 
 func _materialize_output_snapshot(snapshot: Dictionary, directory: String) -> String:
-	var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
 	var path = directory.path_join(snapshot.content_sha256 + snapshot.extension.to_lower())
+	# Validation already decoded the embedded bytes. A verified content-addressed cache hit must not decode them again.
 	if FileAccess.file_exists(path): return path if FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
+	snapshot_materialize_decode_count += 1
+	var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
+	if bytes.is_empty(): return ""
 	var temporary = path + "." + str(Time.get_ticks_usec()) + ".tmp"
 	var output = FileAccess.open(temporary, FileAccess.WRITE)
 	if output == null: return ""
@@ -2598,6 +2860,11 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 		if source_path.is_empty(): return null
 		entry["source_path"] = source_path
 		entry["source_snapshot"] = saved.source_snapshot.duplicate(true)
+		if saved.has("mesh_snapshot"):
+			var mesh_path = _materialize_output_snapshot(saved.mesh_snapshot,directory)
+			if mesh_path.is_empty(): return null
+			entry["mesh_path"] = mesh_path
+			entry["mesh_snapshot"] = saved.mesh_snapshot.duplicate(true)
 	if saved.has("images"):
 		var images: Array = []
 		for item in saved.images:
@@ -2641,25 +2908,26 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	var source_kind = by_id[edge.from].get("type", "copy")
 	if target_kind.begins_with("text_") or target_kind == TEMPLATE_INPUT or source_kind == TEMPLATE_OUTPUT: return false
 	var output = edge.get("output", "result")
-	if output_kind(by_id[edge.from])==PORT_CHARACTER: return false
+	var source_port = output_kind(by_id[edge.from])
 	if edge.has("artifact"):
 		return (
 			output == "result"
-			and target_kind in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT]
-			and output_kind(by_id[edge.from]) == PORT_MESH
+			and (target_kind == GARMENT_SPLIT if source_port == PORT_CHARACTER else target_kind in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT])
+			and source_port in [PORT_MESH, PORT_CHARACTER]
 			and _valid_artifact_reference(edge.artifact)
 			and edge.artifact.size() == 2
 			and (edge.get("iteration", 0) is int or edge.get("iteration", 0) is float)
 			and int(edge.get("iteration", 0)) > 0
 			and not edge.has("artifact_snapshot")
 		)
+	if source_port==PORT_CHARACTER: return false
 	if output == "image_set":
 		return _image_queue_node(by_id[edge.from]) and _accepts_image_set(by_id[edge.to])
 	if _queue_only_node(by_id[edge.from]): return false
 	var flexible = target_kind in ["copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT] or source_kind in [CUSTOM_TEMPLATE, TEMPLATE_OUTPUT]
 	return output == "result" and (flexible or (_accepts_image_set(by_id[edge.to]) and _accepts_single_image(by_id[edge.from], by_id[edge.to])) or (not _accepts_image_set(by_id[edge.to]) and output_kind(by_id[edge.from]) == input_kind(by_id[edge.to])))
 
-func _validated_node_ids(graph: Dictionary, allow_boundaries: bool):
+func _validated_node_ids(graph: Dictionary, allow_boundaries: bool, validate_snapshots: bool = true):
 	var by_id: Dictionary = {}
 	for n in graph.get("nodes", []):
 		if not n is Dictionary or not n.has_all(["id", "source", "image_context", "text", "parameters", "x", "y"]):
@@ -2696,17 +2964,26 @@ func _validated_node_ids(graph: Dictionary, allow_boundaries: bool):
 			if not paths is Array or (not reviewed_mesh and paths.size() > 8) or paths.any(func(path): return not path is String):
 				status.text = "输入路径列表无效"
 				return null
-			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh):
+			if validate_snapshots and n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh):
 				status.text = "输入快照列表无效"
 				return null
 			if not paths.is_empty() and not n.get(field + "_snapshots", []).is_empty() and paths.size() != n[field + "_snapshots"].size():
 				status.text = "输入路径与快照的数量不一致"
 				return null
-			if n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]):
+			if validate_snapshots and n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]):
 				status.text = "输入快照无效"
 				return null
 		by_id[n.id] = n
 	return by_id
+
+func _validate_embedded_inputs(graph: Dictionary) -> bool:
+	# Runs in the open worker after structural validation; no UI state is touched here.
+	for n in graph.get("nodes", []):
+		var reviewed_mesh = n.get("type", "") == "image_to_mesh" and n.get("version", "1") == "2"
+		for field in ["source", "image_context"]:
+			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh): return false
+			if n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]): return false
+	return true
 
 func _template_reference_error(graph: Dictionary, definitions: Dictionary, stack: Array = []) -> String:
 	for node in graph.get("nodes", []):
@@ -2718,69 +2995,72 @@ func _template_reference_error(graph: Dictionary, definitions: Dictionary, stack
 		if not nested.is_empty(): return nested
 	return ""
 
-func open_graph():
-	_invalidate_context()
-	if creating or auto_step or not jobs.is_empty():
-		status.text = "请等待当前运行结束或先取消，再打开工作流"
-		return
-	var value = JSON.parse_string(FileAccess.get_file_as_string(path_edit.text))
+func _prepare_open_graph(value) -> Dictionary:
 	if not value is Dictionary or not safe(value) or value.get("format") != 1 or not value.get("nodes") is Array or not value.get("edges") is Array:
 		status.text = "工作流无效"
-		return
+		return {}
 	var loaded_templates: Dictionary = {}
 	var template_values = value.get("custom_templates", [])
 	if not template_values is Array:
 		status.text = "自定义流程模板列表无效"
-		return
+		return {}
 	for definition in template_values:
 		if not definition is Dictionary or not definition.get("id") is String or not definition.get("name") is String or definition.id.is_empty() or not definition.id.is_valid_identifier() or definition.name.strip_edges().is_empty() or loaded_templates.has(definition.id) or not definition.get("nodes") is Array or not definition.get("edges") is Array:
 			status.text = "自定义流程模板定义无效"
-			return
-		if not WorkflowTemplate.has_valid_boundaries(definition) or _validated_node_ids(definition, true) == null: return
-		var template_by_id: Dictionary = _validated_node_ids(definition, true)
+			return {}
+		if not WorkflowTemplate.has_valid_boundaries(definition) or _validated_node_ids(definition, true, false) == null: return {}
+		var template_by_id: Dictionary = _validated_node_ids(definition, true, false)
 		var template_destinations: Array = []
 		for edge in definition.edges:
 			if not edge is Dictionary or edge.has("artifact") or not _valid_workflow_edge(edge, template_by_id) or edge.to in template_destinations:
 				status.text = "模板“%s”的连接端点或端口无效" % definition.name
-				return
+				return {}
 			template_destinations.append(edge.to)
 		loaded_templates[definition.id] = definition
-	var by_id = _validated_node_ids(value, false)
-	if by_id == null: return
+	var by_id = _validated_node_ids(value, false, false)
+	if by_id == null: return {}
 	var destinations = []
 	for e in value.edges:
 		if not e is Dictionary or not _valid_workflow_edge(e, by_id) or e.to in destinations:
 			status.text = "连接端点或端口无效"
-			return
+			return {}
 		destinations.append(e.to)
 	var reference_error = _template_reference_error(value, loaded_templates)
 	for template_id in loaded_templates:
 		if reference_error.is_empty(): reference_error = _template_reference_error(loaded_templates[template_id], loaded_templates, [template_id])
 	if not reference_error.is_empty():
 		status.text = reference_error
-		return
+		return {}
 	var saved_outputs = value.get("output_history", {})
-	if not _valid_output_history(saved_outputs, by_id):
-		status.text = "生成物快照无效"
-		return
 	for edge in value.edges:
 		if edge.has("artifact") and not _output_history_has_artifact(saved_outputs, str(edge.from), edge.artifact):
 			status.text = "生成物连线引用的轮次不存在"
-			return
-	var recovered_inputs = _restore_missing_input_paths(value.nodes, path_edit.text)
-	if recovered_inputs < 0:
-		status.text = "无法从快照恢复输入文件，已保留当前工作流"
-		return
-	for definition in loaded_templates.values():
-		var restored_template_inputs = _restore_missing_input_paths(definition.nodes, path_edit.text)
-		if restored_template_inputs < 0:
-			status.text = "无法恢复模板输入文件，已保留当前工作流"
-			return
+			return {}
+	return {"value": value, "loaded_templates": loaded_templates, "by_id": by_id, "saved_outputs": saved_outputs}
+
+func _restore_open_graph(request: Dictionary) -> Dictionary:
+	# Heavy byte validation and content-addressed file restoration run off the UI thread.
+	var value: Dictionary = request.value
+	if not _validate_embedded_inputs(value): return {"error": "输入快照无效"}
+	for definition in request.loaded_templates.values():
+		if not _validate_embedded_inputs(definition): return {"error": "模板输入快照无效"}
+	if not _valid_output_history(request.saved_outputs, request.by_id): return {"error": "生成物快照无效"}
+	var recovered_inputs = _restore_missing_input_paths(value.nodes, request.path)
+	if recovered_inputs < 0: return {"error": "无法从快照恢复输入文件，已保留当前工作流"}
+	for definition in request.loaded_templates.values():
+		var restored_template_inputs = _restore_missing_input_paths(definition.nodes, request.path)
+		if restored_template_inputs < 0: return {"error": "无法恢复模板输入文件，已保留当前工作流"}
 		recovered_inputs += restored_template_inputs
-	var restored_history = _restore_output_history(saved_outputs, path_edit.text)
-	if restored_history == null:
-		status.text = "无法恢复生成物，已保留当前工作流"
-		return
+	var restored_history = _restore_output_history(request.saved_outputs, request.path)
+	if restored_history == null: return {"error": "无法恢复生成物，已保留当前工作流"}
+	return {"restored_history": restored_history, "recovered_inputs": recovered_inputs}
+
+func _apply_open_graph(request: Dictionary, restored: Dictionary):
+	var value: Dictionary = request.value
+	var loaded_templates: Dictionary = request.loaded_templates
+	var saved_outputs: Dictionary = request.saved_outputs
+	var restored_history: Dictionary = restored.restored_history
+	var recovered_inputs: int = restored.recovered_inputs
 	preview_history = restored_history
 	artifact_preview_queue.clear()
 	humanoid_waiting.clear()
@@ -2808,6 +3088,7 @@ func open_graph():
 	selected_id = ""
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
+	path_edit.text = request.path
 	var remembered = _remember_workflow_path()
 	status.text = RETIRED_GPT_MESH_NOTICE if nodes.any(_retired_mesh_node) else "已重新打开工作流"
 	if not saved_outputs.is_empty() and not nodes.any(_retired_mesh_node):
@@ -2817,6 +3098,85 @@ func open_graph():
 	if recovered_inputs > 0: status.text += "；已从快照恢复 " + str(recovered_inputs) + " 个输入文件路径"
 	status.text += "；文件：" + path_edit.text
 	if not remembered: status.text += "（未能记录最近路径）"
+
+func open_graph():
+	_invalidate_context()
+	if creating or auto_step or not jobs.is_empty() or is_workflow_opening() or is_character_mesh_preparing():
+		status.text = "请等待当前运行或后台资源准备结束，再打开工作流"
+		return
+	var value = JSON.parse_string(FileAccess.get_file_as_string(path_edit.text))
+	var request = _prepare_open_graph(value)
+	if request.is_empty(): return
+	request["path"] = path_edit.text
+	var restored = _restore_open_graph(request)
+	if restored.has("error"):
+		status.text = restored.error
+		return
+	_apply_open_graph(request, restored)
+
+func is_workflow_opening() -> bool:
+	return workflow_open_worker_task >= 0 or not workflow_open_active_request.is_empty() or not workflow_open_pending_request.is_empty()
+
+func open_graph_async() -> bool:
+	_invalidate_context()
+	if creating or auto_step or not jobs.is_empty() or controller.is_busy() or is_character_mesh_preparing():
+		status.text = "请等待当前运行或后台资源准备结束，再打开工作流"
+		return false
+	workflow_open_serial += 1
+	workflow_open_pending_request = {"serial": workflow_open_serial, "path": path_edit.text}
+	status.text = "正在后台读取工作流…"
+	_start_workflow_open_decode()
+	return true
+
+func _start_workflow_open_decode():
+	if workflow_open_worker_task >= 0 or workflow_open_pending_request.is_empty(): return
+	workflow_open_active_request = workflow_open_pending_request
+	workflow_open_pending_request = {}
+	workflow_open_stage = "decode"
+	workflow_open_worker_result = {}
+	workflow_open_worker_task = WorkerThreadPool.add_task(_workflow_open_decode_task.bind(workflow_open_active_request), false, "Maliang workflow JSON decode")
+
+func _workflow_open_decode_task(request: Dictionary):
+	workflow_open_worker_result = {"value": JSON.parse_string(FileAccess.get_file_as_string(request.path))}
+
+func _workflow_open_restore_task(request: Dictionary):
+	workflow_open_worker_result = _restore_open_graph(request)
+
+func _tick_workflow_open():
+	if workflow_open_worker_task < 0 or not WorkerThreadPool.is_task_completed(workflow_open_worker_task): return
+	WorkerThreadPool.wait_for_task_completion(workflow_open_worker_task)
+	workflow_open_worker_task = -1
+	var completed_stage = workflow_open_stage
+	var request = workflow_open_active_request
+	var result = workflow_open_worker_result
+	workflow_open_active_request = {}
+	workflow_open_stage = ""
+	workflow_open_worker_result = {}
+	if int(request.get("serial", -1)) != workflow_open_serial:
+		_start_workflow_open_decode()
+		return
+	if completed_stage == "decode":
+		var started = Time.get_ticks_usec()
+		var prepared = _prepare_open_graph(result.get("value"))
+		workflow_open_last_prepare_usec = Time.get_ticks_usec() - started
+		if prepared.is_empty():
+			_start_workflow_open_decode()
+			return
+		workflow_open_active_request = request.duplicate()
+		workflow_open_active_request.merge(prepared, true)
+		workflow_open_stage = "restore"
+		status.text = "正在后台校验并恢复工作流资源…"
+		workflow_open_worker_task = WorkerThreadPool.add_task(_workflow_open_restore_task.bind(workflow_open_active_request), false, "Maliang workflow resource restore")
+		return
+	if result.has("error"):
+		status.text = result.error
+		_start_workflow_open_decode()
+		return
+	var started = Time.get_ticks_usec()
+	_apply_open_graph(request, result)
+	workflow_open_last_apply_usec = Time.get_ticks_usec() - started
+	workflow_open_apply_count += 1
+	_start_workflow_open_decode()
 
 func _reject_missing_run_resources(target: String = "", reuse_cache: bool = true) -> bool:
 	var pending: Array = nodes.map(func(node): return str(node.id)) if target.is_empty() else [target]
@@ -3095,6 +3455,10 @@ func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
 	if source_snapshot.is_empty():
 		_fail_humanoid_text_result(result,"无法保存源 GLB 快照，角色结果未加入工作流。")
 		return
+	var mesh_snapshot = _snapshot_file(str(result.get("mesh_path","")))
+	if mesh_snapshot.is_empty() or str(mesh_snapshot.get("content_sha256","")) != str(result.get("mesh_sha256","")):
+		_fail_humanoid_text_result(result,"无法保存或校验已绑骨 GLB 快照，角色结果未加入工作流。")
+		return
 	var attempt_summaries: Array = []
 	for attempt in result.get("attempts",[]):
 		attempt_summaries.append({"attempt":attempt.get("attempt",0),"repair":attempt.get("repair",""),"validation":attempt.get("validation",{}).duplicate(true)})
@@ -3106,6 +3470,8 @@ func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
 		"path":str(result.path),
 		"source_path":source_path,
 		"source_snapshot":source_snapshot,
+		"mesh_path":str(result.mesh_path),
+		"mesh_snapshot":mesh_snapshot,
 		"run":result_run,
 		"node":id,
 		"description":JSON.stringify(matching[0].get("parameters",{}),"  ",true,true),
@@ -3242,8 +3608,10 @@ func start_run(force_rerun: bool = false):
 			if not input_entry.is_empty(): local_inputs.append([str(data.id),input_entry])
 	var reused = reused_nodes.size()
 	var local_node_ids = executable.nodes.filter(func(node): return node.get("type","")==HUMANOID_RIG).map(func(node): return str(node.id))
+	var pending_local_node_ids = local_node_ids.filter(func(node_id): return force_rerun or _reusable_character_entry(str(node_id)).is_empty())
 	executable.nodes = executable.nodes.filter(func(node): return node.get("type","")!=HUMANOID_RIG)
-	executable.edges = executable.edges.filter(func(edge): return edge.from not in local_node_ids and edge.to not in local_node_ids)
+	# Cached character artifacts are immutable Mesh inputs for downstream garment nodes.
+	executable.edges = executable.edges.filter(func(edge): return edge.to not in local_node_ids and edge.from not in pending_local_node_ids)
 	if force_rerun:
 		for data in executable.nodes: data["ignore_cache"] = true
 	_configure_controller()
@@ -3279,6 +3647,10 @@ func retry_node():
 
 func _configure_controller():
 	var configuration = {"python": python_edit.text.strip_edges(), "script": host_edit.text.strip_edges(), "database": db, "factory": factory_edit.text, "state_dir": state_dir, "use_service": _uses_gui_service(), "service_config": service_config_path}
+	configuration["local_runtime"] = {
+		"godot_path": OS.get_executable_path(),
+		"render_script": ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join("mesh_review.gd"))
+	}
 	if bundled_runtime.has("python"):
 		configuration.bundled_python = bundled_runtime.python
 	if bundled_runtime.has("root"):
@@ -3311,6 +3683,8 @@ func _queue_completed_image_previews(data: Dictionary):
 func _process(delta):
 	controller.tick()
 	_tick_preview_loading(delta)
+	_tick_workflow_open()
+	_tick_character_mesh_preparation()
 	# Full-workflow runs also refresh every image artifact, not only a preview target.
 	if not artifact_preview_queue.is_empty() and jobs.is_empty() and not creating and not auto_step and not run_id.is_empty():
 		var node_id = str(artifact_preview_queue.pop_front())
@@ -3884,6 +4258,20 @@ func confirm_publish():
 
 func _exit_tree():
 	_invalidate_preview_requests()
+	workflow_open_serial += 1
+	workflow_open_pending_request = {}
+	workflow_open_active_request = {}
+	workflow_open_stage = ""
+	if workflow_open_worker_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(workflow_open_worker_task)
+		workflow_open_worker_task = -1
+	workflow_open_worker_result = {}
+	character_mesh_pending_entries.clear()
+	character_mesh_active_request = {}
+	if character_mesh_worker_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(character_mesh_worker_task)
+		character_mesh_worker_task = -1
+	character_mesh_worker_result = {}
 	if preview_worker_task >= 0:
 		WorkerThreadPool.wait_for_task_completion(preview_worker_task)
 		preview_worker_task = -1
@@ -3891,7 +4279,7 @@ func _exit_tree():
 	controller.shutdown()
 
 func is_graph_busy() -> bool:
-	return controller.is_busy()
+	return controller.is_busy() or is_workflow_opening() or is_character_mesh_preparing()
 
 func _setup_context_controls():
 	context_menu = PopupMenu.new()
@@ -4011,7 +4399,7 @@ func node_run_blocker(id: String) -> String:
 			for path in _node_paths(data,"source"):
 				if not path.is_empty() and path.get_extension().to_lower()!="glb": return "衣服拆分需要自包含 GLB；已绑骨和静态模型均可（"+str(next_id)+"）"
 			var split_items = data.get("parameters", {}).get("items", [])
-			if not split_items is Array or split_items.is_empty(): return "请在衣服拆分节点中配置至少一件衣服及其 component_id 或审核三角面"
+			if not split_items is Array: return "衣服拆分的内部清单格式无效，请重新创建节点"
 		var reviewed_mesh = kind == "image_to_mesh" and data.get("version", "1") == "2"
 		if not reviewed_mesh and (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
@@ -4064,13 +4452,14 @@ func _popup_graph_menu(local_position: Vector2):
 
 func show_context_menu(local_position: Vector2):
 	if not graph.is_visible_in_tree(): return
-	# Persist the previous inspector before selecting a different context target.
-	if not selected_id.is_empty() and not apply_fields(): return
 	context_position = local_position
 	context_node_ids = []
 	context_connection = {}
 	context_artifact_source = ""
 	var hit = _node_at_context(local_position)
+	# Blank-canvas actions must remain available while an inspector draft is invalid.
+	# Only switching to another node needs to commit the previous inspector first.
+	if not hit.is_empty() and not selected_id.is_empty() and not apply_fields(): return
 	if not hit.is_empty():
 		var hit_node = graph.get_node(NodePath(hit)) as GraphNode
 		if hit_node.get_meta("maliang_artifact", false):
@@ -4250,8 +4639,8 @@ func create_context_node(kind: String):
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
-	# Adding a formal node must not re-layout existing artifacts and move it away from the pointer.
-	rebuild(false)
+	# Add only the new node; rebuilding would synchronously decode every artifact again.
+	_create_formal_node(data)
 	for child in graph.get_children():
 		if child is GraphNode: child.selected = str(child.name) == id
 	select_node(id)
@@ -4362,7 +4751,7 @@ func _open_workflow_path(selected_path: String):
 		return
 	path_edit.text = selected_path.strip_edges()
 	_update_workflow_path_display()
-	open_graph()
+	open_graph_async()
 
 func _workflow_action(action: int):
 	if action == CONTEXT_OPEN and is_graph_busy():
@@ -4381,7 +4770,7 @@ func _workflow_confirmed(selected_path: String = ""):
 		path_edit.text = selected_path
 		_update_workflow_path_display()
 	if workflow_mode == "save": save_graph()
-	elif workflow_mode == "open": open_graph()
+	elif workflow_mode == "open": open_graph_async()
 
 func _default_python_path(builtin: bool) -> String:
 	if bundled_runtime.has('python'): return bundled_runtime.python
@@ -4693,7 +5082,7 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == TEMPLATE_OUTPUT: return '连接模板最终输出 · 固定节点'
 	if _retired_mesh_node(data): return node_label(kind) + ' · GPT CLI 网格已下线'
 	if kind == HUMANOID_RIG: return '本机解剖模板 · 17 根解剖骨＋root · 实际 ROM 检查'
-	if kind == GARMENT_SPLIT: return '本机几何提取 · 已绑骨优先 · 保留原骨架和蒙皮'
+	if kind == GARMENT_SPLIT: return 'AI 多视角识别衣服 · 自动定位组件 · 本机提取并保留骨架蒙皮'
 	if kind == 'copy': return '本机离线复制'
 	var selected_model = str(data.get('model', '')) if not _using_legacy_service() else '高级自定义服务'
 	var description = node_label(kind) + ' · ' + (selected_model if not selected_model.is_empty() else 'CLI 默认／待选择模型')
@@ -4950,7 +5339,8 @@ func save_service_settings():
 	factory_edit.text = "editor_demo:factory"
 	# Nodes created before service setup inherit once; explicit choices stay independent.
 	for data in nodes: _migrate_node_models(data, draft)
-	save_settings()
+	# Saving a service must not persist an unrelated or transient Python field.
+	save_settings(false)
 	var local = ConfigFile.new()
 	local.load(state_dir.path_join("local.cfg"))
 	local.set_value("service", "mode", draft.mode)

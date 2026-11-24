@@ -402,6 +402,22 @@ func run():
 		check(window_rect.encloses(menu_rect), "context menu remains inside the window at size " + str(window_size))
 		panel.context_menu.hide()
 		check(panel.graph.size.y > 300 and panel.native_sections.advanced.size_flags_vertical & Control.SIZE_EXPAND_FILL, "context menus preserve the canvas vertical expansion at size " + str(window_size))
+	# Blank-canvas commands stay reachable even when the selected node has an invalid draft.
+	reset_graph()
+	await settle()
+	panel.nodes[0].type = "garment_split"
+	panel.nodes[0].provider = "garment-split"
+	panel.nodes[0].parameters = {"items": []}
+	panel.rebuild()
+	panel.select_node("a")
+	panel.parameter_form.garment_items_edit.text = "{broken"
+	panel.parameter_form.garment_items_edit.text_changed.emit()
+	var invalid_draft_parameters = panel.nodes[0].parameters.duplicate(true)
+	panel.failure_dialog.hide()
+	popup_at(Vector2(panel.graph.size.x - 30, panel.graph.size.y - 30))
+	check(panel.context_menu.visible and menu_has("保存工作流…") and not panel.failure_dialog.visible, "invalid node draft does not replace the blank-canvas menu with an error dialog")
+	check(panel.nodes[0].parameters == invalid_draft_parameters, "opening the blank-canvas menu does not mutate an invalid node draft")
+	panel.context_menu.hide()
 	check(FileAccess.get_sha256(fixture_image) == image_hash and FileAccess.get_sha256(fixture_mesh) == mesh_hash, "context editing and preview preserve source file bytes")
 	await finish()
 

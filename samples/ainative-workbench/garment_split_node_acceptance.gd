@@ -15,6 +15,14 @@ func _initialize():
 
 func settle():
 	for i in 5: await process_frame
+	var deadline = Time.get_ticks_msec() + 10000
+	var loading = true
+	while loading and Time.get_ticks_msec() < deadline:
+		loading = false
+		for thumbnail in panel.graph.find_children("*", "SubViewportContainer", true, false):
+			if thumbnail.has_method("is_loading") and thumbnail.is_loading(): loading = true
+		if loading: await process_frame
+	check(not loading, "asynchronous garment thumbnails complete")
 
 func idle():
 	var deadline = Time.get_ticks_msec() + 30000
@@ -66,10 +74,14 @@ func run():
 	panel.select_node("split")
 	check(panel.node_label("garment_split") == "衣服拆分" and panel._generator_provider("garment_split") == "garment-split", "creation menu exposes the local garment split node")
 	check(panel.input_kind(split) == panel.PORT_MESH and panel.output_kind(split) == panel.PORT_MESH, "node declares Mesh input and Mesh collection output")
-	check(panel.parameter_form.garment_items_edit.visible and not panel.parameter_form.prompt_edit.visible and not panel.node_model_edit.visible, "structured editor shows garment items without prompt or remote model")
+	check(not panel.parameter_form.garment_items_edit.visible and panel.parameter_form.cli_hint.text.contains("AI") and not panel.parameter_form.prompt_edit.visible and not panel.node_model_edit.visible, "ordinary garment UI uses AI recognition without geometry JSON or remote model controls")
 	check(not panel.context_row.visible and str(panel.source_picker.filters).contains("*.glb"), "garment node accepts one static GLB and no image context")
 	check(panel.apply_fields() and not split.parameters.has("prompt"), "applying garment items adds no generation prompt")
 	check(panel.node_run_blocker("split").is_empty() and panel._service_blocker("garment_split").is_empty(), "local node needs neither generation service nor prompt")
+	var reviewed_items = split.parameters.items.duplicate(true)
+	split.parameters.items = []
+	check(panel.node_run_blocker("split").is_empty(), "empty items enable AI recognition instead of a manual-configuration error")
+	split.parameters.items = reviewed_items
 	panel.run_node_preview("split")
 	await idle()
 	await settle()
@@ -87,7 +99,14 @@ func run():
 		return
 	var cape_card = panel.graph.get_node(NodePath(str(panel.artifact_nodes[cape_key].id)))
 	check(cape_card.title.contains("披风") and not cape_card.title.contains("第 1 轮"), "garment card uses semantic name rather than generation round")
+	check(cape_card.title.contains("表面片段") and cape_card.get_node("ArtifactSummary").text.contains("不是完整衣服"), "surface extraction is never presented as a complete wearable garment")
 	check(cape_card.get_node("ArtifactMeshPreview").mesh_count > 0, "garment card renders actual extracted GLB")
+	var wearable_entry: Dictionary = panel.artifact_nodes[cape_key].entry.duplicate(true)
+	wearable_entry.artifact = {"id":"wearable-test", "revision":"wearable-test"}
+	wearable_entry.provenance.garment_state = "wearable_shell"
+	panel._create_mesh_artifact_node(split, wearable_entry, 7)
+	var wearable_card = panel.graph.get_node(NodePath("artifact_split_garment_007"))
+	check(wearable_card.title.contains("完整衣服") and wearable_card.get_node("ArtifactSummary").text.contains("待视觉/适配审核"), "closed wearable shell has an explicit independent state and remaining acceptance")
 	panel.edges = [{"from":"split","to":"consumer","input":"source","output":"result"}]
 	panel.rebuild()
 	await settle()

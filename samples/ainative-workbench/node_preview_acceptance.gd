@@ -16,8 +16,9 @@ func wait_idle():
 	check(panel.jobs.is_empty() and not panel.auto_step and not panel.creating, "node operation finishes while the editor frame loop advances")
 
 func wait_selection_preview(target):
-	var deadline = Time.get_ticks_msec() + 10000
-	while target.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	var deadline = Time.get_ticks_msec() + 30000
+	while (target.is_preview_loading() or target.is_workflow_opening()) and Time.get_ticks_msec() < deadline: await process_frame
+	check(not target.is_workflow_opening(), "workflow open finishes while the editor frame loop advances")
 	check(not target.is_preview_loading(), "selection preview finishes while the editor frame loop advances")
 
 func double_click(control: Control):

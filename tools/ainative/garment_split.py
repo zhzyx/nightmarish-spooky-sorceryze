@@ -783,6 +783,37 @@ def _build_glb(source, item, selected):
     return _encode_glb(document, binary), source_map, output_vertices, output_triangles
 
 
+def write_component_preview(source_path, component_id, output):
+    """Write one immutable component GLB used only as AI visual evidence."""
+    source = GarmentSource(source_path)
+    component = source.component_map().get(component_id)
+    if component is None:
+        raise ValueError("garment_inventory_unknown_component")
+    item = dict(
+        id="component_preview",
+        label="Component preview",
+        category="garment",
+        slot="other",
+        behavior="skinned",
+        confidence=0.0,
+        review_state="needs_review",
+        selection=dict(mode="components", component_ids=[component_id]),
+    )
+    selected = _selected_primitives(source, item)
+    data, _source_map, vertices, triangles = _build_glb(source, item, selected)
+    output = Path(output).resolve()
+    _write_new(output, data)
+    if hashlib.sha256(source.path.read_bytes()).hexdigest() != source.sha256:
+        raise ValueError("garment_split_source_changed")
+    return dict(
+        path=str(output),
+        sha256=hashlib.sha256(data).hexdigest(),
+        vertices=vertices,
+        triangles=triangles,
+        source_sha256=source.sha256,
+    )
+
+
 def spec_from_inventory(source_path, output, inventory, inspection, confirmed=False):
     """Convert only evidence-bound component candidates; keep other items unresolved."""
     known = {component["component_id"] for component in inspection.get("components", [])}

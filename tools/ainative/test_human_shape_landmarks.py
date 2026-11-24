@@ -162,7 +162,7 @@ class HumanShapeLandmarkTests(unittest.TestCase):
             node="human_shape_adjust",
             version="1",
             inputs={"source": {"id": "source", "revision": sha}},
-            parameters=dict(height_m=1.9, head_ratio=9.0, arm_length_scale=1.2, leg_length_scale=1.1, build=0.4),
+            parameters=dict(height_cm=190, head_ratio=9.0, arm_length_scale=1.2, leg_length_scale=1.1, build=0.4),
             context=[],
         )
         manifest = dict(schema_version=1, artifacts=[artifact])

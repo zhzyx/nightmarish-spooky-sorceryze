@@ -1,8 +1,8 @@
-"""Durable local Executor provider for visible garment-surface extraction.
+"""Durable provider for wearable garment reconstruction and diagnostic surface splits.
 
-No generation service, Blender, remote API or rigging operation is used. The
-primary result is a garment collection GLB; each item is also an independent
-Mesh artifact with exact bytes and provenance.
+Automatic static-input runs use one remote vision segmentation request and local
+source-bound geometry reconstruction. Explicit developer selections remain local
+surface extraction. Every artifact carries exact bytes and provenance.
 """
 
 import base64
@@ -42,30 +42,46 @@ def register(registry):
 
 class GarmentSplitProvider:
     def __init__(self, config):
-        if not isinstance(config, dict) or set(config) != {"storage"}:
+        allowed = {"storage", "planner", "review_godot_path", "review_script_path"}
+        if not isinstance(config, dict) or set(config) - allowed:
             raise ValueError("garment_split_config_invalid")
         storage = Path(config["storage"])
         if not isinstance(config["storage"], str) or not config["storage"].strip():
             raise ValueError("garment_split_config_invalid")
+        self.config = copy.deepcopy(config)
         self.storage = storage.resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
         self.database = self.storage / "jobs.sqlite"
         with sqlite3.connect(self.database) as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
 
-    @staticmethod
-    def fingerprint():
+    def fingerprint(self):
         digest = hashlib.sha256()
-        for name in ("garment_split_provider.py", "garment_split.py", "geometry_repair.py", "cloth_prepare.py"):
+        for name in (
+            "garment_split_provider.py",
+            "garment_split.py",
+            "garment_inventory.py",
+            "garment_auto.py",
+            "garment_complete.py",
+            "geometry_repair.py",
+            "cloth_prepare.py",
+        ):
             path = Path(__file__).with_name(name)
             digest.update(name.encode("utf-8") + b"\0" + path.read_bytes() + b"\0")
+        identity = {
+            key: self.config.get(key) for key in ("planner", "review_godot_path", "review_script_path")
+        }
+        digest.update(canonical(identity).encode("utf-8"))
+        script = Path(self.config.get("review_script_path", ""))
+        if script.is_file():
+            digest.update(script.read_bytes())
         return digest.hexdigest()
 
     def describe(self):
         return dict(
             id=PROVIDER_ID,
             version="1",
-            model="LOCAL GARMENT SURFACE EXTRACTION - NOT AI",
+            model="SOURCE-BOUND WEARABLE GARMENT RECONSTRUCTION",
             model_version=self.fingerprint(),
             available=True,
             capabilities=[KIND],
@@ -123,23 +139,41 @@ class GarmentSplitProvider:
 
     def _run(self, key, request, manifest):
         source_asset, source_data = self._source(request, manifest)
-        parameters = request["parameters"]
+        parameters = copy.deepcopy(request["parameters"])
         job_root = self.storage / key
         job_root.mkdir(exist_ok=False)
         source_path = job_root / "source.glb"
         source_path.write_bytes(source_data)
+        items = parameters.get("items", [])
+        require(isinstance(items, list), "garment_split_spec_invalid")
+        automatic_receipt = {}
         output = job_root / "output"
-        spec = dict(
-            schema_version=1,
-            source=str(source_path),
-            source_sha256=hashlib.sha256(source_data).hexdigest(),
-            output=str(output),
-            items=parameters["items"],
-        )
-        for field in ("unresolved_items", "inventory_sha256"):
-            if field in parameters:
-                spec[field] = parameters[field]
-        record = split(spec)
+        if not items:
+            from garment_complete import complete
+
+            record = complete(
+                source_path,
+                output,
+                job_root / "completion",
+                self.config.get("review_godot_path", ""),
+                self.config.get("review_script_path", ""),
+                planner=self.config.get("planner"),
+            )
+            automatic_receipt = copy.deepcopy(record["automatic_recognition"])
+        else:
+            # Developer-supplied geometry selections remain surface extraction;
+            # they are never promoted to wearable garments by the provider.
+            spec = dict(
+                schema_version=1,
+                source=str(source_path),
+                source_sha256=hashlib.sha256(source_data).hexdigest(),
+                output=str(output),
+                items=parameters["items"],
+            )
+            for field in ("unresolved_items", "inventory_sha256"):
+                if field in parameters:
+                    spec[field] = parameters[field]
+            record = split(spec)
         collection_path = output / record["collection"]["path"]
         collection_data = collection_path.read_bytes()
         require(
@@ -149,7 +183,7 @@ class GarmentSplitProvider:
         final_id = "garment-split-" + key
         common = dict(
             provider=PROVIDER_ID,
-            operation="extract_visible_garment_surface",
+            operation=record["operation"],
             source_sha256=record["source_sha256"],
             source_artifact={key: source_asset[key] for key in ("id", "revision")},
             split_manifest_revision=record["manifest_revision"],
@@ -162,7 +196,11 @@ class GarmentSplitProvider:
             inverse_bind_matrices_preserved=record["inverse_bind_matrices_preserved"],
             unreferenced_source_vertices_retained=record["unreferenced_source_vertices_retained"],
             blender_used=False,
-            cloud_used=False,
+            cloud_used=bool(automatic_receipt),
+            automatic_recognition=copy.deepcopy(automatic_receipt) if automatic_receipt else None,
+            visual_review_passed=False,
+            fit_validated=False,
+            animation_validated=False,
             cloth_ready=False,
         )
         primary_provenance = dict(
@@ -176,6 +214,8 @@ class GarmentSplitProvider:
                     label=item["label"],
                     state=item["state"],
                     review_state=item["review_state"],
+                    coverage_state=item.get("coverage_state", "unknown"),
+                    closed_position_welded=item.get("closed_position_welded", False),
                 )
                 for item in record["items"]
             ],
@@ -198,6 +238,10 @@ class GarmentSplitProvider:
                 behavior=item["behavior"],
                 review_state=item["review_state"],
                 garment_state=item["state"],
+                coverage_state=item.get("coverage_state", "unknown"),
+                closed_position_welded=item.get("closed_position_welded", False),
+                source_triangle_count=item.get("source_triangles"),
+                thickness_m=item.get("thickness_m"),
                 cloth_state=item.get("cloth", {}).get("state"),
                 cloth_ready=False,
                 triangles=item["triangles"],
@@ -263,6 +307,22 @@ class GarmentSplitProvider:
     def public_failure_message(self, snapshot):
         record = self.read(snapshot["job_id"])
         diagnostic = record.get("diagnostic", "")
+        if "api_key_missing" in diagnostic:
+            return "AI 衣服识别需要可用的 KIMI_API_KEY。请在本机配置后重启马良，再显式重试；不会要求你手工填写组件 ID。"
+        if "review_render_failed" in diagnostic:
+            return "无法生成 AI 衣服识别所需的模型与组件视图。请检查模型和当前引擎渲染环境后重试。"
+        if "timed out" in diagnostic.lower() or "timeout" in diagnostic.lower():
+            return "AI 衣服识别请求超时，未收到有效选择，也未自动重发。请稍后显式重试；原模型未改变。"
+        if "garment_complete_no_wearable" in diagnostic:
+            return "没有衣服同时通过完整可见表面与封闭拓扑检查，本次未发布换装产物。请查看未解决项和分割证据；不会把碎片加厚冒充完整衣服。"
+        if "garment_complete_skin_invalid" in diagnostic:
+            return "完整衣服的骨架、关节索引、蒙皮权重或 Inverse Bind 校验失败，本次未发布换装产物。请查看具体过程中的源模型与输出差异。"
+        if "garment_segmentation" in diagnostic or "garment_complete_triangle" in diagnostic:
+            return "完整衣服的多视角分割或三角面证据不完整，本次未发布换装产物。请查看具体过程并显式重试。"
+        if "garment_inventory_no_geometry" in diagnostic:
+            return "AI 未能可靠定位可拆分的衣服组件，本次未修改原模型。请换用更清晰的模型或补充视觉证据后重试。"
+        if "garment_inventory" in diagnostic or "vision_" in diagnostic or "api_output" in diagnostic:
+            return "AI 衣服识别结果不完整或缺少组件图像证据，本次未执行拆分。请查看具体过程并显式重试。"
         if "cloth_rigged_source" in diagnostic:
             return "衣服及原骨架、蒙皮已保留，但当前布料准备器尚不接受带 Skin 的输入；本次只完成已绑骨表面拆分，未宣称布料动态通过。"
         if "skin_invalid" in diagnostic:
@@ -276,4 +336,4 @@ class GarmentSplitProvider:
             return "衣服清单或几何选择无效。请核对每件衣服的 component_id、源三角面和重复选择；原模型未改变。"
         if "source" in diagnostic:
             return "衣服拆分源模型无效或已变化。请重新选择原始静态 GLB，并保留其内嵌依赖。"
-        return "衣服拆分未完成，未发布不完整结果。请检查节点中的衣服清单和本地运行日志。"
+        return "衣服拆分未完成，未发布不完整结果。请查看“具体过程”中的 AI 识别与本地运行记录后显式重试。"

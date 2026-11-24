@@ -842,13 +842,15 @@ class KimiNativeDirectProvider(ModelingProvider):
         if operation in LOCAL_GEOMETRY_OPERATIONS:
             require(not request["context"] and not request["parameters"].get("prompt"), "invalid_input")
             if human_shape:
-                names = ("height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build")
+                names = ("height_cm", "head_ratio", "arm_length_scale", "leg_length_scale", "build")
                 require(all(name in request["parameters"] for name in names), "invalid_input")
                 values = {name: copy.deepcopy(request["parameters"][name]) for name in names}
+                height_cm = values["height_cm"]
+                require(type(height_cm) is int and 20 <= height_cm <= 400 and height_cm % 10 == 0, "invalid_input")
                 repair = dict(
                     reference_pose=None,
                     landmarks=None,
-                    target_height_m=values["height_m"],
+                    target_height_m=height_cm / 100.0,
                     target_head_ratio=values["head_ratio"],
                     arm_length_scale=values["arm_length_scale"],
                     leg_length_scale=values["leg_length_scale"],
@@ -1338,6 +1340,8 @@ class KimiNativeDirectProvider(ModelingProvider):
             preview_sha256=None,
             tool_fingerprint=fingerprint,
         )
+        if operation == "reshape_humanoid":
+            receipt["height_cm"] = plan["original_parameters"]["height_cm"]
         self.write(key, model3d_receipt=receipt)
         provenance = dict(
             provider="local_geometry_repair",
@@ -1373,6 +1377,8 @@ class KimiNativeDirectProvider(ModelingProvider):
             blender_used=False,
             generated_code_executed=False,
         )
+        if operation == "reshape_humanoid":
+            provenance["height_cm"] = plan["original_parameters"]["height_cm"]
         return dict(
             id="kimi-native-repair-" + key,
             revision=sha,

@@ -403,25 +403,63 @@ Preparation failure preserves the extracted GLB and makes the manifest
 the current scope and evidence boundary. Synthetic tests do not establish real
 AI segmentation quality or production cloth behavior.
 
-The Workbench **衣服拆分 / `garment_split`** node exposes a rigged-first
-contract without requiring a saved generation service. Rigged GLBs retain the
-original skeleton and weights; static GLBs are also accepted. Choose or link one
-Mesh, then provide the `items` array in the structured inspector. The node never
-manufactures a prompt or selects a remote model. Its main result is
-`_garments.glb`, a collection containing all selected surfaces; each item also
-appears as a named dynamic garment node with its own thumbnail, GLB save action
-and immutable fixed-artifact downstream input. Garment cards are not generation
-rounds and continue to require visual review. Workflow output snapshots preserve
-all garments and fixed connections across save/reopen.
+The Workbench **衣服拆分 / `garment_split`** node does not require a saved
+generation service. Choose or link one Mesh and run directly. With the default
+empty `items`, `garment_complete.py` now targets independent wearable garments
+on static or rigged GLBs: two 12-bit triangle-ID passes and five ordinary views
+share the same cameras, Kimi vision requests supply normalized visible-surface
+masks, and local code assigns visible source triangles. For dense meshes, the
+same camera, garment mask, visible-plane depth and facing direction recover
+subpixel triangles omitted by raster sampling; connected-component flood fill
+and occluded back surfaces are not used. Base-garment masks include attached
+embroidery and ornament instead of cutting decoration-shaped holes. It never
+treats a connected component or a text label as a complete garment. This
+recognition step requires `KIMI_API_KEY`; missing evidence, uncertain coverage
+and ownership conflicts remain unresolved instead of producing a downgrade.
+Self-intersecting mask contours are rejected. Independent hair, exposed-skin,
+hand and footwear exclusion masks apply during both pixel voting and subpixel
+completion; hand/foot exclusions are not applied to the matching garment slot.
+A final topology pass fills only unowned faces with at least two selected edge
+neighbours, with adjacency cached once per source primitive.
+Rigged inputs preserve the original hierarchy, skins, inverse bind matrices,
+joint indices and weights; reconstructed inner and boundary vertices inherit
+those attributes and are checked explicitly. After reconstruction, a mandatory
+quality gate renders the collection in front/right/back/left/top and submits
+source/output pairs for the same cameras. Per-item missing-surface and
+extraneous-surface defects (including holes, skin, hair, hands and footwear)
+are recorded in `quality_gate`; any defect keeps `visual_review_passed=false`,
+adds an unresolved reason and prevents the item from being presented as
+visually accepted. A failed gate performs at most one generic defect-bound mask
+revision, rebuild and second gate. Missing-surface repair unions valid contours;
+extraneous-surface repair replaces the affected contour. Rejected GLBs and
+`quality_repair_history` are retained, and a second defect remains unresolved.
+Cached gate receipts are bound to both source and collection SHA-256.
+
+An accepted automatic item becomes `wearable_shell` only with
+`coverage=complete_visible` and a closed position-welded mesh after removing the
+body and reconstructing inner thickness and boundary walls. The outer material,
+UVs and source-triangle mapping are retained. This state is not visual, target-rig
+fit, animation, collision or cloth acceptance. Partial surfaces cannot be promoted
+by solidification. Explicit developer `items` retain the older source-bound
+surface-extraction path, including exact rig preservation, and are labelled as
+fragments rather than complete clothes.
+
+The main result is `_garments.glb`, a collection containing only accepted items;
+each item also appears as a named dynamic garment node with its own thumbnail,
+GLB save action and immutable fixed-artifact downstream input. Cards distinguish
+complete shells from surface fragments, show unresolved counts and continue to
+require visual review. Workflow output snapshots preserve all garments and fixed
+connections across save/reopen.
 
 `garment_split_provider.py` persists local Executor intents and results under
 the run-scoped `garment-split-state` directory. Provider identity fingerprints
-the provider, geometry core, GLB repair and cloth-preparation sources. An
-interrupted synchronous local job is not blindly replayed. Rigged cloth
-preparation is rejected explicitly, and `cloth_prepared` does not become
-`cloth_ready` merely because a graph run succeeded. `garment_split_node_acceptance.gd` is the native
-Workbench acceptance entry; it requires a Godot executable and the explicit
-fixture environment documented in that script.
+the provider, geometry core, automatic recognition, inventory, GLB repair,
+cloth-preparation and render-script inputs. An interrupted synchronous local job
+is not blindly replayed. Rigged cloth preparation is rejected explicitly, and
+`cloth_prepared` does not become `cloth_ready` merely because a graph run
+succeeded. `garment_split_node_acceptance.gd` is the native Workbench acceptance
+entry; it requires a Godot executable and the explicit fixture environment
+documented in that script.
 
 ### Local configuration and credentials
 

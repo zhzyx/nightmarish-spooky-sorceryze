@@ -19,6 +19,18 @@ func settle():
 	var deadline = Time.get_ticks_msec() + 10000
 	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
 	check(not panel.is_preview_loading(), "asynchronous artifact preview completes")
+	deadline = Time.get_ticks_msec() + 10000
+	var loading = true
+	while loading and Time.get_ticks_msec() < deadline:
+		loading = false
+		for thumbnail in panel.graph.find_children("*", "SubViewportContainer", true, false):
+			if thumbnail.has_method("is_loading") and thumbnail.is_loading(): loading = true
+		if loading: await process_frame
+	check(not loading, "asynchronous Mesh thumbnails complete")
+
+func thumbnails_pending() -> bool:
+	var thumbnails = panel.graph.find_children("*", "SubViewportContainer", true, false)
+	return not thumbnails.is_empty() and thumbnails.all(func(thumbnail): return thumbnail.has_method("is_loading") and thumbnail.is_loading() and thumbnail.mesh_count == 0)
 
 func double_click(control: Control):
 	var event = InputEventMouseButton.new()
@@ -98,6 +110,7 @@ func run():
 	primary["iterations"] = iterations
 	panel.preview_history["generate"] = [primary]
 	panel.rebuild()
+	check(thumbnails_pending(), "graph rebuild returns before synchronous GLB thumbnail decoding")
 	await settle()
 	check(panel.artifact_nodes.size() == 3, "one Mesh run creates one dynamic output node per generation round")
 	var first_key = artifact_key(1)
@@ -165,11 +178,21 @@ func run():
 	panel.save_graph()
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
 	check(saved.nodes.size() == 3 and saved.output_history.generate[0].iterations.size() == 3, "workflow save embeds every round while excluding dynamic nodes")
+	var validation_before_open = panel.snapshot_validation_decode_count
+	var materialize_before_open = panel.snapshot_materialize_decode_count
 	panel.open_graph()
+	check(panel.snapshot_validation_decode_count - validation_before_open == 3, "workflow validation decodes only three unique GLB snapshots instead of the primary duplicate and three rounds")
+	check(panel.snapshot_materialize_decode_count - materialize_before_open == 3, "first restore materializes only unique GLB snapshots")
+	check(thumbnails_pending(), "workflow open returns before synchronous GLB thumbnail decoding")
 	await settle()
 	first_key = artifact_key(1)
 	check(panel.artifact_nodes.size() == 3 and not first_key.is_empty(), "reopening restores every round without rerunning generation")
 	check(connected(str(panel.artifact_nodes[first_key].id), "adjust"), "reopening restores the selected round connection")
+	var cached_materialize_count = panel.snapshot_materialize_decode_count
+	panel.open_graph()
+	check(panel.snapshot_materialize_decode_count == cached_materialize_count, "reopening verified content-addressed caches performs no additional Base64 decode")
+	check(thumbnails_pending(), "cached workflow reopen also leaves GLB thumbnail decoding off the caller")
+	await settle()
 	var restored_executable = panel.execution_model()
 	check(not restored_executable.is_empty() and restored_executable.edges[0].artifact_snapshot.content_sha256 == FileAccess.get_sha256(round_paths[0]), "restored downstream input still uses the original selected round")
 	panel._keyboard_delete([str(panel.artifact_nodes[artifact_key(2)].id)])

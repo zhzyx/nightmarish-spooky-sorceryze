@@ -389,7 +389,11 @@ def dispatch(args, request):
         if service_path or any(node.get("type", "copy") == "garment_split" for node in model["nodes"]):
             run_id = uuid.uuid4().hex
             config = load_settings(service_path)
-            registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id)
+            local_runtime = None
+            runtime_path = getattr(args, "local_runtime", None)
+            if runtime_path:
+                local_runtime = json.loads(Path(runtime_path).read_text(encoding="utf-8"))
+            registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id, local_runtime)
             runtime_service["image_batch"] = image_batch_settings(config)
             runtime_service["image_batch"]["database"] = str(Path(args.db).resolve())
             runtime_service["image_batch"]["enabled"] = runtime_service["image_batch"]["enabled"] and any(
@@ -543,6 +547,7 @@ def main():
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")
     p.add_argument("--service-config")
+    p.add_argument("--local-runtime")
     p.add_argument("--spec", required=True)
     p.add_argument("--result", required=True)
     args = p.parse_args()

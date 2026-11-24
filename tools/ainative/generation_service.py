@@ -683,10 +683,18 @@ def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, le
     return snapshot
 
 
-def prepare_provider(config, model, database, run_id):
+def prepare_provider(config, model, database, run_id, local_runtime=None):
     from comfy_provider import ComfyProvider, LocalMeshProvider
     from editor_demo import factory
 
+    if local_runtime is None:
+        local_runtime = {}
+    if (
+        not isinstance(local_runtime, dict)
+        or set(local_runtime) - {"godot_path", "render_script"}
+        or any(not isinstance(value, str) for value in local_runtime.values())
+    ):
+        raise ServiceError("service_config_invalid")
     registry, providers = factory()
     generated = [node for node in model["nodes"] if node.get("type", "copy") in (*KINDS, *LOCAL_KINDS)]
     local_generated = [node for node in generated if node["type"] in LOCAL_KINDS]
@@ -695,8 +703,17 @@ def prepare_provider(config, model, database, run_id):
     storage = Path(database).resolve().parent
     if local_generated:
         from garment_split_provider import PROVIDER_ID, GarmentSplitProvider
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL
 
-        provider_config = dict(storage=str(storage / "garment-split-state"))
+        review_script = local_runtime.get("render_script", "")
+        if not review_script and config.get("builder_path"):
+            review_script = str(Path(config["builder_path"]).with_name("mesh_review.gd"))
+        provider_config = dict(
+            storage=str(storage / "garment-split-state"),
+            planner=dict(endpoint=DEFAULT_ENDPOINT, model=DEFAULT_MODEL, key_env="KIMI_API_KEY"),
+            review_godot_path=local_runtime.get("godot_path", "") or config.get("godot_path", ""),
+            review_script_path=review_script,
+        )
         providers[PROVIDER_ID] = GarmentSplitProvider(provider_config)
         snapshots[PROVIDER_ID] = provider_config
         provider_types[PROVIDER_ID] = "garment_split"

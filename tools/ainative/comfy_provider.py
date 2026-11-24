@@ -44,7 +44,7 @@ def register(registry):
         for k, v in DEFAULTS.items()
     }
     shape_props = dict(
-        height_m={"type": "number"},
+        height_cm={"type": "integer"},
         head_ratio={"type": "number"},
         arm_length_scale={"type": "number"},
         leg_length_scale={"type": "number"},

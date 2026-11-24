@@ -183,25 +183,33 @@ func run():
 	# Switching nodes must not leak another type's values or reopen advanced UI.
 	panel.select_node(panel.nodes[0].id)
 	check(form.copy_hint.visible and not form.advanced_box.visible and JSON.parse_string(JSON.stringify(panel.nodes[0].parameters)) == JSON.parse_string(JSON.stringify(original)), "node switching restores independent parameters and collapsed UI")
-	# Garment splitting is a structured local Mesh node with an item-array editor.
+	# Garment splitting defaults to AI recognition; geometry JSON is developer-only.
 	panel.generator_choice.selected = 6
 	panel.add_generator()
 	var garment = panel.nodes[-1]
-	check(garment.type == "garment_split" and garment.provider == "garment-split" and garment.parameters.items.is_empty(), "garment split node starts with an explicit empty item list and local provider")
-	check(form.garment_items_edit.visible and form.garment_items_label.visible and not form.prompt_edit.visible and not form.advanced_toggle.visible and not panel.node_model_edit.visible, "garment form shows item JSON without generation or remote model controls")
+	check(garment.type == "garment_split" and garment.provider == "garment-split" and garment.parameters.items.is_empty(), "garment split node starts with an empty item list for AI recognition")
+	check(not form.garment_items_edit.visible and not form.garment_items_label.visible and form.cli_hint.visible and form.cli_hint.text.contains("AI") and not form.prompt_edit.visible and not form.advanced_toggle.visible and not panel.node_model_edit.visible, "garment form explains AI recognition without exposing geometry JSON or generation controls")
 	check(panel.input_kind(garment) == panel.PORT_MESH and panel.output_kind(garment) == panel.PORT_MESH and not panel.context_row.visible, "garment node has Mesh input/output and no image context")
-	check(form.parameters() == null and form.error_label.text.contains("非空"), "empty garment item list is rejected before execution")
+	var empty_garment = form.parameters()
+	check(empty_garment is Dictionary and empty_garment.get("items", null) == [] and form.error_label.text.is_empty(), "empty garment item list remains a valid automatic configuration")
+	check(panel.apply_fields() and garment.parameters.items.is_empty(), "applying an empty garment draft preserves automatic recognition")
+	garment.source = ProjectSettings.globalize_path("res://fixtures/sample.glb")
+	check(panel.node_run_blocker(str(garment.id)).is_empty(), "running an empty garment draft starts AI recognition instead of demanding component IDs")
+	panel.path_edit.text = panel.state_dir.path_join("empty-garment-form-workflow.json")
+	panel.save_graph()
+	var saved_empty_garment = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(saved_empty_garment is Dictionary and saved_empty_garment.nodes.any(func(node): return node.id == garment.id and node.parameters.items.is_empty()), "workflow save persists an automatic garment draft without a validation dialog")
 	var garment_items = [{"id":"cape","label":"披风","category":"garment","slot":"back","behavior":"cloth","confidence":0.9,"review_state":"needs_review","selection":{"mode":"components","component_ids":["cmp_fixture"]}}]
 	form.garment_items_edit.text = JSON.stringify(garment_items, "  ", true, true)
 	form.garment_items_edit.text_changed.emit()
-	check(panel.apply_fields() and garment.parameters.items == garment_items and not garment.parameters.has("prompt") and garment.text.is_empty(), "garment item editor updates the exact contract without manufacturing a prompt")
+	check(panel.apply_fields() and garment.parameters.items == garment_items and not garment.parameters.has("prompt") and garment.text.is_empty(), "developer garment JSON updates the exact contract without manufacturing a prompt")
 	var garment_id = str(garment.id)
 	panel.path_edit.text = panel.state_dir.path_join("garment-form-workflow.json")
 	panel.save_graph()
 	panel.open_graph()
 	panel.select_node(garment_id)
 	garment = panel.nodes.filter(func(node): return node.id == garment_id)[0]
-	check(garment.parameters.items == garment_items and form.garment_items_edit.visible and JSON.parse_string(form.garment_items_edit.text) == garment_items, "garment item JSON and form visibility survive workflow save and reopen")
+	check(garment.parameters.items == garment_items and not form.garment_items_edit.visible and JSON.parse_string(form.garment_items_edit.text) == garment_items, "developer garment JSON survives workflow save and reopen without becoming ordinary UI")
 	var valid_garment = garment.parameters.duplicate(true)
 	form.garment_items_edit.text = "[1]"
 	form.garment_items_edit.text_changed.emit()

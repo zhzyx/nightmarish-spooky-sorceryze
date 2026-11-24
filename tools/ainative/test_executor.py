@@ -368,6 +368,39 @@ class ExecutorTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertEqual(self.provider.submits, 1)
 
+    def test_large_success_result_is_stored_once_and_restored(self):
+        data = b"x" * 240_000
+        payload = {
+            "content_base64": base64.b64encode(data).decode("ascii"),
+            "content_sha256": hashlib.sha256(data).hexdigest(),
+            "extension": ".png",
+        }
+
+        def result(job_id):
+            return {
+                "schema_version": 1,
+                "artifacts": [{"id": "out-" + job_id, "revision": "1", "type": "image", "payload": payload}],
+            }
+
+        self.provider.result_manifest = result
+        run = self.create()
+        # The cache row and each asset fit individually. Duplicating the same
+        # result in both the run manifest and node result exceeds this limit.
+        self.executor.db.setlimit(__import__("sqlite3").SQLITE_LIMIT_LENGTH, 500_000)
+        self.executor.step(run)
+        status = self.executor.step(run)
+        self.assertEqual(status["state"], "succeeded", status)
+        self.assertEqual(status["nodes"]["first"]["result"], result(status["nodes"]["first"]["job"]["job_id"]))
+        stored = json.loads(self.executor.db.execute("SELECT body FROM runs WHERE id=?", (run,)).fetchone()[0])
+        stored_result = stored["nodes"]["first"]["result"]
+        self.assertEqual(stored_result["storage"], "run_manifest")
+        self.assertNotIn("content_base64", json.dumps(stored_result))
+        self.executor.close()
+        self.executor = self.open()
+        restored = self.executor.status(run)
+        self.assertEqual(restored["nodes"]["first"]["result"], result(restored["nodes"]["first"]["job"]["job_id"]))
+        self.assertEqual(self.executor.export(run)["outputs"]["first"]["result"]["id"], restored["nodes"]["first"]["job"]["outputs"]["result"]["id"])
+
     def test_digest_metadata_can_be_published_and_cached(self):
         original = self.provider.result_manifest
 

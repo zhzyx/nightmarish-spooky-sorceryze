@@ -223,7 +223,7 @@ class HumanShapeTests(unittest.TestCase):
             data = source.read_bytes()
             sha = hashlib.sha256(data).hexdigest()
             parameters = dict(
-                height_m=spec["target_height_m"],
+                height_cm=190,
                 head_ratio=spec["target_head_ratio"],
                 arm_length_scale=spec["arm_length_scale"],
                 leg_length_scale=spec["leg_length_scale"],
@@ -258,6 +258,19 @@ class HumanShapeTests(unittest.TestCase):
                 available=True,
             )
             validate_invocation(registry, request, manifest, provider)
+            for height_cm, height_m in ((170, 1.7), (180, 1.8), (190, 1.9)):
+                with self.subTest(height_cm=height_cm):
+                    converted = KimiNativeDirectProvider._adjust_plan(
+                        None, dict(request, parameters=dict(parameters, height_cm=height_cm)), manifest
+                    )
+                    self.assertAlmostEqual(converted["repair"]["target_height_m"], height_m)
+                    self.assertEqual(converted["original_parameters"]["height_cm"], height_cm)
+            for invalid_height in (173, 180.5, 170.1, 10, 410, True, "180", None):
+                with self.subTest(invalid_height=invalid_height):
+                    with self.assertRaisesRegex(ValueError, "invalid_input"):
+                        KimiNativeDirectProvider._adjust_plan(
+                            None, dict(request, parameters=dict(parameters, height_cm=invalid_height)), manifest
+                        )
             plan = KimiNativeDirectProvider._adjust_plan(None, request, manifest)
             self.assertEqual(plan["operation"], "reshape_humanoid")
             self.assertEqual(plan["repair"]["target_head_ratio"], 9.0)
@@ -284,6 +297,8 @@ class HumanShapeTests(unittest.TestCase):
             self.assertEqual(result["payload"]["provenance"]["provider"], "local_geometry_repair")
             self.assertEqual(result["payload"]["provenance"]["operation"], "reshape_humanoid")
             self.assertFalse(result["payload"]["provenance"]["blender_used"])
+            self.assertEqual(host.receipt["height_cm"], 190)
+            self.assertEqual(result["payload"]["provenance"]["height_cm"], 190)
             self.assertEqual(host.receipt["geometry_repair"]["measured"]["height_m"], 1.9)
 
 

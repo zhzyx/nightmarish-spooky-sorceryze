@@ -49,7 +49,7 @@ static func run(source_path: String, options: Dictionary, validation_parent: Nod
 	if not (height is float or height is int) or not is_finite(float(height)) or float(height)<.2 or float(height)>4.0: return _failure('invalid_height','目标身高必须是 0.2–4 米之间的有限数值。')
 	var max_attempts = _attempt_count(options.get('max_repair_attempts',DEFAULT_MAX_ATTEMPTS))
 	if max_attempts<0: return _failure('invalid_repair_attempts','最大拟合／纠错轮次必须是 1–12 的整数，且包含首次拟合。')
-	if output_path.get_extension().to_lower()!='tscn' or FileAccess.file_exists(output_path): return _failure('output_exists','角色输出必须是新的 .tscn 文件。')
+	if output_path.get_extension().to_lower()!='tscn' or FileAccess.file_exists(output_path) or FileAccess.file_exists(output_path.get_basename()+'.glb'): return _failure('output_exists','角色输出必须是新的 .tscn／.glb 文件组合，现有文件不可覆盖。')
 	var base = Rig.defaults(source_path)
 	if options.get('head_review') is Dictionary: base.head_review = options.head_review.duplicate(true)
 	base.height_m = float(height)
@@ -143,10 +143,25 @@ static func run(source_path: String, options: Dictionary, validation_parent: Nod
 	if not final_report.get('passed',false):
 		final_scene.free()
 		return _failure('reload_validation_failed','最终角色重载后未通过 ROM 验收，已阻断正常角色交付。',attempts)
+	var mesh_path = output_path.get_basename()+'.glb'
+	var document = GLTFDocument.new()
+	var state = GLTFState.new()
+	if document.append_from_scene(final_scene,state)!=OK:
+		final_scene.free()
+		return _failure('mesh_stage_failed','已绑骨角色无法编码为衣服拆分所需的 GLB。',attempts)
+	if document.write_to_filesystem(state,mesh_path)!=OK:
+		final_scene.free()
+		return _failure('mesh_stage_failed','无法保存已绑骨 GLB；角色候选未加入工作流。',attempts)
+	var mesh_sha = FileAccess.get_sha256(mesh_path)
+	if mesh_sha.is_empty():
+		final_scene.free()
+		return _failure('mesh_stage_failed','已绑骨 GLB 校验失败；角色候选未加入工作流。',attempts)
 	return {
 		'scene':final_scene,
 		'path':output_path,
 		'sha256':FileAccess.get_sha256(output_path),
+		'mesh_path':mesh_path,
+		'mesh_sha256':mesh_sha,
 		'source_sha256':source_sha,
 		'capability_limited':false,
 		'passed':true,
