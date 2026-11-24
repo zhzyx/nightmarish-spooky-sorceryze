@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3506e53b78b4b83137d490bf88383efd29103bd4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b8f0cf388edf37c8fbc981c7ad1f9570587c7022146f93c3f932546da0de8a06",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "validation",
+    "detection_head": "019ba3f5a04e1a9862291d49ea54bdff6a86b9a8",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45295429122/job/138114683168",
+    "diagnosis": "全量CI的两项失败已在本地精确复现：设备身份回读执行INSERT OR IGNORE，导致对话只读dump变化和数据库busy回查503。现将登记移至会话签发事务和启动迁移，身份回读仅SELECT。原失败所在3套件24项通过，mypy及ruff通过，独立审查进行中。双线提交另发生pending，身份和空接收分支已回读确认，保留原请求键恢复。",
+    "next_action": "完成迁移与只读修复独立审查，重签完整候选并回读原失败服务CI及双线回执。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:28:58.677534+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T00:33:57.576104+00:00",
+  "sha256": "f2d486b78a4de9e3602b14d13a83a948d7c47c756e04b7d5607a3dd2e2e7054f"
+}

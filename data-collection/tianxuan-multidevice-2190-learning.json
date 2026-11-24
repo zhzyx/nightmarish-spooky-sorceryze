@@ -1,0 +1,11 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "tests": [
+    "test_stale_account_cookie_cannot_replace_key_identity",
+    "test_revocation_between_resolve_and_device_binding_rejects"
+  ],
+  "passed": 2,
+  "expected": "双cookie时账号与设备均绑定选定key；退出不撤销其他cookie；认证到设备绑定期间失效返回401。",
+  "observed": "双cookie时账号与设备均绑定选定key；退出不撤销其他cookie；认证到设备绑定期间失效返回401。"
+}

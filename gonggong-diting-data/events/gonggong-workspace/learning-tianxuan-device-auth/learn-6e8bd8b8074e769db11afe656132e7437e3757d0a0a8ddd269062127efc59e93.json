@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-tianxuan-device-auth",
+  "event_id": "learn-6e8bd8b8074e769db11afe656132e7437e3757d0a0a8ddd269062127efc59e93",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-23T23:50:42.728070+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice",
+    "learn-a497b6a08a3fe286e4d1ccafa42760af8b4357fcd7d4caf3637f9778a2bf36e2"
+  ],
+  "payload": {
+    "scope": "tianxuan-device-auth",
+    "lesson": "bind-device-to-selected-credential",
+    "revision": 2,
+    "previous": "08b20082877120c63626368d1fcd1216e52b17408a7c118293cbdb0aa5fca45c",
+    "action": "verify",
+    "details": {
+      "test": "按提案在当前天璇服务执行两个真实ASGI回归，2 passed。",
+      "expected": "双cookie时账号与设备均绑定选定key；退出不撤销其他cookie；认证到设备绑定期间失效返回401。",
+      "observed": "双cookie时账号与设备均绑定选定key；退出不撤销其他cookie；认证到设备绑定期间失效返回401。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-learning.json",
+        "sha256": "10bb1f53fe231152c4bebcf1587c3972cfd9a4c53147ed1c695487102d29c5ae"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "153838d8a559d3f45ab60bbd2ab23486bbfeb847cbaee82f829fc25c73c622b6"
+}

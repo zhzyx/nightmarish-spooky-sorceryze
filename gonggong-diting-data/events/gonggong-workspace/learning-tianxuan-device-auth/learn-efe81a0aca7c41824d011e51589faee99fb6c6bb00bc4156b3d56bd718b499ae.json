@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-tianxuan-device-auth",
+  "event_id": "learn-efe81a0aca7c41824d011e51589faee99fb6c6bb00bc4156b3d56bd718b499ae",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-24T01:07:32.559237+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice",
+    "learn-24994448af70b3ad12ebe8c6cd0e6851a662bfce5784b9473a232520741bf3c9"
+  ],
+  "payload": {
+    "scope": "tianxuan-device-auth",
+    "lesson": "await-server-logout-receipt",
+    "revision": 2,
+    "previous": "bca253d11fd9b1bc7d0d588c1ac59ae3a793cd00db86bd49a7cc1ecbf9557971",
+    "action": "verify",
+    "details": {
+      "test": "按预先计划在新编译Windows编辑器运行15阶段身份fixture，等待存储与HTTP终态并核验服务器token集合。",
+      "expected": "最终编译编辑器15阶段身份fixture通过，所有Bob派生token已撤销，shared root仍有效。",
+      "observed": "最终编译编辑器15阶段身份fixture通过，所有Bob派生token已撤销，shared root仍有效。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-persistent.json",
+        "sha256": "ab79996415597951dfa89696c8f7fd157fe075b1d32d39a17e72de09d2bb5e75"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "7bf981332f1a0b08bd7d33fe4c3228484734bdae772afec60dafdf4b5ff80d12"
+}

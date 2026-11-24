@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-tianxuan-device-auth",
+  "event_id": "learn-a497b6a08a3fe286e4d1ccafa42760af8b4357fcd7d4caf3637f9778a2bf36e2",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-23T23:49:20.887753+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice"
+  ],
+  "payload": {
+    "scope": "tianxuan-device-auth",
+    "lesson": "bind-device-to-selected-credential",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "新增设备归属时复用认证入口的同一个凭据选择函数，并用同时携带异账号session/key cookie的请求核对账号、设备与撤销目标一致。",
+      "when": "一个HTTP部署支持账号会话与个人密钥两种cookie，且响应或审计增加设备身份。",
+      "counterexample": "客户端设备请求头不构成服务认证；只有一种cookie的测试无法验证混合模式残留状态。",
+      "trial_plan": "keys模式同时提交另一租户的旧session cookie及有效key cookie；/me和设备登记必须均使用key对应主体，退出不得撤销旧session。认证后凭据失效必须401且不得降级为无设备审计。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-validation.json",
+        "sha256": "0d9d2eb7a703234ef1cd501e8aeccd3069839e65d961a8ca50a6639c0bb074d4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "08b20082877120c63626368d1fcd1216e52b17408a7c118293cbdb0aa5fca45c"
+}

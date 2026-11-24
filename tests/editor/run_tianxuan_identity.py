@@ -45,9 +45,12 @@ def exercise(base, binary, source_loaded):
     password, device, personal, legacy = (secrets.token_urlsafe(27) for _ in range(4))
     launcher = secrets.token_urlsafe(27)
     actors = {device: "alice", personal: "bob", legacy: "alice", launcher: "alice"}
+    derived = {}
     observed = []
     cross_origin = []
     state = base / "mode"
+    enrolled = base / "enrolled"
+    saved_marker = base / "saved"
 
     class Service(BaseHTTPRequestHandler):
         def log_message(self, *_args):
@@ -55,13 +58,16 @@ def exercise(base, binary, source_loaded):
 
         def do_GET(self):
             path = self.path.partition("?")[0]
-            actor = actors.get(self.headers.get("Authorization", "").removeprefix("Bearer "))
+            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            actor = actors.get(bearer)
             status, payload = 404, {}
             if path == "/api/v1/auth/config":
                 status, payload = 200, {"mode": "accounts"}
             elif path == "/api/v1/auth/me":
                 mode = state.read_text()
                 status = 503 if mode == "offline" else (403 if mode == "revoked" else (200 if actor else 401))
+                if bearer in derived and derived[bearer]["mode"] == "invalid_me":
+                    status = 403
                 payload = {"id": actor, "role": "viewer", "name": actor} if status == 200 else {}
             elif path == "/api/v1/issues/slow":
                 time.sleep(2)
@@ -71,7 +77,8 @@ def exercise(base, binary, source_loaded):
         def do_POST(self):
             path = self.path.partition("?")[0]
             request = json.loads(self.rfile.read(int(self.headers.get("Content-Length", "0"))) or "{}")
-            actor = actors.get(self.headers.get("Authorization", "").removeprefix("Bearer "))
+            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            actor = actors.get(bearer)
             status, payload = 404, {}
             if path == "/api/v1/auth/editor-session" and state.read_text() != "legacy":
                 if request == {"email": "user@example.test", "password": password}:
@@ -81,10 +88,28 @@ def exercise(base, binary, source_loaded):
                 if request == {"email": "user@example.test", "password": password}:
                     status, payload = 200, {"token": legacy}
                     observed.append("legacy-issued")
+            elif path == "/api/v1/auth/device-session":
+                status = 401
+                if actor and state.read_text() == "deny_enrollment":
+                    status = 403
+                    observed.append("enrollment-denied")
+                elif actor:
+                    mode = state.read_text()
+                    token = secrets.token_urlsafe(27)
+                    actors[token] = actor
+                    derived[token] = {"actor": actor, "mode": mode, "parent": bearer}
+                    observed.append("enrolled-" + actor + "-" + mode)
+                    if mode == "cancel_enrollment":
+                        enrolled.touch()
+                        time.sleep(0.5)
+                    elif mode == "cas_competition":
+                        assert stored("save", secret=competing_record)["status"] == "saved"
+                    status, payload = (503 if mode == "failed_enrollment" else 200), {"token": token}
             elif path == "/api/v1/auth/logout":
                 observed.append("logout-" + str(actor))
-                if actor == "alice":
-                    actors.pop(self.headers["Authorization"].removeprefix("Bearer "), None)
+                if bearer in (personal, launcher):
+                    observed.append("shared-key-revoked")
+                actors.pop(bearer, None)
                 status, payload = 200, {"revoked": True}
             elif path == "/api/v1/issues/measure" and actor:
                 observed.append("audit-" + actor)
@@ -114,12 +139,34 @@ def exercise(base, binary, source_loaded):
         api = f"http://127.0.0.1:{port}"
         secondary = f"http://127.0.0.1:{other}"
 
-        def stored(action, origin=api):
-            return vault.dispatch({
+        def stored(action, origin=api, secret=None):
+            request = {
                 "action": action,
                 "service": "tianxuan-editor",
                 "account": hashlib.sha256(origin.encode()).hexdigest(),
-            })
+            }
+            if secret is not None:
+                request["secret"] = secret
+            return vault.dispatch(request)
+
+        old_record = json.dumps({
+            "version": 1,
+            "origin": api,
+            "project": "legacy-project",
+            "user_id": "bob",
+            "owned": False,
+            "token": personal,
+            "binding_id": "pre-upgrade",
+        })
+        competing_record = json.dumps({**json.loads(old_record), "binding_id": "other-process-login"})
+        migration_modes = {
+            "migrate_failure": "invalid_me",
+            "migrate_cancel": "cancel_enrollment",
+            "migrate_cas": "cas_competition",
+            "migrate_denied": "deny_enrollment",
+            "migrate_logout_during_save": "online",
+            "migrate": "online",
+        }
 
         env = {
             key: value for key, value in sanitized_environment(base).items() if not key.startswith(("TX_", "TIANXUAN_"))
@@ -129,6 +176,8 @@ def exercise(base, binary, source_loaded):
             TX_OTHER_ORIGIN=secondary,
             TX_TEST_SERVICE=service_name,
             TX_STATE=str(state),
+            TX_ENROLLED=str(enrolled),
+            TX_SAVED=str(saved_marker),
             TX_PYTHON=sys.executable,
             GONGGONG_PYTHON=sys.executable,
             TX_FIXTURE_PASSWORD=password,
@@ -136,8 +185,24 @@ def exercise(base, binary, source_loaded):
             TX_SOURCE_LOADED=str(int(source_loaded)),
         )
         try:
-            for phase in ("login", "restart", "precedence", "offline", "logout", "legacy", "early_logout"):
-                state.write_text(phase if phase in ("legacy", "offline") else "online")
+            for phase in (
+                "login",
+                "restart",
+                "precedence",
+                "offline",
+                "logout",
+                "legacy",
+                "early_logout",
+                *migration_modes,
+                "migration_restart",
+                "migration_logout",
+            ):
+                state.write_text(migration_modes.get(phase, phase if phase in ("legacy", "offline") else "online"))
+                if phase in migration_modes:
+                    assert stored("save", secret=old_record)["status"] == "saved"
+                    enrolled.unlink(missing_ok=True)
+                    saved_marker.unlink(missing_ok=True)
+                enrollments_before = len(derived)
                 launch_env = {"TIANXUAN_TOKEN": launcher} if phase == "precedence" else {}
                 result = subprocess.run(
                     [str(editor), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
@@ -147,33 +212,50 @@ def exercise(base, binary, source_loaded):
                     timeout=90,
                 )
                 output = result.stdout + result.stderr
-                assert not any(value.encode() in output for value in (device, personal, password, legacy, launcher)), (
-                    "secret in editor diagnostics"
-                )
+                assert not any(
+                    value.encode() in output for value in (device, personal, password, legacy, launcher, *derived)
+                ), "secret in editor diagnostics"
                 reports = [json.loads(line) for line in result.stdout.splitlines() if line.startswith(b"{")]
                 if result.returncode or b"SCRIPT ERROR" in output or not reports or not reports[-1].get("passed"):
                     raise AssertionError(f"{phase}: {output[-5000:].decode('utf-8', 'replace')}")
                 phases[phase] = reports[-1]["checks"]
                 stored_record = stored("load")
-                if phase in ("login", "restart", "precedence", "legacy"):
+                if phase in ("migrate_failure", "migrate_cancel", "migrate_cas", "migrate_denied"):
+                    expected = competing_record if phase == "migrate_cas" else old_record
+                    assert stored_record == {"status": "loaded", "secret": expected}, phase
+                elif phase in ("login", "restart", "precedence", "legacy", "migrate", "migration_restart"):
                     assert stored_record["status"] == "loaded", "credential not persisted to native store"
                     record = json.loads(stored_record["secret"])
-                    assert record["origin"] == api and record["token"] == {"login": device, "legacy": legacy}.get(
-                        phase, personal
-                    )
-                    assert record["user_id"] == ("bob" if phase in ("precedence", "restart") else "alice")
+                    assert record["origin"] == api and record["owned"] is True
+                    if phase in ("login", "legacy"):
+                        assert record["token"] == {"login": device, "legacy": legacy}[phase]
+                    else:
+                        assert record["token"] in derived and derived[record["token"]]["parent"] == personal
+                        assert record["token"] != personal
+                    assert record["user_id"] == ("alice" if phase in ("login", "legacy") else "bob")
+                    if phase == "migration_restart":
+                        assert len(derived) == enrollments_before, "owned device was enrolled twice"
                     assert password not in stored_record["secret"]
                 else:
                     assert stored_record == {"status": "missing"}, "local grant survived logout/revocation"
             assert observed.count("issued") == observed.count("legacy-issued") == 1
-            assert observed.count("logout-alice") == 2 and "logout-bob" not in observed
+            assert device not in actors and legacy not in actors, observed
+            assert "shared-key-revoked" not in observed and personal in actors
+            assert all(token not in actors for token, info in derived.items() if info["actor"] == "bob")
+            assert observed.count("enrolled-bob-online") == 4
+            assert observed.count("enrolled-bob-invalid_me") == 2
+            assert observed.count("enrolled-bob-cancel_enrollment") == 2
+            assert observed.count("enrolled-bob-failed_enrollment") == 1
+            assert observed.count("enrolled-bob-cas_competition") == 1
+            assert observed.count("enrollment-denied") == 1
             assert "audit-bob" in observed and not cross_origin
             for directory in (base / "engine/editor_data", project):
                 for path in directory.rglob("*"):
                     if path.is_file():
                         contents = path.read_bytes()
                         assert not any(
-                            value.encode() in contents for value in (device, personal, password, legacy, launcher)
+                            value.encode() in contents
+                            for value in (device, personal, password, legacy, launcher, *derived)
                         ), "plaintext in project or editor settings"
         finally:
             for origin in (api, secondary):
@@ -183,6 +265,16 @@ def exercise(base, binary, source_loaded):
         "mode": "source_loaded" if source_loaded else "compiled_native",
         "platform": sys.platform,
         "binary_sha256": digest(editor),
+        "source_sha256": {
+            str(path.relative_to(ROOT)).replace("\\", "/"): digest(path)
+            for path in (
+                ROOT / "editor/docks/tianxuan/session_controller.gd",
+                ROOT / "editor/docks/daqian/session_memory.gd",
+                HELPER,
+                Path(__file__),
+                Path(__file__).with_name("tianxuan_identity.gd"),
+            )
+        },
         "phases": phases,
         "service_observations": observed,
     }
