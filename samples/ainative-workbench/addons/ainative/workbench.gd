@@ -1963,9 +1963,15 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 		if record.get("kind", "image") == "character":
 			status.text = "人形角色是终端预览产物，请双击进入骨骼绑定或使用下载按钮"
 			return
-		if record.get("kind", "image") != "mesh":
-			status.text = "图片生成物请从正式图片节点连接下游"
-			return
+		if record.get("kind", "image") == "image":
+			# Image artifacts adapt the latest formal output; keep the executable edge
+			# on the source node so queue typing, persistence and cache reuse stay intact.
+			source_node = nodes.filter(func(n): return n.id == str(record.source))
+			if source_node.is_empty(): return
+			from = StringName(record.source)
+			from_port = 1 if record.entry.has("images") and not _queue_only_node(source_node[0]) else 0
+			break
+		if record.get("kind", "image") != "mesh": return
 		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
 			status.text = "Mesh 生成物只能连接到 Mesh 输入"
 			return

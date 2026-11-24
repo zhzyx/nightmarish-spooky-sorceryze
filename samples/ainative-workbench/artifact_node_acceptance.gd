@@ -70,7 +70,7 @@ func run():
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await settle()
 	panel.nodes = [formal_node("image", "generate_image"), formal_node("mesh", "image_to_mesh"), formal_node("unrelated", "text_to_mesh")]
-	panel.edges = [{"from": "image", "to": "mesh", "input": "source", "output": "image_set"}]
+	panel.edges = []
 	panel.selected_id = ""
 	var members: Array = []
 	for index in 3:
@@ -83,10 +83,14 @@ func run():
 	check(panel.artifact_nodes.has("image"), "successful image history creates a dynamic artifact node")
 	var artifact_id = str(panel.artifact_nodes["image"].id)
 	var artifact = panel.graph.get_node(NodePath(artifact_id)) as GraphNode
-	check(panel.model().nodes.size() == 3 and panel.model().edges.size() == 1, "artifact presentation does not alter the executable DAG")
+	check(panel.model().nodes.size() == 3 and panel.model().edges.is_empty(), "artifact presentation does not alter the executable DAG")
 	check(artifact.get_meta("maliang_artifact", false) and artifact.get_node("ArtifactGallery").get_child_count() == 3, "one dynamic node displays every generated image thumbnail")
 	var style = artifact.get_theme_stylebox("panel") as StyleBoxFlat
 	check(style != null and style.corner_radius_top_left >= 12 and style.border_width_top >= 2, "rounded bordered artifact shape differs from formal process nodes")
+	panel.graph.connection_request.emit(artifact_id, 0, "mesh", 0)
+	panel._schedule_artifact_layout()
+	await settle()
+	check(panel.edges.size() == 1 and panel.edges[0].get("from") == "image" and panel.edges[0].get("output") == "image_set" and not panel.edges[0].has("artifact"), "image artifact output connects to the downstream input through its formal queue")
 	check(connected("image", artifact_id) and connected(artifact_id, "mesh") and not connected("image", "mesh"), "referenced artifact is inserted between image generation and Mesh")
 	artifact.get_node("ArtifactGallery").get_child(2).get_node("ArtifactImage2").pressed.emit()
 	await settle()
