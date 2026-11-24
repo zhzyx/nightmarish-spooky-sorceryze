@@ -55,6 +55,10 @@ func run() -> void:
 	var phase := OS.get_environment("TX_PHASE")
 	# Use the real OS backend under a fresh service name, never the production vault.
 	session.test_helper_source = helper.replace("Godot.Tianxuan.Editor", OS.get_environment("TX_TEST_SERVICE"))
+	# Security.framework chooses its Keychain search scope from HOME. Only the
+	# helper shares the runner's OS scope; the editor itself stays fully isolated.
+	if OS.has_environment("TX_VAULT_HOME"):
+		session.test_helper_source = session.test_helper_source.replace("import os\n", "import os\nos.environ['HOME'] = os.environ['TX_VAULT_HOME']\n")
 	if phase == "migrate_logout_during_save":
 		session.test_helper_source = session.test_helper_source.replace("response = dispatch(request)", "response = dispatch(request)\n            if request.get('action') == 'save' and response.get('status') == 'saved':\n                import os,time\n                open(os.environ['TX_SAVED'],'w').close()\n                time.sleep(0.5)")
 	if not check(session.test_helper_source != helper and session.credential_transport != null, "isolated native helper embedded"):
@@ -65,7 +69,7 @@ func run() -> void:
 		session._cancel_login()
 	if phase == "early_logout":
 		await session.reset()
-	if phase == "migrate_cancel":
+	if phase in ["migrate_cancel", "migrate_echo_cancel"]:
 		while not FileAccess.file_exists(OS.get_environment("TX_ENROLLED")):
 			await process_frame
 		session._cancel_login()
@@ -239,7 +243,7 @@ func run() -> void:
 			return
 		if not check(session._owned_session and session._token != token and not session._stored_digest.is_empty(), "legacy shared key is upgraded to a persisted owned device grant"):
 			return
-	elif phase in ["migrate_failure", "migrate_cancel", "migrate_cas", "migrate_denied"]:
+	elif phase in ["migrate_failure", "migrate_cancel", "migrate_cas", "migrate_denied", "migrate_echo", "migrate_echo_cancel"]:
 		if not check(session.get_identity().is_empty(), "failed or superseded legacy migration never activates shared credentials"):
 			return
 	elif phase == "migrate_logout_during_save":

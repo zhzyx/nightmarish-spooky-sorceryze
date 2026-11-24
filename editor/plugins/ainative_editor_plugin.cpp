@@ -124,6 +124,33 @@ void AINativeEditorPlugin::_prepare_workbench() {
 	}
 }
 
+Dictionary AINativeEditorPlugin::PrepareSpecHandoff(const Dictionary &mapSnapshot, const Callable &callableValidate) {
+	Dictionary mapResult;
+	mapResult["ok"] = false;
+	if (!is_inside_tree() || !dock || !dock->is_inside_tree()) {
+		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
+		return mapResult;
+	}
+	_prepare_workbench();
+	Node *pWorkbench = dock->get_node_or_null(NodePath("AINativeWorkbench"));
+	if (!pWorkbench || !pWorkbench->has_method("prepare_spec_handoff")) {
+		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
+		return mapResult;
+	}
+	mapResult = pWorkbench->call("prepare_spec_handoff", mapSnapshot, callableValidate);
+	if (bool(mapResult.get("ok", false))) {
+		EditorDockManager::get_singleton()->force_focus_dock(dock);
+	}
+	return mapResult;
+}
+
+void AINativeEditorPlugin::ClearSpecHandoff() {
+	Node *pWorkbench = dock ? dock->get_node_or_null(NodePath("AINativeWorkbench")) : nullptr;
+	if (pWorkbench && pWorkbench->has_method("clear_spec_handoff")) {
+		pWorkbench->call("clear_spec_handoff");
+	}
+}
+
 AINativeEditorPlugin::AINativeEditorPlugin() {
 	dock = memnew(EditorDock);
 	dock->set_name("AINative");
@@ -133,6 +160,8 @@ AINativeEditorPlugin::AINativeEditorPlugin() {
 	dock->set_available_layouts(EditorDock::DOCK_LAYOUT_MAIN_SCREEN | EditorDock::DOCK_LAYOUT_ALL);
 	dock->set_default_slot(EditorDock::DOCK_SLOT_MAIN_SCREEN);
 	dock->set_meta("settings_initializer", callable_mp(this, &AINativeEditorPlugin::_prepare_workbench));
+	dock->set_meta("prepare_spec_handoff", callable_mp(this, &AINativeEditorPlugin::PrepareSpecHandoff));
+	dock->set_meta("clear_spec_handoff", callable_mp(this, &AINativeEditorPlugin::ClearSpecHandoff));
 	notice = memnew(Label);
 	notice->set_text(U"马良 · 网格生成与骨骼绑定");
 	dock->add_child(notice);

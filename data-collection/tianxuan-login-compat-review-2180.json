@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "issue": 2180,
+  "worker": "/root/local_chat_review",
+  "role": "independent implementation reviewer",
+  "implementation_participation": false,
+  "baseline": "e26950889766955589b99af8e12225055cb1e82a",
+  "reviewed_at": "2026-11-24T03:04:24.653683+00:00",
+  "scope": "Compatibility with older workspace services during explicit personal-key authentication; strict temporary-login fallback, credential ownership and vault isolation, canceled/late authentication, modern persistent-device regression, translated safe status diagnostics, and correction of the actual SCons bundle target selected by an existing owned-process test.",
+  "candidate_files_sha256": {
+    "editor/docks/tianxuan/session_controller.gd": "ad5c82d2070dce464bbca44fbb4cbacf2993862c28198144de0bf94a036cf90c",
+    "editor/docks/tianxuan/locale.gd": "dd1e6f6d29f258aec82231d4f5dc34160a2c0e665552dd16115a6abfc4cb3aed",
+    "tests/editor/run_tianxuan_identity.py": "5b9bcc3e3f8ea5e35f643d117e57d819359c363943d34718bfdfdfbfa2651f3f",
+    "tests/editor/tianxuan_identity.gd": "cc4895843685e0a5865425cc2caadd2d4b3f9072e0cdd3ae23fd3bc9a377368e",
+    "tests/editor/run_tianxuan_legacy_key_identity.py": "c65d20d836a6d053d9bf6e6e05a39c50c5c8b45e4cf1aa5ea89d81533c52c0be",
+    "tests/editor/tianxuan_legacy_key_identity.gd": "3cacf69cc3a35312bad8c4fe918e42d48cc28b6d9693423316708ca578af244a",
+    "tools/ainative/test_owned_process.py": "0bc682b07322f40f23bdc2a1fa6bbc62df43bc7d71e1c62f69c990d4a91c83e7",
+    "design-docs/tianxuan-chat-repair-20261124.md": "a424aa61571451198d0f28691c90a240405ed734b52af9cc358b976651624448"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "P1",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/session_controller.gd",
+      "problem": "The initial patch rejected an echoed shared key only in explicit authentication. Legacy saved-key restoration could still persist the same key as owned and later revoke it. Exact string comparison also missed equivalent Bearer values with surrounding spaces.",
+      "resolution": "Both enrollment paths reject canonical shared-key echoes and avoid their revocation, including late responses. Personal-key input is normalized after validation while account passwords remain unchanged. Modern identity tests now cover saved-key echo, late echo and whitespace-equivalent keys; the compatibility suite rejects explicit echoed keys without calling the identity fallback."
+    },
+    {
+      "id": "R2",
+      "severity": "P3",
+      "status": "resolved",
+      "file": "editor/docks/tianxuan/locale.gd",
+      "problem": "New formatted status text was interpolated before translation, and the temporary-login suffix did not exactly match its translation key.",
+      "resolution": "The session uses the Tianxuan translation domain, translates templates before interpolation, translates the exact suffix separately, and includes the connection-failure fragment in the English catalog."
+    }
+  ],
+  "review_checks": [
+    "Only a definite HTTP 404 or 405 from device enrollment allows an explicit personal key to use the older identity endpoint. HTTP 401/403, other service failures, transport failure, empty successful credentials and shared-key echoes do not downgrade.",
+    "Temporary authentication requires an actual successful identity response with a nonblank string actor ID and an allowed admin/editor/viewer role. The server role is preserved; the client grants no additional authority.",
+    "The temporary path returns before any vault load/save/delete or old-device cleanup. It activates with owned=false and no saved digest. Its marker survives sign-out so repeated logout cannot read or delete a different saved login.",
+    "Authentication generation, captured origin and identity generation continue to reject canceled/superseded login results, origin changes and late 401 replies from an older session. Only distinguishable independent device credentials may be revoked.",
+    "Existing owned-device restoration, same-account reauthentication, conditional vault replacement, migration, restart and logout remain covered by the modern identity suite. Shared credentials are never promoted to owned credentials merely because enrollment returned them.",
+    "New status messages contain fixed error categories and safe HTTP status indicators. Raw response bodies and keys are not interpolated. The implementation does not rely on a presumed production HTTP status.",
+    "The new loopback compatibility suite uses generated credentials and an isolated randomly named credential service. On macOS only its test helper shares the runner OS credential-store scope; the editor remains isolated. Fixtures remove their own service records in finally blocks and check for credential leakage.",
+    "The standard identity runner invokes the new compatibility suite and checks unchanged source/binary fingerprints across both runs. This adds routine coverage without a provider invocation or a new production authentication dependency.",
+    "The owned-process test locates the exact ainative/bundle.gen.h CommandNoCache registration rather than assuming it is the first generated-header command. It fails if the target is missing and retains the real source-list, packaged helper and installed helper-resolution assertions."
+  ],
+  "independent_verification": [
+    {
+      "command": "Read current candidate diffs and dependent session transport, server Bearer parsing, credential fixture and editor/SCsub contracts; compare validation source fingerprints with the final files.",
+      "result": "passed",
+      "evidence_level": "independent source review"
+    },
+    {
+      "command": "Python ast.parse on tests/editor/run_tianxuan_identity.py, tests/editor/run_tianxuan_legacy_key_identity.py and tools/ainative/test_owned_process.py.",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "read_back_validation": [
+    {
+      "artifact": "tianxuan-identity-auth-compat-source.json",
+      "sha256": "944bc9423b4ab90b3c9277fc295887fdebd9a1ed71b9472c98b15d641bb25244",
+      "passed": true,
+      "mode": "source_loaded",
+      "binary_sha256": "b0ee8a60f186bdf7c60cc2e0d206ee807d47f07bdf1e74e9220a92842353c36c",
+      "identity_phase_count": 22,
+      "identity_checks": 103,
+      "compatibility_checks": 68,
+      "total_checks": 171,
+      "source_fingerprints_match": true,
+      "stale_sources": [],
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer"
+    },
+    {
+      "artifact": "tianxuan-login-compat-identity-compiled.json",
+      "sha256": "6d7e7e94dbc8ea29d322c6c4f258e2a73c7b4a5d5936cbacc5cdb3dd57067438",
+      "passed": true,
+      "mode": "compiled_native",
+      "binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+      "identity_phase_count": 22,
+      "identity_checks": 103,
+      "compatibility_checks": 68,
+      "total_checks": 171,
+      "source_fingerprints_match": true,
+      "stale_sources": [],
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer"
+    },
+    {
+      "artifact": "tianxuan-login-compat-native.json",
+      "sha256": "516a937969e0f11136139c8ceee46d2667b7149c72bbd978ab6655b4dad6bd6e",
+      "passed": true,
+      "binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+      "native_checks": 157,
+      "local_conversation_checks": 43,
+      "host_progress_checks": 16,
+      "compiled_handoff_checks": 27,
+      "total_checks": 243,
+      "source_fingerprints_match": true,
+      "cloud_inference_requests": 0,
+      "handoff_provider_commands": 0,
+      "handoff_script_error_seen": false,
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer"
+    },
+    {
+      "artifact": "tianxuan-2209-owned-process-tests.log",
+      "sha256": "f6f8ff4cf12677cbb2e0413a79bce96714853a1cd024ccf5426f3bc2247a77d3",
+      "passed": true,
+      "checks": 15,
+      "elapsed_seconds": 13.835,
+      "scope": "Python owned-process adapter tests and the actual SCons bundle-input fixture, including simulated Windows ownership contracts. This is not a new Windows application acceptance run.",
+      "input_file": "tools/ainative/test_owned_process.py",
+      "input_file_sha256": "0bc682b07322f40f23bdc2a1fa6bbc62df43bc7d71e1c62f69c990d4a91c83e7",
+      "input_binding": "Implementation task supplied the frozen-file execution result; the log itself does not embed an input digest. The reviewer inspected the exact current fixture and read the original log.",
+      "execution_owner": "implementation task; independently read back, not executed by this reviewer"
+    }
+  ],
+  "final_validation_binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+  "diagnostics": [
+    {
+      "source": "compiled native workspace run",
+      "observed": [
+        "An empty-name engine condition error.",
+        "Canvas/CanvasItem/ObjectDB and PagedAllocator/dependency cleanup diagnostics at headless exit."
+      ],
+      "disposition": "Retained in the original receipt. Behavioral checks passing is not a zero-warning or clean-shutdown claim."
+    },
+    {
+      "source": "nested local conversation contract",
+      "observed": [
+        "An intentional private storage-blocker directory failure."
+      ],
+      "disposition": "Expected negative-case evidence that a durable save failure does not start inference; private temporary paths are omitted from this public record."
+    },
+    {
+      "source": "identity runners",
+      "observed": [
+        "The runners enforce zero exit status, successful assertions, no SCRIPT ERROR, no private credential/raw-service-body diagnostic leakage, and unchanged validation inputs."
+      ],
+      "disposition": "The compact identity reports do not retain all process diagnostics; this review does not claim that no other shutdown warning occurred."
+    }
+  ],
+  "conclusion": "passed",
+  "unresolved_findings": [],
+  "limitations": [
+    "No production key was read and no authenticated production-service request was made by this reviewer. The actual HTTP status behind the user login failure has not been established by this review; 404/405 compatibility is proven using controlled loopback services.",
+    "The new binary and fixtures establish compatibility behavior, not successful real-user reauthentication against the installed service. Installation, live account acceptance, exact-candidate CI and main delivery remain separate evidence.",
+    "The temporary compatibility login is deliberately not persisted. Modern supported services continue to use independent persistent device authorization.",
+    "No model/provider or asset-production invocation was performed for this review. Prior UI, CLI, production-handoff and delivery evidence is not rewritten or relabeled as new live acceptance."
+  ],
+  "prior_committed_reviews_unchanged": {
+    "data-collection/tianxuan-design-entry-review-2180.json": "ee55bb137f9aebb725eb4f5d45e2c3b64a2d61a7e5b047ddd53a5e3b9ce91c80",
+    "data-collection/tianxuan-resume-layout-review-2180.json": "65ba8ff82a7fb1639cd79d1f08ca4dc801d05a8de19dab5aad504b2ffa1bef50"
+  },
+  "path_policy": "This is a new append-only evidence file. Repository paths are relative, external references are artifact basenames, and machine paths, real account data and credentials are omitted."
+}

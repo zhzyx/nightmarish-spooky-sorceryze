@@ -85,6 +85,11 @@ def main():
     parser.add_argument("--node", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--allow-real-provider", action="store_true")
+    parser.add_argument(
+        "--resume-legacy",
+        action="store_true",
+        help="Recover a private historical pig request through the compiled workspace controller",
+    )
     args = parser.parse_args()
     if not args.allow_real_provider:
         parser.error("This optional probe requires explicit --allow-real-provider authorization")
@@ -150,6 +155,7 @@ def main():
             TX_REAL_CLI_NODE=str(node),
             TX_REAL_CLI_CODEX=str(cli),
             TX_REAL_CLI_WORKFLOW_PYTHON=str(Path(sys.executable).resolve()),
+            TX_REAL_CLI_RESUME="yes" if args.resume_legacy else "no",
         )
         # Provider identity and auth discovery remain exactly as supplied by this user.
         report["home_preserved"] = environment.get("HOME") == os.environ.get("HOME")

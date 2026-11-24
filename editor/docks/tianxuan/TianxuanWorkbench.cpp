@@ -78,6 +78,57 @@ Error InstallTianxuanAssetIfAbsent(const String &strTemporary, const String &str
 
 namespace
 {
+bool IsLocalProductionSnapshotCurrent(const Dictionary &mapSnapshot)
+{
+	EditorNode *pEditor = EditorNode::get_singleton();
+	Node *pWorkspace = pEditor ? pEditor->get_gui_base()->get_node_or_null(NodePath("TianxuanWorkspaceController")) : nullptr;
+	if (!pWorkspace || !pWorkspace->has_method("local_production_specification"))
+	{
+		return false;
+	}
+	Dictionary mapCurrent = pWorkspace->call("local_production_specification");
+	return !mapCurrent.has("error") && mapCurrent == mapSnapshot;
+}
+
+Dictionary PrepareLocalProductionHandoff(const Dictionary &mapSnapshot)
+{
+	Dictionary mapResult;
+	mapResult["ok"] = false;
+	if (!IsLocalProductionSnapshotCurrent(mapSnapshot))
+	{
+		mapResult["error"] = U"账号、对话或已确认规格已变化，请从天璇重新进入。";
+		return mapResult;
+	}
+	EditorNode *pEditor = EditorNode::get_singleton();
+	EditorDock *pDock = pEditor ? Object::cast_to<EditorDock>(pEditor->find_child("AINative", true, false)) : nullptr;
+	if (!pDock || !pDock->is_inside_tree() || !pDock->has_meta("prepare_spec_handoff"))
+	{
+		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
+		return mapResult;
+	}
+	Callable callablePrepare = pDock->get_meta("prepare_spec_handoff");
+	if (!callablePrepare.is_valid())
+	{
+		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
+		return mapResult;
+	}
+	return callablePrepare.call(mapSnapshot, callable_mp_static(&IsLocalProductionSnapshotCurrent));
+}
+
+void ClearLocalProductionHandoff()
+{
+	EditorNode *pEditor = EditorNode::get_singleton();
+	EditorDock *pDock = pEditor ? Object::cast_to<EditorDock>(pEditor->find_child("AINative", true, false)) : nullptr;
+	if (pDock && pDock->has_meta("clear_spec_handoff"))
+	{
+		Callable callableClear = pDock->get_meta("clear_spec_handoff");
+		if (callableClear.is_valid())
+		{
+			callableClear.call();
+		}
+	}
+}
+
 String CredentialPython()
 {
 	return GongGongRuntimeConfig::path(GongGongRuntimeConfig::read_effective(), "workflow_python");
@@ -158,6 +209,8 @@ Node *GetWorkspaceController(AIChatDock *pModelSettings)
 	pController->set_meta("execution_script", refExecution);
 	pController->set_meta("local_conversation_script", refLocalConversation);
 	pController->set_meta("model_host", pModelHost);
+	pController->set_meta("local_production_handoff", callable_mp_static(&PrepareLocalProductionHandoff));
+	pController->set_meta("local_production_clear", callable_mp_static(&ClearLocalProductionHandoff));
 	pController->set_meta("install_asset_if_absent", callable_mp_static(&InstallTianxuanAssetIfAbsent));
 	pController->set("storage_root", EditorPaths::get_singleton()->get_data_dir().path_join("tianxuan-drafts"));
 	pRoot->add_child(pController);

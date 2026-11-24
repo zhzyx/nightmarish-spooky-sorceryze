@@ -138,29 +138,97 @@ func run() -> void:
 		return
 	if not check(await wait_until(func(): return not controller.chat_busy()), "native requirement page finishes refreshing before editing"):
 		return
-	main._page_instances.design._suggest.pressed.emit()
+	var design_view: Control = main._page_instances.design
+	var next_design: Button = design_view.find_child("TianxuanDesignNext", true, false)
+	var design_progress: Label = design_view.find_child("TianxuanDesignProgress", true, false)
+	var design_hint: Label = design_view.find_child("TianxuanDesignNextHint", true, false)
+	var execution_placeholder: Control = design_view.find_child("TianxuanRequirementExecution", true, false)
+	var launch: Button = design_view.find_child("LaunchTianxuanRequirement", true, false)
+	var launch_status: Label = design_view.find_child("TianxuanExecutionStatus", true, false)
+	if not check(next_design != null and design_progress != null and design_hint != null and execution_placeholder != null and launch != null and launch_status != null, "native requirement page exposes its stage summary, next action and execution prerequisites"):
+		return
+	if not check(next_design.text.contains("生成") and not next_design.disabled, "an empty current stage names draft generation as its explicit next action"):
+		return
+	next_design.pressed.emit()
 	if not check(await wait_until(func(): return not controller.chat_busy() and controller.load_draft(controller.design_key("direction")).get("body", "") == "本机 API 夹具设计建议：保持已有目标，补充实现与验收。"), "native requirement suggestion uses the same local API connection"):
 		return
 	if not check(LocalModelFixture.unchanged(ai_before), "local design suggestion also leaves ordinary AIChat conversation unchanged"):
 		return
 	for index in 3:
-		stage.select(index)
-		stage.item_selected.emit(index)
+		if index > 0:
+			var before_next: Dictionary = controller.conversation().duplicate(true)
+			if not check(next_design.text.contains("继续") and not next_design.disabled, "confirming a stage exposes the next unfinished stage"):
+				return
+			next_design.pressed.emit()
+			if not check(stage.selected == index and controller.conversation() == before_next, "cross-stage Next only selects the target; it does not generate, save or confirm"):
+				return
 		main.find_child("TianxuanDesignTitle", true, false).text = "原生完整需求"
 		main.find_child("TianxuanDesignBody", true, false).text = "阶段 %d：明确目标、范围及实现行为。" % index
 		main.find_child("TianxuanDesignAcceptance", true, false).text = "原生控件提交并回读服务端正式需求。"
-		main.find_child("SaveTianxuanDesign", true, false).pressed.emit()
+		if not check(next_design.text.contains("保存") and not next_design.disabled, "the current stage's explicit Next action saves its edited revision"):
+			return
+		next_design.pressed.emit()
 		var stage_name: String = ["direction", "plan", "design"][index]
 		if not check(await wait_until(func(): return not controller.chat_busy() and not controller.design_revision(stage_name).is_empty()), "native design saves stage " + stage_name):
 			return
-		main.find_child("ConfirmTianxuanDesign", true, false).pressed.emit()
-		if not check(await wait_until(func(): return controller.design_revision(stage_name).get("confirmed_at") != null), "native design explicitly confirms stage " + stage_name):
+		if index == 1:
+			var returned_revision: int = controller.design_revision(stage_name).revision
+			design_view._history_toggle.pressed.emit()
+			design_view._return_reason.text = "隔离夹具：补充策划范围后重新确认。"
+			design_view._return.pressed.emit()
+			if not check(await wait_until(func(): return not controller.chat_busy() and controller.design_revision(stage_name).get("returned_at") != null), "native revision history returns the saved plan with an explicit reason"):
+				return
+			if not check(design_view._confirm_stage.disabled and design_view._next_action == "suggest" and not next_design.disabled and design_hint.text.contains("保存新修订"), "a returned revision explains that a new revision is required instead of offering confirmation"):
+				return
+			design_view._history_toggle.pressed.emit()
+			design_view._body.text = "阶段 1：补充策划范围，明确目标、范围及实现行为。"
+			if not check(design_view._next_action == "save" and not next_design.disabled, "editing a returned plan exposes an explicit save action for the replacement revision"):
+				return
+			next_design.pressed.emit()
+			if not check(await wait_until(func(): return not controller.chat_busy() and controller.design_revision(stage_name).get("revision", 0) > returned_revision and controller.design_revision(stage_name).get("returned_at") == null), "saving a returned plan creates a new unreturned revision before confirmation"):
+				return
+		if not check(next_design.text.contains("确认") and controller.design_revision(stage_name).get("confirmed_at") == null, "saving a revision leaves confirmation as a separate explicit action"):
 			return
-	main.find_child("PublishTianxuanRequirement", true, false).pressed.emit()
+		next_design.pressed.emit()
+		if not check(await wait_until(func(): return not controller.chat_busy() and controller.design_revision(stage_name).get("confirmed_at") != null), "native design explicitly confirms stage " + stage_name):
+			return
+		if index == 0:
+			var direction_spec: Dictionary = controller.local_production_specification()
+			if not check(not direction_spec.has("error") and direction_spec.title == controller.conversation().title and direction_spec.acceptance == "", "confirmed direction handoff normalizes nullable fields and uses the conversation title"):
+				print(JSON.stringify({"direction_specification": {"error": direction_spec.get("error"), "title": direction_spec.get("title"), "acceptance": direction_spec.get("acceptance")}, "conversation_title": controller.conversation().get("title"), "chat_busy": controller.chat_busy()}))
+				return
+			if not check(design_progress.is_visible_in_tree() and design_progress.text.contains("方向") and design_progress.text.contains("策划") and design_progress.text.contains("详细设计") and design_progress.text.contains("已确认") and not design_hint.text.is_empty(), "the direction-confirmed state explains all three stages and the concrete next action"):
+				return
+			if not check(execution_placeholder.is_visible_in_tree() and launch.is_visible_in_tree() and launch.disabled and not launch_status.text.is_empty() and design_view._publish.disabled, "direction confirmation keeps an explained execution placeholder visible while publishing and launch remain gated"):
+				return
+			if not check(not design_view._history_body.is_visible_in_tree(), "confirmed history is folded instead of duplicating the current stage content"):
+				return
+	stage.select(0)
+	stage.item_selected.emit(0)
+	design_view._body.text = "未保存的方向修订必须先处理"
+	if not check(controller.local_production_specification().has("error"), "an earlier unsaved stage draft blocks local production handoff even after all saved revisions were confirmed"):
+		return
+	stage.select(2)
+	stage.item_selected.emit(2)
+	var before_draft_review: Dictionary = controller.conversation().duplicate(true)
+	next_design.pressed.emit()
+	if not check(stage.selected == 0 and design_view._body.text == "未保存的方向修订必须先处理" and design_view._publish.disabled and controller.conversation() == before_draft_review, "Next locates an earlier unsaved draft without silently saving it or publishing the requirement"):
+		return
+	design_view._discard.pressed.emit()
+	if not check(next_design.text == "保存已确认需求" and not next_design.disabled, "only three confirmed stages with no unsaved drafts expose publishing as the next action"):
+		return
+	next_design.pressed.emit()
 	if not check(await wait_until(func(): return controller.conversation().get("requirement_id") != null), "three confirmed native stages publish the real shared requirement"):
 		return
 	var requirement: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/docs/" + str(controller.conversation().requirement_id))
 	if not check(requirement.status == 200 and requirement.data.title == "原生完整需求", "Web-compatible document API reads the requirement produced by native controls"):
+		return
+	if not check(next_design.text == "查看启动条件", "a saved requirement offers an explicit route to execution prerequisites"):
+		return
+	next_design.pressed.emit()
+	if not check(await wait_until(func(): return not controller.busy("execution-capabilities") and controller.errors.has("execution-capabilities")), "the native requirement page receives the actual unconfigured execution-service result"):
+		return
+	if not check(execution_placeholder.is_visible_in_tree() and launch.is_visible_in_tree() and launch.disabled and not launch_status.text.is_empty() and controller.conversation().get("execution") == null and not design_view._confirmation.visible, "an unavailable service shows its blocking reason without opening confirmation or starting execution"):
 		return
 	main.find_child("TianxuanPage_home", true, false).pressed.emit()
 	EditorInterface.open_scene_from_path("res://fixture.tscn")

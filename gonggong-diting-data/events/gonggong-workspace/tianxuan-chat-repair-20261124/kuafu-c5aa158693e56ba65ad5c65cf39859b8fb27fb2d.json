@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c5aa158693e56ba65ad5c65cf39859b8fb27fb2d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f5048c34a91611a3f320afb8fc05f86ff299350dbd225391850f0cd28ac4b3a6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "delivery",
+    "detection_head": "3f2f3b2ee6161a1e649fdace622d2f32e34bfb2c",
+    "context_sha256": "ba53fc1188ea989e40707cfad051a362c4ea2f5237ed3d56ff9f6bb026c6b0c2",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-resume-layout",
+    "authority_ref": "issue:2180; user authorized repair of historical request and conversation layout",
+    "evidence": "writer_submit rejected modifications to already committed collection receipts before signing a new candidate",
+    "diagnosis": "Existing review and validation evidence must remain immutable. Formatting delta was initially appended within committed files.",
+    "next_action": "Preserve original committed evidence bytes and add separate format-review and format-validation correction records, then rerun the original writer submission.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T02:26:12.345043+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-tianxuan-resume-layout",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T02:29:20.819167+00:00",
+  "sha256": "f6c04e6291c8a5a1271cf506855c784c80c3208da5055b18c0a4fc90b01cdf41"
+}

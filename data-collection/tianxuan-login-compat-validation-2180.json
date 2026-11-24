@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "issue": 2180,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "scope": "A12: legacy-service sign-in compatibility preserving independent device sessions; bundle-builder regression fixture correction",
+  "validated_at": "2026-11-24T03:04:37.815372+00:00",
+  "source_parent": "e26950889766955589b99af8e12225055cb1e82a",
+  "main_baseline": "b0fc60b42d2a21bb9cc2f8b887685b46f92d037a",
+  "source_sha256": {
+    "design-docs/tianxuan-chat-repair-20261124.md": "a424aa61571451198d0f28691c90a240405ed734b52af9cc358b976651624448",
+    "editor/docks/tianxuan/session_controller.gd": "ad5c82d2070dce464bbca44fbb4cbacf2993862c28198144de0bf94a036cf90c",
+    "editor/docks/tianxuan/locale.gd": "dd1e6f6d29f258aec82231d4f5dc34160a2c0e665552dd16115a6abfc4cb3aed",
+    "tests/editor/run_tianxuan_identity.py": "5b9bcc3e3f8ea5e35f643d117e57d819359c363943d34718bfdfdfbfa2651f3f",
+    "tests/editor/tianxuan_identity.gd": "cc4895843685e0a5865425cc2caadd2d4b3f9072e0cdd3ae23fd3bc9a377368e",
+    "tests/editor/run_tianxuan_legacy_key_identity.py": "c65d20d836a6d053d9bf6e6e05a39c50c5c8b45e4cf1aa5ea89d81533c52c0be",
+    "tests/editor/tianxuan_legacy_key_identity.gd": "3cacf69cc3a35312bad8c4fe918e42d48cc28b6d9693423316708ca578af244a",
+    "tools/ainative/test_owned_process.py": "0bc682b07322f40f23bdc2a1fa6bbc62df43bc7d71e1c62f69c990d4a91c83e7"
+  },
+  "build": {
+    "platform": "macOS arm64",
+    "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+    "passed": true,
+    "binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+    "log_sha256": "77ca38bd087884df16d0342c4b871e2458168d33392036946c728f4fb8bc749f"
+  },
+  "identity": {
+    "source_loaded": {
+      "artifact": "tianxuan-identity-auth-compat-source.json",
+      "sha256": "944bc9423b4ab90b3c9277fc295887fdebd9a1ed71b9472c98b15d641bb25244",
+      "passed": true,
+      "binary_sha256": "b0ee8a60f186bdf7c60cc2e0d206ee807d47f07bdf1e74e9220a92842353c36c",
+      "phases": 22,
+      "identity_checks": 103,
+      "legacy_compatibility_checks": 68,
+      "source_sha256": {
+        "editor/docks/tianxuan/session_controller.gd": "ad5c82d2070dce464bbca44fbb4cbacf2993862c28198144de0bf94a036cf90c",
+        "editor/docks/daqian/session_memory.gd": "9ee95ace26cbe4b1dbac78f235ae4aacb42c1f74c8f9a629c4ef981e3a5cedf2",
+        "customizations/components/godot-host/session_credentials.py": "68777d992d5cb55108777159bc9b5e2947cf1c6e7b80509a96551004087bfe29",
+        "tests/editor/run_tianxuan_identity.py": "5b9bcc3e3f8ea5e35f643d117e57d819359c363943d34718bfdfdfbfa2651f3f",
+        "tests/editor/tianxuan_identity.gd": "cc4895843685e0a5865425cc2caadd2d4b3f9072e0cdd3ae23fd3bc9a377368e",
+        "tests/editor/run_tianxuan_legacy_key_identity.py": "c65d20d836a6d053d9bf6e6e05a39c50c5c8b45e4cf1aa5ea89d81533c52c0be",
+        "tests/editor/tianxuan_legacy_key_identity.gd": "3cacf69cc3a35312bad8c4fe918e42d48cc28b6d9693423316708ca578af244a"
+      },
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "stale_sources": []
+    },
+    "compiled_native": {
+      "artifact": "tianxuan-login-compat-identity-compiled.json",
+      "sha256": "6d7e7e94dbc8ea29d322c6c4f258e2a73c7b4a5d5936cbacc5cdb3dd57067438",
+      "passed": true,
+      "binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+      "phases": 22,
+      "identity_checks": 103,
+      "legacy_compatibility_checks": 68,
+      "source_sha256": {
+        "editor/docks/tianxuan/session_controller.gd": "ad5c82d2070dce464bbca44fbb4cbacf2993862c28198144de0bf94a036cf90c",
+        "editor/docks/daqian/session_memory.gd": "9ee95ace26cbe4b1dbac78f235ae4aacb42c1f74c8f9a629c4ef981e3a5cedf2",
+        "customizations/components/godot-host/session_credentials.py": "68777d992d5cb55108777159bc9b5e2947cf1c6e7b80509a96551004087bfe29",
+        "tests/editor/run_tianxuan_identity.py": "5b9bcc3e3f8ea5e35f643d117e57d819359c363943d34718bfdfdfbfa2651f3f",
+        "tests/editor/tianxuan_identity.gd": "cc4895843685e0a5865425cc2caadd2d4b3f9072e0cdd3ae23fd3bc9a377368e",
+        "tests/editor/run_tianxuan_legacy_key_identity.py": "c65d20d836a6d053d9bf6e6e05a39c50c5c8b45e4cf1aa5ea89d81533c52c0be",
+        "tests/editor/tianxuan_legacy_key_identity.gd": "3cacf69cc3a35312bad8c4fe918e42d48cc28b6d9693423316708ca578af244a"
+      },
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "stale_sources": []
+    }
+  },
+  "native": {
+    "artifact": "tianxuan-login-compat-native.json",
+    "sha256": "516a937969e0f11136139c8ceee46d2667b7149c72bbd978ab6655b4dad6bd6e",
+    "passed": true,
+    "binary_sha256": "3869a4a9ef33dc599bfe42eb64f9335a97fc8f2cf75b22e72dee3e8064f3804e",
+    "checks": 157,
+    "local_conversation_checks": 43,
+    "host_progress_checks": 16,
+    "production_handoff_checks": 27,
+    "script_error_seen": false
+  },
+  "bundle_regression": {
+    "artifact": "tianxuan-2209-owned-process-tests.log",
+    "sha256": "f6f8ff4cf12677cbb2e0413a79bce96714853a1cd024ccf5426f3bc2247a77d3",
+    "checks": 15,
+    "passed": true,
+    "reason": "Fixture previously stopped at unrelated TianxuanScripts.gen.h CommandNoCache. Now selects the exact ainative/bundle.gen.h registration while retaining real source/helper assertions."
+  },
+  "static": {
+    "ruff_check": true,
+    "ruff_format_check": true,
+    "codespell": true,
+    "git_diff_check": true
+  },
+  "preserved_evidence": [
+    "data-collection/tianxuan-resume-layout-review-2180.json",
+    "data-collection/tianxuan-resume-layout-validation-2180.json",
+    "data-collection/tianxuan-design-entry-format-review-2180.json",
+    "data-collection/tianxuan-design-entry-format-validation-2180.json"
+  ],
+  "limits": [
+    "Live authenticated service status is unknown; unauthenticated enrollment 401 does not prove endpoint availability.",
+    "Fallback requires explicit 404/405 and a valid /auth/me identity. Permission denial, network failure, malformed/echoed grants never fall back.",
+    "No production deployment, model provider call, pig asset generation or user credential extraction in this increment.",
+    "Synthetic source/compiled identity and real service login are separate evidence levels. Actual login remains pending.",
+    "Headless teardown and empty-name diagnostics are retained in raw reports.",
+    "PR #2209 failed only Module / maliang and its aggregate because of the reproduced fixture defect. New exact candidate CI remains required."
+  ]
+}

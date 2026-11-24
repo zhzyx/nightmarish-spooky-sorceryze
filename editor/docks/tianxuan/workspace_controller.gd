@@ -96,6 +96,7 @@ func set_language(value: String, persist := true) -> void:
 
 
 func _before_identity_change() -> void:
+	_clear_local_production()
 	# Views save edits synchronously while the old identity is still available.
 	changed.emit("identity_resetting")
 	if local_chat:
@@ -103,6 +104,7 @@ func _before_identity_change() -> void:
 
 
 func _identity_changed() -> void:
+	_clear_local_production()
 	_generation += 1
 	cache.clear()
 	errors.clear()
@@ -111,6 +113,12 @@ func _identity_changed() -> void:
 	active_conversation = ""
 	editor_module = ""
 	changed.emit("identity")
+
+
+func _clear_local_production() -> void:
+	var clear_handoff: Variant = get_meta("local_production_clear", Callable())
+	if clear_handoff is Callable and clear_handoff.is_valid():
+		clear_handoff.call()
 
 
 func identity() -> Dictionary:
@@ -335,6 +343,15 @@ func send_message(text: String, references: Dictionary = {}, _source_text := "")
 	local_chat.send(text, references)
 
 
+func resume_message(turn_id: String, conversation_id := "", scope := "") -> void:
+	if not conversation_id.is_empty() and active_conversation != conversation_id:
+		return
+	if not scope.is_empty() and session.scope_key() != scope:
+		return
+	if local_chat:
+		local_chat.resume(turn_id)
+
+
 func retry_pending_message() -> void:
 	# Reconcile historical cloud requests; never submit them for remote inference.
 	var id := active_conversation
@@ -385,6 +402,44 @@ func design_revision(stage: String) -> Dictionary:
 
 func design_key(stage: String) -> String:
 	return "design:" + active_conversation + ":" + stage
+
+
+func local_production_specification() -> Dictionary:
+	if not can_edit() or conversation().is_empty():
+		return {"error": "请选择有编辑权限的对话，并先确认制作规格。"}
+	if chat_busy():
+		return {"error": "正在处理当前请求，请等待完成后继续。"}
+	for stage in DESIGN_STAGES:
+		if not load_draft(design_key(stage)).is_empty():
+			return {"error": "制作规格有未保存草稿，请先保存并确认，或采用已保存版本。"}
+	for stage in ["design", "direction"]:
+		var revision := design_revision(stage)
+		if revision.get("confirmed_at") == null:
+			continue
+		var title := str(revision.title) if revision.get("title") != null else ""
+		if title.strip_edges().is_empty():
+			title = str(conversation().get("title", ""))
+		return {
+			"scope": session.scope_key(),
+			"conversation": active_conversation,
+			"stage": stage,
+			"revision": int(revision.revision),
+			"project": ProjectSettings.globalize_path("res://").trim_suffix("/"),
+			"title": title,
+			"body": str(revision.get("body", "")),
+			"acceptance": str(revision.acceptance) if revision.get("acceptance") != null else "",
+		}
+	return {"error": "请先保存并确认方向或详细设计，作为本机制作规格。"}
+
+
+func prepare_local_production() -> Dictionary:
+	var specification := local_production_specification()
+	if specification.has("error"):
+		return {"ok": false, "error": specification.error}
+	var handoff: Variant = get_meta("local_production_handoff", Callable())
+	if not handoff is Callable or not handoff.is_valid():
+		return {"ok": false, "error": "此编辑器尚未连接本机马良入口。"}
+	return handoff.call(specification)
 
 
 func design_open(stage: String) -> bool:

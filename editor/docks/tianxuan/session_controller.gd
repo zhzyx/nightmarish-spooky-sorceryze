@@ -16,6 +16,9 @@ var generation := 0
 var online := false
 var _token := ""
 var _owned_session := false
+# Retain this marker after sign-out so repeated logout cannot delete a different
+# process's saved authorization while this editor only used a temporary key.
+var _memory_only_login := false
 var _identity := {}
 var _requests: Array[HTTPRequest] = []
 var credential_transport: Script
@@ -45,6 +48,7 @@ func _automated_launch() -> bool:
 
 
 func _ready() -> void:
+	set_translation_domain(&"tianxuan-native")
 	# An automated editor uses its launcher's grant. A desktop login belongs
 	# to the person who chose it, including when the launcher exports a token.
 	if _automated_launch() and test_helper_source.is_empty():
@@ -139,13 +143,16 @@ func _restore(serial: int) -> void:
 		_restore_running = true
 		var enrollment := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/device-session", record.token, {}, 12.0, "", target)
 		var credential := str(enrollment.data.get("token", ""))
+		var echoes_shared_key := credential.strip_edges() == str(record.token).strip_edges()
 		if serial != _login_serial:
-			await _revoke(credential, target)
+			if not echoes_shared_key:
+				await _revoke(credential, target)
 			return
-		if enrollment.status != 200 or not _valid_token(credential):
+		if enrollment.status != 200 or not _valid_token(credential) or echoes_shared_key:
 			_restore_running = false
 			_set_status("无法升级保存的设备身份，请重新认证或连接服务后重试")
-			await _revoke(credential, target)
+			if not echoes_shared_key:
+				await _revoke(credential, target)
 			return
 		var verified := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
 		if serial != _login_serial or verified.status != 200 or str(verified.data.get("id", "")) != str(record.user_id) or str(verified.data.get("role", "")).is_empty():
@@ -212,6 +219,7 @@ func set_origin(value: String) -> bool:
 	if target != origin:
 		_origin_serial += 1
 		_cancel_login()
+		_memory_only_login = false
 		_clear_active("服务已切换，请登录天璇")
 		origin = target
 		_set_online(false)
@@ -254,10 +262,11 @@ func reset(message := "已退出天璇") -> void:
 	var digest := _stored_digest
 	var token := _token
 	var owned := _owned_session
+	var memory_only := _memory_only_login
 	var serial := _login_serial
 	_clear_active(message)
 	# The user can sign out during cold start, before /me establishes an actor.
-	if token.is_empty() and valid_origin(target):
+	if token.is_empty() and valid_origin(target) and not memory_only:
 		var prior := await _store("load", target)
 		if serial != _login_serial:
 			return
@@ -304,12 +313,15 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 	if not valid_project(project):
 		_set_status("请输入有效的业务项目")
 		return false
-	if secret.is_empty() or (email.is_empty() and not _valid_token(secret)):
+	if secret.is_empty() or (email.is_empty() and (not _valid_token(secret) or secret.strip_edges().is_empty())):
 		_set_status("请输入有效凭据以重新认证")
 		return false
+	if email.is_empty():
+		secret = secret.strip_edges()
 	_set_status("正在验证天璇账号…")
 	var credential := secret
 	var owned := not email.is_empty()
+	var memory_only := false
 	if owned:
 		var payload := {"email": email, "password": secret}
 		var login := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/editor-session", "", payload, 12.0, "", target)
@@ -328,21 +340,47 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 		# A shared personal key authorizes enrollment, each device uses its own session.
 		var enrollment := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/device-session", credential, {}, 12.0, "", target)
 		credential = str(enrollment.data.get("token", ""))
+		var echoes_shared_key := credential.strip_edges() == secret
 		if serial != _login_serial:
-			_revoke(credential, target)
+			if enrollment.status not in [404, 405] and not echoes_shared_key:
+				_revoke(credential, target)
 			return false
-		if enrollment.status != 200 or not _valid_token(credential):
-			_revoke(credential, target)
-			_set_status("无法登记设备登录，请检查服务与授权后重试")
+		if enrollment.status in [404, 405]:
+			# Only a definite absent endpoint permits the old /me contract. Never
+			# persist, revoke, or infer ownership of the shared personal key.
+			credential = secret
+			memory_only = true
+		elif enrollment.status != 200 or not _valid_token(credential) or echoes_shared_key:
+			if not echoes_shared_key:
+				_revoke(credential, target)
+			var detail := tr("连接失败") if enrollment.status == 0 else "HTTP %d" % enrollment.status
+			if enrollment.status in [401, 403]:
+				_set_status(tr("设备登录被拒绝，请检查个人密钥与权限（%s）") % detail)
+			elif enrollment.status == 200:
+				_set_status(tr("设备登录未返回独立设备凭据，个人密钥未保存（%s）") % detail)
+			else:
+				_set_status(tr("设备登录服务暂时不可用，请检查网络或稍后重试（%s）") % detail)
 			return false
-		owned = true
+		else:
+			owned = true
 	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
-	if serial != _login_serial or me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty():
+	var invalid_legacy_identity: bool = memory_only and (not me.data.get("id") is String or str(me.data.get("id", "")).strip_edges().is_empty() or me.data.get("role") not in ["admin", "editor", "viewer"])
+	if serial != _login_serial or me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty() or invalid_legacy_identity:
 		if owned:
 			_revoke(credential, target)
 		if serial == _login_serial:
-			_set_status("凭据失效，请重新认证" if me.status in [401, 403] else "无法核实天璇身份，请重试")
+			if memory_only:
+				var detail := tr("连接失败") if me.status == 0 else "HTTP %d" % me.status
+				_set_status(tr("旧服务身份核实失败，请检查个人密钥、权限或服务状态（%s）") % detail)
+			else:
+				_set_status("凭据失效，请重新认证" if me.status in [401, 403] else "无法核实天璇身份，请重试")
 		return false
+	if memory_only:
+		# This path intentionally performs no vault read, replacement, cleanup,
+		# or revocation of an existing device grant belonging to another process.
+		_activate(me.data, project, credential, false, "", true)
+		_set_status(status_text + tr(" · 当前服务不支持设备登录，仅本次登录有效；已保存登录保持不变"))
+		return true
 	var prior := await _store("load", target)
 	if serial != _login_serial:
 		if owned:
@@ -406,7 +444,7 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 	return true
 
 
-func _activate(identity: Dictionary, project: String, credential: String, owned: bool, digest: String) -> void:
+func _activate(identity: Dictionary, project: String, credential: String, owned: bool, digest: String, memory_only := false) -> void:
 	if not _identity.is_empty():
 		identity_resetting.emit()
 	generation += 1
@@ -414,6 +452,7 @@ func _activate(identity: Dictionary, project: String, credential: String, owned:
 	_identity.project = project
 	_token = credential
 	_owned_session = owned
+	_memory_only_login = memory_only
 	_stored_digest = digest
 	_set_status("%s · %s · %s" % [_identity.get("name", ""), _identity.role, project])
 	identity_changed.emit()

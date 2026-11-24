@@ -81,6 +81,8 @@ var document_histories: Dictionary = {}
 var template_target_aliases: Dictionary = {}
 const WorkflowTemplate = preload("res://addons/ainative/workflow_template.gd")
 const WorkbenchController = preload("res://addons/ainative/workbench_controller.gd")
+const SpecHandoff = preload("res://addons/ainative/spec_handoff.gd")
+var spec_handoff: VBoxContainer
 const HumanoidRigNode = preload("res://addons/ainative/humanoid_rig_node.gd")
 const Rig = preload("res://addons/ainative/rigging.gd")
 var controller = WorkbenchController.new()
@@ -831,6 +833,43 @@ func _ready():
 		controller.restore_run(FileAccess.get_file_as_string(state_dir.path_join("last_run.txt")))
 	if nodes.is_empty(): add_node()
 	_setup_process_panel()
+	spec_handoff = SpecHandoff.new()
+	add_child(spec_handoff)
+	spec_handoff.initialize(self)
+	move_child(spec_handoff, 1 if builtin else 0)
+
+func prepare_spec_handoff(snapshot: Dictionary, validator: Callable) -> Dictionary:
+	if spec_handoff == null:
+		return {"ok": false, "error": "马良工作台尚未就绪。"}
+	var result: Dictionary = spec_handoff.prepare(snapshot, validator)
+	if result.get("ok", false): show_native_section("mesh")
+	return result
+
+func clear_spec_handoff() -> void:
+	if spec_handoff != null: spec_handoff.clear()
+
+func append_spec_handoff_node(snapshot: Dictionary, id: String, reserve: Callable) -> Dictionary:
+	if is_graph_busy():
+		return {"ok": false, "error": "马良正在运行，请等待完成或取消后再添加节点。"}
+	if not active_template_id.is_empty():
+		return {"ok": false, "error": "请先返回主流程，再添加天璇制作节点。"}
+	if nodes.any(func(data): return data.id == id):
+		return {"ok": false, "error": "此制作节点已存在，请使用原节点。"}
+	if not selected_id.is_empty() and not apply_fields():
+		return {"ok": false, "error": "当前节点有无效编辑，请先修正后再添加制作节点。"}
+	var data := {"id": id, "type": "text_to_mesh", "version": _new_node_version("text_to_mesh"), "provider": _generator_provider("text_to_mesh"), "source": "", "image_context": "", "text": "", "parameters": {"prompt": spec_handoff.prompt(snapshot), "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	if _service_mode() in ["api_modeling", "api_sculpt"]: data.model = ""
+	_migrate_node_models(data, service_draft())
+	# Persist the one-use node reservation before changing the in-memory graph.
+	# Neither this operation nor its caller invokes the execution controller.
+	var reservation: Dictionary = reserve.call()
+	if not reservation.get("ok", false): return reservation
+	nodes.append(data)
+	rebuild(false)
+	for child in graph.get_children():
+		if child is GraphNode: child.selected = str(child.name) == id
+	select_node(id)
+	return {"ok": true, "node_id": id}
 
 func _setup_process_panel():
 	process_panel = PanelContainer.new()

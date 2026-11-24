@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "issue": 2180,
+  "worker": "/root/local_chat_review",
+  "role": "independent implementation reviewer",
+  "implementation_participation": false,
+  "baseline": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+  "reviewed_at": "2026-11-24T00:08:20.263335+00:00",
+  "scope": "Follow-up native Tianxuan recovery of historical unanswered requests; immutable history and draft preservation; scope/role/pending guards and durable continuation linkage; request-scoped truthful progress; native reply/composer allocation, reading-position preservation and visible context errors; existing requirement workflow navigation; targeted regressions and CI wiring.",
+  "candidate_files_sha256": {
+    "editor/docks/tianxuan/TianxuanModelHost.cpp": "ae4ba043c7cd1031407f2c2195e1d94562671d7da6436b638be3df854188e422",
+    "editor/docks/tianxuan/TianxuanModelHost.h": "df375bc60fa54bb5bdb822913a707e0ba3875a06604e831c0534ea20f0822528",
+    "editor/docks/tianxuan/home_page.gd": "2cc0a41012f44d9f7ebf7a140101ad4d08b53404815ba511ea6f90f3abc20be8",
+    "editor/docks/tianxuan/local_conversation_controller.gd": "ee2f52323a5f2478b2d055a4b7a0a9d35b68d6420d3e282a5a61d1eacf34b770",
+    "editor/docks/tianxuan/locale.gd": "1b7c38b63f4a0e67229463b78739f2c1a2fd3c388c12b1d238985efb23806999",
+    "editor/docks/tianxuan/workspace_controller.gd": "3a92b2c810eed14f5b6d01beeea4931481be4c2d83dc08e8ffdb08b04beb6115",
+    "tests/editor/run_tianxuan_controller.py": "8dfa4fc026ba0eb417003ed43fec7763506398035a451b94d23c3336bea862a4",
+    "tests/editor/run_tianxuan_host_progress.py": "e541018fd08799378b317a86009c4360735ed9ea1a9885d738da663252356212",
+    "tests/editor/tianxuan_host_progress.gd": "ea5f3d212c0c8e79196d309e43c21b9b39fb65056cc27c7c420f30a2e8ae99cb",
+    "tests/editor/run_tianxuan_real_cli.py": "f90d447a1298d967c289459c296f5e409c75ff7a971c98cbce08a9085c474131",
+    "tests/editor/tianxuan_real_cli.gd": "3c408c495a58f5d4c5cecc5ca3a733c7b513bfb559fd189d33cee33029abdf9c",
+    "tests/editor/tianxuan_layout.gd": "7f265132e45ed928695422bf2c08a0b3b11a9494f722eb8db70af13e2a2a193f",
+    "tests/editor/tianxuan_local_conversation.gd": "13666b8be63e9a25368ea52d5cb31bf4978593ed0d854a77362efa349a1c5b60"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "status": "resolved",
+      "severity": "P2",
+      "problem": "Collapsing the context panel hid missing-selection, missing-module and changed-reference validation errors, making Send appear unresponsive.",
+      "resolution": "Node/resource attachment actions and failed message-context validation reveal the bounded context panel. Final layout regression covers all three visible error cases."
+    },
+    {
+      "id": "R2",
+      "status": "resolved",
+      "severity": "P2",
+      "problem": "The elapsed-time regression required the exact 0:01 label after sleeping, which could reject a valid later clock on a slower host.",
+      "resolution": "The check requires elapsed time to advance and the visible label to update without hard-coding a particular second."
+    },
+    {
+      "id": "R3",
+      "status": "resolved",
+      "severity": "P2",
+      "problem": "The new compiled host progress test initially had no default CI invocation, leaving the real C++ status path outside routine coverage.",
+      "resolution": "The standard native-shell runner now executes the isolated compiled host progress probe and checks the identical binary digest."
+    }
+  ],
+  "review_checks": [
+    "Resume preserves the original unanswered turn, creates a fresh request ID, durably records continued_from before invoking the provider, and preserves the unrelated composer draft.",
+    "Stale view actions bind conversation and session scope; viewer access, unknown receipts, existing pending turns, message limits and cross-project reference snapshots prevent continuation.",
+    "Cancellation and identity generation guards remain unchanged; a stopped continuation can itself be explicitly continued without reusing the original provider request.",
+    "Host Progress returns only active and phase, validates the owned worker and immutable consultation binding, and reports no synthetic percentage, asset completion or provider content.",
+    "Progress timers update their label without rebuilding history. Deferred restoration and scrollbar-range updates preserve reader position while following later layout measurements only for a reader already at the bottom.",
+    "The context error panel opens for relevant actions and errors; input height is bounded. The next-step action navigates to the existing design flow and does not approve or start production.",
+    "The additional system message explains the existing requirement-to-execution workflow while preserving consultation-only tools and prohibiting unverified production claims.",
+    "Real-provider recovery remains explicit opt-in in a private editor/project with inherited legitimate CLI authentication; this reviewer did not invoke a real provider."
+  ],
+  "independent_verification": [
+    {
+      "command": "Private self-contained accepted editor --headless --path <private-project> --script tests/editor/tianxuan_local_conversation.gd with TX_SOURCE=reviewed worktree and private TX_DRAFTS/TX_REPORT; selected source fingerprints checked before and after execution.",
+      "result": "passed",
+      "checks": 43,
+      "evidence_level": "source-loaded controller; injected provider/session; actual private disk",
+      "binary_sha256": "af54cdee1258f263fb5c724aaffe7b33495f43e7282036f479cf7e076aafe8d3",
+      "input_sha256": {
+        "editor/docks/tianxuan/workspace_controller.gd": "3a92b2c810eed14f5b6d01beeea4931481be4c2d83dc08e8ffdb08b04beb6115",
+        "editor/docks/tianxuan/local_conversation_controller.gd": "ee2f52323a5f2478b2d055a4b7a0a9d35b68d6420d3e282a5a61d1eacf34b770",
+        "tests/editor/tianxuan_local_conversation.gd": "13666b8be63e9a25368ea52d5cb31bf4978593ed0d854a77362efa349a1c5b60"
+      },
+      "notes": "Intentional storage-blocker directory error proves a failed durable save does not start inference. This source test does not establish the new compiled UI or C++ binary."
+    },
+    {
+      "command": "python3 -m py_compile tests/editor/run_tianxuan_controller.py tests/editor/run_tianxuan_host_progress.py tests/editor/run_tianxuan_real_cli.py",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "read_back_validation": [
+    {
+      "artifact": "tianxuan-resume-layout-final.json",
+      "sha256": "005edddb5c1a472959d365e915b5756f2ecfa67cab428c5e7f8a2f33459bbec2",
+      "passed": true,
+      "binary_sha256": "af4307d3729b8e607a5e3043eb1cb75dc2b3ff78e70dd60a60efdb0798ea34f3",
+      "check_count": 218,
+      "stale_source_paths": [],
+      "execution_owner": "implementation task; read back independently, not executed by this reviewer"
+    },
+    {
+      "artifact": "tianxuan-resume-native.json",
+      "sha256": "3a48c78ff8860f07f9ea5a750323f3c7a404f653fc6b69285e06b5a252c7fc65",
+      "passed": true,
+      "binary_sha256": "af4307d3729b8e607a5e3043eb1cb75dc2b3ff78e70dd60a60efdb0798ea34f3",
+      "check_count": 131,
+      "stale_source_paths": [],
+      "execution_owner": "implementation task; read back independently, not executed by this reviewer",
+      "source_contract_checks": 43,
+      "compiled_host_progress_checks": 16
+    },
+    {
+      "artifact": "tianxuan-resume-real-cli-final.json",
+      "sha256": "2986a3da5ef4f63ae45969ed798ddc181370afa85ededa959b798265a5a5ca42",
+      "passed": true,
+      "binary_sha256": "af4307d3729b8e607a5e3043eb1cb75dc2b3ff78e70dd60a60efdb0798ea34f3",
+      "check_count": 18,
+      "stale_source_paths": [],
+      "execution_owner": "implementation task; read back independently, not executed by this reviewer",
+      "request_accepted": true,
+      "all_native_checks_passed": true,
+      "script_error_seen": false,
+      "reply_points_to_requirement_workflow": true,
+      "reviewer_provider_invocations": 0
+    }
+  ],
+  "conclusion": "passed",
+  "unresolved_findings": [],
+  "limitations": [
+    "This is independent code review with explicitly separated reviewer executions and author validation receipts; it does not replace exact-candidate CI, merge/main readback or final installation acceptance.",
+    "Headless layout geometry and interaction checks do not establish macOS or Windows pixel/IME acceptance. A private rendered screenshot was not independently reviewed here.",
+    "A real completed planning reply and requirement navigation do not prove a pig asset was generated, imported or a production task approved. Those actions remain behind existing execution and approval boundaries.",
+    "Business-service compatibility and pending-sync status retain the previous behavior; no deployment is claimed."
+  ],
+  "path_policy": "All repository paths are relative. External validation references are artifact basenames. Machine paths, usernames, HOME values and credentials are omitted.",
+  "corrections": [
+    {
+      "reviewed_at": "2026-11-24T00:18:51.678425+00:00",
+      "worker": "/root/local_chat_review",
+      "candidate_head_before_correction": "47de5cc6d7618bac336467ff071d209cae05e872",
+      "trigger": "PR #2195 codespell failure in a test description and its copied validation text.",
+      "scope": [
+        "tests/editor/tianxuan_host_progress.gd",
+        "data-collection/tianxuan-resume-layout-validation-2180.json"
+      ],
+      "change": "Use American English canceling in the assertion description and matching public validation description. The test predicate, timing, product code and runtime behavior are unchanged.",
+      "test_sha256_before": "2144c1a31f386de24a2c82b539de3248fe29bbdcc91788ee2ee40b525327073f",
+      "test_sha256_after": "ea5f3d212c0c8e79196d309e43c21b9b39fb65056cc27c7c420f30a2e8ae99cb",
+      "independent_check": "Verified that replacing the single assertion-description spelling in HEAD reproduces the entire current test file exactly; all other previously reviewed product/test fingerprints still match.",
+      "targeted_validation_readback": {
+        "artifact": "tianxuan-resume-host-spelling.json",
+        "sha256": "708715ff130dfa217006c8068b730c311ffbafe97d71cf52dcce5af3a94f6857",
+        "passed": true,
+        "checks": 16,
+        "editor_sha256": "1bcf5bd01acaaf77426813747a4bc75d2043199f9cd21442c2a0bd6230a4bc9c",
+        "script_error_seen": false,
+        "execution_owner": "implementation task; read back independently, not executed by this reviewer"
+      },
+      "conclusion": "passed",
+      "additional_reviewer_provider_invocations": 0,
+      "evidence_policy": "Earlier report digests are retained as historical evidence. This correction does not claim that earlier receipts contain the new assertion description. No other review or test was repeated and the installed user application was not restarted by this reviewer."
+    }
+  ]
+}
