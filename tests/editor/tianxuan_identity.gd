@@ -33,6 +33,10 @@ func slow_request() -> void:
 	late = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/issues/slow")
 
 
+func update_project(token: String) -> void:
+	late = {"accepted": await session.authenticate("", token, "new-project")}
+
+
 func run() -> void:
 	await process_frame
 	var mounted := EditorInterface.get_base_control().find_child("TianxuanSessionController", true, false)
@@ -71,8 +75,53 @@ func run() -> void:
 			return
 		if not check(session.get_identity().id == "alice" and not session._stored_digest.is_empty(), "verified device grant saved"):
 			return
+	elif phase == "same_account":
+		var original: String = session._stored_digest
+		var personal := OS.get_environment("TX_SAME_ACCOUNT_KEY")
+		if not check(await session.authenticate("", personal, "project-a") and session._stored_digest == original, "same account and project retain exact original binding"):
+			return
+		set_mode("saved_offline")
+		if not check(not await session.authenticate("", personal, "project-b") and session._stored_digest == original, "saved grant verification outage preserves actor, project and original credential"):
+			return
+		set_mode("online")
+		if not check(await session.authenticate("user@example.test", password, "project-a") and session._stored_digest == original, "same-account password confirmation retains prior device authorization"):
+			return
+		if not check(await session.authenticate("", personal, "project-b") and session.get_identity().project == "project-b", "same user can update project on the retained binding"):
+			return
+		var audited: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/measure")
+		if not check(audited.data.get("actor") == "alice", "server audits original account after project change"):
+			return
+	elif phase == "rebind":
+		var short_key := OS.get_environment("TX_SAME_ACCOUNT_KEY")
+		if not check(await session.authenticate("", short_key, "project-a"), "initial finite personal key accepted"):
+			return
+		set_mode("prior_revoked")
+		if not check(await session.authenticate("", OS.get_environment("TX_SECOND_KEY"), "project-a"), "confirmed revoked saved key is replaced by the newly verified key"):
+			return
+	elif phase == "concurrent":
+		set_mode("replace_during_check")
+		if not check(not await session.authenticate("", OS.get_environment("TX_SAME_ACCOUNT_KEY"), "project-b"), "concurrent account switch wins over stale saved binding"):
+			return
+	elif phase == "logout_during_update":
+		if not check(session.get_identity().get("id") == "bob", "competing editor's saved login restored"):
+			return
+		# Delay the test-only helper so the explicit logout lands while the CAS is pending.
+		session.test_helper_source = "import time\ntime.sleep(0.3)\n" + session.test_helper_source
+		var pending_save: int = session._store_issued + 2
+		update_project(token)
+		var until := Time.get_ticks_msec() + 8000
+		while session._store_issued < pending_save and Time.get_ticks_msec() < until:
+			await process_frame
+		if not check(session._store_issued == pending_save and session._store_next < pending_save, "project save is in flight before explicit logout"):
+			return
+		await session.reset()
+		while late.is_empty():
+			await process_frame
+		await settled()
+		if not check(not late.accepted and session.get_identity().is_empty(), "explicit logout supersedes unfinished project change"):
+			return
 	elif phase == "restart":
-		if not check(session.get_identity().id == "alice" and session.get_identity().project == "project-a", "new process restored verified actor and project"):
+		if not check(session.get_identity().id == "alice" and session.get_identity().project == "project-b", "new process restored verified actor and updated project"):
 			return
 		var denied: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/denied")
 		if not check(denied.status == 403 and session.get_identity().id == "alice", "business permission refusal keeps login"):

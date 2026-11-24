@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5dc0e813bbd2790a0e1a722ca57ab853ebbecc3f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2f8b46ffca08c3f3ecbf6ff45d8645910cbf4624ddae9cbe378faafff5013ef0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "validation",
+    "detection_head": "779c2adc12a1765cfc3f5de90088f261522526cf",
+    "context_sha256": "c5d2fd8dbab6c739fb296ee6e902b11b80c93e086a026e6bb60b2decf0e54786",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceUI-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45301337813",
+    "diagnosis": "The history validator found the unstaged #2184 worker completion event in this checkout. Verified its request binding and added the real terminal event to this delivery.",
+    "next_action": "Repeat the complete gate on the updated exact index, then deliver using the authorized editor identity.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:57:36.501354+00:00",
+    "attempted": "Direct history validation now reports tracked, 10662 files and 10541 records.",
+    "repair_owner": "codex-root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-24T01:00:21.018927+00:00",
+  "sha256": "11d570d33187131809b9d9acb865c7a7fdf63384eb2392cef9575a6452fa3fd0"
+}

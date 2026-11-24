@@ -43,8 +43,9 @@ def exercise(base, binary, source_loaded):
     spec.loader.exec_module(vault)
     vault.TIANXUAN_SERVICE = service_name
     password, device, personal, legacy = (secrets.token_urlsafe(27) for _ in range(4))
-    launcher = secrets.token_urlsafe(27)
-    actors = {device: "alice", personal: "bob", legacy: "alice", launcher: "alice"}
+    launcher, other_device, same_user = (secrets.token_urlsafe(27) for _ in range(3))
+    actors = {device: "alice", personal: "bob", legacy: "alice", launcher: "alice", same_user: "alice"}
+    private_values = (device, personal, password, legacy, launcher, other_device, same_user)
     observed = []
     cross_origin = []
     state = base / "mode"
@@ -55,14 +56,25 @@ def exercise(base, binary, source_loaded):
 
         def do_GET(self):
             path = self.path.partition("?")[0]
-            actor = actors.get(self.headers.get("Authorization", "").removeprefix("Bearer "))
+            credential = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            actor = actors.get(credential)
             status, payload = 404, {}
             if path == "/api/v1/auth/config":
                 status, payload = 200, {"mode": "accounts"}
             elif path == "/api/v1/auth/me":
                 mode = state.read_text()
                 status = 503 if mode == "offline" else (403 if mode == "revoked" else (200 if actor else 401))
-                payload = {"id": actor, "role": "viewer", "name": actor} if status == 200 else {}
+                if mode == "saved_offline" and credential == device:
+                    status = 503
+                if mode == "prior_revoked" and credential == same_user:
+                    status = 401
+                if mode == "replace_during_check" and credential == launcher:
+                    concurrent = json.loads(stored("load")["secret"])
+                    concurrent.update(user_id="bob", token=personal, owned=False, project="external")
+                    replace_record(concurrent)
+                    observed.append("concurrent-switch")
+                if status == 200:
+                    payload = {"id": actor, "role": "viewer", "tenant_id": "local-fixture", "name": actor}
             elif path == "/api/v1/issues/slow":
                 time.sleep(2)
                 status = 401
@@ -75,7 +87,9 @@ def exercise(base, binary, source_loaded):
             status, payload = 404, {}
             if path == "/api/v1/auth/editor-session" and state.read_text() != "legacy":
                 if request == {"email": "user@example.test", "password": password}:
-                    status, payload = 200, {"token": device}
+                    grant = other_device if "issued" in observed else device
+                    actors[grant] = "alice"
+                    status, payload = 200, {"token": grant}
                     observed.append("issued")
             elif path == "/api/v1/auth/session" and state.read_text() == "legacy":
                 if request == {"email": "user@example.test", "password": password}:
@@ -88,6 +102,8 @@ def exercise(base, binary, source_loaded):
                 status, payload = 200, {"revoked": True}
             elif path == "/api/v1/issues/measure" and actor:
                 observed.append("audit-" + actor)
+                if self.headers.get("Authorization") == "Bearer " + device:
+                    observed.append("original-device-used")
                 status, payload = 200, {"actor": actor}
             elif path == "/api/v1/issues/denied":
                 status = 403
@@ -121,6 +137,17 @@ def exercise(base, binary, source_loaded):
                 "account": hashlib.sha256(origin.encode()).hexdigest(),
             })
 
+        def replace_record(record):
+            original = stored("load")["secret"]
+            updated = vault.dispatch({
+                "action": "save",
+                "service": "tianxuan-editor",
+                "account": hashlib.sha256(api.encode()).hexdigest(),
+                "secret": json.dumps(record),
+                "expected": hashlib.sha256(original.encode()).hexdigest(),
+            })
+            assert updated["status"] == "saved"
+
         env = {
             key: value for key, value in sanitized_environment(base).items() if not key.startswith(("TX_", "TIANXUAN_"))
         }
@@ -133,10 +160,19 @@ def exercise(base, binary, source_loaded):
             GONGGONG_PYTHON=sys.executable,
             TX_FIXTURE_PASSWORD=password,
             TX_FIXTURE_KEY=personal,
+            TX_SAME_ACCOUNT_KEY=same_user,
+            TX_SECOND_KEY=launcher,
             TX_SOURCE_LOADED=str(int(source_loaded)),
         )
         try:
-            for phase in ("login", "restart", "precedence", "offline", "logout", "legacy", "early_logout"):
+            for phase in (
+                "login", "same_account", "restart", "precedence", "offline", "logout", "legacy",
+                "early_logout", "rebind", "concurrent", "logout_during_update",
+            ):
+                if phase == "same_account":
+                    original = json.loads(stored("load")["secret"])
+                    original.pop("binding_id")
+                    replace_record(original)
                 state.write_text(phase if phase in ("legacy", "offline") else "online")
                 launch_env = {"TIANXUAN_TOKEN": launcher} if phase == "precedence" else {}
                 result = subprocess.run(
@@ -147,7 +183,7 @@ def exercise(base, binary, source_loaded):
                     timeout=90,
                 )
                 output = result.stdout + result.stderr
-                assert not any(value.encode() in output for value in (device, personal, password, legacy, launcher)), (
+                assert not any(value.encode() in output for value in private_values), (
                     "secret in editor diagnostics"
                 )
                 reports = [json.loads(line) for line in result.stdout.splitlines() if line.startswith(b"{")]
@@ -155,25 +191,31 @@ def exercise(base, binary, source_loaded):
                     raise AssertionError(f"{phase}: {output[-5000:].decode('utf-8', 'replace')}")
                 phases[phase] = reports[-1]["checks"]
                 stored_record = stored("load")
-                if phase in ("login", "restart", "precedence", "legacy"):
+                if phase in ("login", "same_account", "restart", "precedence", "legacy", "rebind", "concurrent"):
                     assert stored_record["status"] == "loaded", "credential not persisted to native store"
                     record = json.loads(stored_record["secret"])
-                    assert record["origin"] == api and record["token"] == {"login": device, "legacy": legacy}.get(
-                        phase, personal
-                    )
-                    assert record["user_id"] == ("bob" if phase in ("precedence", "restart") else "alice")
+                    expected_token = {
+                        "login": device, "same_account": device, "legacy": legacy, "rebind": launcher
+                    }.get(phase, personal)
+                    assert record["origin"] == api and record["token"] == expected_token
+                    assert record["user_id"] == actors[expected_token]
+                    if phase == "same_account":
+                        assert record == {**original, "project": "project-b"}
+                        assert other_device not in actors and device in actors
+                    if phase == "concurrent":
+                        assert record["project"] == "external"
                     assert password not in stored_record["secret"]
                 else:
                     assert stored_record == {"status": "missing"}, "local grant survived logout/revocation"
-            assert observed.count("issued") == observed.count("legacy-issued") == 1
-            assert observed.count("logout-alice") == 2 and "logout-bob" not in observed
-            assert "audit-bob" in observed and not cross_origin
+            assert observed.count("issued") == 2 and observed.count("legacy-issued") == 1
+            assert observed.count("logout-alice") == 3 and "logout-bob" not in observed
+            assert {"original-device-used", "concurrent-switch", "audit-bob"} <= set(observed) and not cross_origin
             for directory in (base / "engine/editor_data", project):
                 for path in directory.rglob("*"):
                     if path.is_file():
                         contents = path.read_bytes()
                         assert not any(
-                            value.encode() in contents for value in (device, personal, password, legacy, launcher)
+                            value.encode() in contents for value in private_values
                         ), "plaintext in project or editor settings"
         finally:
             for origin in (api, secondary):

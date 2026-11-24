@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-91b6483abf56e273d2b6e8f64d78f0d50fdc8196",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "003ad3200f1d0a7050a58350a07ca29bfde2bfe259ef2c68afbd9314dcb16cf3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "delivery",
+    "detection_head": "8438d12121f449b87f7b74d89807e67ad26a3539",
+    "context_sha256": "e89b0916aed063ea3f4ed9666470721225f95245393425ed6a8b53841ed0eb2b",
+    "operator": "Sail-Li",
+    "worker": "heqi_2183_dual",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceDual-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2198",
+    "diagnosis": "The Git diagnostic trace was growing inside the nonignored worktree snapshot. The formal gate detected changed bytes.",
+    "next_action": "Keep temporary diagnostics outside the candidate inventory and run gates serially against one index.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:18:58.546643+00:00",
+    "attempted": "Isolated only this work order temporary diagnostics. The same business tree 39055c0d passed the formal gate, committed data check, Git signing and native receiver.",
+    "repair_owner": "heqi_2183_dual",
+    "continuable": "Production acceptance remains on 2183 and 2184."
+  },
+  "occurred_at": "2026-11-24T00:26:51.918618+00:00",
+  "sha256": "fdd8485dbd9ee3290929866ba7de20baef19cfef665f99993213fe636361a540"
+}

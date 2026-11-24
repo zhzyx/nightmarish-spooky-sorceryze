@@ -28,6 +28,7 @@ var _process := {}
 var _store_issued := 0
 var _store_next := 0
 var _login_serial := 0
+var _logout_serial := -1
 var _origin_serial := 0
 var _stored_digest := ""
 var _restore_pending := false
@@ -207,6 +208,7 @@ func _set_online(value: bool) -> void:
 
 func reset(message := "已退出天璇") -> void:
 	_cancel_login()
+	_logout_serial = _login_serial
 	var target := origin
 	var digest := _stored_digest
 	var token := _token
@@ -293,26 +295,56 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 			_revoke(credential, target)
 		return false
 	var previous := _read_record(prior, target)
-	var record := JSON.stringify({"version": 1, "origin": target, "project": project, "user_id": str(me.data.id), "owned": owned, "token": credential, "binding_id": Crypto.new().generate_random_bytes(16).hex_encode()})
+	var retain := false
+	if previous.get("user_id") == me.data.id:
+		var saved_me := me
+		if previous.token != credential:
+			saved_me = await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", previous.token, {}, 12.0, "", target)
+		var verified: bool = saved_me.status == 200 and not str(saved_me.data.get("id", "")).is_empty() and not str(saved_me.data.get("role", "")).is_empty()
+		if serial != _login_serial or (not verified and saved_me.status not in [401, 403]):
+			if owned and credential != previous.token:
+				await _revoke(credential, target)
+			if serial == _login_serial:
+				_set_status("暂时无法核实保存的身份，请重新连接后重试")
+			return false
+		retain = verified and saved_me.data.id == me.data.id and saved_me.data.get("tenant_id") == me.data.get("tenant_id")
+		if retain:
+			me = saved_me
+	var selected := str(previous.token) if retain else credential
+	var selected_owned := bool(previous.owned) if retain else owned
+	if retain and owned and credential != selected:
+		await _revoke(credential, target)
+		if serial != _login_serial:
+			return false
+	var record: String
+	if retain:
+		record = str(prior.secret)
+		if previous.project != project:
+			previous.project = project
+			record = JSON.stringify(previous)
+	else:
+		record = JSON.stringify({"version": 1, "origin": target, "project": project, "user_id": str(me.data.id), "owned": owned, "token": credential, "binding_id": Crypto.new().generate_random_bytes(16).hex_encode()})
 	var expected := str(prior.secret).sha256_text() if prior.get("status") == "loaded" else "missing"
 	var saved := await _store("save", target, record, expected)
 	var digest := record.sha256_text() if saved.get("status") == "saved" else ""
 	if serial != _login_serial:
-		if not digest.is_empty():
+		# Logout may already have captured the digest from before our project update.
+		# Only delete the exact bytes this save wrote, and leave a later login intact.
+		if not digest.is_empty() and (not retain or (_logout_serial == _login_serial and digest != expected)):
 			await _store("delete", target, "", digest)
-		if owned:
+		if owned and not retain:
 			_revoke(credential, target)
 		return false
 	if digest.is_empty() and (saved.get("status") == "changed" or not previous.is_empty() or not _stored_digest.is_empty()):
-		if owned:
+		if owned and not retain:
 			_revoke(credential, target)
 		_set_status("无法替换已保存的身份，请检查系统凭据库后重试")
 		return false
-	if _owned_session and _token != credential:
+	if _owned_session and _token != selected:
 		_revoke(_token, target)
-	if previous.get("owned") == true and previous.token != credential and previous.token != _token:
+	if previous.get("owned") == true and previous.token != selected and previous.token != _token:
 		_revoke(previous.token, target)
-	_activate(me.data, project, credential, owned, digest)
+	_activate(me.data, project, selected, selected_owned, digest)
 	if digest.is_empty() and saved.get("status") != "disabled":
 		_set_status(status_text + " · 系统凭据库不可用，仅本次登录有效")
 	return true
