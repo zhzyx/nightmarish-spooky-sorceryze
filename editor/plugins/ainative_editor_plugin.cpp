@@ -124,35 +124,29 @@ void AINativeEditorPlugin::_prepare_workbench() {
 	}
 }
 
-Dictionary AINativeEditorPlugin::PrepareSpecHandoff(const Dictionary &mapSnapshot, const Callable &callableValidate)
-{
+Dictionary AINativeEditorPlugin::PrepareSpecHandoff(const Dictionary &mapSnapshot, const Callable &callableValidate) {
 	Dictionary mapResult;
 	mapResult["ok"] = false;
-	if (!is_inside_tree() || !dock || !dock->is_inside_tree())
-	{
+	if (!is_inside_tree() || !dock || !dock->is_inside_tree()) {
 		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
 		return mapResult;
 	}
 	_prepare_workbench();
 	Node *pWorkbench = dock->get_node_or_null(NodePath("AINativeWorkbench"));
-	if (!pWorkbench || !pWorkbench->has_method("prepare_spec_handoff"))
-	{
+	if (!pWorkbench || !pWorkbench->has_method("prepare_spec_handoff")) {
 		mapResult["error"] = U"马良工作台尚未就绪，请检查内置工具是否可用。";
 		return mapResult;
 	}
 	mapResult = pWorkbench->call("prepare_spec_handoff", mapSnapshot, callableValidate);
-	if (bool(mapResult.get("ok", false)))
-	{
+	if (bool(mapResult.get("ok", false))) {
 		EditorDockManager::get_singleton()->force_focus_dock(dock);
 	}
 	return mapResult;
 }
 
-void AINativeEditorPlugin::ClearSpecHandoff()
-{
+void AINativeEditorPlugin::ClearSpecHandoff() {
 	Node *pWorkbench = dock ? dock->get_node_or_null(NodePath("AINativeWorkbench")) : nullptr;
-	if (pWorkbench && pWorkbench->has_method("clear_spec_handoff"))
-	{
+	if (pWorkbench && pWorkbench->has_method("clear_spec_handoff")) {
 		pWorkbench->call("clear_spec_handoff");
 	}
 }

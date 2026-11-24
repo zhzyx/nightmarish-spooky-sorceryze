@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a9de6eae7c726e852a2e30498ebe68be8467959c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "adff6fe2afebf710341c926b26ec6375c3bfc47f7ffda911a1ae297a0088e12b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "user-report",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "ba53fc1188ea989e40707cfad051a362c4ea2f5237ed3d56ff9f6bb026c6b0c2",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-resume-layout",
+    "authority_ref": "issue:2180; user authorized repair of historical request and conversation layout",
+    "evidence": "PR2208 static-check run45311413315 job138167779261: clang-format changed only six brace placements in editor/plugins/ainative_editor_plugin.cpp",
+    "diagnosis": "The plugin file uses repository Godot formatting rather than the Tianxuan directory custom style. Runtime behavior is unaffected; all non-whitespace source bytes match.",
+    "next_action": "Apply exact brace-only correction, verify pinned formatter and independent delta review, resubmit exact candidate; retain installed application and its own source revision.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:51:38.150994+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-tianxuan-resume-layout",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T02:24:23.439363+00:00",
+  "sha256": "9ef5b5abd7cd3bba710a7eb90e6571b830ce96669726e96204f03e2844f7a5fd"
+}
