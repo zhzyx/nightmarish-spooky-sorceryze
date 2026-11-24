@@ -1113,7 +1113,7 @@ func _load_host_settings() -> ConfigFile:
 func save_settings(include_runtime: bool = true):
 	var c = ConfigFile.new()
 	c.load(state_dir.path_join("local.cfg"))
-	if include_runtime:
+	if include_runtime or (bundled_runtime.has('python') and python_edit.text == bundled_runtime.python):
 		# Resolve shipped components again from the executable after a move.
 		var uses_bundled_python = bundled_runtime.has('python') and python_edit.text == bundled_runtime.python
 		c.set_value('host', 'use_bundled_python', uses_bundled_python)

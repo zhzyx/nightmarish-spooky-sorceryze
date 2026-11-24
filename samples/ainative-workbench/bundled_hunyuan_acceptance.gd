@@ -116,6 +116,7 @@ func run():
 	var local = ConfigFile.new()
 	local.load(panel.state_dir.path_join('local.cfg'))
 	if not verify(local.get_value('managed_comfy', 'runtime_root', '') == '' and local.get_value('host', 'python', '') == '', 'Settings store the bundled choices without absolute paths'): return
+	if not verify(local.get_value('managed_comfy', 'use_bundled_runtime', false) and local.get_value('host', 'use_bundled_python', false), 'Bundled selections are saved for portable reopen'): return
 	if connect_only:
 		finish(true)
 		return
