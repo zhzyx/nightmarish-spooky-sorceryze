@@ -19,11 +19,11 @@ SESSION_COOKIE = "__Host-tianxuan_session"
 
 
 def request_token(connection: HTTPConnection) -> str:
-    scheme, _, bearer = connection.headers.get("authorization", "").partition(" ")
+    scheme, _, bearer = str(connection.headers.get("authorization", "")).partition(" ")
     if scheme.lower() == "bearer":
         return bearer.strip()
     session = connection.cookies.get(SESSION_COOKIE, "") if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts" else ""
-    return session or connection.cookies.get(COOKIE, "")
+    return str(session or connection.cookies.get(COOKIE, ""))
 
 
 class KeyLogin(BaseModel):

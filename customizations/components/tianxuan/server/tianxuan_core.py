@@ -724,6 +724,8 @@ class Tianxuan:
         child = self.issue_session(actor)
         self.db.execute("UPDATE sessions SET expires_at=? WHERE token_hash=?", (parent[0], _token_hash(child)))
         context = self.device_context(child)
+        if context is None:
+            raise PermissionDenied("source credential expired during device enrollment")
         self.db.execute("UPDATE session_devices SET parent_hash=? WHERE token_hash=?", (digest, _token_hash(child)))
         self._event(self._tenant_of(actor), "identity.device.issued", actor, context["device_id"], context)
         return {"token": child, "user_id": actor, **context}

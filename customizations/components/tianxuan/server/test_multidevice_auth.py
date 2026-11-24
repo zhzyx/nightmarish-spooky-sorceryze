@@ -137,3 +137,14 @@ def test_device_registration_survives_restart_and_source_expiry(tmp_path):
             assert domain.device_context(grant["token"]) is None
     finally:
         domain.db.close()
+
+
+def test_expiry_during_enrollment_rolls_back_child(setup, monkeypatch):
+    from tianxuan_core import PermissionDenied
+
+    domain, _, key, _, _ = setup
+    before = domain.db.execute("SELECT count(*) FROM sessions").fetchone()[0]
+    monkeypatch.setattr(domain, "device_context", lambda token: None)
+    with pytest.raises(PermissionDenied, match="expired during device enrollment"):
+        domain.issue_device_session(key["key"])
+    assert domain.db.execute("SELECT count(*) FROM sessions").fetchone()[0] == before
