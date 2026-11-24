@@ -22,6 +22,17 @@ func run():
 	var orientation = {'route':'standard','reference_pose':'T','auto_orient':true,'yaw_degrees':0.0}
 	check(is_equal_approx(Rig.fit_t_pose_yaw(z_wide,orientation),-90.0),'Z-axis T pose auto orientation')
 	check(is_zero_approx(Rig.fit_t_pose_yaw(x_wide,orientation)),'X-axis T pose remains unchanged')
+	var landmark_extras = {'maliang_humanoid_landmarks':{'reference_pose':'T','coordinate_space':'Y_up_meters_left_positive_X','validation_state':'automatically_derived_review_required','landmarks':{
+		'shoulder_l':[0.0,1.5,-.2],'elbow_l':[0.0,1.5,-.5],'wrist_l':[0.0,1.5,-.8],
+		'shoulder_r':[0.0,1.5,.2],'elbow_r':[0.0,1.5,.5],'wrist_r':[0.0,1.5,.8]
+	}}}
+	var landmark_fit = Rig.source_arm_joints(landmark_extras,-90.0,Vector3(.01,0,.03),.9)
+	check(not landmark_fit.has('error') and landmark_fit.get('joints',{}).size()==6,'source-bound arm landmarks fit the complete arm chains')
+	check(landmark_fit.get('joints',{}).get('upper_arm_l',Vector3.ZERO).distance_to(Vector3(.171,1.35,-.027))<.00001,'source shoulder follows yaw, centering and target-height normalization')
+	check(landmark_fit.get('joints',{}).get('upper_arm_r',Vector3.ZERO).distance_to(Vector3(-.189,1.35,-.027))<.00001,'right shoulder follows the same centering transform after orientation')
+	var missing_landmark = landmark_extras.duplicate(true)
+	missing_landmark.maliang_humanoid_landmarks.landmarks.erase('wrist_l')
+	check(Rig.source_arm_joints(missing_landmark,-90.0,Vector3.ZERO,1.0).has('error'),'incomplete source arm landmarks fail explicitly')
 	orientation.auto_orient = false
 	check(is_zero_approx(Rig.fit_t_pose_yaw(z_wide,orientation)),'automatic orientation opt-out')
 	orientation.auto_orient = true

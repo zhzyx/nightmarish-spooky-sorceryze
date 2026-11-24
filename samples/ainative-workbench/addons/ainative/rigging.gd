@@ -47,7 +47,7 @@ static func head_contract_error(p: Dictionary) -> String:
 	return ''
 
 static func geometry_key(p: Dictionary) -> String:
-	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,p.get('shoulder_gate_strength',0.0),'anatomical-segments-v1-arm-chain-gate-v3']).sha256_text()
+	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,p.get('shoulder_gate_strength',0.0),'anatomical-segments-v1-arm-chain-gate-v3-source-arm-landmarks-v1']).sha256_text()
 
 static func arm_chain_weight_falloff(point: Vector3, shoulder: Vector3, height: float, strength: float = 0.0) -> float:
 	# Keep the inner chest out of every arm-chain bone; bounded retries can
@@ -66,6 +66,27 @@ static func fit_t_pose_yaw(source_bounds: AABB, p: Dictionary) -> float:
 	if source_bounds.size.z>source_bounds.size.x*1.5 and source_bounds.size.z>source_bounds.size.y*.65:
 		return -90.0
 	return yaw
+
+static func source_arm_joints(extras: Dictionary, yaw_degrees: float, offset: Vector3, scale_factor: float) -> Dictionary:
+	var result = {'joints':{},'validation_state':''}
+	var record = extras.get('maliang_humanoid_landmarks',{})
+	if not record is Dictionary: return {'error':'素体关节记录格式无效。'}
+	if record.is_empty(): return result
+	if record.get('reference_pose')!='T' or record.get('coordinate_space')!='Y_up_meters_left_positive_X':
+		return {'error':'素体关节记录的参考姿势或坐标系无效。'}
+	var landmarks = record.get('landmarks',{})
+	if not landmarks is Dictionary: return {'error':'素体关节记录缺少坐标。'}
+	var names = {'upper_arm_l':'shoulder_l','forearm_l':'elbow_l','hand_l':'wrist_l','upper_arm_r':'shoulder_r','forearm_r':'elbow_r','hand_r':'wrist_r'}
+	var rotation = Basis(Vector3.UP,deg_to_rad(yaw_degrees))
+	for bone_name in names:
+		var xyz = landmarks.get(names[bone_name])
+		if not xyz is Array or xyz.size()!=3: return {'error':'素体关节记录缺少完整手臂关键点：'+names[bone_name]}
+		for value in xyz:
+			if not (value is float or value is int) or not is_finite(float(value)): return {'error':'素体关节记录包含非有限坐标：'+names[bone_name]}
+		var source_point = Vector3(xyz[0],xyz[1],xyz[2])
+		result.joints[bone_name] = (rotation*source_point-offset)*scale_factor
+	result.validation_state = str(record.get('validation_state','unknown'))
+	return result
 
 static func build(path: String, p: Dictionary) -> Dictionary:
 	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != p.get('source_sha256',''): return {'error':'源文件哈希不匹配；请重新打开源文件。'}
@@ -195,6 +216,14 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 		if not candidates.is_empty():
 			candidates.sort()
 			positions[bi].z = candidates[candidates.size()/2]
+	report['source_arm_landmarks_applied'] = false
+	if p.route=='standard' and p.reference_pose=='T':
+		var landmark_fit = source_arm_joints(source_extras(path),p.yaw_degrees,offset,scale_factor)
+		if landmark_fit.has('error'): return {'error':landmark_fit.error,'diagnostics':report}
+		for bone_name in landmark_fit.joints:
+			positions[NAMES.find(bone_name)] = landmark_fit.joints[bone_name]
+		report.source_arm_landmarks_applied = not landmark_fit.joints.is_empty()
+		report.source_arm_landmarks_validation_state = landmark_fit.validation_state
 	for name in p.joints:
 		var xyz = p.joints[name]
 		if not name in NAMES or not xyz is Array or xyz.size()!=3: return {'error':'关节修正无效：'+str(name)}
