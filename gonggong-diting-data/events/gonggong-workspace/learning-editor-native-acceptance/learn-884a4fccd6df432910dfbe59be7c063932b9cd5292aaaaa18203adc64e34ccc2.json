@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-884a4fccd6df432910dfbe59be7c063932b9cd5292aaaaa18203adc64e34ccc2",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "occurred_at": "2026-11-24T01:44:52.501201+00:00",
+  "evidence_refs": [
+    "request-2190-multidevice",
+    "learn-12aa19e25e9cb2cce9dcc2654657bab2733ba7b046422868f297068eac117f6d"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 22,
+    "previous": "b74ae3ba760970d1e82e9d7af0ec08ef34be63addd4a267acf79444de27f9d5b",
+    "action": "applied",
+    "details": {
+      "task": "#2190多设备与#2205设备授权留存整合；取消和退出前等待真实服务、存储marker或在途store ticket，继而核验终态。",
+      "observed": "最终Windows编译编辑器20阶段/97检查通过；CAS竞争、退出及迁移取消均确认异步操作已开始，未选用的新增派生token已在服务端撤销。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-multidevice-2190-retention.json",
+        "sha256": "e820d40e2f4cd60bece6bd2a37973d49f65dab09b31df158d010f755f4973150"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/request-2190-multidevice.json",
+      "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+    }
+  },
+  "sha256": "261341ecd3115e6b861818d4bdd72014a7c8c5ba24fe45d23dadc0ac138ccb8d"
+}

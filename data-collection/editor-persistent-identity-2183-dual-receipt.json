@@ -1,0 +1,17 @@
+{
+  "issue_number": 2183,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2198",
+  "base": "8438d12121f449b87f7b74d89807e67ad26a3539",
+  "candidate": "b06eca00e5ca144ce994a0492d9ed076c8e27fc8",
+  "signed": "c1bc7fb3538eb3904fb2a17f35d81ba443cb703c",
+  "tree": "39055c0dcc99b21ecab1f8ee495270ae3d116919",
+  "main": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+  "native_candidate": "07dee86fe7efb077e34e53588ff9f85e198ccd62b13722a14c7ee6ffd322175e",
+  "native_merge": "7dd332cf8141b4884ff50dcb6d8a2390cb408f93327bce38496d1811846533d5",
+  "files": 32390,
+  "manifest_sha256": "c428cb324a85b37d70ac2faf520d126a5a90e99e131c57555aab2c665f28dcbf",
+  "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45296486788",
+  "static_and_windows_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45296486696"
+}

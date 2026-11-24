@@ -1,0 +1,28 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "inputs": {
+    "customizations/components/tianxuan/server/tianxuan_core.py": "979dfe4f446e6cc6fe06fc728b3b9d4eb7d5c73860c0f16a7a2f4d505fb5be96",
+    "customizations/components/tianxuan/server/test_multidevice_auth.py": "3e78439433787bda9dea7179e62e361a12872cb1aee5be2a0b0777657517dbcd"
+  },
+  "prior_candidate": "019ba3f5a04e1a9862291d49ea54bdff6a86b9a8",
+  "regression": {
+    "original_failure_suites_passed": 24,
+    "integrated_auth_and_submission_passed": 144,
+    "integrated_subtests_passed": 9,
+    "mypy_ci_import_environment": "passed",
+    "ruff": "passed"
+  },
+  "trial": {
+    "passed": 3,
+    "expected": "3项计划试验通过：历史会话迁移后标识稳定，有效凭据身份回读不改变数据库，在写锁期间保持只读回查可用；真正写入仍返回503。",
+    "observed": "3项计划试验通过：历史会话迁移后标识稳定，有效凭据身份回读不改变数据库，在写锁期间保持只读回查可用；真正写入仍返回503。"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_eac1e5c56e452663",
+    "terminal": "collaboration.final:/root/sinan_eac1e5c56e452663",
+    "result": "no blocking findings",
+    "additional_validation": "Six original auth tests and six in-memory checks covering partial migration/restart/query_only/rollback/caller-owned transaction/parent binding passed. File-database concurrent-start stress was not separately run."
+  },
+  "boundary": "Valid credential identity reads do not write; expired credentials retain existing session cleanup semantics. New remote CI pending."
+}

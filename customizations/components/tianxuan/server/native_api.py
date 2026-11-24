@@ -301,6 +301,10 @@ def _identity(
     if not actor:
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
         actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None
+        if actor and callable(getattr(store, "device_context", None)):
+            request.state.verified_device = store.device_context(token.strip())
+            if request.state.verified_device is None:
+                raise HTTPException(401, "authenticated device credential expired or revoked")
     if not actor:
         raise HTTPException(401, "valid authenticated identity required")
     context = store.actor_context(actor)
@@ -310,6 +314,17 @@ def _identity(
     if query_keys and not (allow_project and query_keys == ["project"]):
         raise HTTPException(422, "query parameters are not supported")
     return context["tenant"], str(actor)
+
+
+def _device_context(request: Request) -> dict[str, str]:
+    # Only authentication middleware/domain resolution may bind this context.
+    # Payload fields and caller-selected headers never select a device scope.
+    device = getattr(request.state, "verified_device", None)
+    if device is None:
+        return {}
+    if not isinstance(device, dict) or not all(device.get(key) for key in ("device_id", "credential_id")):
+        raise HTTPException(401, "verified device identity required")
+    return {key: device[key] for key in ("device_id", "credential_id")}
 
 
 def _fields(value: Any, required: set[str], optional: set[str] | None = None) -> dict[str, Any]:
@@ -394,9 +409,9 @@ def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
     return payload["request_key"], changes
 
 
-async def _call(function: Callable[..., Any], *args: Any) -> Any:
+async def _call(function: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     try:
-        return await run_in_threadpool(function, *args)
+        return await run_in_threadpool(function, *args, **kwargs)
     except Conflict:
         raise HTTPException(409, "candidate conflicts with stored inputs or request key") from None
     except NativeStoreError:
@@ -463,7 +478,15 @@ def _source(domain: Any, actor: str, doc_id: str) -> dict[str, Any]:
 
 
 def _snapshot(
-    store: NativeStore, domain: Any, tenant: str, actor: str, doc_id: str, payload: dict[str, Any]
+    store: NativeStore,
+    domain: Any,
+    tenant: str,
+    actor: str,
+    doc_id: str,
+    payload: dict[str, Any],
+    *,
+    device_id: str | None = None,
+    credential_id: str | None = None,
 ) -> dict[str, Any]:
     # Recheck current ACL even on historical replay; never rebuild historical bytes.
     domain.get_doc_shared(actor, doc_id, write=True)
@@ -484,13 +507,9 @@ def _snapshot(
     except UnicodeError:
         raise HTTPException(422, "request_key must be valid Unicode") from None
     module = domain.bind_native_requirement(actor, doc_id)
-    with store._connection() as db:
-        receipt = db.execute(
-            "SELECT result FROM native_receipts WHERE tenant=? AND actor=? AND request_key=?",
-            (tenant, actor, native_key),
-        ).fetchone()
+    receipt = store.batch_receipt(tenant, actor, native_key, device_id=device_id, credential_id=credential_id)
     if receipt:
-        result = json.loads(receipt[0])
+        result = receipt
         revision = result["revisions"].get(module)
         if not revision:
             raise Conflict("operation key reused for another requirement")
@@ -509,6 +528,8 @@ def _snapshot(
             actor,
             native_key,
             [{"module": module, "base": payload["base"], "reads": None, "edits": {"snapshot.json": content}}],
+            device_id=device_id,
+            credential_id=credential_id,
         )
         revision = result["revisions"][module]
     composition = store.compose(tenant, {module: revision})
@@ -533,18 +554,20 @@ def create_native_router(store: NativeStore) -> APIRouter:
     async def snapshot(doc_id: str, request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         payload = _fields(await _body(request), {"request_key", "source_version", "base"})
-        return await _call(_snapshot, store, request.app.state.store, tenant, actor, doc_id, payload)
+        return await _call(
+            _snapshot, store, request.app.state.store, tenant, actor, doc_id, payload, **_device_context(request)
+        )
 
     @router.post("/batches")
     async def submit(request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         key, changes = _changes(await _body(request))
-        return await _call(store.submit, tenant, actor, key, changes)
+        return await _call(store.submit, tenant, actor, key, changes, **_device_context(request))
 
     @router.get("/batches/{request_key}")
     async def batch_receipt(request_key: str, request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
-        result = await _call(store.batch_receipt, tenant, actor, request_key)
+        result = await _call(store.batch_receipt, tenant, actor, request_key, **_device_context(request))
         if result:
             for module in result["revisions"]:
                 await _call(_module_read, request.app.state.store, actor, module)

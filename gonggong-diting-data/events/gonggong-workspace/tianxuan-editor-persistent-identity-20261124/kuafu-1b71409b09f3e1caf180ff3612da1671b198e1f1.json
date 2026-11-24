@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1b71409b09f3e1caf180ff3612da1671b198e1f1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d0511987ed91ec85cdb7bc468d90c219d3777dd6f9e7a0e9acbd9ef685d42534",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2196",
+    "action": "delivery",
+    "detection_head": "8438d12121f449b87f7b74d89807e67ad26a3539",
+    "context_sha256": "e89b0916aed063ea3f4ed9666470721225f95245393425ed6a8b53841ed0eb2b",
+    "operator": "Sail-Li",
+    "worker": "heqi_2183_dual",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:deviceDual-1124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2198",
+    "diagnosis": "Authenticated Git fetch returned exit 128 before candidate creation, leaving FETCH_HEAD empty. Network root cause remains unconfirmed. Exact authenticated target later returned main 8438d121.",
+    "next_action": "Keep signed candidate b06eca00 and matching native receipt. Await PR CI and merge readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:15:51.027086+00:00",
+    "attempted": "Read back local, remote and PR state before retry; writer then verified GitHub signature and native receiver.",
+    "repair_owner": "heqi_2183_dual",
+    "continuable": "No pending candidate transport from this incident."
+  },
+  "occurred_at": "2026-11-24T00:26:42.787203+00:00",
+  "sha256": "c20ffa69faef7d53679d1648cd1453d0ac1a631d0561d6311231d3795124bc3f"
+}

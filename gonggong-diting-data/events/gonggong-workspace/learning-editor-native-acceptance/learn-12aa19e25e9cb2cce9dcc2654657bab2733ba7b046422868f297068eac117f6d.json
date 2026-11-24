@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-12aa19e25e9cb2cce9dcc2654657bab2733ba7b046422868f297068eac117f6d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "occurred_at": "2026-11-24T01:03:57.594587+00:00",
+  "evidence_refs": [
+    "editor-identity-request-2183",
+    "learn-cf41d121d56c5ceca6b43aff21aace2cd628ddfcf98b5f35e343fb902ef94bd7"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 21,
+    "previous": "4c71ac24c2dc22cd83c8f9d02f41a5ec7aa528b4e663dae06a511b3e67ff2ca9",
+    "action": "applied",
+    "details": {
+      "task": "Issue 2183 native editor sign-out during a same-account project update.",
+      "observed": "The isolated OS credential helper was still processing the exact compare-and-swap save when logout began. The editor rejected the superseded login and a fresh native-store lookup found no remaining binding. The final eleven-process suite passed 58 assertions."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-persistent-identity-2183-production.json",
+        "sha256": "265b7bfaef8c8ac37d47fc36d5e59c903f4a86171157f36b981330d3cd295abd"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-editor-persistent-identity-20261124/editor-identity-request-2183.json",
+      "sha256": "ed6c252e082113403cb539e8230d80644e9cc1c897a0eec559e88dce6a3abffa"
+    }
+  },
+  "sha256": "b74ae3ba760970d1e82e9d7af0ec08ef34be63addd4a267acf79444de27f9d5b"
+}

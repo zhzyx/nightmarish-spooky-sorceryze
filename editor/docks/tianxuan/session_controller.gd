@@ -28,6 +28,7 @@ var _process := {}
 var _store_issued := 0
 var _store_next := 0
 var _login_serial := 0
+var _logout_serial := -1
 var _origin_serial := 0
 var _stored_digest := ""
 var _restore_pending := false
@@ -132,6 +133,47 @@ func _restore(serial: int) -> void:
 	if me.status != 200 or str(me.data.get("role", "")).is_empty():
 		_set_status("暂时无法核实保存的身份，重新连接服务后将重试")
 		return
+	if not record.owned:
+		# Older editors saved the shared key itself. Upgrade it using the exact
+		# record read above so another process's newer login always wins.
+		_restore_running = true
+		var enrollment := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/device-session", record.token, {}, 12.0, "", target)
+		var credential := str(enrollment.data.get("token", ""))
+		if serial != _login_serial:
+			await _revoke(credential, target)
+			return
+		if enrollment.status != 200 or not _valid_token(credential):
+			_restore_running = false
+			_set_status("无法升级保存的设备身份，请重新认证或连接服务后重试")
+			await _revoke(credential, target)
+			return
+		var verified := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
+		if serial != _login_serial or verified.status != 200 or str(verified.data.get("id", "")) != str(record.user_id) or str(verified.data.get("role", "")).is_empty():
+			if serial == _login_serial:
+				_restore_running = false
+				_set_status("无法核实升级后的设备身份，请重新认证")
+			await _revoke(credential, target)
+			return
+		var upgraded := record.duplicate(true)
+		upgraded.token = credential
+		upgraded.owned = true
+		upgraded.binding_id = Crypto.new().generate_random_bytes(16).hex_encode()
+		var serialized := JSON.stringify(upgraded)
+		var saved := await _store("save", target, serialized, str(reply.secret).sha256_text())
+		if serial != _login_serial:
+			if saved.get("status") == "saved":
+				# A concurrent logout must never resurrect the old shared identity.
+				await _store("delete", target, "", serialized.sha256_text())
+			await _revoke(credential, target)
+			return
+		_restore_running = false
+		if saved.get("status") != "saved":
+			_set_status("保存的身份已变化或凭据库不可用，请重新连接后重试")
+			await _revoke(credential, target)
+			return
+		record = upgraded
+		_stored_digest = serialized.sha256_text()
+		me = verified
 	_restore_pending = false
 	_activate(me.data, record.project, record.token, record.owned, _stored_digest)
 
@@ -207,6 +249,7 @@ func _set_online(value: bool) -> void:
 
 func reset(message := "已退出天璇") -> void:
 	_cancel_login()
+	_logout_serial = _login_serial
 	var target := origin
 	var digest := _stored_digest
 	var token := _token
@@ -278,8 +321,21 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 			_revoke(credential, target)
 			return false
 		if login.status != 200 or not _valid_token(credential):
+			_revoke(credential, target)
 			_set_status("登录失败，请重新认证" if login.status in [401, 403] else "无法登录天璇，请检查服务后重试")
 			return false
+	else:
+		# A shared personal key authorizes enrollment, each device uses its own session.
+		var enrollment := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/device-session", credential, {}, 12.0, "", target)
+		credential = str(enrollment.data.get("token", ""))
+		if serial != _login_serial:
+			_revoke(credential, target)
+			return false
+		if enrollment.status != 200 or not _valid_token(credential):
+			_revoke(credential, target)
+			_set_status("无法登记设备登录，请检查服务与授权后重试")
+			return false
+		owned = true
 	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
 	if serial != _login_serial or me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty():
 		if owned:
@@ -293,26 +349,58 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 			_revoke(credential, target)
 		return false
 	var previous := _read_record(prior, target)
-	var record := JSON.stringify({"version": 1, "origin": target, "project": project, "user_id": str(me.data.id), "owned": owned, "token": credential, "binding_id": Crypto.new().generate_random_bytes(16).hex_encode()})
+	var retain := false
+	# Shared keys from older editors must become independent device grants.
+	# Only an owned device authorization can survive same-account confirmation.
+	if previous.get("owned") == true and previous.get("user_id") == me.data.id:
+		var saved_me := me
+		if previous.token != credential:
+			saved_me = await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", previous.token, {}, 12.0, "", target)
+		var verified: bool = saved_me.status == 200 and not str(saved_me.data.get("id", "")).is_empty() and not str(saved_me.data.get("role", "")).is_empty()
+		if serial != _login_serial or (not verified and saved_me.status not in [401, 403]):
+			if owned and credential != previous.token:
+				await _revoke(credential, target)
+			if serial == _login_serial:
+				_set_status("暂时无法核实保存的身份，请重新连接后重试")
+			return false
+		retain = verified and saved_me.data.id == me.data.id and saved_me.data.get("tenant_id") == me.data.get("tenant_id")
+		if retain:
+			me = saved_me
+	var selected := str(previous.token) if retain else credential
+	var selected_owned := bool(previous.owned) if retain else owned
+	if retain and owned and credential != selected:
+		await _revoke(credential, target)
+		if serial != _login_serial:
+			return false
+	var record: String
+	if retain:
+		record = str(prior.secret)
+		if previous.project != project:
+			previous.project = project
+			record = JSON.stringify(previous)
+	else:
+		record = JSON.stringify({"version": 1, "origin": target, "project": project, "user_id": str(me.data.id), "owned": owned, "token": credential, "binding_id": Crypto.new().generate_random_bytes(16).hex_encode()})
 	var expected := str(prior.secret).sha256_text() if prior.get("status") == "loaded" else "missing"
 	var saved := await _store("save", target, record, expected)
 	var digest := record.sha256_text() if saved.get("status") == "saved" else ""
 	if serial != _login_serial:
-		if not digest.is_empty():
+		# Logout may already have captured the digest from before our project update.
+		# Only delete the exact bytes this save wrote, and leave a later login intact.
+		if not digest.is_empty() and (not retain or (_logout_serial == _login_serial and digest != expected)):
 			await _store("delete", target, "", digest)
-		if owned:
+		if owned and not retain:
 			_revoke(credential, target)
 		return false
 	if digest.is_empty() and (saved.get("status") == "changed" or not previous.is_empty() or not _stored_digest.is_empty()):
-		if owned:
+		if owned and not retain:
 			_revoke(credential, target)
 		_set_status("无法替换已保存的身份，请检查系统凭据库后重试")
 		return false
-	if _owned_session and _token != credential:
+	if _owned_session and _token != selected:
 		_revoke(_token, target)
-	if previous.get("owned") == true and previous.token != credential and previous.token != _token:
+	if previous.get("owned") == true and previous.token != selected and previous.token != _token:
 		_revoke(previous.token, target)
-	_activate(me.data, project, credential, owned, digest)
+	_activate(me.data, project, selected, selected_owned, digest)
 	if digest.is_empty() and saved.get("status") != "disabled":
 		_set_status(status_text + " · 系统凭据库不可用，仅本次登录有效")
 	return true

@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from fastapi.routing import APIRoute
-from native_api import _body, _fields, _identity
+from native_api import _body, _device_context, _fields, _identity
 from native_repository import MAX_MANIFEST, MAX_OBJECT, NativeRepository, RepositoryForbidden
 from native_store import Conflict, NativeStoreError
 from starlette.concurrency import run_in_threadpool
@@ -65,7 +65,8 @@ def create_native_repository_router(repository: NativeRepository) -> APIRouter:
                 raise HTTPException(422, "legacy identity headers are not supported")
             tenant, actor = _identity(request, refresh=True)
             try:
-                return method(tenant, actor, request.path_params["repo"], *args, **kwargs)
+                with repository.device_context(**_device_context(request)):
+                    return method(tenant, actor, request.path_params["repo"], *args, **kwargs)
             except RepositoryForbidden:
                 raise HTTPException(403, "repository permission denied") from None
             except Conflict as error:
