@@ -4,6 +4,7 @@ extends SceneTree
 var checks: Array[String] = []
 var failures: Array[Dictionary] = []
 var geometry_samples: Array[Dictionary] = []
+var design_geometry_samples: Array[Dictionary] = []
 const LocalModelFixture = preload("res://local_model_fixture.gd")
 
 
@@ -199,6 +200,89 @@ func home_vertical_layout(main: Control, viewport: SubViewport) -> void:
 			await settle()
 
 
+func design_flow_geometry(main: Control, viewport: SubViewport) -> void:
+	var controller: Node = main.get_meta("controller")
+	var key: String = controller.new_id()
+	var route := "/api/v1/workspace/conversations/" + key
+	await controller.session.api_request(HTTPClient.METHOD_POST, "/api/v1/workspace/conversations", {"id": key})
+	var turn: Dictionary = await controller.session.api_request(HTTPClient.METHOD_POST, route + "/local-turns", {"id": controller.new_id(), "expected_version": 0, "content": "生成猪模型的需求", "answer": "先确认模型规格，再逐步完善策划与设计。", "model": "isolated-layout-history"})
+	if not check(turn.status == 200, "Design layout fixture stores a completed discussion without calling a provider"):
+		return
+	var saved: Dictionary = await controller.session.api_request(HTTPClient.METHOD_POST, route + "/design/direction/drafts", {"expected_version": turn.data.version, "body": "已确认的方向：保留猪模型的体型、材质和可检验规格。\n\n".repeat(30)})
+	if not check(saved.status == 200, "Design layout fixture saves a substantive direction revision"):
+		return
+	var confirmed: Dictionary = await controller.session.api_request(HTTPClient.METHOD_POST, route + "/design/direction/confirm", {"expected_version": saved.data.version, "revision": saved.data.current.direction})
+	if not check(confirmed.status == 200 and confirmed.data.get("requirement_id") == null and confirmed.data.get("execution") == null, "Direction-only fixture preserves the remaining design and production gates"):
+		return
+	await controller.select_conversation(key)
+	var theme_script: Script = main.get_meta("scripts").theme
+	for scale in [1.0, 1.5, 2.0]:
+		for mode in [{"compact": false, "width": 960}, {"compact": false, "width": 480}, {"compact": true, "width": 340}]:
+			var view: Control = main.get_script().new()
+			for name in ["controller", "scripts"]:
+				view.set_meta(name, main.get_meta(name))
+			view.set_meta("compact", mode.compact)
+			viewport.add_child(view)
+			view.ui_scale = scale
+			view.custom_minimum_size = Vector2(280 if mode.compact else 430, 240) * scale
+			view.theme = theme_script.build(EditorInterface.get_editor_theme(), scale, true)
+			view._navigate("design", "")
+			await wait_until(func(): return not controller.chat_busy())
+			var design: Control = view._page_instances.design
+			design._stage.select(0)
+			design._stage.item_selected.emit(0)
+			var progress: Label = design.find_child("TianxuanDesignProgress", true, false)
+			var next: Button = design.find_child("TianxuanDesignNext", true, false)
+			var hint: Label = design.find_child("TianxuanDesignNextHint", true, false)
+			var execution: Control = design.find_child("TianxuanRequirementExecution", true, false)
+			var launch: Button = design.find_child("LaunchTianxuanRequirement", true, false)
+			var reason: Label = design.find_child("TianxuanExecutionStatus", true, false)
+			if not check(progress != null and next != null and hint != null and execution != null and launch != null and reason != null, "Direction-confirmed layout retains a stage summary, next action and explained execution placeholder"):
+				failures.append({"direction_confirmed_regression": {"direction_confirmed": controller.design_revision("direction").get("confirmed_at") != null, "selected_stage": design._stage.selected, "execution_visible": design._execution.visible, "publish_disabled": design._publish.disabled, "next_exists": next != null}})
+				view.queue_free()
+				await controller.select_conversation("")
+				return
+			for height in [460, 680]:
+				viewport.size = Vector2i(roundi(mode.width * scale), roundi(height * scale))
+				view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				view._responsive()
+				await settle()
+				var hint_scroll: Node = hint.get_parent()
+				while hint_scroll != null and not hint_scroll is ScrollContainer:
+					hint_scroll = hint_scroll.get_parent()
+				if hint_scroll is ScrollContainer:
+					hint_scroll.ensure_control_visible(hint)
+					await settle()
+				var hint_area: Rect2 = hint_scroll.get_global_rect() if hint_scroll is ScrollContainer else view.get_global_rect()
+				var hint_reachable := hint.is_visible_in_tree() and hint.get_global_rect().intersects(hint_area)
+				var scroll: Node = launch.get_parent()
+				while scroll != null and not scroll is ScrollContainer:
+					scroll = scroll.get_parent()
+				if scroll is ScrollContainer:
+					scroll.ensure_control_visible(launch)
+					await settle()
+				var overflow := []
+				horizontal_overflow(view, viewport.size.x, overflow)
+				var next_rect: Rect2 = next.get_global_rect()
+				var summary_rect: Rect2 = progress.get_global_rect()
+				var launch_rect: Rect2 = launch.get_global_rect()
+				var reason_rect: Rect2 = reason.get_global_rect()
+				var scroll_rect: Rect2 = scroll.get_global_rect() if scroll is ScrollContainer else design.get_global_rect()
+				var sample := {"compact": mode.compact, "scale": scale, "viewport": viewport.size, "next": next_rect, "summary": summary_rect, "hint_reachable": hint_reachable, "launch": launch_rect, "reason": reason_rect, "scroll": scroll_rect, "page_height": view.size.y}
+				design_geometry_samples.append(sample)
+				var fits := next_rect.position.y >= 0 and next_rect.end.y <= viewport.size.y + 1 and summary_rect.end.y <= viewport.size.y + 1 and view.size.y <= viewport.size.y + 1 and overflow.is_empty()
+				var reachable := hint_reachable and launch_rect.position.y >= scroll_rect.position.y - 1 and launch_rect.end.y <= scroll_rect.end.y + 1 and reason_rect.intersects(scroll_rect)
+				var explains: bool = execution.is_visible_in_tree() and launch.is_visible_in_tree() and launch.disabled and next.text.contains("策划") and not hint.text.is_empty() and not reason.text.is_empty() and not design._history_body.is_visible_in_tree()
+				if not fits or not reachable or not explains:
+					failures.append({"design_flow_geometry": sample, "fits": fits, "reachable": reachable, "explains": explains, "overflow": overflow.slice(0, 1)})
+				else:
+					checks.append("Direction-confirmed design keeps Next visible and its blocked launch reachable at %d×%d, %.1fx (%s)" % [mode.width, height, scale, "dock" if mode.compact else "workspace"])
+			view.queue_free()
+			await settle()
+	await controller.select_conversation("")
+	await settle()
+
+
 func run() -> void:
 	await settle()
 	var main = EditorInterface.get_base_control().find_child("TianxuanWorkspaceView", true, false)
@@ -264,6 +348,7 @@ func run() -> void:
 	root.add_child(viewport)
 	await home_interactions(main, viewport)
 	await home_vertical_layout(main, viewport)
+	await design_flow_geometry(main, viewport)
 	for language in ["zh", "en"]:
 		controller.set_language(language, false)
 		for compact in [false, true]:
@@ -298,5 +383,5 @@ func run() -> void:
 		print(JSON.stringify({"layout_failures": failures}))
 		quit(1)
 		return
-	print(JSON.stringify({"passed": true, "checks": checks, "conversation_layout": geometry_samples}))
+	print(JSON.stringify({"passed": true, "checks": checks, "conversation_layout": geometry_samples, "design_layout": design_geometry_samples}))
 	quit(0)

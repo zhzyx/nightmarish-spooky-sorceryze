@@ -619,6 +619,16 @@ def main():
         files += ["tests/editor/tianxuan_local_conversation.gd"]
     if include_local_contract:
         files += ["tests/editor/run_tianxuan_host_progress.py", "tests/editor/tianxuan_host_progress.gd"]
+        files += [
+            "tests/editor/run_tianxuan_production_handoff.py",
+            "tests/editor/tianxuan_production_handoff.gd",
+            "editor/plugins/ainative_editor_plugin.cpp",
+            "editor/plugins/ainative_editor_plugin.h",
+            "editor/docks/tianxuan/TianxuanWorkbench.cpp",
+            "editor/ainative/builders.py",
+            "samples/ainative-workbench/addons/ainative/workbench.gd",
+            "samples/ainative-workbench/addons/ainative/spec_handoff.gd",
+        ]
     fingerprints = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in files}
     with tempfile.TemporaryDirectory(prefix="tianxuan-native-controller-") as temporary:
         if args.local_conversation:
@@ -661,6 +671,28 @@ def main():
                 assert progress_report.get("ok") is True, progress_report
                 assert progress_report.get("editor_sha256") == report["binary_sha256"], progress_report
                 report["host_progress_contract"] = progress_report
+                handoff_receipt = Path(temporary) / "production-handoff.json"
+                handoff_result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "tests/editor/run_tianxuan_production_handoff.py"),
+                        "--godot",
+                        str(args.godot.resolve()),
+                        "--out",
+                        str(handoff_receipt),
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    timeout=90,
+                )
+                if handoff_result.returncode or not handoff_receipt.is_file():
+                    raise AssertionError((handoff_result.stdout + handoff_result.stderr)[-12000:])
+                handoff_report = json.loads(handoff_receipt.read_text(encoding="utf-8"))
+                assert handoff_report.get("ok") is True, handoff_report
+                assert handoff_report.get("editor_sha256") == report["binary_sha256"], handoff_report
+                report["production_handoff_contract"] = handoff_report
     if any(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() != fingerprints[p] for p in files):
         raise AssertionError("Candidate source changed during validation; rerun the affected check")
     level = (
