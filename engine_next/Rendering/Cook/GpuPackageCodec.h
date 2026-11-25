@@ -42,6 +42,7 @@ namespace EngineNext::Rendering
 // Private shared codec boundary. Input is a validated M3 scene. Metadata retains
 // all non-payload fields while geometry, images and mip bytes live in pages.
 [[nodiscard]] bool PrepareGpuSceneForPaging(const RenderScene &stSource, RenderScene &out_stPrepared, Assets::Diagnostics &out_arrDiagnostics);
+[[nodiscard]] bool PrepareEncodedGpuSceneForPaging(const RenderScene &stSource, RenderScene &out_stPrepared, Assets::Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool EncodeGpuSceneMetadata(const RenderScene &stPrepared, std::vector<std::uint8_t> &out_arrBytes, Assets::Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool DecodeGpuSceneMetadata(const std::vector<std::uint8_t> &arrBytes, const std::string &strSourceDigest, RenderScene &out_stMetadata, Assets::Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool PublishGpuDirectoryNoReplace(const std::filesystem::path &stSource, const std::filesystem::path &stTarget);

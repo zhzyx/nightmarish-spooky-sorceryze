@@ -140,6 +140,7 @@ ignore-words-list = [
 	"optin",
 	"ot",
 	"outin",
+	"paeth", # PNG filter 4; https://www.w3.org/TR/png-3/#9Filter-type-4-Paeth
 	"parm",
 	"pEvent",
 	"requestor",

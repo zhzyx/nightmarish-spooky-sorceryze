@@ -12,6 +12,7 @@ struct RayTracingDraw
 struct RayTracingMaterial
 {
 	float4 BaseColor;
+	// RGB emission and positive-Z tangent normal encoding flag.
 	float4 Emissive;
 	// Roughness, metallic, effective normal scale, occlusion strength.
 	float4 Surface;
@@ -20,6 +21,16 @@ struct RayTracingMaterial
 	uint AlphaMode;
 	float AlphaCutoff;
 };
+
+float3 RayTracingDecodeNormal(float3 Encoded, RayTracingMaterial Material)
+{
+	float3 Mapped = Encoded * 2 - 1;
+	if (Material.Emissive.w > 0.5)
+	{
+		Mapped.z = sqrt(saturate(1 - dot(Mapped.xy, Mapped.xy)));
+	}
+	return Mapped;
+}
 
 // Opaque geometry normally commits in hardware. MASK uses the same base-alpha
 // product and cutoff as raster. BLEND is transparent to this GI ray policy.

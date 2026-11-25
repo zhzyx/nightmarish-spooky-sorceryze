@@ -140,7 +140,7 @@ public:
 	void Execute(std::uint32_t nFrame, std::uint32_t nPhase, std::uint32_t nBucket, ID3D12GraphicsCommandList *pList) const;
 	[[nodiscard]] bool Commit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Discard(std::uint32_t nFrame, Assets::Diagnostics &out_arrDiagnostics);
-	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
+	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics, GeometryGpuStatistics *out_pRetired = nullptr);
 	[[nodiscard]] bool Release(std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	ID3D12Resource *Clusters() const noexcept;
 	ID3D12Resource *Clusters(std::uint32_t nFrame) const noexcept;

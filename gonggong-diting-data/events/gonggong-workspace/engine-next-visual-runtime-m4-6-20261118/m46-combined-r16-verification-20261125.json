@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "event_id": "m46-combined-r16-verification-20261125",
+  "kind": "step",
+  "occurred_at": "2026-11-24T22:49:02.197420+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-d5957dfb",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m46-telemetry-request-20261118"
+  ],
+  "payload": {
+    "candidate": "combined-r16",
+    "native_key": "047aedf65c02042a3780fad73a037c2f98b7b7a4d60d3a438ce9dce7bf074377",
+    "executable_sha256": "a0b564c706278fd07b6d2a69d07ef5b2c1a3a73e1704b694042edcf9a3b67c14",
+    "core_native_key": "67ce3dfdde12aae8a8cdad7b2608e84904177a9e702810fc54cadf55a937728a",
+    "verification": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r16-verification.json",
+      "sha256": "72dc0460151e812f6fa1629b93f9d87a1c95c8ab91f6aa39a40f97d838a89509",
+      "size_bytes": 16760
+    },
+    "review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r16-review.json",
+      "sha256": "6e6182c54816bdcff9a2d396df4a22b7fd506dc47a46a9317f310df7e1848eed",
+      "size_bytes": 8655
+    },
+    "build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r16-build-impact.json",
+      "sha256": "da4ca5ea1a2ff8f082ef05f4d7a6f83d8b00d00ea55401c21a1d8bd1cf5120dc",
+      "size_bytes": 50809
+    },
+    "cpu_tests_each_compiler": 606,
+    "cpu_checks_each_compiler": 1760715,
+    "gpu_frames": {
+      "full_feature_resize": 256,
+      "worker_spatial_native4k_smoke": 166,
+      "complex_c_geometry": 128,
+      "capture": 68,
+      "module_controls_with_intentional_native_and_shader_variants": 192,
+      "copied_release": 32
+    },
+    "gpu_validation_errors": 0,
+    "stage_complete": false,
+    "remaining": [
+      "Actual selected CI on the successor signed head and main readback",
+      "Calibrated same-source UE A-F final quality",
+      "Native4K High/Ultra throughput and 30-60 minute sustained acceptance",
+      "Real physical input and display observation"
+    ],
+    "limitations": [
+      "PNG portability is limited to non-interlaced RGBA8; other PNG layouts and JPEG keep WIC or platform rejection.",
+      "Core was rebuilt for R16 because image decoder inputs changed; no R12 Core reuse is claimed.",
+      "The prior static and Ubuntu/macOS failures and R13 UE reference calibration mismatches are retained.",
+      "Two native4K smoke frames and a geometry-focused C configuration are functional evidence."
+    ]
+  },
+  "sha256": "a6d6fbe58a1fad98ae70b7676685f6c5666bae868183a4735a820c545514a988"
+}

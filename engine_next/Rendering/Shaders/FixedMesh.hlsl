@@ -15,6 +15,12 @@ void CSMain(uint3 DispatchId : SV_DispatchThreadID)
 {
     OutputTint[0] = float4(0.88 + 0.12 * sin(Time), 0.90, 1.0, 1.0);
 }
+
+[numthreads(1, 1, 1)]
+void AssetDirectionalTintCS()
+{
+    OutputTint[0] = float4(1.0, 1.0, 1.0, 1.0);
+}
 #else
 StructuredBuffer<float4> Tint : register(t0);
 

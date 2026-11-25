@@ -315,7 +315,7 @@ bool GpuPagedGeometry::BuildActive(const PagedFrameSelection &stSelection, Asset
 				GeometryCluster stCluster;
 				stCluster.stInput = stInput;
 				stCluster.stInput.arrDraw[3] = nDraw;
-				stCluster.arrMetadata = { nBucket, nSlot, 0, 0 };
+				stCluster.arrMetadata = { nBucket, nSlot, nNode + 1, stTree.arrNodes[nNode].nChildCount };
 				arrBucketClusters[nBucket].push_back(stCluster);
 			}
 		}
@@ -487,6 +487,16 @@ bool GpuPagedGeometry::Prepare(std::uint32_t nFrame, const std::vector<std::arra
 	arrFrames[nFrame].stViews->Unmap(0, nullptr);
 	return true;
 }
+std::uint64_t GpuPagedGeometry::PendingUploadBytes() const noexcept
+{
+	std::uint64_t nBytes = 0;
+	for (std::uint32_t nSlot : arrPrepared)
+	{
+		nBytes += arrSlots[nSlot].nBufferBytes;
+	}
+	return nBytes;
+}
+
 bool GpuPagedGeometry::RecordUploads(ID3D12GraphicsCommandList *pList, Assets::Diagnostics &out_arrDiagnostics)
 {
 	if (!IsOwner() || nPendingFrame >= GEOMETRY_FRAME_COUNT || bRecorded || pList == nullptr || pList->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)

@@ -40,6 +40,7 @@
 #include "engine_next/include/EngineNext/Rendering/ParticleSettings.h"
 #include "engine_next/include/EngineNext/Rendering/MaterialSettings.h"
 #include "engine_next/include/EngineNext/Rendering/GlobalIlluminationSettings.h"
+#include "engine_next/include/EngineNext/Rendering/VirtualShadowSettings.h"
 #include "engine_next/include/EngineNext/Rendering/AmbientOcclusionSettings.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
@@ -101,6 +102,7 @@ enum class ShadowFilter : std::uint8_t
 
 struct ShadowSettings
 {
+	VirtualShadowSettings stVirtualPages;
 	bool bEnabled = true;
 	std::uint32_t nResolution = 2048;
 	double dDistance = 50;

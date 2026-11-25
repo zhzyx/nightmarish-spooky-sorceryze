@@ -3,6 +3,8 @@
 import hashlib
 import json
 import shutil
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,6 +13,7 @@ from unittest import mock
 import BuildRuntime
 import ExportCleanSource
 import PackageRuntime
+import RunM3AiAcceptance
 
 
 class BuildRuntimeTests(unittest.TestCase):
@@ -92,6 +95,44 @@ class BuildRuntimeTests(unittest.TestCase):
         (output / "keep.txt").write_text("keep", encoding="utf-8")
         with self.assertRaises(ValueError):
             ExportCleanSource.export_clean_source(self.repo, output)
+
+    def test_clean_export_runs_copy_executor_without_site_packages(self):
+        output = self.temporary / "StandaloneSource"
+        ExportCleanSource.export_clean_source(self.repo, output)
+        spec = RunM3AiAcceptance.request(
+            "LocalCopyProvider:factory", self.repo / "engine_next/Tests/Fixtures/M3/valid.glb"
+        )
+        command = [
+            sys.executable,
+            "-I",
+            "-S",
+            str(output / "engine_next/Tools/ExecutorCli.py"),
+            "--db",
+            str(self.temporary / "copy.sqlite"),
+            "--factory",
+            "LocalCopyProvider:factory",
+        ]
+
+        def invoke(operation, body=None):
+            result = subprocess.run(
+                [*command, operation, "--run", "clean-copy"],
+                input=json.dumps(body) if body is not None else None,
+                capture_output=True,
+                text=True,
+                cwd=output,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            receipt = json.loads(result.stdout)
+            self.assertTrue(receipt["ok"])
+            return receipt["result"]
+
+        invoke("create", {"graph": spec["graph"], "manifest": spec["manifest"]})
+        for _ in range(8):
+            invoke("step")
+        exported = invoke("export")
+        self.assertEqual(exported["manifest"], spec["manifest"])
+        self.assertEqual(exported["outputs"]["copy"]["result"], {"id": "input", "revision": "input-r1"})
 
     def test_package_contains_only_declared_runtime_files(self):
         targets = []

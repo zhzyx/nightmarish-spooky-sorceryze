@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "engine_next/Rendering/Cook/GpuPackage.h"
+#include "engine_next/Rendering/Cook/BlockTextureCodec.h"
 #include "engine_next/Rendering/Cook/GpuPackageCodec.h"
 
 #include "engine_next/Assets/AssetValidation.h"
@@ -548,6 +549,20 @@ void WritePreparedData(Writer &stWriter, const RenderScene &stScene)
 			stWriter.Uint32(stVariant.nImage);
 			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.eSemantic));
 			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.eAlphaPolicy));
+			if (stScene.nGpuFormatVersion == 4)
+			{
+				stWriter.Uint32(static_cast<std::uint32_t>(stVariant.eNormalEncoding));
+				stWriter.Uint32(static_cast<std::uint32_t>(stVariant.arrEncodedMips.size()));
+				for (const EncodedTextureMip &stMip : stVariant.arrEncodedMips)
+				{
+					stWriter.Uint32(stMip.nWidth);
+					stWriter.Uint32(stMip.nHeight);
+					stWriter.Uint32(static_cast<std::uint32_t>(stMip.eFormat));
+					stWriter.Uint32(static_cast<std::uint32_t>(stMip.arrBytes.size()));
+					stWriter.Bytes(stMip.arrBytes.data(), stMip.arrBytes.size());
+				}
+				continue;
+			}
 			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.arrMips.size()));
 			for (const MipLevel &stMip : stVariant.arrMips)
 			{
@@ -592,8 +607,10 @@ void WritePreparedData(Writer &stWriter, const RenderScene &stScene)
 	}
 }
 
-bool ReadTextureData(Reader &stReader, RenderAsset &out_stAsset, bool bMetadata = false)
+bool ReadTextureData(Reader &stReader, RenderAsset &out_stAsset, std::uint32_t nVersion)
 {
+	const bool bMetadata = nVersion >= 3;
+	const bool bEncoded = nVersion == 4;
 	std::uint32_t nVariants = 0;
 	if (!stReader.Count(nVariants, 16, MAX_ITEMS, sizeof(CookedTextureVariant)))
 	{
@@ -609,12 +626,21 @@ bool ReadTextureData(Reader &stReader, RenderAsset &out_stAsset, bool bMetadata 
 		if (!stReader.Uint32(stVariant.nImage) || stVariant.nImage >= out_stAsset.stMesh.arrImages.size() ||
 			!stReader.Uint32(nSemantic) || nSemantic > static_cast<std::uint32_t>(ImageSemantic::Normal) ||
 			!stReader.Uint32(nAlpha) || nAlpha > static_cast<std::uint32_t>(TextureAlphaPolicy::Ignore) ||
-			!setKeys.insert({ stVariant.nImage, nSemantic, nAlpha }).second || !stReader.Count(nMips, bMetadata ? 12 : 16, 14, sizeof(MipLevel)) || nMips == 0)
+			!setKeys.insert({ stVariant.nImage, nSemantic, nAlpha }).second)
+		{
+			return false;
+		}
+		std::uint32_t nNormalEncoding = 0;
+		if ((bEncoded && (!stReader.Uint32(nNormalEncoding) || nNormalEncoding > 1)) ||
+			!stReader.Count(nMips, bEncoded ? 16 : (bMetadata ? 12 : 16), 14,
+							bEncoded ? sizeof(EncodedTextureMip) : sizeof(MipLevel)) ||
+			nMips == 0)
 		{
 			return false;
 		}
 		stVariant.eSemantic = static_cast<ImageSemantic>(nSemantic);
 		stVariant.eAlphaPolicy = static_cast<TextureAlphaPolicy>(nAlpha);
+		stVariant.eNormalEncoding = static_cast<TextureNormalEncoding>(nNormalEncoding);
 		Assets::BlobInfo stImageInfo;
 		Assets::Diagnostics arrImageDiagnostics;
 		const EncodedImage &stImage = out_stAsset.stMesh.arrImages[stVariant.nImage];
@@ -626,6 +652,26 @@ bool ReadTextureData(Reader &stReader, RenderAsset &out_stAsset, bool bMetadata 
 		std::uint32_t nHeight = 0;
 		for (std::uint32_t nMip = 0; nMip < nMips; ++nMip)
 		{
+			if (bEncoded)
+			{
+				EncodedTextureMip stLevel;
+				std::uint32_t nFormat = 0;
+				TextureMipLayout stLayout;
+				if (!stReader.Uint32(stLevel.nWidth) || !stReader.Uint32(stLevel.nHeight) || !stReader.Uint32(nFormat) || nFormat > 2 ||
+					!ComputeTextureMipLayout(stLevel.nWidth, stLevel.nHeight, static_cast<TextureFormat>(nFormat), stLayout) ||
+					!stReader.Bytes(stLevel.arrBytes, 0) || !stLevel.arrBytes.empty() ||
+					(nMip != 0 && (stLevel.nWidth != (std::max)(1U, nWidth / 2) || stLevel.nHeight != (std::max)(1U, nHeight / 2) || (nWidth == 1 && nHeight == 1) || nFormat != static_cast<std::uint32_t>(stVariant.arrEncodedMips[0].eFormat))) ||
+					(nMip == 0 && nFormat != 0 && (stLevel.nWidth % 4 != 0 || stLevel.nHeight % 4 != 0)) ||
+					(nFormat == 2 ? (nNormalEncoding != 1 || nSemantic != 2) : nNormalEncoding != 0))
+				{
+					return false;
+				}
+				stLevel.eFormat = static_cast<TextureFormat>(nFormat);
+				nWidth = stLevel.nWidth;
+				nHeight = stLevel.nHeight;
+				stVariant.arrEncodedMips.push_back(std::move(stLevel));
+				continue;
+			}
 			MipLevel stLevel;
 			if (!stReader.Uint32(stLevel.nWidth) || !stReader.Uint32(stLevel.nHeight) || stLevel.nWidth == 0 || stLevel.nHeight == 0 ||
 				stLevel.nWidth > 8192 || stLevel.nHeight > 8192 ||
@@ -758,8 +804,9 @@ bool ReadClusterData(Reader &stReader, MeshPrimitive &out_stPrimitive)
 	return true;
 }
 
-bool ReadPreparedData(Reader &stReader, RenderScene &out_stScene, bool bMetadata = false)
+bool ReadPreparedData(Reader &stReader, RenderScene &out_stScene, std::uint32_t nVersion)
 {
+	const bool bMetadata = nVersion >= 3;
 	std::uint32_t nAssets = 0;
 	if (!stReader.Count(nAssets, 4, 1024) || nAssets != out_stScene.arrAssets.size())
 	{
@@ -767,7 +814,7 @@ bool ReadPreparedData(Reader &stReader, RenderScene &out_stScene, bool bMetadata
 	}
 	for (RenderAsset &stAsset : out_stScene.arrAssets)
 	{
-		if (!ReadTextureData(stReader, stAsset, bMetadata))
+		if (!ReadTextureData(stReader, stAsset, nVersion))
 		{
 			return false;
 		}
@@ -893,7 +940,7 @@ bool Decode(const std::vector<std::uint8_t> &arrPage, RenderScene &out_stScene)
 	{
 		RenderAsset stAsset;
 		if (!stReader.String(stAsset.stIdentity.strAssetId) || !stReader.String(stAsset.stIdentity.strRevision) || !stReader.String(stAsset.stIdentity.strContentSha256) ||
-			!Assets::IsIdentity(stAsset.stIdentity.strAssetId) || !Assets::IsRevision(stAsset.stIdentity.strRevision) || !Assets::IsSha256(stAsset.stIdentity.strContentSha256) || !setAssets.insert(stAsset.stIdentity.strAssetId).second || !ReadMesh(stReader, stAsset.stMesh, nVersion == 3))
+			!Assets::IsIdentity(stAsset.stIdentity.strAssetId) || !Assets::IsRevision(stAsset.stIdentity.strRevision) || !Assets::IsSha256(stAsset.stIdentity.strContentSha256) || !setAssets.insert(stAsset.stIdentity.strAssetId).second || !ReadMesh(stReader, stAsset.stMesh, nVersion >= 3))
 		{
 			return false;
 		}
@@ -927,7 +974,7 @@ bool Decode(const std::vector<std::uint8_t> &arrPage, RenderScene &out_stScene)
 		}
 		out_stScene.arrInstances.push_back(stInstance);
 	}
-	if (nVersion >= PREPARED_FORMAT_VERSION && !ReadPreparedData(stReader, out_stScene, nVersion == 3))
+	if (nVersion >= PREPARED_FORMAT_VERSION && !ReadPreparedData(stReader, out_stScene, nVersion))
 	{
 		return false;
 	}
@@ -1112,10 +1159,39 @@ bool PrepareGpuSceneForPaging(const RenderScene &stSource, RenderScene &out_stPr
 	return true;
 }
 
+bool PrepareEncodedGpuSceneForPaging(const RenderScene &stSource, RenderScene &out_stPrepared, Assets::Diagnostics &out_arrDiagnostics)
+{
+	RenderScene stPrepared;
+	if (!PrepareGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics))
+	{
+		return false;
+	}
+	std::size_t nRemainingBytes = MAX_PAGE_BYTES;
+	for (RenderAsset &stAsset : stPrepared.arrAssets)
+	{
+		for (CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
+		{
+			CookedTextureVariant stEncoded;
+			if (!EncodeTextureMips(stVariant, stEncoded, out_arrDiagnostics, nRemainingBytes))
+			{
+				return false;
+			}
+			for (const EncodedTextureMip &stMip : stEncoded.arrEncodedMips)
+			{
+				nRemainingBytes -= stMip.arrBytes.size();
+			}
+			stVariant = std::move(stEncoded);
+		}
+	}
+	stPrepared.nGpuFormatVersion = 4;
+	out_stPrepared = std::move(stPrepared);
+	return true;
+}
+
 bool EncodeGpuSceneMetadata(const RenderScene &stPrepared, std::vector<std::uint8_t> &out_arrBytes, Assets::Diagnostics &out_arrDiagnostics)
 {
 	RenderScene stMetadata;
-	stMetadata.nGpuFormatVersion = 3;
+	stMetadata.nGpuFormatVersion = stPrepared.nGpuFormatVersion == 4 ? 4 : 3;
 	stMetadata.strSceneId = stPrepared.strSceneId;
 	stMetadata.strSceneRevision = stPrepared.strSceneRevision;
 	stMetadata.strSceneDigest = stPrepared.strSceneDigest;
@@ -1147,6 +1223,15 @@ bool EncodeGpuSceneMetadata(const RenderScene &stPrepared, std::vector<std::uint
 			stVariantCopy.nImage = stVariant.nImage;
 			stVariantCopy.eSemantic = stVariant.eSemantic;
 			stVariantCopy.eAlphaPolicy = stVariant.eAlphaPolicy;
+			stVariantCopy.eNormalEncoding = stVariant.eNormalEncoding;
+			for (const EncodedTextureMip &stMip : stVariant.arrEncodedMips)
+			{
+				EncodedTextureMip stMipCopy;
+				stMipCopy.nWidth = stMip.nWidth;
+				stMipCopy.nHeight = stMip.nHeight;
+				stMipCopy.eFormat = stMip.eFormat;
+				stVariantCopy.arrEncodedMips.push_back(std::move(stMipCopy));
+			}
 			stVariantCopy.arrMips.reserve(stVariant.arrMips.size());
 			for (const MipLevel &stMip : stVariant.arrMips)
 			{
@@ -1160,7 +1245,7 @@ bool EncodeGpuSceneMetadata(const RenderScene &stPrepared, std::vector<std::uint
 		stMetadata.arrAssets.push_back(std::move(stCopy));
 	}
 	std::vector<std::uint8_t> arrBytes;
-	if (!Encode(stMetadata, arrBytes, 3))
+	if (!Encode(stMetadata, arrBytes, stMetadata.nGpuFormatVersion))
 	{
 		return Fail(out_arrDiagnostics, "gpu_metadata", "$", "Metadata exceeds the codec budget.");
 	}
@@ -1183,7 +1268,7 @@ bool DecodeGpuSceneMetadata(const std::vector<std::uint8_t> &arrBytes, const std
 	Reader stReader(arrBytes);
 	std::uint64_t nMagic = 0;
 	RenderScene stCandidate;
-	if (!stReader.Uint64(nMagic) || !stReader.Uint32(stCandidate.nGpuFormatVersion) || stCandidate.nGpuFormatVersion != 3 ||
+	if (!stReader.Uint64(nMagic) || !stReader.Uint32(stCandidate.nGpuFormatVersion) || (stCandidate.nGpuFormatVersion != 3 && stCandidate.nGpuFormatVersion != 4) ||
 		!stReader.String(stCandidate.strSceneId) || !Assets::IsIdentity(stCandidate.strSceneId) ||
 		!stReader.String(stCandidate.strSceneRevision) || !Assets::IsRevision(stCandidate.strSceneRevision) ||
 		!stReader.String(stCandidate.strSceneDigest) || !Assets::IsSha256(stCandidate.strSceneDigest) ||

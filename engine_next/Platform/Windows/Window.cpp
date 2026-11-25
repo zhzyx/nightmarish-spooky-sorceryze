@@ -106,6 +106,18 @@ struct Window::State
 		}
 	}
 
+	void RecordInput() noexcept
+	{
+		const std::uint64_t nQpc = ReadQpc();
+		if (stInput.nInputRevision == UINT64_MAX || nQpc == 0 || nQpc < stInput.nInputReceivedQpc)
+		{
+			++stInput.nInputErrorCount;
+			return;
+		}
+		++stInput.nInputRevision;
+		stInput.nInputReceivedQpc = nQpc;
+	}
+
 	void SetKey(std::uint32_t nKey, bool bPressed) noexcept
 	{
 		if (nKey < stInput.arrKeys.size() && stInput.arrKeys[nKey] != bPressed)
@@ -257,6 +269,7 @@ struct Window::State
 			AddDelta(stInput.nHorizontalWheelDelta, nWheel);
 		}
 		stInput.nLastEventQpc = ReadQpc();
+		RecordInput();
 	}
 
 	void ReadRawInput(LPARAM nParameter) noexcept
@@ -284,6 +297,7 @@ struct Window::State
 			if (stKeyboard.MakeCode != KEYBOARD_OVERRUN_MAKE_CODE && stKeyboard.VKey < 255)
 			{
 				SetKeyboardKey(stKeyboard.VKey, stKeyboard.MakeCode, (stKeyboard.Flags & RI_KEY_E0) != 0, (stKeyboard.Flags & RI_KEY_BREAK) == 0);
+				RecordInput();
 			}
 			else
 			{
@@ -359,13 +373,25 @@ struct Window::State
 			case WM_SYSKEYDOWN:
 				if (pState->stInput.bFocused)
 				{
+					const std::uint64_t nBefore = pState->stInput.nKeyEventCount;
 					pState->SetKeyboardKey(static_cast<std::uint32_t>(nWordParameter), static_cast<std::uint32_t>((nLongParameter >> 16) & 0xFF), (nLongParameter & (1L << 24)) != 0, true);
+					if (pState->stInput.nKeyEventCount != nBefore)
+					{
+						pState->RecordInput();
+					}
 				}
 				break;
 			case WM_KEYUP:
 			case WM_SYSKEYUP:
+			{
+				const std::uint64_t nBefore = pState->stInput.nKeyEventCount;
 				pState->SetKeyboardKey(static_cast<std::uint32_t>(nWordParameter), static_cast<std::uint32_t>((nLongParameter >> 16) & 0xFF), (nLongParameter & (1L << 24)) != 0, false);
+				if (pState->stInput.nKeyEventCount != nBefore)
+				{
+					pState->RecordInput();
+				}
 				break;
+			}
 			case WM_MOUSEMOVE:
 				pState->stInput.nPointerClientX = static_cast<std::int16_t>(LOWORD(nLongParameter));
 				pState->stInput.nPointerClientY = static_cast<std::int16_t>(HIWORD(nLongParameter));

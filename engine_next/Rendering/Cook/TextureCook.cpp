@@ -111,7 +111,8 @@ bool CountMipBytes(const EncodedImage &stImage, std::size_t nRemainingBytes, std
 
 bool SameVariant(const CookedTextureVariant &stExpected, const CookedTextureVariant &stActual)
 {
-	if (stExpected.nImage != stActual.nImage || stExpected.eSemantic != stActual.eSemantic || stExpected.eAlphaPolicy != stActual.eAlphaPolicy || stExpected.arrMips.size() != stActual.arrMips.size())
+	if (stExpected.nImage != stActual.nImage || stExpected.eSemantic != stActual.eSemantic || stExpected.eAlphaPolicy != stActual.eAlphaPolicy || stExpected.arrMips.size() != stActual.arrMips.size() ||
+		stActual.eNormalEncoding != TextureNormalEncoding::Cartesian || !stActual.arrEncodedMips.empty())
 	{
 		return false;
 	}

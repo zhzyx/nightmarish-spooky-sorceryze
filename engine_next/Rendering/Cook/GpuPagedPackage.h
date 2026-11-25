@@ -46,6 +46,7 @@ enum class GpuPageKind : std::uint32_t
 	MeshGeometry = 1,
 	EncodedImage = 2,
 	TextureMip = 3,
+	BlockTextureMip = 4,
 };
 
 struct GpuPageDescription
@@ -162,5 +163,26 @@ private:
 // identical Cook reconciles the existing target; conflicting output is kept.
 [[nodiscard]] bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
 									   const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics);
+
+// CPU v4 entry: preserves encoded bytes and source verification. The original
+// runtime loader explicitly rejects v4 until its BC upload path is integrated.
+[[nodiscard]] bool LoadVerifiedEncodedGpuPackage(const std::string &strPackage, const RenderScene &stSource,
+												 const GpuPageLimits &stLimits, RenderScene &out_stScene,
+												 GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics);
+
+// Retains the verified v4 index and defers texture payload IO to the residency owner.
+[[nodiscard]] bool LoadTextureStreamingPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
+											   RenderScene &out_stScene, GpuPageReadStats &out_stStats, GpuPageIndex &out_stIndex, Assets::Diagnostics &out_arrDiagnostics);
+
+// Same no-replace paged publication as v3, with a fixed BC7/BC5 recipe.
+[[nodiscard]] bool CookEncodedGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
+										 const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics);
+
+[[nodiscard]] bool ReadGpuTextureMip(const GpuPageIndex &stIndex, std::uint32_t nPage, EncodedTextureMip &out_stMip,
+									 GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics);
+
+[[nodiscard]] bool ReadGpuTextureSuffix(const GpuPageIndex &stIndex, const std::vector<std::uint32_t> &arrMipPages,
+										std::uint32_t nFirstMip, std::vector<EncodedTextureMip> &out_arrLevels,
+										GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics);
 
 } // namespace EngineNext::Rendering

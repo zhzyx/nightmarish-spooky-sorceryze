@@ -6,6 +6,9 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
     return Maximum > 0 ? Scaled * rsqrt(max(dot(Scaled, Scaled), 1.0e-38)) : Fallback;
 }
 #include "ShadowSampling.hlsli"
+#if defined(VIRTUAL_SHADOW_STAGE)
+#include "ShadowPageReceiver.hlsli"
+#endif
 #if defined(MATERIAL_EXTENSION_STAGE)
 #include "MaterialEnvironmentLighting.hlsli"
 #endif
@@ -138,6 +141,13 @@ float3 EvaluateLight(float3 Base, float Metallic, float Roughness, float3 N, flo
 }
 float SampleCascadeShadow(float3 Position, float3 N, float3 GeometricNormal, uint Cascade)
 {
+#if defined(VIRTUAL_SHADOW_STAGE)
+    float PageVisibility;
+    if (SampleVirtualShadow(Position, N, GeometricNormal, Cascade, ShadowParameters.w, ShadowParameters.z, PageVisibility))
+    {
+        return PageVisibility;
+    }
+#endif
     float4 ShadowPosition = mul(ShadowViewProjection[Cascade], float4(Position + N * ShadowParameters.w, 1));
     float3 Projected = ShadowPosition.xyz / ShadowPosition.w;
     float2 Gradient = ShadowReceiverGradient(ShadowViewProjection[Cascade][0].xyz,
@@ -224,6 +234,10 @@ TransparentOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     float3 Tangent = dot(TangentVector, TangentVector) > 0.00000001 ? normalize(TangentVector) : normalize(cross(TangentAxis, N));
     float3 Bitangent = normalize(cross(N, Tangent)) * Input.Tangent.w;
     float3 Mapped = Flags.z > 0.5 ? NormalTexture.Sample(NormalSampler, Input.Texcoord).xyz * 2 - 1 : float3(0, 0, 1);
+    if (Flags.w > 0.5)
+    {
+        Mapped.z = sqrt(saturate(1 - dot(Mapped.xy, Mapped.xy)));
+    }
     float NormalScale = max(abs(Surface.y), 1);
     Mapped = UnitDirection(float3(Mapped.xy * (Surface.y / NormalScale), Mapped.z / NormalScale), float3(0, 0, 1));
     N = UnitDirection(Tangent * Mapped.x + Bitangent * Mapped.y + N * Mapped.z, N);

@@ -434,7 +434,6 @@ ENGINE_NEXT_TEST("Prepared GPU package persists image mip bytes and binds them t
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "textures.engpu";
 	const bool bCooked = EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), EngineNext::Rendering::GpuCookConfig{}, arrDiagnostics);
-#if defined(_WIN32)
 	ENGINE_NEXT_CHECK(bCooked);
 	if (!bCooked)
 	{
@@ -474,9 +473,4 @@ ENGINE_NEXT_TEST("Prepared GPU package persists image mip bytes and binds them t
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::VerifyCookedScene(stSource, stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, "gpu_source_mismatch");
-#else
-	ENGINE_NEXT_CHECK(!bCooked);
-	ENGINE_NEXT_CHECK(!fs::exists(stOutput));
-	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, "image_decode_platform");
-#endif
 }
