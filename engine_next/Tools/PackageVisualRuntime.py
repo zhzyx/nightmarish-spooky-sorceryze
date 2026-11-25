@@ -36,6 +36,7 @@ SHADER_FILES = {
     "FixedMesh.vs.cso",
     "FixedMesh.ps.cso",
     "FixedMesh.cs.cso",
+    "AssetDirectionalTint.cs.cso",
     "Deferred.vs.cso",
     "AnimatedDeferred.vs.cso",
     "Deferred.ps.cso",

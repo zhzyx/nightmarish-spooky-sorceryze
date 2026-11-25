@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "issue_number": 1539,
+  "parent_issue_number": 1323,
+  "candidate": "combined-r17",
+  "stage_complete": false,
+  "complete": false,
+  "native_key": "a19d9dff6ac2703356849ea191d1c92903697d60b7d399d150c5e37de5d8c917",
+  "executable_sha256": "df7506616f8447b172d389dd7414381647bb7a809d72ec34d737c57753627160",
+  "recorded_at_utc": "2026-11-25T02:27:13.681204+00:00",
+  "base_commit": "0a664cc4703e075205be0909e6d7f67287bc406f",
+  "source_manifest": {
+    "path": "engine-next-combined-lighting-r17-20261125/SourceManifest.json",
+    "sha256": "18e1f78b56bedea5b5eaf2a86bf3d70982ae6f82bbac1abe53b3bcba83431b64",
+    "size_bytes": 60796
+  },
+  "records": [
+    {
+      "scope": "R13 source material prefix and resize path",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R13ResizeClosure.json",
+        "sha256": "0826a6971271be5d012fff8812640a3a492f4856fd817c34b35e2043eacb4c91",
+        "size_bytes": 1243
+      }
+    },
+    {
+      "scope": "R12 offline Executor host",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R12HostClosure.json",
+        "sha256": "334335303b69911072e08df61a0243dadb31ae84310c9aa30a5593d11de8ca48",
+        "size_bytes": 15046
+      }
+    },
+    {
+      "scope": "R12 tooling and benchmark geometry",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R12ToolingGeometryReview.json",
+        "sha256": "1667bd84397db452c001ffadc51a93260a4298c2432d7540379fe0d0162305d9",
+        "size_bytes": 3907
+      }
+    },
+    {
+      "scope": "Portable PNG decoder review",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/PortablePngReview.json",
+        "sha256": "e369100a0464ab7c2f21daa6780b6a713291c5363ae899fe57de4f38638b82ec",
+        "size_bytes": 1632
+      }
+    },
+    {
+      "scope": "R14 comment delta review",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R14CommentDeltaReview.json",
+        "sha256": "c81e902b710b99fdc5c10416adec74798b6c2120dec98a29a70499756562f3e9",
+        "size_bytes": 1684
+      }
+    },
+    {
+      "scope": "R13 device resize closure",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R13ResizeDeviceClosure.json",
+        "sha256": "e8e126b8be345034ccd3703c721bed0b87e32f5e0f987e6fdc47997a578a4539",
+        "size_bytes": 1685
+      }
+    },
+    {
+      "scope": "Main shared AI regression before fixture correction",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/SharedAiRegression.json",
+        "sha256": "457d0f3829b6faa433224efa8430ffa7075e519113820ce37340f2aa7bef5afa",
+        "size_bytes": 18856
+      }
+    },
+    {
+      "scope": "Private Windows SQLite fixture fix and 72-case rerun",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/SharedAiFixtureFix/Evidence.json",
+        "sha256": "c9e9790ebac0dcef0583ae74a538361e4c0ac836ce50498052790fa9baf5b109",
+        "size_bytes": 5180
+      }
+    }
+  ],
+  "device_regression": {
+    "status": "passed",
+    "report": {
+      "path": "engine-next-combined-lighting-r17-20261125/Regression/Result.json",
+      "sha256": "08479e8838066d91149f7b25619129fda97efdab6982721b60b5b81044092f1b",
+      "size_bytes": 3152
+    },
+    "frames": 256,
+    "cases": [
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/D/Invocation.json",
+          "sha256": "48a654677d146f33033da99a0dbb708056786cff4fca8857a152c3c4b42732a1",
+          "size_bytes": 1765
+        },
+        "case": "D",
+        "frames": 64,
+        "resizes": 0,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "",
+        "animated_draws": 0,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/D/Runtime.json",
+          "sha256": "3764385404926a7ce2aa2453720f9444a7741030dd6d5e658c72e63bda071f5d",
+          "size_bytes": 527713
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/DResize/Invocation.json",
+          "sha256": "43084d19a60523f9d085695f52d547cf8e87968cebeca1efefd9dabc81242f83",
+          "size_bytes": 1821
+        },
+        "case": "DResize",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "",
+        "animated_draws": 0,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/DResize/Runtime.json",
+          "sha256": "82d3e981b7a8af58d6c6914237cee3b30a11743f86899cb1d982e420e5268b93",
+          "size_bytes": 527631
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/E/Invocation.json",
+          "sha256": "4d07e53a1ba14772ac0a479e7770362c2afa65fcfa9f26043a751848de104077",
+          "size_bytes": 1671
+        },
+        "case": "E",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "animated_vertex_layout",
+        "animated_draws": 1,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/E/Runtime.json",
+          "sha256": "ef385d887f4d3b4ec53a367ef2d91838342602868ce092fe6ad58a28877028a6",
+          "size_bytes": 508609
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/ERayOwned/Invocation.json",
+          "sha256": "2b15c024dea60767a7a761b6ba83a87d5c0f702df2d64a4e32baa63609cb5f4f",
+          "size_bytes": 1711
+        },
+        "case": "ERayOwned",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": false,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "animated_vertex_layout",
+        "animated_draws": 1,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r17-20261125/Regression/ERayOwned/Runtime.json",
+          "sha256": "264581a41d435981cf7b354a4fa6d0a571377a016a45d82fcf01dccc8679ff51",
+          "size_bytes": 478966
+        }
+      }
+    ]
+  },
+  "scope": "Source review and device reruns retain their own candidate identities. The shared AI test-only fix was independently exercised against the main snapshot.",
+  "prior_portable_cpu": [
+    {
+      "path": "engine-next-combined-lighting-r14-20261125/PortablePng/PortablePngEvidence.json",
+      "sha256": "c907f9dbb06de71afb5773710c1baa6936911a227a0a143d19207a01b8fe3ad9",
+      "size_bytes": 3649
+    },
+    {
+      "path": "engine-next-combined-lighting-r14-20261125/PortablePng/Comparison.json",
+      "sha256": "da08c9d0af0f216a1e4f4abe7b0c98c695e0dd47fe15b6777ca393885fb81c1a",
+      "size_bytes": 824
+    }
+  ],
+  "current_device_closure": {
+    "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R17AssetTintDeviceClosure.json",
+    "sha256": "beae1f7e6f012677dd188ae58e219d9c208ad608ea269d96f81d32bbcf3cb31a",
+    "size_bytes": 1955
+  },
+  "candidate_receipts_ready": true,
+  "iteration_scope_complete": true
+}

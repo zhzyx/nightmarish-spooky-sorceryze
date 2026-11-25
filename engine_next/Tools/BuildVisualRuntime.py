@@ -203,6 +203,7 @@ SHADERS = [
     ("VSMain", "vs_6_0", "FixedMesh.vs.cso", []),
     ("PSMain", "ps_6_0", "FixedMesh.ps.cso", []),
     ("CSMain", "cs_6_0", "FixedMesh.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
+    ("AssetDirectionalTintCS", "cs_6_0", "AssetDirectionalTint.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
     ("VSMain", "vs_6_0", "Deferred.vs.cso", ["-D", "GEOMETRY_STAGE=1"]),
     ("VSMain", "vs_6_0", "AnimatedDeferred.vs.cso", ["-D", "GEOMETRY_STAGE=1", "-D", "ANIMATION_STAGE=1"]),
     ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
@@ -677,7 +678,7 @@ def compile_shaders(args, commands):
             / "engine_next/Rendering/Shaders"
             / (
                 "FixedMesh.hlsl"
-                if name.startswith("FixedMesh")
+                if name.startswith("FixedMesh") or name == "AssetDirectionalTint.cs.cso"
                 else "ShadowPageFeedback.hlsl"
                 if name == "ShadowPageFeedback.cs.cso"
                 else "AmbientOcclusion.hlsl"

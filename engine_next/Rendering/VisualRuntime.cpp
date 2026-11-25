@@ -1702,7 +1702,8 @@ bool VisualRuntime::CreatePipeline()
 {
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "FixedMesh.vs.cso");
 	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "FixedMesh.ps.cso");
-	const std::vector<std::uint8_t> arrCompute = ReadShader(stConfig.strShaderDirectory, "FixedMesh.cs.cso");
+	const char *pComputeShader = bSceneMode ? "AssetDirectionalTint.cs.cso" : "FixedMesh.cs.cso";
+	const std::vector<std::uint8_t> arrCompute = ReadShader(stConfig.strShaderDirectory, pComputeShader);
 	if (arrVertex.empty() || arrPixel.empty() || arrCompute.empty())
 	{
 		return Fail("Missing or empty offline shader package");

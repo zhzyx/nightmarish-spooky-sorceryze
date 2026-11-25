@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Native material prefix and resource bindings compile into the renderer. Offline shader bundles can be replaced on the same executable.",
-  "host_contract": "M3 scene and asset identities bind derived pages and texture mips. Resize preserves the source material prefix used by GI and reflections.",
+  "reason": "Native resource selection binds the neutral asset tint and the dynamic demo tint to their distinct compute PSOs. Offline shader bundles can be replaced on the same executable.",
+  "host_contract": "M3 scene and asset identities bind derived pages and texture mips. Asset lighting binds a constant white multiplier. The demo retains its time-varying tint; both pixel consumers read the compute output.",
   "rollback": "Restore the native inputs and shader bundle, then compare the restored deterministic image against the baseline.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-6-combined-r16-build-impact.json"
+  "evidence": "data-collection/engine-next-visual-runtime-m4-6-combined-r17-build-impact.json"
 }

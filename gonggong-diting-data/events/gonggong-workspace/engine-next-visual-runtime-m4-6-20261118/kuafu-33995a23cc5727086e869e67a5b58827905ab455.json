@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-33995a23cc5727086e869e67a5b58827905ab455",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7d82f479fe3fe016ce85ab28f9799d90f7161659023bd5a602c59df3566047a5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "c211a2d4f0e95b6ae12c6e6c9fa434f2951e6c53",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "artifact:engine-next-ue-reference-20261118/Reference-r4/AssetDirectionalTintR16/Evidence.json",
+    "diagnosis": "The no-asset M4.1 demo compute tint is also multiplied into deferred, transparent, GI and ray asset lighting despite no source light-color animation. Independent review confirms P2 and blocks unchanged R16 merge. The existing scene mode now chooses a neutral white compute entry with the same resource, dispatch, barriers and consumers; no-asset demo bytecode is unchanged.",
+    "next_action": "Finish exact R17 dual-compiler and device white-UAV/demo/legacy-control checks, redo affected image comparisons, then publish a tested successor. Keep PR2236 unmerged and retain all R16 images as historical.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T23:37:21.589049+00:00",
+    "attempted": "Private DXC disassembly confirms white writes; targeted MSVC and clang-cl compilation and15 tooling tests passed. R17 freezes the corrected mode selection and104-CSO build/package. Current Core normal/clean checks passed on a newly rebuilt key; full renderer and device closure remain pending.",
+    "repair_owner": "agent:/root",
+    "continuable": "CPU build and independent review can proceed while an isolated worker validates lossless shader performance prototypes under resource guards."
+  },
+  "occurred_at": "2026-11-24T23:42:05.479962+00:00",
+  "sha256": "3cd692901be13b10babdc3a538d8bcb47fdd17f527802add7637312d1a9d981f"
+}
