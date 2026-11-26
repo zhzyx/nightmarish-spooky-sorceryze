@@ -297,8 +297,8 @@ EditorThemeManager::ThemeConfiguration EditorThemeManager::_create_theme_config(
 		Color system_accent_color = display_server->get_accent_color();
 
 		if (follow_system_theme) {
-			String dark_theme = "Default";
-			String light_theme = "Light";
+			String dark_theme = "Apple Gray Dark";
+			String light_theme = "Apple Gray";
 
 			config.preset = light_theme; // Assume light theme if we can't detect system theme attributes.
 
@@ -324,7 +324,17 @@ EditorThemeManager::ThemeConfiguration EditorThemeManager::_create_theme_config(
 			const float light_contrast = -0.06;
 
 			// Please use alphabetical order if you're adding a new color preset here.
-			if (config.preset == "Black (OLED)") {
+			if (config.preset == "Apple Gray") {
+				preset_accent_color = Color(0.0, 0.36, 0.82);
+				preset_base_color = Color(0.91, 0.91, 0.92);
+				preset_contrast = -0.045;
+				preset_icon_saturation = 0.65;
+			} else if (config.preset == "Apple Gray Dark") {
+				preset_accent_color = Color(0.35, 0.65, 1.0);
+				preset_base_color = Color(0.18, 0.18, 0.19);
+				preset_contrast = 0.16;
+				preset_icon_saturation = 0.65;
+			} else if (config.preset == "Black (OLED)") {
 				preset_accent_color = Color(0.45, 0.75, 1.0);
 				preset_base_color = Color(0, 0, 0);
 				// The contrast rate value is irrelevant on a fully black theme.

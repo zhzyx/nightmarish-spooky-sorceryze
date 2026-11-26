@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "occurred_at": "2026-11-24T22:08:56.421033+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-d5957dfb",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "AGENTS.md"
+  },
+  "event_id": "m46-combined-r13-verification-20261125",
+  "kind": "step",
+  "evidence_refs": [
+    "m46-telemetry-request-20261118"
+  ],
+  "payload": {
+    "candidate": "combined-r13",
+    "native_key": "5247c6265f76639a792c73cad16a89281dabb1295208e3c19214cf62aba5b751",
+    "executable_sha256": "f7379d1c02d7e5d8d3a7eab394a21977b53afab35c21b61d5a11b42425d5afda",
+    "verification": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r13-verification.json",
+      "sha256": "1b3cd400cf6824eaee3c111916a9bf7975dd1444b63d9d53ab7e3f1a04db0e6b",
+      "size_bytes": 12835
+    },
+    "review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r13-review.json",
+      "sha256": "4e610d3fad63b1a348f83a41b94ac70a24edef4d3c07bddc0d949d3042c65554",
+      "size_bytes": 7294
+    },
+    "build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-combined-r13-build-impact.json",
+      "sha256": "94003f1b1783862b086cb5bde3158fa79d22a11e3033cfc10d34546663e40a84",
+      "size_bytes": 50809
+    },
+    "cpu_tests_each_compiler": 605,
+    "cpu_checks_each_compiler": 1760711,
+    "tool_tests": 47,
+    "functional_frames": {
+      "full_feature_resize_regression": 256,
+      "default_threads_spatial_and_native4k_smoke": 166,
+      "complex_c_geometry": 128,
+      "renderdoc_startup_and_warm_capture": 68,
+      "module_controls_including_deliberate_native_and_shader_variants": 192
+    },
+    "gpu_validation_errors": 0,
+    "reused_core_native_key": "a04916cb6b5e1ea4bfbce563904ccf5a104d9f93b3657136dbe14f052d6b29e7",
+    "reuse_basis": "All R12 Core native and host inputs match the current source hashes; normal and clean M2/M3/AI and minimal Core package acceptance retain the R12 Core identity.",
+    "stage_complete": false,
+    "remaining": [
+      "Native 4K performance",
+      "30–60 minute sustained run",
+      "Final same-source UE quality comparison",
+      "Real input validation"
+    ],
+    "scope": "Functional integration slice. Native4K smoke verifies two frames and dimensions only. Geometry-focused C, historical component results, deliberate module variants, real input and final quality/performance acceptance remain distinct."
+  },
+  "sha256": "48bf0414af65a923ab969212e8424159d3d4de1e171f373569914d49b9bf9dd6"
+}

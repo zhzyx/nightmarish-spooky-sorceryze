@@ -63,6 +63,8 @@ builtin = ["clear", "rare", "en-GB_to_en-US"]
 # Preserve verbatim D3D12 and Windows CLI diagnostics in immutable evidence.
 ignore-regex = "\\(labelled with 'Possibly imprecise'\\)|Windows /fo spelling false positive" # codespell:ignore labelled,fo
 skip = [
+	# Preserve the exact independently reviewed #2222 UI validation receipt.
+	"data-collection/engine-apple-gray-ui-2222-validation.json",
 	# Keep the original run-control receipt attached to the Windows worker's evidence.
 	"data-collection/gonggong-ai-workbench-plan1-s10.json",
 	# Preserve the exact #1434 process-test transcript and reviewed checksum.
@@ -138,6 +140,7 @@ ignore-words-list = [
 	"optin",
 	"ot",
 	"outin",
+	"paeth", # PNG filter 4; https://www.w3.org/TR/png-3/#9Filter-type-4-Paeth
 	"parm",
 	"pEvent",
 	"requestor",

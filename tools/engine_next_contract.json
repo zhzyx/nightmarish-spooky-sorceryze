@@ -41,7 +41,8 @@
     "engine_next/thirdparty/enet",
     "engine_next/thirdparty/zlib",
     "engine_next/thirdparty/libjpeg-turbo",
-    "engine_next/thirdparty/meshoptimizer"
+    "engine_next/thirdparty/meshoptimizer",
+    "engine_next/thirdparty/bc7enc"
   ],
   "allowed_angle_include_prefixes": [
     "enet/",
@@ -136,7 +137,8 @@
         "dxgidebug.h",
         "pix.h",
         "wincodec.h",
-        "objbase.h"
+        "objbase.h",
+        "psapi.h"
       ],
       "allowed_system_libraries": [
         "d3d12",
@@ -195,6 +197,17 @@
         "ole32",
         "windowscodecs"
       ]
+    },
+    "bc7_portable": {
+      "source_roots": [
+        "engine_next/thirdparty/bc7enc"
+      ],
+      "allowed_angle_includes": [
+        "immintrin.h",
+        "emmintrin.h",
+        "memory.h"
+      ],
+      "allowed_system_libraries": []
     }
   }
 }

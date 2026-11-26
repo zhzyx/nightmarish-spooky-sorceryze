@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-12e48b3dddcc7f5dc941e045d2edb325582cea56",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b3258fe62a64219b2ba909edf8d44d4140817f7fdf0674c6bb9edf2e02cdd016",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "9b49f166f5ce7d5fee19b9d53e8a7d6cf1b3fde8",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "data-collection/engine-next-visual-runtime-m4-6-spelling-correction-20261125.json",
+    "diagnosis": "Codespell treated the correct PNG filter name Paeth as a misspelling. The W3C PNG specification names filter4 Paeth. Adding that exact proper name to the existing project word list preserves correct source terminology and all other checks.",
+    "next_action": "Publish spelling metadata correction, require all selected checks on the new signed head, merge through the normal protected PR route and read back main. Final M4 quality and performance remain open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T22:58:59.703493+00:00",
+    "attempted": "Pinned codespell2.4.2 with the actual ENXT CI argument passed110 changed first-party files. All404 runtime,246 Core and5 host input hashes still match R16; no native or shader bytes were changed. The prior signed head already passed Ubuntu portable FrameGraph tests.",
+    "repair_owner": "agent:/root",
+    "continuable": "The source and binary candidate stays R16; only spelling metadata needs a new delivery head."
+  },
+  "occurred_at": "2026-11-24T23:02:29.655767+00:00",
+  "sha256": "b46e155c71f3982c2171d942a942c6ee04c02361ce721aa677396fadcacf92a3"
+}

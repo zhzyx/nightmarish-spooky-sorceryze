@@ -573,6 +573,7 @@ class BridgeTests(unittest.TestCase):
     def test_cached_mesh_snapshot_hydrates_original_immutable_record(self):
         import base64
         import sqlite3
+        from contextlib import closing
 
         from extensions import canonical
 
@@ -597,7 +598,7 @@ class BridgeTests(unittest.TestCase):
                 dependencies=[source_reference],
             )
             database = root / "db"
-            with sqlite3.connect(database) as db:
+            with closing(sqlite3.connect(database)) as db, db:
                 db.execute("CREATE TABLE assets(id TEXT, revision TEXT, body TEXT NOT NULL, PRIMARY KEY(id,revision))")
                 for asset in (original_source, original):
                     db.execute("INSERT INTO assets VALUES(?,?,?)", (asset["id"], asset["revision"], canonical(asset)))

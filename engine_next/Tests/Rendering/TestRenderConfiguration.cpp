@@ -83,8 +83,6 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.stLightAnimation.arrKeyframes = { { 0, 2 }, { 1, 3 } };
 	stConfiguration.stReflections.bEnabled = true;
 	stConfiguration.stReflections.dMaxDistance = 321;
-	stConfiguration.stAmbientOcclusion.bEnabled = true;
-	stConfiguration.stAmbientOcclusion.dRadius = 6;
 	stConfiguration.stVolume.dDistance = 456;
 	stConfiguration.arrParticles = { EngineNext::Rendering::ParticleSettings{} };
 	stConfiguration.arrParticles[0].nEmitterId = 123;
@@ -103,8 +101,6 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK(!stConfiguration.stTemporal.bEnabled);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, 0.25);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dDepthThreshold, 0.125);
-	ENGINE_NEXT_CHECK(stConfiguration.stAmbientOcclusion.bEnabled);
-	ENGINE_NEXT_CHECK_EQ(stConfiguration.stAmbientOcclusion.dRadius, 6.0);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.eMode, EngineNext::Rendering::ExposureMode::Manual);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dManualEv100, 7);
 	ENGINE_NEXT_CHECK(stConfiguration.stBloom.bEnabled);
@@ -1105,6 +1101,29 @@ ENGINE_NEXT_TEST("Render configuration rejects malformed reflection fields trans
 	CheckRejected(stValue);
 }
 
+ENGINE_NEXT_TEST("Render configuration validates optional DXR reflection settings")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{
+		{ "enabled", true }, { "ray_tracing", JsonValue::Object{ { "enabled", true }, { "resolution_divisor", std::int64_t{ 1 } }, { "samples_per_lobe", std::int64_t{ 4 } }, { "spatial_passes", std::int64_t{ 3 } }, { "max_history", std::int64_t{ 64 } }, { "max_gpu_bytes", std::int64_t{ 2147483648LL } } } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stReflections.stRayTracing.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.stRayTracing.nResolutionDivisor, 1U);
+	for (const JsonValue &stBad : std::array<JsonValue, 8>{ JsonValue(true), JsonValue::Object{ { "enabled", std::int64_t{ 1 } } },
+															JsonValue::Object{ { "resolution_divisor", std::int64_t{ 3 } } }, JsonValue::Object{ { "samples_per_lobe", 1.0 } },
+															JsonValue::Object{ { "spatial_passes", std::int64_t{ 4 } } }, JsonValue::Object{ { "max_history", std::int64_t{ 0 } } },
+															JsonValue::Object{ { "history_weight", 1.0 } }, JsonValue::Object{ { "unused", true } } })
+	{
+		(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", true }, { "ray_tracing", stBad } };
+		CheckRejected(stValue);
+	}
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", false }, { "ray_tracing", JsonValue::Object{ { "enabled", true } } } };
+	CheckRejected(stValue);
+}
+
 ENGINE_NEXT_TEST("Render configuration accepts optional fog and particle emitters")
 {
 	JsonValue stValue = ValidConfiguration();
@@ -1235,6 +1254,31 @@ ENGINE_NEXT_TEST("Render configuration routes optional GPU geometry settings tra
 	(*(*stValue.GetObject())["geometry_culling"].GetObject())["unexpected"] = true;
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
 	ENGINE_NEXT_CHECK(stConfiguration.stGeometry.bEnabled && stConfiguration.stGeometry.nMaxCommands == 1);
+}
+
+ENGINE_NEXT_TEST("Render configuration validates optional bounded virtual shadow pages")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stShadows.stVirtualPages.bEnabled);
+	(*stValue.GetObject())["shadows"] = JsonValue::Object{
+		{ "enabled", true }, { "resolution", std::int64_t{ 1024 } }, { "distance", 50.0 }, { "split_lambda", 0.6 }, { "depth_bias", 0.0005 }, { "normal_bias", 0.01 }, { "virtual_pages", JsonValue::Object{ { "enabled", true }, { "resolution", std::int64_t{ 8192 } }, { "physical_pages", std::int64_t{ 16 } }, { "updates_per_frame", std::int64_t{ 8 } } } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.stVirtualPages.bEnabled);
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.stVirtualPages.nPhysicalPages == 16);
+	JsonValue::Object &mapVirtual = *(*(*stValue.GetObject())["shadows"].GetObject())["virtual_pages"].GetObject();
+	mapVirtual["updates_per_frame"] = std::int64_t{ 17 };
+	CheckRejected(stValue);
+	mapVirtual["updates_per_frame"] = std::int64_t{ 8 };
+	mapVirtual["enabled"] = false;
+	mapVirtual["resolution"] = std::int64_t{ 9000 };
+	CheckRejected(stValue);
+	mapVirtual["resolution"] = std::int64_t{ 8192 };
+	mapVirtual["unexpected"] = true;
+	CheckRejected(stValue);
 }
 
 ENGINE_NEXT_TEST("Render configuration routes ambient occlusion settings")

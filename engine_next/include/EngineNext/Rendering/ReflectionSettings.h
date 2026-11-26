@@ -31,6 +31,7 @@
 #pragma once
 
 #include "engine_next/include/EngineNext/Assets/Types.h"
+#include "engine_next/include/EngineNext/Rendering/RayReflectionSettings.h"
 
 #include <cstdint>
 
@@ -45,6 +46,7 @@ struct ReflectionSettings
 	double dNormalBias = 0.02;
 	std::uint32_t nMaxSteps = 128;
 	double dMaxRoughness = 0.8;
+	RayReflectionSettings stRayTracing;
 };
 
 // Pure CPU validation, callable on any thread with exclusive diagnostic access.

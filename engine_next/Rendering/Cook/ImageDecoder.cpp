@@ -98,7 +98,34 @@ public:
 	int nResult;
 };
 
-bool ValidatePngData(const std::vector<std::uint8_t> &arrBytes, const Assets::BlobInfo &stInfo, Assets::Diagnostics &out_arrDiagnostics)
+std::uint8_t PngPredictor(std::uint8_t nFilter, int nLeft, int nUp, int nUpperLeft)
+{
+	switch (nFilter)
+	{
+		case 1:
+			return static_cast<std::uint8_t>(nLeft);
+		case 2:
+			return static_cast<std::uint8_t>(nUp);
+		case 3:
+			return static_cast<std::uint8_t>((nLeft + nUp) / 2);
+		case 4:
+		{
+			const int nEstimate = nLeft + nUp - nUpperLeft;
+			const int nLeftDistance = std::abs(nEstimate - nLeft);
+			const int nUpDistance = std::abs(nEstimate - nUp);
+			const int nCornerDistance = std::abs(nEstimate - nUpperLeft);
+			if (nLeftDistance <= nUpDistance && nLeftDistance <= nCornerDistance)
+			{
+				return static_cast<std::uint8_t>(nLeft);
+			}
+			return static_cast<std::uint8_t>(nUpDistance <= nCornerDistance ? nUp : nUpperLeft);
+		}
+		default:
+			return 0;
+	}
+}
+
+bool InflatePngData(const std::vector<std::uint8_t> &arrBytes, const Assets::BlobInfo &stInfo, std::vector<std::uint8_t> *pRgba8, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::uint8_t nBitDepth = arrBytes[24];
 	const std::uint8_t nColorType = arrBytes[25];
@@ -146,6 +173,7 @@ bool ValidatePngData(const std::vector<std::uint8_t> &arrBytes, const Assets::Bl
 	std::size_t nPass = 0;
 	std::uint32_t nRow = 0;
 	std::uint32_t nRowOffset = 0;
+	std::uint8_t nFilter = 0;
 	int nResult = Z_OK;
 	while (nResult != Z_STREAM_END)
 	{
@@ -164,6 +192,23 @@ bool ValidatePngData(const std::vector<std::uint8_t> &arrBytes, const Assets::Bl
 			{
 				Assets::AddDiagnostic(out_arrDiagnostics, "image_png_scanline", "$.IDAT", "PNG scanline length or filter is invalid.");
 				return false;
+			}
+			if (pRgba8 != nullptr)
+			{
+				if (nRowOffset == 0)
+				{
+					nFilter = arrOutput[nByte];
+				}
+				else
+				{
+					const std::size_t nPosition = pRgba8->size();
+					const std::size_t nStride = arrPasses[nPass].nRowBytes;
+					const bool bHasLeft = nRowOffset > 4;
+					const int nLeft = bHasLeft ? (*pRgba8)[nPosition - 4] : 0;
+					const int nUp = nRow > 0 ? (*pRgba8)[nPosition - nStride] : 0;
+					const int nUpperLeft = bHasLeft && nRow > 0 ? (*pRgba8)[nPosition - nStride - 4] : 0;
+					pRgba8->push_back(static_cast<std::uint8_t>(arrOutput[nByte] + PngPredictor(nFilter, nLeft, nUp, nUpperLeft)));
+				}
 			}
 			++nRowOffset;
 			if (nRowOffset == arrPasses[nPass].nRowBytes + 1)
@@ -470,9 +515,21 @@ bool DecodeImage(const std::vector<std::uint8_t> &arrEncoded, const std::string 
 	{
 		return false;
 	}
-	if (strMediaType == "image/png" && !ValidatePngData(arrEncoded, stInfo, out_arrDiagnostics))
+	if (strMediaType == "image/png")
 	{
-		return false;
+		const bool bRgba8 = arrEncoded[24] == 8 && arrEncoded[25] == 6 && arrEncoded[28] == 0;
+		DecodedImage stCandidate;
+		if (!InflatePngData(arrEncoded, stInfo, bRgba8 ? &stCandidate.arrRgba8 : nullptr, out_arrDiagnostics))
+		{
+			return false;
+		}
+		if (bRgba8)
+		{
+			stCandidate.nWidth = stInfo.nWidth;
+			stCandidate.nHeight = stInfo.nHeight;
+			out_stImage = std::move(stCandidate);
+			return true;
+		}
 	}
 #if defined(_WIN32)
 	if (strMediaType == "image/jpeg")
@@ -486,8 +543,7 @@ bool DecodeImage(const std::vector<std::uint8_t> &arrEncoded, const std::string 
 	}
 	return DecodeWic(arrEncoded, strMediaType, stInfo, out_stImage, out_arrDiagnostics);
 #else
-	(void)out_stImage;
-	Assets::AddDiagnostic(out_arrDiagnostics, "image_decode_platform", "$", "PNG/JPEG pixel decoding is currently available on Windows through WIC.");
+	Assets::AddDiagnostic(out_arrDiagnostics, "image_decode_platform", "$", "This PNG layout or JPEG requires Windows WIC. Portable decoding supports non-interlaced 8-bit RGBA PNG.");
 	return false;
 #endif
 }

@@ -47,6 +47,12 @@ public:
 
 private:
 	bool folded = false;
+	bool fold_animating = false;
+	bool restore_clip_contents = false;
+	real_t fold_height = 0;
+	real_t fold_from_height = 0;
+	real_t fold_target_height = 0;
+	double fold_elapsed = 0;
 	String title;
 	Ref<FoldableGroup> foldable_group;
 	String language;
@@ -85,6 +91,7 @@ private:
 		Ref<Texture2D> folded_arrow_mirrored;
 
 		int h_separation = 0;
+		int folding_duration = 0;
 		int icon_max_width = 0;
 
 		Ref<AudioStream> focus_sound;

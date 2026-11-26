@@ -7161,6 +7161,7 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p
 	surface->add_child(bottom_center_vbox);
 
 	info_panel = memnew(PanelContainer);
+	info_panel->set_theme_type_variation("EditorGlassPanel");
 	info_panel->set_anchor_and_offset(SIDE_LEFT, ANCHOR_END, -90 * EDSCALE);
 	info_panel->set_anchor_and_offset(SIDE_TOP, ANCHOR_END, -90 * EDSCALE);
 	info_panel->set_anchor_and_offset(SIDE_RIGHT, ANCHOR_END, -10 * EDSCALE);
@@ -7257,6 +7258,7 @@ Node3DEditorViewport::Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p
 	top_right_vbox->add_child(rotation_control);
 
 	frame_time_panel = memnew(PanelContainer);
+	frame_time_panel->set_theme_type_variation("EditorGlassPanel");
 	frame_time_panel->set_mouse_filter(MOUSE_FILTER_IGNORE);
 	top_right_vbox->add_child(frame_time_panel);
 	frame_time_panel->hide();

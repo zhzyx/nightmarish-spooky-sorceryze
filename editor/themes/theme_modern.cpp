@@ -120,11 +120,11 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 
 		// Font colors.
 
-		p_config.font_color = p_config.mono_color_font * Color(1, 1, 1, 0.75);
-		p_config.font_secondary_color = p_config.mono_color_font * Color(1, 1, 1, 0.55);
+		p_config.font_color = p_config.mono_color_font * Color(1, 1, 1, 0.88);
+		p_config.font_secondary_color = p_config.mono_color_font * Color(1, 1, 1, 0.68);
 		p_config.font_focus_color = p_config.mono_color_font;
-		p_config.font_hover_color = p_config.mono_color_font * Color(1, 1, 1, 0.85);
-		p_config.font_pressed_color = p_config.mono_color_font * Color(1, 1, 1, 0.85);
+		p_config.font_hover_color = p_config.mono_color_font * Color(1, 1, 1, 0.95);
+		p_config.font_pressed_color = p_config.mono_color_font * Color(1, 1, 1, 0.95);
 		p_config.font_hover_pressed_color = p_config.mono_color_font;
 		p_config.font_disabled_color = p_config.mono_color_font * Color(1, 1, 1, p_config.dark_icon_and_font ? 0.35 : 0.5);
 		p_config.font_readonly_color = Color(p_config.mono_color_font.r, p_config.mono_color_font.g, p_config.mono_color_font.b, 0.65);
@@ -208,6 +208,20 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 		p_config.flat_button_hover_color = _get_base_color(p_config, -1.2, 0.75);
 		p_config.flat_button_pressed_color = _get_base_color(p_config, -2.0, 0.75);
 		p_config.flat_button_hover_pressed_color = _get_base_color(p_config, -2.4, 0.75);
+
+		// Keep interaction states distinct on neutral surfaces, including light themes.
+		// Blend opaque colors so nested controls do not accumulate translucent fills.
+		if (p_config.preset == "Apple Gray" || p_config.preset == "Apple Gray Dark") {
+			p_config.flat_button_hover_color = p_config.base_color.lerp(p_config.mono_color, 0.07);
+			p_config.flat_button_pressed_color = p_config.base_color.lerp(p_config.accent_color, 0.18);
+			p_config.flat_button_hover_pressed_color = p_config.base_color.lerp(p_config.accent_color, 0.26);
+			p_config.button_normal_color = p_config.base_color.lerp(p_config.mono_color_inv, 0.35);
+			p_config.button_hover_color = p_config.button_normal_color.lerp(p_config.mono_color, 0.08);
+			p_config.button_pressed_color = p_config.base_color.lerp(p_config.accent_color, 0.22);
+			p_config.button_border_normal_color = p_config.base_color.lerp(p_config.mono_color, 0.16);
+			p_config.button_border_hover_color = p_config.base_color.lerp(p_config.mono_color, 0.28);
+			p_config.button_border_pressed_color = p_config.accent_color;
+		}
 
 		p_config.shadow_color = Color(0, 0, 0, p_config.dark_theme ? 0.3 : 0.1);
 		p_config.selection_color = p_config.accent_color * Color(1, 1, 1, 0.4);
@@ -317,7 +331,7 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_config.button_style_hover = p_config.button_style->duplicate();
 			p_config.button_style_hover->set_bg_color(p_config.button_hover_color);
 			if (p_config.draw_extra_borders) {
-				p_config.button_style_pressed->set_border_color(p_config.extra_border_color_1);
+				p_config.button_style_hover->set_border_color(p_config.extra_border_color_1);
 			} else {
 				p_config.button_style_hover->set_border_color(p_config.button_border_hover_color);
 			}
@@ -353,7 +367,7 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_config.popup_panel_style->set_shadow_color(Color(0, 0, 0, 0.3));
 			p_config.popup_panel_style->set_shadow_size(EDSCALE_RND(p_config.base_margin * 0.75));
 			p_config.popup_panel_style->set_content_margin_all(EDSCALE_RND(p_config.popup_margin));
-			p_config.popup_panel_style->set_corner_radius_all(0);
+			p_config.popup_panel_style->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 			if (p_config.draw_extra_borders) {
 				p_config.popup_panel_style->set_border_width_all(EDSCALE_RND(1));
 				p_config.popup_panel_style->set_border_color(p_config.extra_border_color_2);
@@ -366,14 +380,14 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 			p_config.window_style->set_border_color(p_config.base_color);
 			p_config.window_style->set_border_width(SIDE_TOP, EDSCALE_RND(24));
 			p_config.window_style->set_expand_margin(SIDE_TOP, EDSCALE_RND(24));
-			p_config.window_style->set_corner_radius_all(0);
+			p_config.window_style->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 
 			p_config.window_complex_style = p_config.window_style->duplicate();
 			p_config.window_complex_style->set_bg_color(p_config.surface_lowest_color);
 
 			p_config.dialog_style = p_config.base_style->duplicate();
 			p_config.dialog_style->set_content_margin_all(p_config.popup_margin);
-			p_config.dialog_style->set_corner_radius_all(0);
+			p_config.dialog_style->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 		}
 
 		// Panels.
@@ -419,6 +433,8 @@ void ThemeModern::populate_shared_styles(const Ref<EditorTheme> &p_theme, Editor
 }
 
 void ThemeModern::populate_standard_styles(const Ref<EditorTheme> &p_theme, EditorThemeManager::ThemeConfiguration &p_config) {
+	p_theme->set_type_variation("EditorGlassPanel", "PanelContainer");
+	p_theme->set_constant("background_blur", "EditorGlassPanel", bool(EDITOR_GET("interface/theme/reduce_transparency")) ? 0 : MAX(1, EDSCALE_RND(3)));
 	// Panels.
 	{
 		// Panel.
@@ -438,7 +454,7 @@ void ThemeModern::populate_standard_styles(const Ref<EditorTheme> &p_theme, Edit
 
 			Ref<StyleBoxFlat> tooltip_style = p_config.base_style->duplicate();
 			tooltip_style->set_bg_color(p_config.surface_popup_color);
-			tooltip_style->set_corner_radius_all(0);
+			tooltip_style->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 			if (p_config.draw_extra_borders) {
 				tooltip_style->set_border_width_all(EDSCALE_RND(1));
 				tooltip_style->set_border_color(p_config.extra_border_color_2);
@@ -452,7 +468,7 @@ void ThemeModern::populate_standard_styles(const Ref<EditorTheme> &p_theme, Edit
 		popup_panel_style->set_shadow_color(Color(0, 0, 0, 0.3));
 		popup_panel_style->set_shadow_size(EDSCALE_RND(p_config.base_margin * 0.75));
 		popup_panel_style->set_content_margin_all(p_config.popup_margin);
-		popup_panel_style->set_corner_radius_all(0);
+		popup_panel_style->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 		if (p_config.draw_extra_borders) {
 			popup_panel_style->set_border_width_all(EDSCALE_RND(1));
 			popup_panel_style->set_border_color(p_config.extra_border_color_2);
@@ -1003,6 +1019,7 @@ void ThemeModern::populate_standard_styles(const Ref<EditorTheme> &p_theme, Edit
 		foldable_container_panel->set_corner_radius(CORNER_TOP_RIGHT, 0);
 		p_theme->set_stylebox(SceneStringName(panel), "FoldableContainer", foldable_container_panel);
 		p_theme->set_stylebox("focus", "FoldableContainer", p_config.focus_style);
+		p_theme->set_constant("folding_duration", "FoldableContainer", bool(EDITOR_GET("interface/theme/reduce_motion")) ? 0 : 180);
 
 		p_theme->set_font(SceneStringName(font), "FoldableContainer", p_theme->get_font(SceneStringName(font), SNAME("HeaderSmall")));
 		p_theme->set_font_size(SceneStringName(font_size), "FoldableContainer", p_theme->get_font_size(SceneStringName(font_size), SNAME("HeaderSmall")));
@@ -1085,7 +1102,7 @@ void ThemeModern::populate_standard_styles(const Ref<EditorTheme> &p_theme, Edit
 			Ref<StyleBoxFlat> style_popup_menu = p_config.base_style->duplicate();
 			style_popup_menu->set_bg_color(p_config.surface_popup_color);
 			style_popup_menu->set_content_margin_all(p_config.popup_margin);
-			style_popup_menu->set_corner_radius_all(0);
+			style_popup_menu->set_corner_radius_all(EDSCALE_RND(p_config.corner_radius));
 			if (p_config.draw_extra_borders) {
 				style_popup_menu->set_border_width_all(EDSCALE_RND(1));
 				style_popup_menu->set_border_color(p_config.extra_border_color_2);
@@ -1704,7 +1721,8 @@ void ThemeModern::populate_editor_styles(const Ref<EditorTheme> &p_theme, Editor
 
 		// 3D/Spatial editor.
 		Ref<StyleBoxFlat> style_info_3d_viewport = p_config.base_style->duplicate();
-		Color bg_color = style_info_3d_viewport->get_bg_color() * Color(1, 1, 1, 0.5);
+		Color bg_color = style_info_3d_viewport->get_bg_color();
+		bg_color.a = bool(EDITOR_GET("interface/theme/reduce_transparency")) ? 1.0 : 0.5;
 		if (!p_config.dark_theme) {
 			// Always use a dark background for the 3D viewport, even in light themes.
 			// This is displayed as an overlay of the 3D scene, whose appearance doesn't change with the editor theme.

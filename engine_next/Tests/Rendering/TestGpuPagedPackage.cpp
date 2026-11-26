@@ -51,12 +51,6 @@ using EngineNext::Rendering::ReadGpuPage;
 using EngineNext::Serialization::JsonValue;
 using EngineNext::Tests::Rendering::PackageFixture;
 
-#if defined(_WIN32)
-constexpr bool TEXTURE_COOK_SUPPORTED = true;
-#else
-constexpr bool TEXTURE_COOK_SUPPORTED = false;
-#endif
-
 std::vector<std::uint8_t> Bytes(const fs::path &stPath)
 {
 	std::ifstream stStream(stPath, std::ios::binary | std::ios::ate);
@@ -254,19 +248,6 @@ ENGINE_NEXT_TEST("Paged GPU Cook roundtrips metadata and reads only the requeste
 	}
 	const fs::path stTarget = stFixture.stRoot / "paged.engpu";
 	Diagnostics arrDiagnostics;
-#if !defined(_WIN32)
-	// The portable decoder intentionally reports PNG/JPEG pixel decoding as
-	// unsupported. Keep this contract explicit; the remaining tests use meshes
-	// without images and still exercise the complete portable page codec.
-	ENGINE_NEXT_CHECK(!CookPagedGpuPackage((stFixture.stRoot / "source.enpak").string(), stTarget.string(), {}, {}, arrDiagnostics));
-	bool bUnsupported = false;
-	for (const EngineNext::Assets::Diagnostic &stDiagnostic : arrDiagnostics)
-	{
-		bUnsupported = bUnsupported || stDiagnostic.strCode == "image_decode_platform";
-	}
-	ENGINE_NEXT_CHECK(bUnsupported);
-	ENGINE_NEXT_CHECK(!fs::exists(stTarget));
-#else
 	const bool bCooked = CookPagedGpuPackage((stFixture.stRoot / "source.enpak").string(), stTarget.string(), {}, {}, arrDiagnostics);
 	ENGINE_NEXT_CHECK(bCooked);
 	if (!bCooked)
@@ -327,7 +308,6 @@ ENGINE_NEXT_TEST("Paged GPU Cook roundtrips metadata and reads only the requeste
 		ENGINE_NEXT_CHECK(ReadGpuPage(stIndex, nPage, arrMip, stStats, arrDiagnostics));
 	}
 	ENGINE_NEXT_CHECK(CookPagedGpuPackage((stFixture.stRoot / "source.enpak").string(), stTarget.string(), {}, {}, arrDiagnostics));
-#endif
 }
 
 ENGINE_NEXT_TEST("Paged GPU directory rejects gaps overlaps duplicates and invalid references transactionally")
@@ -554,7 +534,7 @@ ENGINE_NEXT_TEST("Paged GPU budget failures preserve opened index and existing p
 
 ENGINE_NEXT_TEST("Paged GPU codec keeps legacy and prepared package entry points compatible")
 {
-	PackageFixture stFixture(TEXTURE_COOK_SUPPORTED);
+	PackageFixture stFixture(true);
 	if (!stFixture.bReady)
 	{
 		return;
@@ -679,7 +659,7 @@ ENGINE_NEXT_TEST("Paged GPU concurrent publication is atomic and interrupted sta
 
 ENGINE_NEXT_TEST("Paged normal entry verifies canonical source and preserves legacy loading")
 {
-	PackageFixture stFixture(TEXTURE_COOK_SUPPORTED);
+	PackageFixture stFixture(true);
 	if (!stFixture.bReady)
 	{
 		return;

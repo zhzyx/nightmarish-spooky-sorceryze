@@ -21,6 +21,7 @@ class VisualBuildTests(unittest.TestCase):
         (self.repo / "LICENSE.txt").write_text("test license\n", encoding="utf-8")
         for path in (
             "engine_next/thirdparty/enet/LICENSE",
+            "engine_next/thirdparty/bc7enc/LICENSE",
             "engine_next/thirdparty/zlib/LICENSE",
             "engine_next/thirdparty/libjpeg-turbo/LICENSE.md",
             "engine_next/thirdparty/libjpeg-turbo/README.ijg",
@@ -69,6 +70,7 @@ class VisualBuildTests(unittest.TestCase):
                 "next_visual_client.exe",
                 "LICENSE.txt",
                 "ENet-LICENSE.txt",
+                "bc7enc-LICENSE.txt",
                 "zlib-LICENSE.txt",
                 "libjpeg-turbo-LICENSE.md",
                 "libjpeg-turbo-README.ijg",

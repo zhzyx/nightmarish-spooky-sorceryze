@@ -607,7 +607,7 @@ bool GpuGeometry::Discard(std::uint32_t nFrame, Assets::Diagnostics &out_arrDiag
 	return true;
 }
 
-bool GpuGeometry::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics)
+bool GpuGeometry::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics, GeometryGpuStatistics *out_pRetired)
 {
 	if (!IsOwner() || nFrame >= GEOMETRY_FRAME_COUNT || nCompletedFence == UINT64_MAX)
 	{
@@ -647,6 +647,10 @@ bool GpuGeometry::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, A
 	const D3D12_RANGE stNoWrite{ 0, 0 };
 	stFrame.stReadback->Unmap(0, &stNoWrite);
 	stFrame.bReadbackPending = false;
+	if (out_pRetired != nullptr)
+	{
+		*out_pRetired = stNext;
+	}
 	if (stFrame.nFence >= nCollectedFence)
 	{
 		stStatistics = stNext;

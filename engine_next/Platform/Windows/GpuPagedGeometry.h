@@ -69,6 +69,7 @@ public:
 	[[nodiscard]] const ResidencyTelemetry &Telemetry() const noexcept;
 	[[nodiscard]] const GpuPageReadStats &IoStatistics() const noexcept;
 	[[nodiscard]] std::uint64_t OverheadBytes() const noexcept;
+	[[nodiscard]] std::uint64_t PendingUploadBytes() const noexcept;
 	[[nodiscard]] std::uint64_t BudgetStalls() const noexcept;
 	[[nodiscard]] std::uint64_t ActiveReuses() const noexcept;
 	// Reuse decisions within preparation attempts, including later discards.

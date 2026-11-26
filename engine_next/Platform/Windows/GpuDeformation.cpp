@@ -274,4 +274,9 @@ double GpuDeformation::MaxLocalMotion() const noexcept
 {
 	return dMaxLocalMotion;
 }
+std::uint64_t GpuDeformation::UploadBytes() const noexcept
+{
+	return nUploadBytes;
+}
+
 } // namespace EngineNext::Rendering

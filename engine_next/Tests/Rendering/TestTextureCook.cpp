@@ -163,7 +163,6 @@ ENGINE_NEXT_TEST("Texture cook deduplicates semantic variants and applies alpha 
 	const EngineNext::Rendering::DecodedMesh stMesh = MakeMesh();
 	EngineNext::Rendering::MeshTextureCook stCook;
 	EngineNext::Assets::Diagnostics arrDiagnostics;
-#if defined(_WIN32)
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookMeshTextures(stMesh, stCook, arrDiagnostics, 48));
 	ENGINE_NEXT_CHECK_EQ(stCook.arrVariants.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stCook.arrMaterials.size(), 2U);
@@ -190,13 +189,8 @@ ENGINE_NEXT_TEST("Texture cook deduplicates semantic variants and applies alpha 
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::ValidateMeshTextureCook(stMesh, stCook, arrDiagnostics));
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::CookMeshTextures(stMesh, stCook, arrDiagnostics, 47));
 	ENGINE_NEXT_CHECK_EQ(stCook.arrVariants.size(), 4U);
-#else
-	ENGINE_NEXT_CHECK(!EngineNext::Rendering::CookMeshTextures(stMesh, stCook, arrDiagnostics));
-	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, std::string("image_decode_platform"));
-#endif
 }
 
-#if defined(_WIN32)
 ENGINE_NEXT_TEST("Texture cook validation rejects modified mip bytes keys and bindings")
 {
 	const EngineNext::Rendering::DecodedMesh stMesh = MakeMesh();
@@ -212,7 +206,6 @@ ENGINE_NEXT_TEST("Texture cook validation rejects modified mip bytes keys and bi
 	stCook.arrMaterials[0].arrVariants[0] = 1;
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ValidateMeshTextureCook(stMesh, stCook, arrDiagnostics));
 }
-#endif
 
 ENGINE_NEXT_TEST("Texture cook rejects incomplete compressed image data before publication")
 {

@@ -38,6 +38,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #if defined(_WIN32)
@@ -112,11 +113,11 @@ std::vector<std::uint8_t> MakePng()
 	return arrPng;
 }
 
-std::vector<std::uint8_t> ReplacePngData(const std::vector<std::uint8_t> &arrRawData, bool bInterlaced = false)
+std::vector<std::uint8_t> ReplacePngData(const std::vector<std::uint8_t> &arrRawData, bool bInterlaced = false, std::uint8_t nHeight = 1)
 {
 	std::vector<std::uint8_t> arrPng = MakePng();
 	arrPng.resize(8);
-	std::vector<std::uint8_t> arrHeader{ 0, 0, 0, 2, 0, 0, 0, 1, 8, 6, 0, 0, static_cast<std::uint8_t>(bInterlaced) };
+	std::vector<std::uint8_t> arrHeader{ 0, 0, 0, 2, 0, 0, 0, nHeight, 8, 6, 0, 0, static_cast<std::uint8_t>(bInterlaced) };
 	AppendChunk(arrPng, { 'I', 'H', 'D', 'R' }, arrHeader);
 	std::vector<std::uint8_t> arrCompressed{ 0x78, 0x01, 0x01 };
 	const std::uint16_t nSize = static_cast<std::uint16_t>(arrRawData.size());
@@ -476,11 +477,11 @@ ENGINE_NEXT_TEST("Image decoder handles complete PNG and JPEG pixel payloads")
 	DecodedImage stJpeg;
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const std::vector<std::uint8_t> arrSource = MakePng();
-#if defined(_WIN32)
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::DecodeImage(arrSource, "image/png", stPng, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(stPng.nWidth, 2U);
 	ENGINE_NEXT_CHECK_EQ(stPng.nHeight, 1U);
 	ENGINE_NEXT_CHECK_EQ(stPng.arrRgba8, (std::vector<std::uint8_t>{ 255, 0, 0, 255, 0, 255, 0, 64 }));
+#if defined(_WIN32)
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::DecodeImage(MakeJpeg(), "image/jpeg", stJpeg, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(stJpeg.nWidth, 1U);
 	ENGINE_NEXT_CHECK_EQ(stJpeg.nHeight, 1U);
@@ -493,12 +494,35 @@ ENGINE_NEXT_TEST("Image decoder handles complete PNG and JPEG pixel payloads")
 		ENGINE_NEXT_CHECK_EQ(stJpeg.arrRgba8[3], 255);
 	}
 #else
-	ENGINE_NEXT_CHECK(!EngineNext::Rendering::DecodeImage(MakePng(), "image/png", stPng, arrDiagnostics));
-	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, std::string("image_decode_platform"));
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::DecodeImage(MakeJpeg(), "image/jpeg", stJpeg, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, std::string("image_decode_platform"));
 #endif
 	ENGINE_NEXT_CHECK_EQ(arrSource, MakePng());
+}
+
+ENGINE_NEXT_TEST("RGBA8 PNG reconstructs five filter types to exact source pixels")
+{
+	// Two texels in each row, using None, Sub, Up, Average and Paeth in order.
+	const std::vector<std::uint8_t> arrFiltered{
+		0, 31, 84, 137, 190, 243, 40, 93, 146,
+		1, 199, 252, 49, 102, 212, 212, 212, 212,
+		2, 168, 168, 168, 168, 168, 168, 168, 168,
+		3, 224, 250, 21, 175, 190, 190, 190, 190,
+		4, 168, 168, 168, 168, 168, 212, 212, 212
+	};
+	const std::vector<std::uint8_t> arrExpected{
+		31, 84, 137, 190, 243, 40, 93, 146,
+		199, 252, 49, 102, 155, 208, 5, 58,
+		111, 164, 217, 14, 67, 120, 173, 226,
+		23, 76, 129, 182, 235, 32, 85, 138,
+		191, 244, 41, 94, 147, 200, 253, 50
+	};
+	DecodedImage stImage;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::DecodeImage(ReplacePngData(arrFiltered, false, 5), "image/png", stImage, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stImage.nWidth, 2U);
+	ENGINE_NEXT_CHECK_EQ(stImage.nHeight, 5U);
+	ENGINE_NEXT_CHECK_EQ(stImage.arrRgba8, arrExpected);
 }
 
 ENGINE_NEXT_TEST("Image decoder rejects damaged pixel payloads after structural validation")
@@ -551,13 +575,8 @@ ENGINE_NEXT_TEST("Image decoder rejects trailing compressed bytes and accepts sp
 	AppendChunk(arrSplit, { 'I', 'E', 'N', 'D' }, {});
 	DecodedImage stImage;
 	EngineNext::Assets::Diagnostics arrDiagnostics;
-#if defined(_WIN32)
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::DecodeImage(arrSplit, "image/png", stImage, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(stImage.arrRgba8, (std::vector<std::uint8_t>{ 255, 0, 0, 255, 0, 255, 0, 64 }));
-#else
-	ENGINE_NEXT_CHECK(!EngineNext::Rendering::DecodeImage(arrSplit, "image/png", stImage, arrDiagnostics));
-	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, std::string("image_decode_platform"));
-#endif
 	std::vector<std::uint8_t> arrTrailing(arrSource.begin(), arrSource.begin() + 33);
 	std::vector<std::uint8_t> arrExtra = arrCompressed;
 	arrExtra.push_back(0);

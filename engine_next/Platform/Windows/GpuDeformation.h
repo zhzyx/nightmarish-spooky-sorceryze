@@ -80,6 +80,7 @@ public:
 	ID3D12Resource *PreviousPositions() const noexcept;
 	ID3D12Resource *Upload(std::uint32_t nFrame) const noexcept;
 	std::uint64_t MemoryBytes() const noexcept;
+	[[nodiscard]] std::uint64_t UploadBytes() const noexcept;
 	double MaxLocalMotion() const noexcept;
 
 private:

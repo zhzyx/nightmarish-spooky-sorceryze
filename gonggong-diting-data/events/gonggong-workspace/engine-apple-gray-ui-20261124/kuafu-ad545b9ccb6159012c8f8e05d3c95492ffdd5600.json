@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ad545b9ccb6159012c8f8e05d3c95492ffdd5600",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d3b260e7314eb00b0bf4a8d86c96a38f527f1efe916500fb5756b6f32b1de8ab",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "validation",
+    "detection_head": "1c7c0e27f10c665f6dc882ec34e1b4a00a964bab",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "data-collection/engine-apple-gray-ui-2222-validation.json",
+    "diagnosis": "Windows text writing produced CRLF in the validation JSON; Git normalized staged bytes to LF. Byte comparison confirmed CRLF-only difference. Restored worktree evidence to the exact staged LF bytes without changing payload.",
+    "next_action": "Stage the diagnosis event and rerun the original formal gate; delivery remains pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T17:28:01.230125+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T17:31:26.651086+00:00",
+  "sha256": "b4abc0bad124b5837f5ed6108015d2c03a6deabeb06b88f4e0bde02dc29cba5c"
+}

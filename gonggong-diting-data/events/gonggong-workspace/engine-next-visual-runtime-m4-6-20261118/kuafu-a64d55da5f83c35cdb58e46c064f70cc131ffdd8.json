@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a64d55da5f83c35cdb58e46c064f70cc131ffdd8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b2ca18dd3664dec13ee1cb40c9667b1dd3d4132087946eaec8102d8c435caadb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "delivery",
+    "detection_head": "c049dcaf26bd84dea980dca78508ebf81a02fdce",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "artifact:engine-next-combined-lighting-r13-20261125/WriterSubmitUtf8.log",
+    "diagnosis": "Submission, commit, push and signed PR succeeded, but final JSON printing used the Windows GBK stdout codec and failed on an emoji in a CI check name. Re-running the same immutable submission with Python UTF-8 mode recovered the existing PR.",
+    "next_action": "Fix the independent static CI file-header and executable-mode failures, revalidate the affected candidate, then publish the successor and continue selected CI and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T22:12:02.222852+00:00",
+    "attempted": "Original writer stderr and created PR2234 retained. The UTF-8 recovery returned the same signed head 66d4c755231473cb6f1fe30228ec8f1c4e373c9a; no second PR or source commit was created for recovery.",
+    "repair_owner": "agent:/root",
+    "continuable": "The submission receipt is recovered; no protected merge was performed."
+  },
+  "occurred_at": "2026-11-24T22:16:54.058139+00:00",
+  "sha256": "652cad3c6d123b6407613283752520605382b84317d4c55751ed3b27ad6048d2"
+}

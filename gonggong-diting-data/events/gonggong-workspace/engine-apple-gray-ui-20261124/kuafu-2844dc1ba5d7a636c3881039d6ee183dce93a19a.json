@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2844dc1ba5d7a636c3881039d6ee183dce93a19a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0db285966cec09853098f958369b09abd0b222d8a4374aee6212575422d06ac3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "validation",
+    "detection_head": "dd428660cfde26f9c377a43919fad5b09a943ba2",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2231",
+    "diagnosis": "早期构建期间临时原生脚本输入变化导致来源快照不一致。后续固定测试输入并完成受信重建；有效二进制 b842accf72d5de0bd72c50280a3917408844671a46d32528f8d648dc2784aa3f 已通过本地原生回归，精确签发候选9b13dde4ca98f86b27da347f1ca98cfdeef87e72全部CI通过且已合入main。当前补齐初始事故缺失的接单回执，不将历史失败计为通过。",
+    "next_action": "原操作与业务验收已复验通过；归档补充回执并随当前工单完成收尾。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T16:11:56.047740+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T19:42:37.084158+00:00",
+  "sha256": "d49fba0171ec10bc19be5f7d57c6744854b9bbabaef8ff10330cd400673b0bb8"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-59b653604385bbb426b687ac923a937f9f4969fb2f9790f8656926b65ae87ca5",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "occurred_at": "2026-11-24T17:57:47.086763+00:00",
+  "evidence_refs": [
+    "request-engine-apple-gray-ui-20261124",
+    "learn-6f7da7c461be5fa982ab3cb2fb7c9b50504ab244878d26a86e3f04122fe49d00"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "layered-backdrop-regression",
+    "revision": 3,
+    "previous": "547c012d51902a81b4a596456b4287e045435d2b07fa7dc7c8630a8c95fe78a4",
+    "action": "revise",
+    "details": {
+      "method": "For screen-texture material, render glass A, opaque layer B, then glass C and assert C includes B. Preserve original committed evidence bytes; record prose corrections separately rather than invalidating referenced digests.",
+      "when": "Multiple same-viewport controls use screen-texture backdrop sampling.",
+      "counterexample": "A single glass panel or shared unchanged background cannot distinguish stale screen snapshots. Separate native windows require a different capture model.",
+      "trial_plan": "Run the layered fixture against auto-copy-only and per-panel-copy candidates; require failure for the former and success for the latter. Repeat on each supported renderer before generalizing."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/engine-apple-gray-ui-2222-validation.json",
+        "sha256": "cedd49abf27caf5cf04c7f5bc0f87993a51d11dfbbf8b63d1d81d154aefe101b"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/engine-apple-gray-ui-20261124/request-engine-apple-gray-ui-20261124.json",
+      "sha256": "1d8221c193c90c8b03fe0b72b92f8518adb340d72493dbe216951cfd13d31734"
+    }
+  },
+  "sha256": "de099abbdcd18a31d628a39ea8ce61123746781fb308d39e4174cde17da86aa4"
+}

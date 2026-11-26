@@ -57,6 +57,10 @@ struct InputState
 	std::uint64_t nFocusEventCount = 0;
 	std::uint64_t nInputErrorCount = 0;
 	std::uint64_t nLastEventQpc = 0;
+	// Accepted keyboard/mouse messages only; focus/paint/resize are excluded.
+	// Several receipts may coalesce into the latest state before one frame.
+	std::uint64_t nInputRevision = 0;
+	std::uint64_t nInputReceivedQpc = 0;
 	std::uint64_t nQpcFrequency = 0;
 	bool bFocused = false;
 };

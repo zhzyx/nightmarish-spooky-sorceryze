@@ -10,9 +10,33 @@ import time
 from pathlib import Path
 
 SHADER_FILES = {
+    *(
+        f"Diagnostic-{name}.ps.cso"
+        for name in (
+            "normal",
+            "roughness",
+            "metallic",
+            "ao",
+            "emissive",
+            "motion",
+            "depth",
+            "gbuffer",
+            "culling",
+            "cluster",
+            "lod",
+            "streaming",
+            "cascade",
+            "vsm-page",
+            "gi-probe",
+            "ssr",
+            "volume-fog",
+            "exposure",
+        )
+    ),
     "FixedMesh.vs.cso",
     "FixedMesh.ps.cso",
     "FixedMesh.cs.cso",
+    "AssetDirectionalTint.cs.cso",
     "Deferred.vs.cso",
     "AnimatedDeferred.vs.cso",
     "Deferred.ps.cso",
@@ -36,6 +60,10 @@ SHADER_FILES = {
     "MaterialReflectionTrace.cs.cso",
     "ReflectionComposite.cs.cso",
     "ReflectionRadiance.cs.cso",
+    "RayReflectionTrace.cs.cso",
+    "RayReflectionTemporal.cs.cso",
+    "RayReflectionSpatial.cs.cso",
+    "RayReflectionComposite.cs.cso",
     "VolumeInject.cs.cso",
     "VolumeLight.cs.cso",
     "VolumeTemporal.cs.cso",
@@ -64,6 +92,10 @@ SHADER_FILES = {
 SHADER_FILES |= {"AmbientOcclusion.cs.cso", "AmbientOcclusionBlur.cs.cso"} | {
     "Ao" + name for name in SHADER_FILES if name.endswith("Lighting.ps.cso")
 }
+SHADER_FILES |= {
+    "Virtual" + name for name in SHADER_FILES if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
+}
+SHADER_FILES.add("ShadowPageFeedback.cs.cso")
 
 
 def digest(path):
@@ -137,6 +169,7 @@ def create_package(repo, build_dir):
         licenses = {
             "LICENSE.txt": "LICENSE.txt",
             "ENet-LICENSE.txt": "engine_next/thirdparty/enet/LICENSE",
+            "bc7enc-LICENSE.txt": "engine_next/thirdparty/bc7enc/LICENSE",
             "zlib-LICENSE.txt": "engine_next/thirdparty/zlib/LICENSE",
             "libjpeg-turbo-LICENSE.md": "engine_next/thirdparty/libjpeg-turbo/LICENSE.md",
             "libjpeg-turbo-README.ijg": "engine_next/thirdparty/libjpeg-turbo/README.ijg",

@@ -113,6 +113,8 @@ JsonValue InspectGpuJson(const EngineNext::Rendering::RenderScene &in_stScene)
 	std::size_t nClusterCount = 0;
 	std::size_t nMipCount = 0;
 	std::size_t nTextureVariantCount = 0;
+	std::uint64_t nEncodedTextureBytes = 0;
+	JsonValue::List arrEncodedTextures;
 	for (const EngineNext::Rendering::RenderAsset &stAsset : in_stScene.arrAssets)
 	{
 		for (const EngineNext::Rendering::MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
@@ -121,7 +123,25 @@ JsonValue InspectGpuJson(const EngineNext::Rendering::RenderScene &in_stScene)
 		}
 		for (const EngineNext::Rendering::CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
 		{
-			nMipCount += stVariant.arrMips.size();
+			nMipCount += stVariant.arrMips.size() + stVariant.arrEncodedMips.size();
+			if (!stVariant.arrEncodedMips.empty())
+			{
+				std::uint64_t nBytes = 0;
+				for (const EngineNext::Rendering::EncodedTextureMip &stMip : stVariant.arrEncodedMips)
+				{
+					nBytes += stMip.arrBytes.size();
+				}
+				nEncodedTextureBytes += nBytes;
+				arrEncodedTextures.emplace_back(JsonValue::Object{
+						{ "asset_id", stAsset.stIdentity.strAssetId },
+						{ "image", static_cast<std::int64_t>(stVariant.nImage) },
+						{ "semantic", static_cast<std::int64_t>(stVariant.eSemantic) },
+						{ "normal_encoding", static_cast<std::int64_t>(stVariant.eNormalEncoding) },
+						{ "format", static_cast<std::int64_t>(stVariant.arrEncodedMips[0].eFormat) },
+						{ "mips", static_cast<std::int64_t>(stVariant.arrEncodedMips.size()) },
+						{ "bytes", static_cast<std::int64_t>(nBytes) },
+				});
+			}
 		}
 		nTextureVariantCount += stAsset.stTextureCook.arrVariants.size();
 	}
@@ -134,6 +154,8 @@ JsonValue InspectGpuJson(const EngineNext::Rendering::RenderScene &in_stScene)
 		{ "scene_id", in_stScene.strSceneId },
 		{ "texture_mip_count", static_cast<std::int64_t>(nMipCount) },
 		{ "texture_variant_count", static_cast<std::int64_t>(nTextureVariantCount) },
+		{ "encoded_texture_bytes", static_cast<std::int64_t>(nEncodedTextureBytes) },
+		{ "encoded_textures", std::move(arrEncodedTextures) },
 		{ "valid", true },
 	};
 }
@@ -234,7 +256,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 {
 	if (in_nArgumentCount < 2 || (in_nArgumentCount == 2 && std::string(in_ppArguments[1]) == "--help"))
 	{
-		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu [--layout-only] | gpu-cook-v3 --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu (--source-digest SHA256 | --source-package DIR.enpak) | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
+		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu [--layout-only] | gpu-cook-v3 --package DIR.enpak --output DIR.engpu | gpu-cook-v4 --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu (--source-digest SHA256 | --source-package DIR.enpak) | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
 		return in_nArgumentCount == 2 ? 0 : 2;
 	}
 	const std::string strCommand = in_ppArguments[1];
@@ -242,10 +264,10 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 	for (int nIndex = 2; nIndex < in_nArgumentCount; ++nIndex)
 	{
 		const std::string strOption = in_ppArguments[nIndex];
-		if (strCommand == "gpu-cook" || strCommand == "gpu-cook-v3" || strCommand == "gpu-validate")
+		if (strCommand == "gpu-cook" || strCommand == "gpu-cook-v3" || strCommand == "gpu-cook-v4" || strCommand == "gpu-validate")
 		{
 			const bool bAllowed = strOption == "--package" ||
-					((strCommand == "gpu-cook" || strCommand == "gpu-cook-v3") && strOption == "--output") ||
+					((strCommand == "gpu-cook" || strCommand == "gpu-cook-v3" || strCommand == "gpu-cook-v4") && strOption == "--output") ||
 					(strCommand == "gpu-cook" && strOption == "--layout-only") ||
 					(strCommand == "gpu-validate" && (strOption == "--source-digest" || strOption == "--source-package"));
 			if (!bAllowed || mapOptions.count(strOption) != 0)
@@ -293,17 +315,19 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		return RunAi(mapOptions);
 	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
-	if (strCommand == "gpu-cook-v3")
+	if (strCommand == "gpu-cook-v3" || strCommand == "gpu-cook-v4")
 	{
 		if (mapOptions.count("--package") == 0 || mapOptions.count("--output") == 0)
 		{
 			return 2;
 		}
-		if (!EngineNext::Rendering::CookPagedGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), {}, {}, arrDiagnostics))
+		const bool bEncoded = strCommand == "gpu-cook-v4";
+		const bool bCooked = bEncoded ? EngineNext::Rendering::CookEncodedGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), {}, {}, arrDiagnostics) : EngineNext::Rendering::CookPagedGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), {}, {}, arrDiagnostics);
+		if (!bCooked)
 		{
 			return Failure(arrDiagnostics);
 		}
-		Print(JsonValue::Object{ { "diagnostics", JsonValue::List{} }, { "gpu_format_version", std::int64_t{ 3 } }, { "valid", true } });
+		Print(JsonValue::Object{ { "diagnostics", JsonValue::List{} }, { "gpu_format_version", std::int64_t{ bEncoded ? 4 : 3 } }, { "valid", true } });
 		return 0;
 	}
 	if (strCommand == "gpu-cook")
@@ -333,7 +357,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		{
 			EngineNext::Rendering::RenderScene stSource;
 			if (!EngineNext::Rendering::LoadRenderScene(mapOptions.at("--source-package"), stSource, arrDiagnostics) ||
-				!EngineNext::Rendering::LoadVerifiedGpuPackage(mapOptions.at("--package"), stSource, {}, stScene, stStats, arrDiagnostics))
+				!EngineNext::Rendering::LoadVerifiedEncodedGpuPackage(mapOptions.at("--package"), stSource, {}, stScene, stStats, arrDiagnostics))
 			{
 				return Failure(arrDiagnostics);
 			}

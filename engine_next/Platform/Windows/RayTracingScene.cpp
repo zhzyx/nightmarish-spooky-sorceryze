@@ -301,6 +301,21 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 			{
 				return Error(out_arrDiagnostics, "Invalid material surface parameters.");
 			}
+			if (stSource.nGpuFormatVersion == 4 && stMaterial.nNormalTexture >= 0)
+			{
+				const MeshTextureCook &stCook = stSource.arrAssets[nAsset].stTextureCook;
+				const std::size_t nMaterial = arrMaterials.size() - arrMaterialBase.back();
+				if (nMaterial >= stCook.arrMaterials.size())
+				{
+					return Error(out_arrDiagnostics, "Missing ray tracing material texture bindings.");
+				}
+				const std::int32_t nNormal = stCook.arrMaterials[nMaterial].arrVariants[2];
+				if (nNormal < 0 || static_cast<std::size_t>(nNormal) >= stCook.arrVariants.size())
+				{
+					return Error(out_arrDiagnostics, "Invalid ray tracing normal texture variant.");
+				}
+				stGpu.arrEmissive[3] = stCook.arrVariants[nNormal].eNormalEncoding == TextureNormalEncoding::PositiveZ ? 1.0F : 0.0F;
+			}
 			stGpu.arrSurface = { stMaterial.fRoughness, stMaterial.fMetallic, stMaterial.nNormalTexture >= 0 ? stMaterial.fNormalScale : 0, stMaterial.fOcclusionStrength };
 			if (!std::isfinite(stMaterial.fAlphaCutoff) || stMaterial.fAlphaCutoff < 0 || stMaterial.fAlphaCutoff > 1 || static_cast<unsigned>(stMaterial.eAlphaMode) > 2 || stMaterial.nBaseColorTexture < -1 || (stMaterial.nBaseColorTexture >= 0 && static_cast<std::size_t>(stMaterial.nBaseColorTexture) >= stMesh.arrTextures.size()))
 			{

@@ -476,7 +476,7 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 ## 待确认决策
 
 1. 采用上述 AssetManifest／SceneDocument v1 字段、受限 ID／revision 和明确预算；如后续需要扩展，使用新 schema version，不在 v1 静默加字段。
-2. M3 AI 宿主直接复用 `executor_cli.py`，不为 export 修改 `editor_host.py`；离线 copy 使用现有 `editor_demo:factory`，合成 Provider 仅用于测试。
+2. M3 AI 宿主直接复用 `executor_cli.py`，不为 export 修改 `editor_host.py`；当时离线 copy 使用 `editor_demo:factory`，合成 Provider 仅用于测试。现行独立入口见下节。
 3. AICore 进程重启时建立新的公共运行并附着原 Executor run，不伪造核心内部 generation 的持久恢复。
 4. M2 新会话按升序分配两个场景 player_spawn，客户端身份仍由既有 welcome 返回，不新增网络字段。
 5. 用户确认本设计和五个 PR 边界后，才从 PR 1 开始修改实现代码。
@@ -487,3 +487,13 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 - PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-r3-review.json`、`pr3-r3-verification.json` 和 `pr3-r3-build-impact.json`；R1／R2 审查与证据保留用于追踪 CI 格式、负责人和 Windows 兼容性修正。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
 - PR 4 的独立审查见 `data-collection/engine-next-assets-ai-workflow-m3-pr4-r2-review.json`；R2 本机证据覆盖 54 个原生测试、同包与无包三进程、Godot 4.4.1 的导入／验证／发布／回读及禁止项。R1 证据保留用于追踪 CI 格式与命名修正；Windows／Linux 的 PR 4 结果仍以精确 CI 为准。
 - PR 5 逐轮完整验收分别修复了 macOS `os.waitid` 缺失、Ubuntu Pillow 缺失、Windows 马良完成回调 busy 拒绝和 Darwin 外部 `lsof` 监听归属不可用。R3 使用系统 libproc 核验真实 TCP listener，按地址族区分精确地址与 wildcard，并覆盖 IPv4／IPv6 跨族负例。R4 将全新内置包断言从过时的 Codex 默认值改为既定 `local_mesh`，仍要求精确模型和全部后续业务检查。R5／R6 补充临时 fixture、进程状态及节点诊断；R7 栈采样定位到合成 HTTP fixture 的反向 mDNS 查询。R8 在 fixture 绑定中绕过反解后，外部 fixture 已恢复；R9 对 supervisor 的固定 IPv4 回环控制服务器采用相同的真实 bind／无反解路径，控制 RPC 和临时端口语义不变；马良验收改用真实 `_set_node_file` 语义入口，确保源文件进入模型而非仅更新视图文本。R10 仅将完整三平台契约任务时限从 10 分钟调至 20 分钟，不删减检查。各轮独立审查与本机／CI 证据分别保留，整单收尾以最新候选的精确结果为准。
+
+## 2026-11-25：独立 Executor 入口
+
+独立源码导出现在通过 `engine_next/Tools/ExecutorCli.py` 调用共享 Executor，并显式选择 `LocalCopyProvider:factory`。调用方完整配置 Python、入口脚本和 factory；C++ `HostConfig` 调用方也填写对应的 `strPython`、`strExecutorScript`、`strFactory`。例如从源码导出根目录调用：
+
+```text
+next_asset ai-run --request request.json --python <Python可执行文件> --executor-script engine_next/Tools/ExecutorCli.py --factory LocalCopyProvider:factory --database executor.sqlite --state controller.json --output scene.enpak
+```
+
+包装入口定位确定的模块根，透传共享 CLI 的参数、JSON、标准流与退出码。factory 复用既有本地字节复制实现和 copy schema，提供标准库可用的独立入口。编辑器的聚合 factory 可以继续注册其可选服务。原 M3 验收中的 factory 名称保留为历史事实；本节更新宿主入口，不修改资产 ID、revision、blob、SceneDocument 或 Provider 协议。本地复制仍明确标记为非 AI 生成。

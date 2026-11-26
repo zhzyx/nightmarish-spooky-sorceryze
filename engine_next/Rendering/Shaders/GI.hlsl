@@ -321,7 +321,7 @@ RelocationSummary ObservePlacementRay(RelocationSummary Summary, float3 Center, 
 			float Handedness = determinant(NormalizedWorld) < 0 ? -1 : 1;
 			float3 Bitangent = GiDirection(cross(N, T)) * ObjectTangent.w * Handedness;
 			RayTracingMaterial Material = Materials[Draw.Material];
-			float3 Mapped = GiTexture(Draw.Material, 2, Uv).xyz * 2 - 1;
+			float3 Mapped = RayTracingDecodeNormal(GiTexture(Draw.Material, 2, Uv).xyz, Material);
 			float NormalScale = max(abs(Material.Surface.z), 1);
 			Mapped = GiDirection(float3(Mapped.xy * (Material.Surface.z / NormalScale), Mapped.z / NormalScale));
 			N = GiDirection(T * Mapped.x + Bitangent * Mapped.y + N * Mapped.z);

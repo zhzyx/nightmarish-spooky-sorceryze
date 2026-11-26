@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "issue_number": 1539,
+  "candidate": "combined-r16-spelling-correction",
+  "stage_complete": false,
+  "runtime_native_key": "047aedf65c02042a3780fad73a037c2f98b7b7a4d60d3a438ce9dce7bf074377",
+  "core_native_key": "67ce3dfdde12aae8a8cdad7b2608e84904177a9e702810fc54cadf55a937728a",
+  "executable_sha256": "a0b564c706278fd07b6d2a69d07ef5b2c1a3a73e1704b694042edcf9a3b67c14",
+  "change": {
+    "path": "pyproject.toml",
+    "term": "paeth",
+    "reason": "Paeth is the specified name of PNG filter type 4, not a misspelling. Keep the correct technical name in source and add it to the existing project word list.",
+    "primary_reference": "https://www.w3.org/TR/png-3/#9Filter-type-4-Paeth",
+    "before_sha256": "6e9e358cc93f948a25e8b49d6a0b08a2dfd167f963cc34bf9e4e8e58cfd93df1",
+    "after_sha256": "f90ad2427eda4a967da9c7442ca1792ad5e87efb5f6d3452f499bbc15fbc9078"
+  },
+  "verification": {
+    "codespell_version": "2.4.2",
+    "actual_ci_cli": "--ignore-words-list=ENXT",
+    "changed_first_party_files_checked": 110,
+    "exit_code": 0,
+    "receipt_path": "engine-next-combined-lighting-r16-20261125/CodespellVerification.json",
+    "receipt_sha256": "a1ffc29fb054802c77db71ddfa486f163dad7ed14399e3a5e5e42709c447702b",
+    "runtime_input_hashes_match": 404,
+    "core_input_hashes_match": 246,
+    "host_input_hashes_match": 5
+  },
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45504926239",
+  "scope": "Spelling metadata correction only. Current R16 compiled inputs and device results remain exact; new signed-head CI and main readback are required."
+}

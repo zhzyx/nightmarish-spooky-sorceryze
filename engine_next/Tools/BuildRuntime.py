@@ -95,6 +95,10 @@ APP_SOURCES = {
         "engine_next/Rendering/Cook/ImageDecoder.cpp",
         "engine_next/Rendering/Cook/MeshCluster.cpp",
         "engine_next/Rendering/Cook/TextureCook.cpp",
+        "engine_next/Rendering/Cook/BlockTextureCodec.cpp",
+        "engine_next/thirdparty/bc7enc/bc7enc.cpp",
+        "engine_next/thirdparty/bc7enc/bc7decomp.cpp",
+        "engine_next/thirdparty/bc7enc/rgbcx.cpp",
         "engine_next/Rendering/Cook/JpegValidation.c",
         "engine_next/Rendering/RenderScene.cpp",
     ],
@@ -264,6 +268,20 @@ def configure_toolchain(args):
 def compiler_command_with_enet(args, source, object_path, dependency_path):
     command = BuildSupport.compiler_command(args, source, object_path, dependency_path)
     include = args.repo / "engine_next/thirdparty/enet/include"
+    source_name = BuildSupport.repository_name(
+        args.repo, Path(source) if Path(source).is_absolute() else args.repo / source
+    )
+    if args.compiler == "clang" and source_name and source_name.startswith("engine_next/thirdparty/bc7enc/"):
+        # Exact upstream uses anonymous color unions and unused static helpers.
+        command.extend(["-Wno-gnu-anonymous-struct", "-Wno-nested-anon-types", "-Wno-microsoft-enum-value"])
+        if source_name.endswith("/bc7enc.cpp"):
+            command.append("-Wno-unused-function")
+        if source_name.endswith("/rgbcx.cpp"):
+            command.append("-Wno-unused-const-variable")
+    if source_name == "engine_next/thirdparty/bc7enc/bc7decomp.cpp":
+        # The unchanged upstream SSE2 paths declare scalar fallback constants.
+        # Keep all other warnings fatal, including the rest of this dependency.
+        command.append("-Wno-unused-variable" if args.compiler == "clang" else "/wd4189")
     if args.compiler == "clang":
         index = command.index("-c")
         command[index:index] = ["-I", include]
@@ -550,7 +568,7 @@ def run_ai_acceptance(args, targets, directory):
                 "--fixture",
                 args.repo / "engine_next/Tests/Fixtures/M3/valid.glb",
                 "--executor",
-                args.repo / "tools/ainative/executor_cli.py",
+                args.repo / "engine_next/Tools/ExecutorCli.py",
                 "--python",
                 sys.executable,
                 "--report",
@@ -665,7 +683,7 @@ def build_native_identity(args, library_sources):
         "engine_next/Tools/PackageVisualRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("zlib", "libjpeg-turbo", "meshoptimizer")
+            for name in ("zlib", "libjpeg-turbo", "meshoptimizer", "bc7enc")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],

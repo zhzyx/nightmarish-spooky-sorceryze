@@ -319,11 +319,50 @@ bool ParseLightAnimation(const Serialization::JsonValue &stValue, double dBaseIl
 	return ValidateLightAnimation(out_stSettings, dBaseIlluminance, out_arrDiagnostics);
 }
 
+bool ParseRayReflections(const Serialization::JsonValue &stValue, RayReflectionSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.reflections.ray_tracing";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "resolution_divisor", "samples_per_lobe", "spatial_passes", "max_history", "history_weight", "depth_threshold", "normal_threshold", "roughness_threshold", "max_gpu_bytes" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	const std::array<const char *, 5> arrNames{ "resolution_divisor", "samples_per_lobe", "spatial_passes", "max_history", "max_gpu_bytes" };
+	std::array<std::uint64_t, 5> arrValues{ out_stSettings.nResolutionDivisor, out_stSettings.nSamplesPerLobe, out_stSettings.nSpatialPasses, out_stSettings.nMaxHistory, out_stSettings.nMaxGpuBytes };
+	for (std::size_t nIndex = 0; nIndex < arrNames.size(); ++nIndex)
+	{
+		if (pObject->find(arrNames[nIndex]) != pObject->end())
+		{
+			std::int64_t nValue = 0;
+			if (!Assets::Integer(*pObject, arrNames[nIndex], strPath, nValue, out_arrDiagnostics) || nValue < 0 || static_cast<std::uint64_t>(nValue) > UINT32_MAX)
+			{
+				return Fail("ray_reflections", strPath + "." + arrNames[nIndex], "Expected a bounded nonnegative integer.", out_arrDiagnostics);
+			}
+			arrValues[nIndex] = static_cast<std::uint64_t>(nValue);
+		}
+	}
+	out_stSettings.nResolutionDivisor = static_cast<std::uint32_t>(arrValues[0]);
+	out_stSettings.nSamplesPerLobe = static_cast<std::uint32_t>(arrValues[1]);
+	out_stSettings.nSpatialPasses = static_cast<std::uint32_t>(arrValues[2]);
+	out_stSettings.nMaxHistory = static_cast<std::uint32_t>(arrValues[3]);
+	out_stSettings.nMaxGpuBytes = arrValues[4];
+	return OptionalNumber(*pObject, "history_weight", strPath, out_stSettings.dHistoryWeight, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "depth_threshold", strPath, out_stSettings.dDepthThreshold, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "normal_threshold", strPath, out_stSettings.dNormalThreshold, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "roughness_threshold", strPath, out_stSettings.dRoughnessThreshold, out_arrDiagnostics) &&
+			ValidateRayReflectionSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseReflections(const Serialization::JsonValue &stValue, ReflectionSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.reflections";
 	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
-	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "max_distance", "thickness", "normal_bias", "max_steps", "max_roughness" }, strPath, out_arrDiagnostics))
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "max_distance", "thickness", "normal_bias", "max_steps", "max_roughness", "ray_tracing" }, strPath, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -344,6 +383,11 @@ bool ParseReflections(const Serialization::JsonValue &stValue, ReflectionSetting
 			return Fail("reflection_settings", strPath + ".max_steps", "Expected an integer step count in [8,256].", out_arrDiagnostics);
 		}
 		out_stSettings.nMaxSteps = static_cast<std::uint32_t>(nMaxSteps);
+	}
+	const Serialization::JsonValue::Object::const_iterator itRayTracing = pObject->find("ray_tracing");
+	if (itRayTracing != pObject->end() && !ParseRayReflections(itRayTracing->second, out_stSettings.stRayTracing, out_arrDiagnostics))
+	{
+		return false;
 	}
 	return OptionalNumber(*pObject, "max_distance", strPath, out_stSettings.dMaxDistance, out_arrDiagnostics) &&
 			OptionalNumber(*pObject, "thickness", strPath, out_stSettings.dThickness, out_arrDiagnostics) &&
@@ -409,11 +453,50 @@ bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalL
 	return true;
 }
 
+bool ParseVirtualShadows(const Serialization::JsonValue &stValue, VirtualShadowSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.shadows.virtual_pages";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "cache", "resolution", "physical_pages", "updates_per_frame", "memory_budget_bytes" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	const Serialization::JsonValue::Object::const_iterator itCache = pObject->find("cache");
+	if (itCache != pObject->end() && !itCache->second.GetBool(out_stSettings.bCache))
+	{
+		return Fail("type", strPath + ".cache", "Expected a boolean.", out_arrDiagnostics);
+	}
+	const std::array<const char *, 4> arrNames{ "resolution", "physical_pages", "updates_per_frame", "memory_budget_bytes" };
+	std::array<std::uint64_t, 4> arrValues{ out_stSettings.nResolution, out_stSettings.nPhysicalPages, out_stSettings.nUpdatesPerFrame, out_stSettings.nMemoryBudget };
+	for (std::size_t nIndex = 0; nIndex < arrNames.size(); ++nIndex)
+	{
+		if (pObject->find(arrNames[nIndex]) != pObject->end())
+		{
+			std::int64_t nValue = 0;
+			if (!Assets::Integer(*pObject, arrNames[nIndex], strPath, nValue, out_arrDiagnostics) || nValue < 0 || nValue > UINT32_MAX)
+			{
+				return Fail("range", strPath + "." + arrNames[nIndex], "Expected a nonnegative 32-bit integer.", out_arrDiagnostics);
+			}
+			arrValues[nIndex] = static_cast<std::uint64_t>(nValue);
+		}
+	}
+	out_stSettings.nResolution = static_cast<std::uint32_t>(arrValues[0]);
+	out_stSettings.nPhysicalPages = static_cast<std::uint32_t>(arrValues[1]);
+	out_stSettings.nUpdatesPerFrame = static_cast<std::uint32_t>(arrValues[2]);
+	out_stSettings.nMemoryBudget = arrValues[3];
+	return ValidateVirtualShadowSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_stShadows, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.shadows";
 	const Serialization::JsonValue::Object *pShadows = Assets::Object(stValue, strPath, out_arrDiagnostics);
-	if (pShadows == nullptr || !RequiredFields(*pShadows, { "enabled", "resolution", "distance", "split_lambda", "depth_bias", "normal_bias" }, { "local_resolution", "filter", "light_radius" }, strPath, out_arrDiagnostics))
+	if (pShadows == nullptr || !RequiredFields(*pShadows, { "enabled", "resolution", "distance", "split_lambda", "depth_bias", "normal_bias" }, { "local_resolution", "filter", "light_radius", "virtual_pages" }, strPath, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -464,6 +547,11 @@ bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_s
 			return Fail("shadow_filter", strPath + ".filter", "Expected pcf or pcss.", out_arrDiagnostics);
 		}
 		out_stShadows.eFilter = strFilter == "pcf" ? ShadowFilter::Pcf : ShadowFilter::Pcss;
+	}
+	const Serialization::JsonValue::Object::const_iterator itVirtual = pShadows->find("virtual_pages");
+	if (itVirtual != pShadows->end() && !ParseVirtualShadows(itVirtual->second, out_stShadows.stVirtualPages, out_arrDiagnostics))
+	{
+		return false;
 	}
 	return pShadows->find("light_radius") == pShadows->end() ||
 			BoundedNumber(*pShadows, "light_radius", strPath, 0, 10, out_stShadows.dLightRadius, out_arrDiagnostics);

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c4c500aa456b94a8bf16c71b3ff28426b84c393d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "de887dfa962b64e63b8dc338d6ffc2cda286a2d946cff2fb6d2e6f174cfd2e9b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "c049dcaf26bd84dea980dca78508ebf81a02fdce",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "artifact:engine-next-combined-lighting-r14-20261125/PortablePng/PortablePngEvidence.json",
+    "diagnosis": "The prior decoder validated PNG but returned image_decode_platform outside Windows; the encoded-v4 test required real RGBA pixels on every platform. Test code then dereferenced an empty decoded array after prerequisite failure. The fix reuses existing zlib for non-interlaced RGBA8 PNG on every platform and preserves failure assertions with diagnostic early returns.",
+    "next_action": "Complete final R16 MSVC, clang-cl, newly affected Core normal/clean/package acceptance and device checks; publish successor and require actual Ubuntu/macOS CI success before merge. Keep original failed CI and M4 acceptance open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T22:30:43.655921+00:00",
+    "attempted": "Private MSVC full CPU606 tests1760715 checks and focused clang-cl rerun passed; WIC versus portable fixture manifest, metadata and payload are byte-identical. Independent source review found no P1/P2; explicit standard includes and canonical formatting were added. R15 and R14 evidence retains its actual source identity.",
+    "repair_owner": "agent:/root",
+    "continuable": "Source fix is integrated with final R16 source hashes; portable CI and main readback are still pending."
+  },
+  "occurred_at": "2026-11-24T22:35:23.563723+00:00",
+  "sha256": "b3c4facc51681a91aff4791baad502927fa3cc9b681b25af863b4c0d541b51c1"
+}

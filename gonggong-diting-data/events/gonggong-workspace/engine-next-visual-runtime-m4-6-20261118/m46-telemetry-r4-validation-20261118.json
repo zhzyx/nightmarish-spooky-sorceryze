@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "occurred_at": "2026-11-18T17:15:20.580457+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "event_id": "m46-telemetry-r4-validation-20261118",
+  "kind": "step",
+  "evidence_refs": [
+    "m46-telemetry-request-20261118"
+  ],
+  "payload": {
+    "candidate": "telemetry-r4",
+    "verification": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-telemetry-verification.json",
+      "sha256": "ee0de8c13dc35e8bdc001883ddb6490aca5ffca9482a9cf5d9d715bf5c422ba1",
+      "size_bytes": 5024
+    },
+    "native_key": "5ed969319b943e7778bc417820361549eddbccdbcee29831328ea231652c08c5",
+    "cpu_tests_each_compiler": 543,
+    "cpu_checks_each_compiler": 1601314,
+    "normal_gpu_frames": 5690,
+    "gpu_validation_errors": 0,
+    "input_scope": "Synthetic PostMessage keyboard receipt revision to frame Present API; no physical input/scanout claim.",
+    "stage_complete": false,
+    "remaining": [
+      "Real physical keyboard/mouse input validation",
+      "30 and 60 minute runs on final integrated features at native4K",
+      "Full M4.6 UE A-F comparisons, performance thresholds and delivery acceptance"
+    ]
+  },
+  "sha256": "ff45415a36b4187e124532b2f2f4784f2e88d6164a931eba9961d600c14f3282"
+}

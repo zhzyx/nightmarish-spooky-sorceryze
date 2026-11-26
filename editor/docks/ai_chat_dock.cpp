@@ -8243,8 +8243,13 @@ void AIChatDock::_notification(int p_what) {
 	}
 	if (p_what == NOTIFICATION_READY || p_what == NOTIFICATION_THEME_CHANGED) {
 		wave_material->set_shader_parameter("crest", get_editor_theme_icon(SNAME("AIChatWave")));
+		const String preset = EDITOR_GET("interface/theme/color_preset");
+		const bool neutral_style = preset == "Apple Gray" || preset == "Apple Gray Dark";
+		wave_material->set_shader_parameter("neutral_style", neutral_style);
+		wave_material->set_shader_parameter("reduce_motion", bool(EDITOR_GET("interface/theme/reduce_motion")));
+		wave_material->set_shader_parameter("neutral_color", get_theme_color(SNAME("font_color"), SNAME("Label")));
 		const bool light_text = get_theme_color(SNAME("font_color"), SNAME("Label")).get_luminance() > 0.5f;
-		set_title_color(light_text ? Color::html("#7dd3fc") : Color::html("#0369a1"));
+		set_title_color(neutral_style ? get_theme_color(SNAME("font_color"), SNAME("Label")) : (light_text ? Color::html("#7dd3fc") : Color::html("#0369a1")));
 	}
 	if (p_what == NOTIFICATION_READY) {
 		EditorNode::get_singleton()->connect(SNAME("scene_changed"), callable_mp(this, &AIChatDock::WorkbenchSceneChanged));
@@ -8517,6 +8522,9 @@ render_mode unshaded;
 uniform sampler2D crest : source_color, filter_linear, repeat_disable;
 uniform float height;
 uniform float working = 0.0;
+uniform bool neutral_style = false;
+uniform bool reduce_motion = false;
+uniform vec4 neutral_color : source_color = vec4(0.5);
 varying vec2 local_pos;
 
 void vertex() {
@@ -8525,7 +8533,7 @@ void vertex() {
 
 void fragment() {
 	// Fixed time speed keeps the water continuous when work starts or finishes.
-	float t = TIME * 1.4;
+	float t = reduce_motion ? 0.0 : TIME * 1.4;
 	vec2 p = local_pos / height;
 	float swell = 0.04 + working * 0.045;
 	float surface = 0.56 + swell * sin(p.x * 3.2 - t * 2.0)
@@ -8545,6 +8553,9 @@ void fragment() {
 	float alpha = mask + water_alpha * (1.0 - mask);
 	vec3 color = (icon.rgb * mask + water * water_alpha * (1.0 - mask)) / max(alpha, 0.001);
 	COLOR = vec4(color, alpha);
+	if (neutral_style) {
+		COLOR = vec4(neutral_color.rgb, alpha * (0.16 + working * 0.24));
+	}
 }
 )");
 	wave_material.instantiate();

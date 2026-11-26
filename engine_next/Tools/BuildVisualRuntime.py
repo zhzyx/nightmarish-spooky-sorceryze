@@ -17,6 +17,7 @@ import PackageVisualRuntime
 CORE_SOURCES = [
     "engine_next/Rendering/PagedGeometry.cpp",
     "engine_next/Rendering/PageResidency.cpp",
+    "engine_next/Rendering/TextureResidency.cpp",
     "engine_next/Rendering/Cook/GpuPagedPackage.cpp",
     "engine_next/Rendering/LodSelection.cpp",
     "engine_next/Rendering/Cook/GeometryLod.cpp",
@@ -27,13 +28,16 @@ CORE_SOURCES = [
     "engine_next/Rendering/RenderConfiguration.cpp",
     "engine_next/Rendering/CameraMatrices.cpp",
     "engine_next/Rendering/ShadowData.cpp",
+    "engine_next/Rendering/ShadowPageCache.cpp",
     "engine_next/Rendering/LocalShadowData.cpp",
     "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/ColorLut.cpp",
+    "engine_next/Rendering/FrameTelemetry.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
     "engine_next/Rendering/AmbientOcclusionSettings.cpp",
+    "engine_next/Rendering/RayReflectionSettings.cpp",
     "engine_next/Rendering/GeometrySettings.cpp",
     "engine_next/Rendering/GeometryCulling.cpp",
     "engine_next/Rendering/GeometryScene.cpp",
@@ -57,6 +61,10 @@ CORE_SOURCES = [
     "engine_next/Rendering/Cook/GpuPackage.cpp",
     "engine_next/Rendering/Cook/MeshCluster.cpp",
     "engine_next/Rendering/Cook/TextureCook.cpp",
+    "engine_next/Rendering/Cook/BlockTextureCodec.cpp",
+    "engine_next/thirdparty/bc7enc/bc7enc.cpp",
+    "engine_next/thirdparty/bc7enc/bc7decomp.cpp",
+    "engine_next/thirdparty/bc7enc/rgbcx.cpp",
     "engine_next/Rendering/RenderScene.cpp",
     "engine_next/Serialization/Json.cpp",
     "engine_next/Serialization/Sha256.cpp",
@@ -86,12 +94,16 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/RayTracingScene.cpp",
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
     "engine_next/Platform/Windows/GpuDeformation.cpp",
+    "engine_next/Platform/Windows/GpuShadowPages.cpp",
+    "engine_next/Platform/Windows/ShadowRecording.cpp",
+    "engine_next/Platform/Windows/GpuRayReflections.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
     "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
 ]
 TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestPagedGeometry.cpp",
     "engine_next/Tests/Rendering/TestPageResidency.cpp",
+    "engine_next/Tests/Rendering/TestTextureResidency.cpp",
     "engine_next/Tests/Rendering/TestGpuPagedPackage.cpp",
     "engine_next/Tests/Rendering/TestLodSelection.cpp",
     "engine_next/Tests/Rendering/TestGeometryLod.cpp",
@@ -101,15 +113,18 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
     "engine_next/Tests/Rendering/TestCameraMatrices.cpp",
     "engine_next/Tests/Rendering/TestShadowData.cpp",
+    "engine_next/Tests/Rendering/TestShadowPageCache.cpp",
     "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
     "engine_next/Tests/Rendering/TestShadowSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalState.cpp",
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestColorLut.cpp",
+    "engine_next/Tests/Rendering/TestFrameTelemetry.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
     "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
+    "engine_next/Tests/Rendering/TestRayReflections.cpp",
     "engine_next/Tests/Rendering/TestGeometrySettings.cpp",
     "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
     "engine_next/Tests/Rendering/TestGeometryScene.cpp",
@@ -143,12 +158,15 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestGpuPackage.cpp",
     "engine_next/Tests/Rendering/TestMeshCluster.cpp",
     "engine_next/Tests/Rendering/TestTextureCook.cpp",
+    "engine_next/Tests/Rendering/TestBlockTextureCodec.cpp",
+    "engine_next/Tests/Rendering/TestEncodedGpuPackage.cpp",
 ]
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/DeformationFrame.h",
     "EngineNext/Rendering/AnimationData.h",
     "EngineNext/Rendering/PagedGeometry.h",
     "EngineNext/Rendering/PageResidency.h",
+    "EngineNext/Rendering/TextureResidency.h",
     "EngineNext/Rendering/GeometryLod.h",
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
@@ -157,6 +175,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/RenderConfiguration.h",
     "EngineNext/Rendering/CameraMatrices.h",
     "EngineNext/Rendering/ShadowData.h",
+    "EngineNext/Rendering/VirtualShadowSettings.h",
     "EngineNext/Rendering/LocalShadowData.h",
     "EngineNext/Rendering/TemporalState.h",
     "EngineNext/Rendering/PostProcessSettings.h",
@@ -164,6 +183,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
     "EngineNext/Rendering/AmbientOcclusionSettings.h",
+    "EngineNext/Rendering/RayReflectionSettings.h",
     "EngineNext/Rendering/GeometrySettings.h",
     "EngineNext/Rendering/GeometryCulling.h",
     "EngineNext/Rendering/GeometryScene.h",
@@ -183,6 +203,7 @@ SHADERS = [
     ("VSMain", "vs_6_0", "FixedMesh.vs.cso", []),
     ("PSMain", "ps_6_0", "FixedMesh.ps.cso", []),
     ("CSMain", "cs_6_0", "FixedMesh.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
+    ("AssetDirectionalTintCS", "cs_6_0", "AssetDirectionalTint.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
     ("VSMain", "vs_6_0", "Deferred.vs.cso", ["-D", "GEOMETRY_STAGE=1"]),
     ("VSMain", "vs_6_0", "AnimatedDeferred.vs.cso", ["-D", "GEOMETRY_STAGE=1", "-D", "ANIMATION_STAGE=1"]),
     ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
@@ -194,6 +215,32 @@ SHADERS = [
         "ps_6_0",
         "MaterialLighting.ps.cso",
         ["-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
+    ),
+    *(
+        ("DiagnosticPS", "ps_6_0", f"Diagnostic-{name}.ps.cso", ["-D", f"VIEW={index}"])
+        for index, name in enumerate(
+            [
+                "normal",
+                "roughness",
+                "metallic",
+                "ao",
+                "emissive",
+                "motion",
+                "depth",
+                "gbuffer",
+                "culling",
+                "cluster",
+                "lod",
+                "streaming",
+                "cascade",
+                "vsm-page",
+                "gi-probe",
+                "ssr",
+                "volume-fog",
+                "exposure",
+            ],
+            start=2,
+        )
     ),
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
     ("ToneMapPS", "ps_6_0", "ScreenEffects.ps.cso", ["-D", "TONEMAP_STAGE=1", "-D", "SCREEN_EFFECTS_STAGE=1"]),
@@ -221,6 +268,10 @@ SHADERS = [
     ),
     ("CompositeCS", "cs_6_0", "ReflectionComposite.cs.cso", ["-D", "COMPOSITE_STAGE=1"]),
     ("RadianceCS", "cs_6_0", "ReflectionRadiance.cs.cso", ["-D", "RADIANCE_STAGE=1"]),
+    ("TraceCS", "cs_6_5", "RayReflectionTrace.cs.cso", ["-D", "RAY_REFLECTION_TRACE=1"]),
+    ("TemporalCS", "cs_6_5", "RayReflectionTemporal.cs.cso", ["-D", "RAY_REFLECTION_TEMPORAL=1"]),
+    ("SpatialCS", "cs_6_5", "RayReflectionSpatial.cs.cso", ["-D", "RAY_REFLECTION_SPATIAL=1"]),
+    ("CompositeCS", "cs_6_5", "RayReflectionComposite.cs.cso", ["-D", "RAY_REFLECTION_COMPOSITE=1"]),
     ("InjectCS", "cs_6_0", "VolumeInject.cs.cso", ["-D", "VOLUME_INJECT_STAGE=1"]),
     ("LightCS", "cs_6_0", "VolumeLight.cs.cso", ["-D", "VOLUME_LIGHT_STAGE=1"]),
     ("TemporalCS", "cs_6_0", "VolumeTemporal.cs.cso", []),
@@ -282,6 +333,12 @@ SHADERS += [
     for entry, profile, name, definitions in SHADERS
     if name.endswith("Lighting.ps.cso")
 ]
+SHADERS += [
+    (entry, profile, "Virtual" + name, [*definitions, "-D", "VIRTUAL_SHADOW_STAGE=1"])
+    for entry, profile, name, definitions in SHADERS
+    if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
+]
+SHADERS.append(("FeedbackCS", "cs_6_0", "ShadowPageFeedback.cs.cso", []))
 
 
 def write_json(path, value):
@@ -621,7 +678,9 @@ def compile_shaders(args, commands):
             / "engine_next/Rendering/Shaders"
             / (
                 "FixedMesh.hlsl"
-                if name.startswith("FixedMesh")
+                if name.startswith("FixedMesh") or name == "AssetDirectionalTint.cs.cso"
+                else "ShadowPageFeedback.hlsl"
+                if name == "ShadowPageFeedback.cs.cso"
                 else "AmbientOcclusion.hlsl"
                 if name.startswith("AmbientOcclusion")
                 else "GeometryCull.hlsl"
@@ -632,6 +691,7 @@ def compile_shaders(args, commands):
                 if name.startswith("GeometryDepth")
                 else "Transparent.hlsl"
                 if name.startswith(("Transparent", "MaterialTransparent", "GiTransparent", "GiMaterialTransparent"))
+                or (name.startswith("Virtual") and name.endswith("Transparent.ps.cso"))
                 else "GI.hlsl"
                 if name in ("GiPrepare.cs.cso", "GiRelocate.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso")
                 else "VolumeTemporal.hlsl"
@@ -643,6 +703,8 @@ def compile_shaders(args, commands):
                 else "Reflection.hlsl"
                 if (name.startswith("Reflection") and name != "ReflectionLighting.ps.cso")
                 or name == "MaterialReflectionTrace.cs.cso"
+                else "RayReflections.hlsl"
+                if name.startswith("RayReflection")
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
                 else "Exposure.hlsl"
@@ -651,6 +713,8 @@ def compile_shaders(args, commands):
                 if name.startswith("Bloom")
                 else "TemporalAA.hlsl"
                 if name.startswith("Temporal")
+                else "Diagnostic.hlsl"
+                if name.startswith("Diagnostic-")
                 else "Deferred.hlsl"
             )
         )
@@ -732,7 +796,7 @@ def build(args):
         "engine_next/Tools/BuildRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer")
+            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer", "bc7enc")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],
@@ -746,10 +810,14 @@ def build(args):
             else [
                 "engine_next/Rendering/Shaders/FixedMesh.hlsl",
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
+                "engine_next/Rendering/Shaders/Diagnostic.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusion.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusionMath.hlsli",
                 "engine_next/Rendering/Shaders/ScreenEffects.hlsli",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
+                "engine_next/Rendering/Shaders/ShadowPageGpu.hlsli",
+                "engine_next/Rendering/Shaders/ShadowPageFeedback.hlsl",
+                "engine_next/Rendering/Shaders/ShadowPageReceiver.hlsli",
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
                 "engine_next/Rendering/Shaders/ShadowReceiverPlane.hlsli",
                 "engine_next/Rendering/Shaders/TemporalAA.hlsl",
@@ -759,6 +827,8 @@ def build(args):
                 "engine_next/Rendering/Shaders/Bloom.hlsl",
                 "engine_next/Rendering/Shaders/BloomSampling.hlsli",
                 "engine_next/Rendering/Shaders/Reflection.hlsl",
+                "engine_next/Rendering/Shaders/RayReflections.hlsl",
+                "engine_next/Rendering/Shaders/RayReflectionSampling.hlsli",
                 "engine_next/Rendering/Shaders/GeometryVisibility.hlsli",
                 "engine_next/Rendering/Shaders/GeometryCull.hlsl",
                 "engine_next/Rendering/Shaders/GeometryHiZ.hlsl",

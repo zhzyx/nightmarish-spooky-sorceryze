@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-acb996a5a103214c38d18717d79a4e850c342d5b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9614e31be08a0c31d1d265b4ebcf88e08bc988d338b97408e8d30cc44db64fe5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "c049dcaf26bd84dea980dca78508ebf81a02fdce",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "artifact:engine-next-combined-lighting-r14-20261125/SourceManifest.json",
+    "diagnosis": "Static CI correctly rejected five noncanonical copyright filename header alignments and a shebang script without its executable Git mode. The repository copyright hook corrected only comment whitespace; AnalyzeFrameTelemetry.py content is unchanged and its index mode is now 100755.",
+    "next_action": "Fix and revalidate the separately observed portable PNG decoder failure before preparing the successor candidate. Do not count failed or skipped CI as passed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T22:18:36.173137+00:00",
+    "attempted": "R14 frozen source was independently reviewed: five comment-only second-line changes, no line-count or statement change; full MSVC 605 tests and1760711 checks passed. R13 original failure logs and signed PR2234 are retained.",
+    "repair_owner": "agent:/root",
+    "continuable": "Header and executable-mode fixes are ready; portable v4 cook CI and final successor publication remain pending."
+  },
+  "occurred_at": "2026-11-24T22:24:40.976841+00:00",
+  "sha256": "757da1654ef508d5f1c18558b84134651e3019162b4b4f46ec11726f891b6b57"
+}
