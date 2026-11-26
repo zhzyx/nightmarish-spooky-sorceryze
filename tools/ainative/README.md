@@ -160,16 +160,35 @@ provider and immutable artifacts, never as a fallback for a new direct-3D reques
 
 The adapter supports text, one ordinary image and 2–4 independent views. Text uses
 `description`, one image uses `image_url`, and multiple views use `multiview`. Separate
-view inputs are ordered front/back for two views, front/right/back for three, and
-front/right/back/left for four. A single explicitly marked three-view sheet is cropped
-into front/right/back panels before upload; it is not sent as one ordinary photograph.
-Cropping uses Pillow when that sheet mode is requested.
+view inputs default to front/back for two views, front/right/back for three, and
+front/right/back/left for four before analyzed-direction overrides. A single explicitly
+marked three-view sheet is cropped into three panels before upload; it is not sent as one
+ordinary photograph. Cropping uses Pillow when that sheet mode is requested.
+
+Version 2 preserves this initial sheet mechanism through structured `sheet_views`: only a
+visually confirmed, nonoverlapping front/side/back contact sheet may select
+`multiview_sheet`, with actual panel order front/right/back or front/left/back. The middle
+panel is never assumed to be right; its bytes must enter the matching `right_url` or
+`left_url` slot. Ambiguous sheets are never guessed or split. Local detail close-ups do
+not replace, reframe or independently rescale the sheet's generation panels, because the
+original equal-sized same-camera alignment is part of the generation contract.
 
 Version 2 `image_to_mesh` adds a vision-guided review loop. Kimi inspects every input
 image independently, synthesizes one subject and rejects inconsistent references. The
-collection has no fixed size or semantic order: analyzed front views receive more weight
-than side views, and side views more than top views, while detail close-ups remain review
-evidence rather than being mislabeled as full-body inputs. Tripo's per-call limit only
+collection has no fixed size or semantic order. Global full-subject references are grouped
+by their analyzed direction: when front and other directions are available, front evidence
+collectively receives 50% and the remaining directions share 50% by direction priority;
+duplicate images within one direction divide that direction's share. A single available
+direction normalizes to 100%, and no front reference is invented when none exists. Each
+planned region/direction is also weighted independently: explicit localized close-ups for
+that exact region/direction collectively receive 70%, with all other evidence sharing 30%.
+Left/right close-ups map to the local `side` comparison. These values are auditable
+reference-selection and visual-review evidence priorities, not numeric conditioning weights
+inside Tripo; the current multiview API has no numeric-weight or localized-part control.
+The policy is saved as `reference_weight_policy` with
+`generative_model_numeric_weights_applied=false`. Detail close-ups remain review evidence
+rather than being mislabeled as full-body inputs, and weighted priorities never average away
+a required-view or hard-gate defect. Tripo's per-call limit only
 controls the dynamic selection for each generation attempt. The analysis also creates a
 task-specific `review_plan`: base front/rear/profile/overhead evidence checks the generated
 3D subject, while detail regions and directions come from the actual references and user

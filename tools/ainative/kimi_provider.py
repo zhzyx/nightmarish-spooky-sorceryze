@@ -767,7 +767,13 @@ class KimiNativeDirectProvider(ModelingProvider):
             parameters["no_texture"] = True
         if parameters["no_texture"]:
             parameters["texture_quality"] = None
-        view_order = ["front", "right", "back"] if sheet else ["front", "back", "left", "right"][: len(sources)]
+        if sheet:
+            view_order = sources[0]["payload"].get("provenance", {}).get(
+                "analyzed_sheet_views", ["front", "right", "back"]
+            )
+            require(view_order in (["front", "right", "back"], ["front", "left", "back"]), "invalid_input")
+        else:
+            view_order = ["front", "back", "left", "right"][: len(sources)]
         if len(sources) > 2:
             view_order = ["front", "right", "back", "left"][: len(sources)]
         analyzed_order = [source["payload"].get("provenance", {}).get("analyzed_view") for source in sources]
@@ -1768,6 +1774,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             prompt_application="reference_analysis_and_generated_mesh_review",
             visual_review_plan=mesh_vision.get_review_plan(analysis),
             review_policy="reference_driven_dynamic_review_plan_v1",
+            reference_weight_policy=mesh_vision.reference_weight_policy(analysis),
         )
         self.write(
             key,
@@ -2064,6 +2071,7 @@ class KimiNativeDirectProvider(ModelingProvider):
                 prompt_application="reference_analysis_and_generated_mesh_review",
                 visual_review_plan=review_plan,
                 review_policy="reference_driven_dynamic_review_plan_v1",
+                reference_weight_policy=mesh_vision.reference_weight_policy(analysis),
             )
             self.write(
                 key,

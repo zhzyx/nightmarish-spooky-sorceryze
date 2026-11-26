@@ -13,6 +13,7 @@ from mesh_vision import (
     complete_review,
     corrected_review_yaw,
     get_review_plan,
+    reference_weight_policy,
     review,
     review_prompt,
     review_view_definitions,
@@ -24,12 +25,13 @@ from mesh_vision import (
 from test_multi_image_provider import asset, reference
 
 
-def analyzed(image_id, view, kind="full_subject"):
+def analyzed(image_id, view, kind="full_subject", sheet_views=None):
     return dict(
         image_id=image_id,
         view=view,
         content_kind=kind,
         detail_region="face" if kind == "detail" else "",
+        sheet_views=list(sheet_views or []),
         same_subject=True,
         observation="synthetic observation",
     )
@@ -128,6 +130,15 @@ class MeshVisionTests(unittest.TestCase):
         )
         self.assertEqual(child["parameters"]["prompt"], "")
         self.assertEqual(len(child["context"]), 3)
+        provenance = [item["payload"]["provenance"] for item in selected]
+        self.assertAlmostEqual(provenance[0]["generation_weight"], 0.5)
+        self.assertAlmostEqual(sum(item["generation_weight"] for item in provenance), 1.0)
+        self.assertTrue(
+            all(
+                item["generation_weight_application"] == "reference_selection_and_vision_review_only"
+                for item in provenance
+            )
+        )
 
     def test_no_front_uses_best_single_view_instead_of_inventing_front(self):
         sources = [asset("top", "top"), asset("side", "side"), asset("face", "face")]
@@ -140,7 +151,121 @@ class MeshVisionTests(unittest.TestCase):
             self.request(sources), [dict(asset=source, label=source["id"]) for source in sources], document
         )
         self.assertEqual([item["id"] for item in selected], ["side"])
+        self.assertEqual(selected[0]["payload"]["provenance"]["generation_weight"], 1.0)
         self.assertEqual(child["context"], [])
+
+    def test_duplicate_front_images_share_half_without_duplicate_generation_views(self):
+        sources = [asset(name, name) for name in ("front-a", "front-b", "right", "back")]
+        document = analysis([
+            analyzed("front-a", "front"),
+            analyzed("front-b", "front"),
+            analyzed("right", "right"),
+            analyzed("back", "back"),
+        ])
+        policy = reference_weight_policy(document)
+        weights = {item["image_id"]: item["weight"] for item in policy["global"]["references"]}
+        self.assertAlmostEqual(weights["front-a"], 0.25)
+        self.assertAlmostEqual(weights["front-b"], 0.25)
+        self.assertAlmostEqual(weights["right"], 0.5 * 80 / 150)
+        self.assertAlmostEqual(weights["back"], 0.5 * 70 / 150)
+        self.assertAlmostEqual(sum(weights.values()), 1.0)
+        _, selected = select_generation_request(
+            self.request(sources), [dict(asset=source, label=source["id"]) for source in sources], document
+        )
+        self.assertEqual([item["id"] for item in selected], ["front-a", "right", "back"])
+
+    def test_local_detail_direction_uses_seventy_percent_direct_evidence(self):
+        document = planned_analysis(
+            [
+                analyzed("body-front", "front"),
+                analyzed("body-right", "right"),
+                analyzed("face-front", "front", "detail"),
+                analyzed("face-side", "right", "detail"),
+            ],
+            [
+                dict(
+                    region="head",
+                    views=["front", "side"],
+                    source_image_ids=["body-front", "body-right", "face-front", "face-side"],
+                    goal="preserve facial identity and profile depth",
+                )
+            ],
+        )
+        policy = reference_weight_policy(document)
+        self.assertFalse(policy["generative_model_numeric_weights_applied"])
+        self.assertEqual(len(policy["local"]), 2)
+        for local in policy["local"]:
+            self.assertEqual(local["direct_group_weight"], 0.7)
+            self.assertAlmostEqual(local["other_evidence_group_weight"], 0.3)
+            self.assertEqual(len(local["direct_references"]), 1)
+            self.assertEqual(local["direct_references"][0]["weight"], 0.7)
+        self.assertEqual(policy["local"][1]["direct_references"][0]["image_id"], "face-side")
+        prompt = review_prompt(document, [])
+        self.assertIn("Reference weight policy:", prompt)
+        self.assertIn('"direct_group_weight":0.7', prompt)
+        self.assertIn("Never average away a defect", prompt)
+
+    def test_contact_sheet_preserves_initial_fixed_crop_mechanism(self):
+        from kimi_provider import KimiNativeDirectProvider
+        from test_kimi_provider import png_bytes
+
+        sources = [asset(name, name) for name in ("sheet", "face-front", "face-side")]
+        data = png_bytes()
+        sha = hashlib.sha256(data).hexdigest()
+        sources[0]["revision"] = sha
+        sources[0]["payload"].update(
+            content_base64=base64.b64encode(data).decode(), content_sha256=sha, bytes=len(data)
+        )
+        document = planned_analysis(
+            [
+                analyzed("sheet", "unknown", "contact_sheet", ["front", "right", "back"]),
+                analyzed("face-front", "front", "detail"),
+                analyzed("face-side", "right", "detail"),
+            ],
+            [
+                dict(
+                    region="head",
+                    views=["front", "side"],
+                    source_image_ids=["sheet", "face-front", "face-side"],
+                    goal="preserve identity and profile without changing the sheet generation input",
+                )
+            ],
+        )
+        child, selected = select_generation_request(
+            self.request(sources), [dict(asset=source, label=source["id"]) for source in sources], document
+        )
+        self.assertEqual([item["id"] for item in selected], ["sheet"])
+        self.assertEqual(child["parameters"]["prompt"], "三视图")
+        self.assertEqual(child["context"], [])
+        provenance = selected[0]["payload"]["provenance"]
+        self.assertEqual(provenance["input_mode"], "multiview_sheet")
+        self.assertEqual(provenance["analyzed_sheet_views"], ["front", "right", "back"])
+        self.assertEqual(provenance["generation_direction_weights"]["front"], 0.5)
+        provider = object.__new__(KimiNativeDirectProvider)
+        provider.config = {"model": "v3.1"}
+        plan = provider.plan(child, dict(schema_version=1, artifacts=selected))
+        self.assertEqual(plan["input_mode"], "multiview_sheet")
+        self.assertEqual(plan["view_order"], ["front", "right", "back"])
+        document["images"][0]["sheet_views"] = ["front", "left", "back"]
+        left_child, left_selected = select_generation_request(
+            self.request(sources), [dict(asset=source, label=source["id"]) for source in sources], document
+        )
+        left_plan = provider.plan(left_child, dict(schema_version=1, artifacts=left_selected))
+        self.assertEqual(left_plan["input_mode"], "multiview_sheet")
+        self.assertEqual(left_plan["view_order"], ["front", "left", "back"])
+        policy = reference_weight_policy(document)
+        self.assertEqual(policy["global"]["references"], [])
+        left_weights = policy["global"]["sheets"][0]["direction_weights"]
+        self.assertEqual(left_weights["front"], 0.5)
+        self.assertEqual(left_weights["left"], provenance["generation_direction_weights"]["right"])
+        self.assertEqual(left_weights["back"], provenance["generation_direction_weights"]["back"])
+        self.assertEqual(policy["local"][1]["direct_references"][0]["image_id"], "face-side")
+
+        document["images"][0]["sheet_views"] = []
+        with self.assertRaisesRegex(ValueError, "vision_no_full_subject"):
+            select_generation_request(
+                self.request(sources), [dict(asset=source, label=source["id"]) for source in sources], document
+            )
 
     def test_retry_uses_previous_model_for_appearance_adjustment(self):
         sources = [asset("front", "front")]
@@ -755,6 +880,7 @@ class ReviewLoopTests(unittest.TestCase):
             provenance = manifest["artifacts"][-1]["payload"]["provenance"]
             self.assertEqual(provenance["review_policy"], "reference_driven_dynamic_review_plan_v1")
             self.assertEqual(provenance["visual_review_plan"], get_review_plan(document))
+            self.assertEqual(provenance["reference_weight_policy"], reference_weight_policy(document))
 
     def test_camera_mismatch_rereviews_same_model_without_model_adjust(self):
         from kimi_provider import KimiNativeDirectProvider

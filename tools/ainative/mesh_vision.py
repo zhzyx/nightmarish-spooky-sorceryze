@@ -29,6 +29,115 @@ VIEW_WEIGHTS = {
     "bottom": 30,
     "unknown": 10,
 }
+FRONT_DIRECTION_WEIGHT = 0.5
+LOCAL_DETAIL_DIRECTION_WEIGHT = 0.7
+WEIGHT_APPLICATION = "reference_selection_and_vision_review_only"
+SHEET_VIEWS = ("front", "right", "back")
+SHEET_VIEW_ORDERS = (SHEET_VIEWS, ("front", "left", "back"))
+SHEET_SELECTION_PROMPT = "三视图"
+
+
+def _directional_reference_weights(references):
+    """Normalize direction groups, then share a direction among duplicate images."""
+    groups = {}
+    for reference in references:
+        view = reference["view"]
+        if view in VIEW_WEIGHTS:
+            groups.setdefault(view, []).append(reference["image_id"])
+    if not groups:
+        return {}
+    if len(groups) == 1:
+        direction_weights = {next(iter(groups)): 1.0}
+    elif "front" in groups:
+        remaining = sum(VIEW_WEIGHTS[view] for view in groups if view != "front")
+        direction_weights = {"front": FRONT_DIRECTION_WEIGHT}
+        direction_weights.update(
+            (view, (1.0 - FRONT_DIRECTION_WEIGHT) * VIEW_WEIGHTS[view] / remaining)
+            for view in groups
+            if view != "front"
+        )
+    else:
+        total = sum(VIEW_WEIGHTS[view] for view in groups)
+        direction_weights = {view: VIEW_WEIGHTS[view] / total for view in groups}
+    return {
+        image_id: direction_weights[view] / len(groups[view])
+        for view, image_ids in groups.items()
+        for image_id in image_ids
+    }
+
+
+def _detail_direction(view):
+    return "side" if view in ("left", "right") else view
+
+
+def _sheet_views(item):
+    views = item.get("sheet_views", [])
+    supported = [list(order) for order in SHEET_VIEW_ORDERS]
+    return list(views) if item["content_kind"] == "contact_sheet" and views in supported else []
+
+
+def reference_weight_policy(analysis):
+    """Return auditable evidence priorities; these are not Tripo sampling controls."""
+    full_subject = [item for item in analysis["images"] if item["content_kind"] == "full_subject"]
+    global_weights = _directional_reference_weights(full_subject)
+    global_references = [
+        dict(image_id=item["image_id"], view=item["view"], weight=global_weights[item["image_id"]])
+        for item in full_subject
+        if item["image_id"] in global_weights
+    ]
+    sheets = []
+    for item in analysis["images"]:
+        views = _sheet_views(item)
+        if views:
+            sheets.append(
+                dict(
+                    image_id=item["image_id"],
+                    views=views,
+                    direction_weights=_directional_reference_weights(
+                        [dict(image_id=view, view=view) for view in views]
+                    ),
+                )
+            )
+    by_id = {item["image_id"]: item for item in analysis["images"]}
+    local = []
+    for detail in get_review_plan(analysis)["details"]:
+        linked = [by_id[image_id] for image_id in detail["source_image_ids"]]
+        for direction in detail["views"]:
+            direct = [
+                item
+                for item in linked
+                if item["content_kind"] == "detail" and _detail_direction(item["view"]) == direction
+            ]
+            if not direct:
+                continue
+            direct_ids = {item["image_id"] for item in direct}
+            local.append(
+                dict(
+                    region=detail["region"],
+                    direction=direction,
+                    direct_references=[
+                        dict(image_id=item["image_id"], weight=LOCAL_DETAIL_DIRECTION_WEIGHT / len(direct))
+                        for item in direct
+                    ],
+                    direct_group_weight=LOCAL_DETAIL_DIRECTION_WEIGHT,
+                    other_source_image_ids=[
+                        item["image_id"] for item in linked if item["image_id"] not in direct_ids
+                    ],
+                    other_evidence_group_weight=1.0 - LOCAL_DETAIL_DIRECTION_WEIGHT,
+                )
+            )
+    return {
+        "schema_version": 1,
+        "application": WEIGHT_APPLICATION,
+        "generative_model_numeric_weights_applied": False,
+        "global": dict(
+            front_direction_weight=FRONT_DIRECTION_WEIGHT,
+            rule="front_50_remaining_50_when_multiple_directions",
+            references=global_references,
+            sheets=sheets,
+        ),
+        "local": local,
+    }
 
 
 def review_plan_schema():
@@ -73,10 +182,23 @@ def analysis_schema():
                 type="string", enum=["full_subject", "partial_subject", "detail", "contact_sheet", "other"]
             ),
             detail_region=dict(type="string"),
+            sheet_views=dict(
+                type="array",
+                maxItems=3,
+                items=dict(type="string", enum=["front", "left", "right", "back"]),
+            ),
             same_subject=dict(type="boolean"),
             observation=dict(type="string"),
         ),
-        required=["image_id", "view", "content_kind", "detail_region", "same_subject", "observation"],
+        required=[
+            "image_id",
+            "view",
+            "content_kind",
+            "detail_region",
+            "sheet_views",
+            "same_subject",
+            "observation",
+        ],
         additionalProperties=False,
     )
     subject = dict(
@@ -295,13 +417,23 @@ def analysis_prompt(request, entries):
         "another object), its anatomy or structure, proportions, materials, and expected details. Reject conflicting "
         "subjects honestly. The labels are lineage only, not visual evidence. Return one entry per listed image_id with "
         "no omissions or duplicates. User modeling intent is context, not permission to ignore visible evidence. "
+        "For every image return sheet_views, normally []. Only when one actual contact sheet has exactly three "
+        "nonoverlapping full-body panels ordered front/side/back, set content_kind=contact_sheet, view=unknown and "
+        "sheet_views to the actual anatomical order: [front,right,back] or [front,left,back]. Determine the side from "
+        "visible facing direction and consistent accessory/anatomy evidence, not from a filename, label or user claim. "
+        "For a +Z-facing subject, its anatomical-right side is viewed from -X and its front projects to screen-right; "
+        "the anatomical-left side is the opposite. Never assume the middle panel is right. An ordinary photo is never "
+        "a sheet. Keep an ambiguous or differently ordered contact sheet at sheet_views=[] so it cannot enter the fixed "
+        "three-panel generation path. "
         "Also create review_plan for THIS request, not a generic character template. Base front/right/back/left/top "
         "model evidence is implicit and must not be listed as detail. Add detail entries only for details actually "
         "requested by the user or visible in the references. Supported regions are head, upper_body, lower_body, "
         "hand_left, hand_right and object_detail; supported detail views are front, three_quarter, side and back. "
         "Use head only for face/head goals, hand_left or hand_right for hand goals, upper_body or lower_body for "
         "armor/clothing/body-region goals, and object_detail for other localized details. Link every detail to the "
-        "actual source_image_ids that establish the goal and write a concrete comparison goal. Do not add head views "
+        "actual source_image_ids that establish the goal and write a concrete comparison goal. For every localized "
+        "close-up, use content_kind=detail and report its visible direction as precisely as its full-body directions; "
+        "these explicit region/direction links drive the local 70% direct-evidence priority. Do not add head views "
         "merely because the subject is human. Set head_gate=true only when complete head and animation-geometry "
         "acceptance is required and the head detail requests front, three_quarter and side views; otherwise false.\n"
         "User intent:\n" + "\n".join([prompt] + contexts).strip() + "\nImage lineage:\n" + listing
@@ -310,6 +442,7 @@ def analysis_prompt(request, entries):
 
 def review_prompt(analysis, previous_issues, required_views=None, recovery_context=None):
     plan = get_review_plan(analysis)
+    weights = reference_weight_policy(analysis)
     expected = [item["view"] for item in review_view_definitions(plan)] if required_views is None else required_views
     partial = required_views is not None
     prompt = (
@@ -318,7 +451,13 @@ def review_prompt(analysis, previous_issues, required_views=None, recovery_conte
         "generated evidence only with actual available reference directions and details. Never invent a missing "
         "reference view or fail a model merely because the input has no matching reference direction; base generated "
         "views still establish the model's own three-dimensional structure. Follow the task-specific review_plan for "
-        "detail goals. Return exactly one views entry for every required generated view ID listed below, using the ID "
+        "detail goals and the reference_weight_policy for evidence priority. At global scope, available front evidence "
+        "collectively has 50% priority when other directions exist; the remaining directions share 50%. At each planned "
+        "region/direction with an explicit localized close-up, that direct evidence collectively has 70% priority and "
+        "all other evidence shares 30%. Resolve likeness and visible shape using those priorities, especially facial "
+        "identity and profile depth. These are evidence priorities, not claimed numeric controls inside the 3D service. "
+        "Never average away a defect: every required view and hard gate must still pass independently. "
+        "Return exactly one views entry for every required generated view ID listed below, using the ID "
         "verbatim with no omissions or duplicates. A head_gate narrative never substitutes for a views entry. "
         "Set rendered_front_view to the full-body generated view label (front, right, back or left) whose image actually "
         "shows the subject's anatomical or reference front. Use front when generated-front is correct. Determine this "
@@ -348,6 +487,8 @@ def review_prompt(analysis, previous_issues, required_views=None, recovery_conte
         prompt
         + "\nTask-specific review plan:\n"
         + canonical(plan)
+        + "\nReference weight policy:\n"
+        + canonical(weights)
         + "\nReference analysis:\n"
         + canonical(analysis)
         + "\nPrevious rejected-attempt issues:\n"
@@ -436,6 +577,14 @@ def analyze(provider, key, request, sources, directory):
         len(observed) == len(entries) and set(observed) == expected and len(set(observed)) == len(observed),
         "vision_output_invalid",
     )
+    for item in document["images"]:
+        sheet_views = item.get("sheet_views")
+        require(
+            isinstance(sheet_views, list)
+            and (not sheet_views or sheet_views in [list(order) for order in SHEET_VIEW_ORDERS])
+            and (not sheet_views or item["content_kind"] == "contact_sheet" and item["view"] == "unknown"),
+            "vision_output_invalid",
+        )
     require(
         document["coherent"] and all(item["same_subject"] for item in document["images"]), "vision_subject_incoherent"
     )
@@ -445,6 +594,34 @@ def analyze(provider, key, request, sources, directory):
 def select_generation_request(request, sources, analysis):
     """Use analyzed evidence and weights; input order is only a stable tie-break."""
     by_id = {source["asset"]["id"]: source for source in sources}
+    sheets = [item for item in analysis["images"] if _sheet_views(item)]
+    require(len(sheets) <= 1, "vision_multiple_contact_sheets")
+    if sheets:
+        item = sheets[0]
+        views = _sheet_views(item)
+        source = by_id[item["image_id"]]
+        asset = copy.deepcopy(source["asset"])
+        provenance = dict(asset["payload"].get("provenance", {}))
+        provenance.update(
+            analyzed_view="contact_sheet",
+            analyzed_sheet_views=views,
+            input_mode="multiview_sheet",
+            generation_weight=1.0,
+            generation_direction_weights=_directional_reference_weights(
+                [dict(image_id=view, view=view) for view in views]
+            ),
+            generation_selection_score=VIEW_WEIGHTS["front"],
+            generation_weight_application=WEIGHT_APPLICATION,
+        )
+        asset["payload"]["provenance"] = provenance
+        child = copy.deepcopy(request)
+        child["version"] = "1"
+        child["inputs"] = {"source": {key: asset[key] for key in ("id", "revision")}}
+        child["context"] = []
+        # This marker only selects the original fixed three-panel crop path; it
+        # is not sent as an additional text constraint with the image request.
+        child["parameters"]["prompt"] = SHEET_SELECTION_PROMPT
+        return child, [asset]
     candidates = []
     for index, item in enumerate(analysis["images"]):
         if item["content_kind"] != "full_subject" or item["view"] not in GENERATION_VIEWS:
@@ -461,16 +638,32 @@ def select_generation_request(request, sources, analysis):
         candidates = [max(full, key=lambda value: (value[0], value[1]))]
     else:
         candidates.sort(key=lambda value: (value[0], value[1]), reverse=True)
-        front = [candidate for candidate in candidates if candidate[2] == "front"]
+        unique_directions = []
+        observed = set()
+        for candidate in candidates:
+            if candidate[2] not in observed:
+                unique_directions.append(candidate)
+                observed.add(candidate[2])
+        has_front = any(candidate[2] == "front" for candidate in unique_directions)
         candidates = (
-            front + [candidate for candidate in candidates if candidate[2] != "front"] if front else [candidates[0]]
+            sorted(unique_directions, key=lambda value: value[2] != "front")
+            if has_front
+            else [unique_directions[0]]
         )
         candidates = candidates[:4]
+    normalized_weights = _directional_reference_weights(
+        [dict(image_id=source["asset"]["id"], view=view) for _, _, view, source in candidates]
+    )
     selected = []
-    for weight, _, view, source in candidates:
+    for selection_score, _, view, source in candidates:
         asset = copy.deepcopy(source["asset"])
         provenance = dict(asset["payload"].get("provenance", {}))
-        provenance.update(analyzed_view=view, generation_weight=weight)
+        provenance.update(
+            analyzed_view=view,
+            generation_weight=normalized_weights[source["asset"]["id"]],
+            generation_selection_score=selection_score,
+            generation_weight_application=WEIGHT_APPLICATION,
+        )
         asset["payload"]["provenance"] = provenance
         selected.append(asset)
     references = [{key: asset[key] for key in ("id", "revision")} for asset in selected]
