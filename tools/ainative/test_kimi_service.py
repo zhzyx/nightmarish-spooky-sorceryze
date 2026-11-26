@@ -133,10 +133,14 @@ class KimiServiceTests(unittest.TestCase):
             with self.subTest(mode=mode), self.assertRaises(ServiceError):
                 settings({"mode": mode, "endpoint": "file:///invalid", "api_model": "model", "api_key_env": "KEY"})
         board = settings({**self.value, "godot_path": "board-runtime", "builder_path": "/fixture/modeling_builder.gd"})
+        batch = image_batch_settings(board)
         self.assertEqual(
-            image_batch_settings(board)["board_config"],
+            batch["board_config"],
             {"board_godot_path": "board-runtime", "board_builder_path": str(Path("/fixture/image_contact_sheet.gd"))},
         )
+        self.assertEqual(set(batch["review_config"]), {"endpoint", "model", "key_env"})
+        self.assertEqual(batch["review_config"]["key_env"], "KIMI_API_KEY")
+        self.assertIsNone(image_batch_settings({"mode": "comfy"})["review_config"])
 
     def test_mesh_stays_ready_when_image_tool_is_absent_or_invalid(self):
         with (

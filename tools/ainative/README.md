@@ -516,6 +516,25 @@ neutral reference-image instruction because the underlying service requires a pr
 K3.1 Pro does not directly generate these 2D images, and this integration neither
 replaces nor disguises ComfyUI or Codex.
 
+Automatic front/back requests for a standalone garment use garment-specific directions,
+including natural no-body/no-mannequin phrasing. The derived back view is an object-
+turntable reconstruction, not a retouch of the front composition: it must show newly
+visible rear construction and suppress front-only openings and ornaments, while retaining
+the same garment design, scale, background and wearer-relative left/right convention.
+Explicitly labeled legacy outputs receive the same front/back surface directions. On the
+Kimi Work image route, standalone-garment views also pass through a real vision gate before
+the image set is published. The gate inspects the returned pixels together, rejects oblique
+fronts, duplicated or front-like backs, body/mannequin leakage and inconsistent garment designs.
+For rear views it independently checks cuff exteriors, a closed non-cardigan back, a flat
+rear belt, and a planar/horizontal rear layout. Visible cuff openings or wide cuff rims,
+vertical back openings, front-style belt ornaments, and a dominant vertical front-like
+composition fail their respective checks when no explicit rear design was requested. All
+four booleans are mandatory and participate in local verdict validation. The gate binds
+its verdict to the generated image SHA-256 values. It uses the same `KIMI_API_KEY`
+planner route as Mesh vision review. An unavailable, invalid, timed-out or mismatched review
+fails the parent batch without publishing an apparently successful image set; generated child
+receipts and review evidence remain durable, and no regeneration is attempted automatically.
+
 In AI settings, select the installed plugin's `scripts/image_generation_tool.py` and the
 windowless `pythonw.exe` returned by the official `resolve_image_powershell.sh` resolver.
 The two local paths can also provide initial values through `KIMI_WORK_IMAGE_TOOL` and

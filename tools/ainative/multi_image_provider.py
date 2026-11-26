@@ -11,13 +11,17 @@ multi-reference backends receive ordered sources within their input contracts.
 import base64
 import copy
 import hashlib
+import json
+import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 from codex_provider import CodexProvider, _creationflags, validate_png
 from comfy_provider import digest
 from extensions import NodeRegistry, canonical, require, validate_invocation, validate_outputs
+from owned_process import run_owned
 
 VERSION = "4"
 UNIFIED_VERSION = "2"
@@ -53,6 +57,11 @@ MESSAGES = {
     "image_batch_failed": "至少一个图像子任务失败。已完成的子任务回执仍保留，不会自动重新生成。",
     "image_batch_cancelled": "图像批次已取消；各子任务的已有回执仍保留。",
     "image_batch_result_invalid": "图像集合的数量、顺序或成员身份不一致，未发布该结果。",
+    "image_view_review_unavailable": "衣服视角审核需要可用的 KIMI_API_KEY。已保留生成结果，但不会把未审核图片标记为正确正背面。",
+    "image_view_review_failed": "衣服视角审核未返回有效结果。已保留生成与审核证据，请查看具体过程后显式重试；不会自动重新生成。",
+    "image_view_review_timeout": "衣服视角审核超时。已保留生成结果，本次未发布正背面图片，也不会自动重新生成。",
+    "image_view_review_invalid": "衣服视角审核回执不完整或与本次图片不一致，本次未发布正背面图片。",
+    "image_view_mismatch": "生成结果不是所要求的衣服正背面，或两件衣服设计不一致。本次未发布错误视角图片；审核证据已保留。",
 }
 
 
@@ -232,33 +241,60 @@ _VIEW_INSTRUCTIONS = {
 _GARMENT_VIEW_INSTRUCTIONS = {
     "正面": (
         "strict FRONT view of the ISOLATED garment itself; place the camera directly before its designed front and show "
-        "the exterior front surface, with the front neckline and any front opening or fastenings facing the camera. "
-        "Show the garment alone, upright, centered and fully visible, without a person, body, face, mannequin or hanger. "
-        "Use the wearer's left/right convention; do not mirror or swap sides"
+        "the exterior front surface, with the front neckline and any front opening or fastenings facing the camera. Use "
+        "a straight-on, near-orthographic product view with no yaw: the garment's vertical center is centered, left and "
+        "right shoulders and sleeves have matching angles and equal visual weight, and any central front placket is "
+        "vertical in the image center. Do not use a three-quarter, oblique or side view. Show the garment alone, upright, "
+        "centered and fully visible, without a person, body, face, mannequin or hanger. Use the wearer's left/right "
+        "convention; do not mirror or swap sides"
     ),
     "背面": (
-        "strict BACK view of the SAME ISOLATED garment; rotate it exactly 180 degrees around its vertical axis from the "
-        "front view, place the camera directly behind it, and show the exterior back surface and back neckline. Any front "
-        "opening, buttons or chest details must face away and must not be visible. Do not return a mirrored front, an "
-        "inside view or a different garment design. Show the garment alone, without a person, body, face, mannequin or "
+        "strict BACK view of the SAME ISOLATED garment; rotate the garment itself exactly 180 degrees around its vertical "
+        "axis from the front view, as on a turntable, with the camera directly behind it at the same height and distance. "
+        "Render a newly visible rear exterior, clearly showing the back neckline, rear shoulder construction, rear sleeve "
+        "attachments, rear body panels and back hem. The designed front opening, central front placket, front buttons and "
+        "chest-only ornaments are on the far side and must not be visible; do not copy those front motifs onto the back "
+        "unless the user explicitly requested them on both sides. By default, show only plain sleeve exteriors with no "
+        "visible cuff opening, interior lining, turned-back cuff or emphasized wide cuff rim. Make the back a continuous "
+        "closed pullover-style rear panel, not a cardigan or open-front construction: no rear vertical opening, placket, "
+        "zipper, buttons, lacing or parted front panels. Keep the rear waist and belt flat and smooth with the closure "
+        "hidden: no front buckle, knot, clasp or large ornamental centerpiece on the back. Organize the rear design with "
+        "broad flat fabric panels and clear horizontal elements, especially a horizontal shoulder yoke, horizontal waist "
+        "band and horizontal panel seams; horizontal construction must dominate over any long vertical center ornament. "
+        "Do not copy the front's vertical central composition onto the back unless the user explicitly requested that "
+        "rear design. Do not return a duplicated, mirrored or relabeled front, "
+        "an inside view or a different garment design. Show the garment alone, without a person, body, face, mannequin or "
         "hanger. Use the wearer's left/right convention; do not mirror or swap sides between views"
     ),
 }
+_GARMENT_DERIVATION_CONSTRAINT = (
+    "This is an object-turnaround reconstruction, not a flat retouch or a copy of the reference composition. Use the "
+    "attached image only to establish the SAME garment's category, silhouette, proportions, sleeve and hem lengths, "
+    "materials, colors and shared construction. Re-render the requested side as newly visible exterior geometry and "
+    "reconstruct its hidden surface in the same design language; do not preserve details that belong only to the opposite "
+    "side. Keep the same upright pose, scale, centered framing, plain background and lighting. Before returning, verify "
+    "that the visible neckline, shoulder construction and decoration belong to the requested side; if the result repeats "
+    "the opposite-side view under this label, redo the view instead of returning it."
+)
 _STANDALONE_GARMENT_PATTERN = re.compile(
     r"(?:单独|独立|仅|只)(?:生成|绘制|展示|输出|保留|要)?[^，。；;\n]{0,12}"
     r"(?:衣服|服装|衣物|法袍|长袍|上衣|裙子|外套|铠甲|盔甲)"
-    r"|(?:衣服|服装|衣物|法袍|长袍|上衣|裙子|外套|铠甲|盔甲)[^，。；;\n]{0,12}"
-    r"(?:单独|独立|仅|无人|无人体|无模特)"
-    r"|(?:isolated|standalone|only|no\s+(?:person|human|body|model|mannequin))[\s\w-]{0,40}"
+    r"|(?:衣服|服装|衣物|法袍|长袍|上衣|裙子|外套|铠甲|盔甲)[^。；;\n]{0,20}"
+    r"(?:单独|独立|仅|无人|无人体|无模特|不要(?:人|人体|人物|模特))"
+    r"|(?:isolated|standalone|only|no\s+(?:person|human|body|model|mannequin))[\s\w,-]{0,40}"
     r"(?:garment|clothing|robe|shirt|dress|coat|jacket|armor)"
-    r"|(?:garment|clothing|robe|shirt|dress|coat|jacket|armor)[\s\w-]{0,40}"
-    r"(?:isolated|standalone|only|without\s+(?:a\s+)?(?:person|human|body|model|mannequin))",
+    r"|(?:garment|clothing|robe|shirt|dress|coat|jacket|armor)[\s\w,-]{0,40}"
+    r"(?:isolated|standalone|only|no\s+(?:person|human|body|model|mannequin)|without\s+(?:a\s+)?(?:person|human|body|model|mannequin))",
     re.IGNORECASE,
 )
 
 
+def _standalone_garment_view(label, source_text):
+    return label in _GARMENT_VIEW_INSTRUCTIONS and bool(_STANDALONE_GARMENT_PATTERN.search(source_text))
+
+
 def _view_instruction(label, source_text):
-    if label in _GARMENT_VIEW_INSTRUCTIONS and _STANDALONE_GARMENT_PATTERN.search(source_text):
+    if _standalone_garment_view(label, source_text):
         return _GARMENT_VIEW_INSTRUCTIONS[label]
     return _VIEW_INSTRUCTIONS.get(label, label)
 
@@ -451,17 +487,24 @@ def make_reference_board(sources, directory, config):
 class MultiImageProvider(CodexProvider):
     """Batch lifecycle wrapper around an existing provider, sharing no child job key."""
 
-    def __init__(self, inner, storage, board_config=None):
+    def __init__(self, inner, storage, board_config=None, review_config=None):
         self.inner = inner
         self.storage = Path(storage).resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
         self.database = self.storage / "multi-image-jobs.sqlite"
         self.board_config = dict(board_config or {})
         require(set(self.board_config) <= {"board_godot_path", "board_builder_path"}, "reference_board_missing")
+        self.review_config = copy.deepcopy(review_config)
+        if self.review_config is not None:
+            from api_planner import validate_config
+
+            validate_config(self.review_config)
         self.fingerprint = digest([
             inner.describe(),
             self.board_config,
+            self.review_config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("image_view_review.py").read_bytes()).hexdigest(),
         ])
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
@@ -650,6 +693,7 @@ class MultiImageProvider(CodexProvider):
             + [str(context.get("text", "")) for context in source["context"]]
         )
         specification = plan["specifications"][index]
+        garment_view = _standalone_garment_view(specification["label"], source_text)
         if not _automatic_request(source):
             if len(plan["specifications"]) > 1:
                 prompt = str(request["parameters"].get("prompt", ""))
@@ -659,6 +703,8 @@ class MultiImageProvider(CodexProvider):
                     + specification["label"]
                     + ". Do not return a contact sheet, collage or multiple panels."
                 )
+                if garment_view:
+                    request["parameters"]["prompt"] += "\n" + _view_instruction(specification["label"], source_text) + "."
             request["parameters"]["prompt"] = _constrain_t_pose(request["parameters"]["prompt"], source_text)
             return request
         prompt = str(request["parameters"].get("prompt", ""))
@@ -669,12 +715,8 @@ class MultiImageProvider(CodexProvider):
                     + primary_prompt(prompt)
                     + "\nOnly one instance of the subject is allowed. Do not return multiple views, duplicates, a contact sheet, collage or multiple panels."
                 )
-                if specification["label"] in _GARMENT_VIEW_INSTRUCTIONS and _STANDALONE_GARMENT_PATTERN.search(
-                    source_text
-                ):
-                    request["parameters"]["prompt"] += (
-                        "\n" + _view_instruction(specification["label"], source_text) + "."
-                    )
+                if garment_view:
+                    request["parameters"]["prompt"] += "\n" + _view_instruction(specification["label"], source_text) + "."
             request["parameters"]["prompt"] = _constrain_t_pose(request["parameters"]["prompt"], source_text)
             return request
         primary = self._primary_ref(plan)
@@ -686,17 +728,109 @@ class MultiImageProvider(CodexProvider):
             if specification.get("mode") == "detail"
             else "Show the exact same subject from this camera/view direction: "
         )
+        introduction = "The attached primary image is the authoritative depiction of the same generated subject. "
+        consistency = (
+            "Preserve its identity, geometry, materials, colors, style and background. "
+            "Change only the camera/view or framing needed for this derived image; do not design a new subject."
+        )
+        if garment_view:
+            introduction = "The attached primary image identifies the SAME garment, but it is NOT the target view to reproduce. "
+            action = "Render the SAME garment from this exact camera/view direction: "
+            consistency = _GARMENT_DERIVATION_CONSTRAINT
         request["parameters"]["prompt"] = _constrain_t_pose(
-            "The attached primary image is the authoritative depiction of the same generated subject. "
+            introduction
             + action
             + _view_instruction(specification["label"], source_text)
-            + ". Preserve its identity, geometry, materials, colors, style and background. "
-            + "Change only the camera/view or framing needed for this derived image; do not design a new subject. "
-            + "The result must contain exactly one instance of the subject. "
+            + ". "
+            + consistency
+            + " The result must contain exactly one instance of the subject. "
             + "Do not return multiple views, duplicates, a contact sheet, collage or multiple panels.",
             source_text,
         )
         return request
+
+    def _run_view_review(self, key, directory):
+        directory = Path(directory)
+        runtime = directory / "runtime"
+        runtime.mkdir()
+        environment = os.environ.copy()
+        environment["PYTHONUTF8"] = "1"
+        environment["TEMP"] = environment["TMP"] = str(runtime)
+        if os.name != "nt":
+            environment["TMPDIR"] = str(runtime)
+
+        def active():
+            record = self._local(key)
+            return record is not None and "terminal" not in record
+
+        def fail(reason):
+            raise ValueError("image_view_review_timeout" if reason == "timeout" else "image_view_review_failed")
+
+        with (directory / "vision.log").open("xb") as log:
+            return run_owned(
+                [
+                    sys.executable,
+                    "-X",
+                    "utf8",
+                    str(Path(__file__).with_name("api_planner.py")),
+                    str(directory / "planner-config.json"),
+                    str(directory),
+                ],
+                stdout=log,
+                stderr=log,
+                env=environment,
+                limit=1024 * 1024,
+                timeout=135,
+                active=active,
+                fail=fail,
+                cwd=directory,
+            )
+
+    def _review_garment_views(self, key, record):
+        if self.review_config is None:
+            return None
+        source = record["request"]
+        source_text = "\n".join(
+            [str(source["parameters"].get("prompt", ""))]
+            + [str(context.get("text", "")) for context in source["context"]]
+        )
+        entries = []
+        input_images = []
+        for child in record["children"]:
+            specification = record["specifications"][child["index"]]
+            if not _standalone_garment_view(specification["label"], source_text):
+                continue
+            reference = child["receipt"]["outputs"]["result"]
+            manifest = self.inner.result_manifest(child["key"])
+            image = next(
+                (
+                    item
+                    for item in manifest["artifacts"]
+                    if item["id"] == reference["id"] and item["revision"] == reference["revision"]
+                ),
+                None,
+            )
+            require(image is not None and image["type"] == "image", "image_batch_result_invalid")
+            payload = image["payload"]
+            data = base64.b64decode(payload["content_base64"], validate=True)
+            require(hashlib.sha256(data).hexdigest() == payload["content_sha256"], "image_view_review_invalid")
+            entries.append(dict(label=specification["label"], data=data, extension=payload["extension"].lower()))
+            input_images.append(dict(label=specification["label"], sha256=payload["content_sha256"]))
+        if not entries:
+            return None
+        require(bool(os.environ.get(self.review_config["key_env"])), "image_view_review_unavailable")
+        import image_view_review
+
+        directory = self.storage / key / "view-review"
+        raw = image_view_review.prepare_request(self.review_config, source_text, entries, directory)
+        self.write(key, view_review_state="running", view_review_inputs=input_images)
+        code = self._run_view_review(key, directory)
+        if code is None:
+            return None
+        require(code == 0, "image_view_review_failed")
+        document = json.loads((directory / "api-plan.json").read_text(encoding="utf-8"))
+        document = image_view_review.validate_response(document, entries, raw, directory)
+        return dict(document, input_images=input_images)
 
     def _store_receipt(self, key, index, receipt):
         from extensions import validate_job
@@ -786,6 +920,7 @@ class MultiImageProvider(CodexProvider):
                     derivation=record.get("derivation", "independent_labeled_outputs"),
                     ordered_sources=record["sources"],
                     reference_board=record["reference_board"],
+                    garment_view_review=record.get("view_review"),
                 ),
             ),
             dependencies=[item["artifact"] for item in items],
@@ -871,6 +1006,26 @@ class MultiImageProvider(CodexProvider):
         if any(receipt is not None and receipt["state"] == "cancelled" for receipt in receipts):
             self.write(key, terminal=self.snapshot(key, "cancelled"))
         elif all(receipt is not None and receipt["state"] == "succeeded" for receipt in receipts):
+            try:
+                review = self._review_garment_views(key, record)
+            except (ValueError, OSError, KeyError, TypeError) as error:
+                code = str(error) if str(error) in MESSAGES else "image_view_review_failed"
+                self.write(key, view_review_state="failed", terminal=self.snapshot(key, "failed", error=MESSAGES[code]))
+                return self.read(key)["terminal"]
+            record = self.read(key)
+            if "terminal" in record:
+                return record["terminal"]
+            if review is not None:
+                if not review["passed"]:
+                    self.write(
+                        key,
+                        view_review=review,
+                        view_review_state="failed",
+                        terminal=self.snapshot(key, "failed", error=MESSAGES["image_view_mismatch"]),
+                    )
+                    return self.read(key)["terminal"]
+                self.write(key, view_review=review, view_review_state="passed")
+                record = self.read(key)
             self._result(key, record)
         else:
             return self.snapshot(key, "running")

@@ -3,13 +3,15 @@
 import base64
 import copy
 import hashlib
+import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from contracts import validate
-from extensions import NodeRegistry, validate_invocation, validate_outputs
+from extensions import NodeRegistry, canonical, validate_invocation, validate_outputs
 from multi_image_provider import (
     MultiImageProvider,
     automatic_output_specifications,
@@ -547,7 +549,9 @@ class MultiImageTests(unittest.TestCase):
     def test_standalone_garment_has_explicit_front_and_back_surface_constraints(self):
         cases = (
             "单独生成一件白色法袍，只要衣服，不要人体或模特，正面和背面",
+            "生成一件白色法袍，不要人体或模特，正面和背面",
             "Generate a standalone white robe, front view and back view",
+            "Generate a white robe with no person or mannequin, front view and back view",
         )
         for index, text in enumerate(cases):
             with self.subTest(prompt=text):
@@ -574,13 +578,159 @@ class MultiImageTests(unittest.TestCase):
                 self.assertIn("without a person, body, face, mannequin or hanger", front)
                 self.assertIn("wearer's left/right convention", front)
                 self.assertNotIn("nose pointing toward the viewer", front)
+                self.assertIn("identifies the SAME garment, but it is NOT the target view to reproduce", back)
+                self.assertNotIn("authoritative depiction", back)
                 self.assertIn("strict BACK view of the SAME ISOLATED garment", back)
-                self.assertIn("exactly 180 degrees around its vertical axis", back)
-                self.assertIn("exterior back surface and back neckline", back)
-                self.assertIn("must face away and must not be visible", back)
-                self.assertIn("Do not return a mirrored front", back)
+                self.assertIn("rotate the garment itself exactly 180 degrees", back)
+                self.assertIn("newly visible rear exterior", back)
+                self.assertIn("back neckline, rear shoulder construction, rear sleeve attachments", back)
+                self.assertIn("central front placket, front buttons and chest-only ornaments", back)
+                self.assertIn("do not copy those front motifs onto the back", back)
+                self.assertIn("no visible cuff opening, interior lining, turned-back cuff", back)
+                self.assertIn("continuous closed pullover-style rear panel", back)
+                self.assertIn("no rear vertical opening, placket, zipper, buttons", back)
+                self.assertIn("rear waist and belt flat and smooth", back)
+                self.assertIn("no front buckle, knot, clasp or large ornamental centerpiece", back)
+                self.assertIn("broad flat fabric panels and clear horizontal elements", back)
+                self.assertIn("horizontal shoulder yoke, horizontal waist band", back)
+                self.assertIn("duplicated, mirrored or relabeled front", back)
+                self.assertIn("object-turnaround reconstruction, not a flat retouch", back)
+                self.assertIn("reconstruct its hidden surface", back)
+                self.assertIn("if the result repeats the opposite-side view", back)
+                self.assertNotIn("Change only the camera/view", back)
                 self.assertIn("wearer's left/right convention", back)
                 self.assertNotIn("face pointing away from the viewer", back)
+                self.assertIn("straight-on, near-orthographic product view with no yaw", front)
+                self.assertIn("Do not use a three-quarter, oblique or side view", front)
+
+    def reviewed_adapter(self, inner):
+        config = dict(endpoint="https://example.invalid/v1", model="kimi-k2.5", key_env="KIMI_API_KEY")
+        return MultiImageProvider(inner, self.root / "reviewed-state", review_config=config)
+
+    def reviewed_request(self):
+        return dict(
+            node="generate_image",
+            version="2",
+            inputs={},
+            parameters={"prompt": "生成一件白色法袍，不要人体或模特，正面和背面"},
+            context=[],
+        )
+
+    def finish(self, provider, receipt):
+        for _ in range(4):
+            receipt = provider.poll(receipt["job_id"])
+            if receipt["state"] in ("succeeded", "failed", "cancelled"):
+                break
+        return receipt
+
+    def review_document(self, passed):
+        issues = [] if passed else ["front is oblique and back repeats the front"]
+        return dict(
+            passed=passed,
+            same_garment=True,
+            views=[
+                dict(
+                    label=label,
+                    observed_view=("front", "back")[index] if passed else ("three_quarter_front", "front")[index],
+                    matches_label=passed,
+                    garment_only=True,
+                    cuff_exterior_pass=passed,
+                    closed_back_pass=passed,
+                    flat_rear_belt_pass=passed,
+                    horizontal_rear_layout_pass=passed,
+                    evidence="actual generated pixels",
+                    issues=issues,
+                )
+                for index, label in enumerate(("正面", "背面"))
+            ],
+            summary="garment view review",
+            issues=issues,
+            input_images=[dict(label="正面", sha256="a" * 64), dict(label="背面", sha256="b" * 64)],
+        )
+
+    def test_garment_view_review_rejects_wrong_angles_before_publication(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.reviewed_adapter(inner)
+        with patch.object(MultiImageProvider, "_review_garment_views", return_value=self.review_document(False)) as review:
+            receipt = self.finish(provider, provider.submit(self.reviewed_request(), {"schema_version": 1, "artifacts": []}, "b" * 64))
+        self.assertEqual(receipt["state"], "failed")
+        self.assertIn("不是所要求的衣服正背面", receipt["error"])
+        self.assertEqual(review.call_count, 1)
+        self.assertEqual(inner.submissions, 2)
+        self.assertNotIn("result", provider.read("b" * 64))
+        with self.assertRaisesRegex(ValueError, "image_batch_result_invalid"):
+            provider.result_manifest("b" * 64)
+
+    def test_garment_view_review_pass_is_bound_to_result_provenance(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.reviewed_adapter(inner)
+        with patch.object(MultiImageProvider, "_review_garment_views", return_value=self.review_document(True)):
+            receipt = self.finish(provider, provider.submit(self.reviewed_request(), {"schema_version": 1, "artifacts": []}, "c" * 64))
+        self.assertEqual(receipt["state"], "succeeded")
+        result = provider.result_manifest("c" * 64)
+        collection = next(item for item in result["artifacts"] if item["type"] == "image_set")
+        review = collection["payload"]["provenance"]["garment_view_review"]
+        self.assertTrue(review["passed"])
+        self.assertEqual([item["sha256"] for item in review["input_images"]], ["a" * 64, "b" * 64])
+
+    def test_real_review_request_binds_the_actual_generated_image_hashes(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.reviewed_adapter(inner)
+
+        def complete_review(key, directory):
+            directory = Path(directory)
+            raw = (directory / "api-request.json").read_bytes()
+            document = self.review_document(True)
+            document.pop("input_images")
+            (directory / "api-plan.json").write_text(canonical(document), encoding="utf-8")
+            (directory / "api-receipt.json").write_text(
+                canonical(
+                    dict(
+                        request_sha256=hashlib.sha256(raw).hexdigest(),
+                        instructions_sha256=hashlib.sha256(canonical(document).encode("utf-8")).hexdigest(),
+                    )
+                ),
+                encoding="utf-8",
+            )
+            return 0
+
+        with patch.dict(os.environ, {"KIMI_API_KEY": "fixture"}), patch.object(
+            MultiImageProvider, "_run_view_review", side_effect=complete_review
+        ) as runner:
+            receipt = self.finish(
+                provider, provider.submit(self.reviewed_request(), {"schema_version": 1, "artifacts": []}, "e" * 64)
+            )
+        self.assertEqual(receipt["state"], "succeeded")
+        self.assertEqual(runner.call_count, 1)
+        result = provider.result_manifest("e" * 64)
+        collection = next(item for item in result["artifacts"] if item["type"] == "image_set")
+        review = collection["payload"]["provenance"]["garment_view_review"]
+        expected = [item["artifact"]["revision"] for item in collection["payload"]["items"]]
+        self.assertEqual([item["sha256"] for item in review["input_images"]], expected)
+
+    def test_garment_view_review_unavailable_does_not_publish_unreviewed_images(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.reviewed_adapter(inner)
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("KIMI_API_KEY", None)
+            receipt = self.finish(
+                provider, provider.submit(self.reviewed_request(), {"schema_version": 1, "artifacts": []}, "d" * 64)
+            )
+        self.assertEqual(receipt["state"], "failed")
+        self.assertIn("KIMI_API_KEY", receipt["error"])
+        self.assertNotIn("result", provider.read("d" * 64))
+
+    def test_only_kimi_image_adapter_receives_garment_review_config(self):
+        from generation_service import adapt_image_providers
+
+        config = dict(endpoint="https://example.invalid/v1", model="kimi-k2.5", key_env="KIMI_API_KEY")
+        providers = adapt_image_providers(
+            {"kimi_work_image": FakeImageProvider("kimi_work_image"), "kimi_native": FakeImageProvider("kimi_native")},
+            self.root / "routing.sqlite",
+            {"enabled": True, "board_config": {}, "review_config": config},
+        )
+        self.assertEqual(providers["kimi_work_image"].review_config, config)
+        self.assertIsNone(providers["kimi_native"].review_config)
 
     def test_left_and_right_views_have_explicit_opposite_camera_directions(self):
         inner = FakeImageProvider("kimi_work_image")

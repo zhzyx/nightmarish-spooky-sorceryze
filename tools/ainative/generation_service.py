@@ -532,18 +532,22 @@ def register_workflow(registry):
 
 
 def image_batch_settings(config):
+    review = None
     if config.get("mode") == "kimi_native":
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL
+
         builder = config.get("builder_path") or config.get("image_board_builder_path", "")
         board = dict(
             board_godot_path=config.get("godot_path") or config.get("image_board_godot_path", ""),
             board_builder_path=str(Path(builder).with_name("image_contact_sheet.gd")) if builder else "",
         )
+        review = dict(endpoint=DEFAULT_ENDPOINT, model=DEFAULT_MODEL, key_env="KIMI_API_KEY")
     else:
         board = dict(
             board_godot_path=config.get("image_board_godot_path", ""),
             board_builder_path=config.get("image_board_builder_path", ""),
         )
-    return dict(enabled=True, board_config=board)
+    return dict(enabled=True, board_config=board, review_config=review)
 
 
 def adapt_image_providers(providers, database, batch):
@@ -560,6 +564,7 @@ def adapt_image_providers(providers, database, batch):
             providers[name],
             Path(database).resolve().parent / "multi-image-state" / name,
             batch.get("board_config", {}),
+            batch.get("review_config") if name == "kimi_work_image" or base == "kimi_work_image" else None,
         )
     return providers
 
