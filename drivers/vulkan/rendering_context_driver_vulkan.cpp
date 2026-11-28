@@ -31,6 +31,9 @@
 #ifdef VULKAN_ENABLED
 
 #include "rendering_context_driver_vulkan.h"
+#ifdef GODOT_NGX_EXTENSIONS
+#include "UpscalerExtensions.h"
+#endif
 
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
@@ -461,6 +464,15 @@ Error RenderingContextDriverVulkan::_initialize_instance_extensions() {
 	}
 
 	// Load instance extensions that are available.
+	#ifdef GODOT_NGX_EXTENSIONS
+	for (const CharString &strName : GetUpscalerExtensions(VK_NULL_HANDLE, VK_NULL_HANDLE))
+	{
+		if (!requested_instance_extensions.has(strName))
+		{
+			_register_requested_instance_extension(strName, false);
+		}
+	}
+#endif
 	uint32_t instance_extension_count = 0;
 	VkResult err = vkEnumerateInstanceExtensionProperties(nullptr, &instance_extension_count, nullptr);
 	ERR_FAIL_COND_V(err != VK_SUCCESS && err != VK_INCOMPLETE, ERR_CANT_CREATE);

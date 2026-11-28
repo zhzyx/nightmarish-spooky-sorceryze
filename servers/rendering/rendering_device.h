@@ -1800,6 +1800,7 @@ private:
 	struct Frame {
 		// List in usage order, from last to free to first to free.
 		List<Buffer> buffers_to_dispose_of;
+		Vector<Ref<RefCounted>> retained_gpu_objects;
 		List<Texture> textures_to_dispose_of;
 		List<Framebuffer> framebuffers_to_dispose_of;
 		List<RDD::SamplerID> samplers_to_dispose_of;
@@ -1941,6 +1942,8 @@ public:
 
 	void swap_buffers(bool p_present);
 
+	RDD::TextureID GetCallbackTexture(RID ridTexture);
+	void RetainForGpuFrame(const Ref<RefCounted> &refObject);
 	uint32_t get_frame_delay() const;
 
 	void submit();

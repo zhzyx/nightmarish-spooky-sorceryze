@@ -54,6 +54,7 @@
 #define RB_TEX_DEPTH_MSAA SNAME("depth_msaa")
 #define RB_TEX_DEPTH_SUBSAMPLED SNAME("depth_subsampled")
 #define RB_TEX_DEPTH_MSAA_SUBSAMPLED SNAME("depth_msaa_subsampled")
+#define RB_TEX_REACTIVE_MASK SNAME("reactive_mask")
 #define RB_TEX_VELOCITY SNAME("velocity")
 #define RB_TEX_VELOCITY_MSAA SNAME("velocity_msaa")
 

@@ -37,11 +37,14 @@ namespace RendererRD {
 MotionVectorsStore::MotionVectorsStore() {
 	Vector<String> modes;
 	modes.push_back("");
+	modes.push_back("\n#define VENDOR_INPUTS\n");
 
 	motion_shader.initialize(modes);
 	shader_version = motion_shader.version_create();
 
-	pipeline = RD::get_singleton()->compute_pipeline_create(motion_shader.version_get_shader(shader_version, 0));
+	for (int i = 0; i < 2; i++) {
+		pipeline[i] = RD::get_singleton()->compute_pipeline_create(motion_shader.version_get_shader(shader_version, i));
+	}
 }
 
 MotionVectorsStore::~MotionVectorsStore() {
@@ -50,7 +53,7 @@ MotionVectorsStore::~MotionVectorsStore() {
 
 void MotionVectorsStore::process(Ref<RenderSceneBuffersRD> p_render_buffers,
 		const Projection &p_current_projection, const Transform3D &p_current_transform,
-		const Projection &p_previous_projection, const Transform3D &p_previous_transform) {
+		const Projection &p_previous_projection, const Transform3D &p_previous_transform, bool p_only_missing) {
 	MaterialStorage *material_storage = MaterialStorage::get_singleton();
 	ERR_FAIL_NULL(material_storage);
 
@@ -60,7 +63,11 @@ void MotionVectorsStore::process(Ref<RenderSceneBuffersRD> p_render_buffers,
 	uint32_t view_count = p_render_buffers->get_view_count();
 	Size2i internal_size = p_render_buffers->get_internal_size();
 
-	PushConstant push_constant;
+	PushConstant push_constant = {};
+	if (p_only_missing) {
+		p_render_buffers->create_texture(RB_SCOPE_BUFFERS, RB_TEX_REACTIVE_MASK, RD::DATA_FORMAT_R8_UNORM,
+				RD::TEXTURE_USAGE_STORAGE_BIT | RD::TEXTURE_USAGE_SAMPLING_BIT);
+	}
 	{
 		push_constant.resolution[0] = internal_size.width;
 		push_constant.resolution[1] = internal_size.height;
@@ -75,11 +82,11 @@ void MotionVectorsStore::process(Ref<RenderSceneBuffersRD> p_render_buffers,
 
 	RD::get_singleton()->draw_command_begin_label("Motion Vector Store");
 
-	RID shader = motion_shader.version_get_shader(shader_version, 0);
+	RID shader = motion_shader.version_get_shader(shader_version, p_only_missing);
 	ERR_FAIL_COND(shader.is_null());
 
 	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
-	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, pipeline);
+	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, pipeline[p_only_missing]);
 
 	for (uint32_t v = 0; v < view_count; v++) {
 		RID velocity = p_render_buffers->get_velocity_buffer(false, v);
@@ -87,7 +94,14 @@ void MotionVectorsStore::process(Ref<RenderSceneBuffersRD> p_render_buffers,
 		RD::Uniform u_depth(RD::UNIFORM_TYPE_SAMPLER_WITH_TEXTURE, 0, Vector<RID>({ default_sampler, depth }));
 		RD::Uniform u_velocity(RD::UNIFORM_TYPE_IMAGE, 1, velocity);
 
-		RID uniform_set = uniform_set_cache->get_cache(shader, 0, u_depth, u_velocity);
+		RID uniform_set;
+		if (p_only_missing) {
+			RD::Uniform u_color(RD::UNIFORM_TYPE_SAMPLER_WITH_TEXTURE, 2, Vector<RID>({ default_sampler, p_render_buffers->get_internal_texture(v) }));
+			RD::Uniform u_mask(RD::UNIFORM_TYPE_IMAGE, 3, p_render_buffers->get_texture_slice(RB_SCOPE_BUFFERS, RB_TEX_REACTIVE_MASK, v, 0));
+			uniform_set = uniform_set_cache->get_cache(shader, 0, u_depth, u_velocity, u_color, u_mask);
+		} else {
+			uniform_set = uniform_set_cache->get_cache(shader, 0, u_depth, u_velocity);
+		}
 		RD::get_singleton()->compute_list_bind_uniform_set(compute_list, uniform_set, 0);
 		RD::get_singleton()->compute_list_set_push_constant(compute_list, &push_constant, sizeof(PushConstant));
 		RD::get_singleton()->compute_list_dispatch_threads(compute_list, internal_size.width, internal_size.height, 1);

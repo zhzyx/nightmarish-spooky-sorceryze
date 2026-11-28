@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "github-issue-2242-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-forward-plus-upscaling-20261128",
+  "kind": "request",
+  "occurred_at": "2026-11-28T13:43:12Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2242",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-reported-by-host",
+    "definition_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+    "origin": "yanshi-drafted-github-issue-readback"
+  },
+  "payload": {
+    "issue_number": 2242,
+    "title": "在 Windows Forward+ 集成 DLSS SR 与 AMD FSR",
+    "updated_at": "2026-11-28T13:43:12Z",
+    "issue_body_sha256": "06375c891c8a09d33fd8685ef83f29ada83aeb0906bee070d58335009a90e8c6",
+    "issue_author": "1401213887",
+    "scope": "User-authorized delivery from Codex, with work order drafted by Yanshi"
+  },
+  "evidence_refs": [],
+  "sha256": "4c4b1cf7d0d42e0089614349a7fc6f10f40c7e41ce74bc4d42cb7a957e17f3d7"
+}

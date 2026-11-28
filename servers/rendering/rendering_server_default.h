@@ -767,6 +767,8 @@ public:
 	FUNC2(viewport_set_update_mode, RID, RSE::ViewportUpdateMode)
 	FUNC1RC(RSE::ViewportUpdateMode, viewport_get_update_mode, RID)
 
+	FUNC1RC(Dictionary, GetUpscalingInfo, RID)
+	FUNC1(ResetUpscalingHistory, RID)
 	FUNC1RC(RID, viewport_get_render_target, RID)
 	FUNC1RC(RID, viewport_get_texture, RID)
 

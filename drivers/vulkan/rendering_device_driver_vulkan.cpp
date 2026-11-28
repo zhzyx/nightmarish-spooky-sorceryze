@@ -29,6 +29,9 @@
 /**************************************************************************/
 
 #include "rendering_device_driver_vulkan.h"
+#ifdef GODOT_NGX_EXTENSIONS
+#include "UpscalerExtensions.h"
+#endif
 
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
@@ -628,6 +631,15 @@ Error RenderingDeviceDriverVulkan::_initialize_device_extensions() {
 
 	_register_requested_device_extension(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME, false);
 
+	#ifdef GODOT_NGX_EXTENSIONS
+	for (const CharString &strName : GetUpscalerExtensions(context_driver->instance_get(), physical_device))
+	{
+		if (!requested_device_extensions.has(strName))
+		{
+			_register_requested_device_extension(strName, false);
+		}
+	}
+#endif
 	uint32_t device_extension_count = 0;
 	VkResult err = vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &device_extension_count, nullptr);
 	ERR_FAIL_COND_V_MSG(err != VK_SUCCESS, ERR_CANT_CREATE, vformat("Couldn't get Vulkan device extension count (VkResult error %d).", err));

@@ -1,0 +1,108 @@
+{
+  "nvidia": {
+    "repository": "NVIDIA/DLSS",
+    "tag": "v310.9.16",
+    "commit": "9981c6350dc58c0ce21f024fd65e31e851c31689",
+    "files": {
+      "LICENSE.txt": {
+        "size": 26620,
+        "blob": "80756566d773cdac55179c5ae16c4495df7f73b5"
+      },
+      "include/nvsdk_ngx.h": {
+        "size": 40289,
+        "blob": "ae6b49174049eed69cc377b2fffd3c901651f764"
+      },
+      "include/nvsdk_ngx_defs.h": {
+        "size": 44313,
+        "blob": "807fa2475e90214f6846b9b4840be92e7bd66b5b"
+      },
+      "include/nvsdk_ngx_defs_vk.h": {
+        "size": 3196,
+        "blob": "f02503e1ce90e5320053ca10883883ae71100136"
+      },
+      "include/nvsdk_ngx_helpers.h": {
+        "size": 5317,
+        "blob": "e6a0f2581e1586240821afa7523a65a75654e847"
+      },
+      "include/nvsdk_ngx_helpers_cuda.h": {
+        "size": 3593,
+        "blob": "251ba9d5fcf0800bbc3fbb5e8870c61739c6d98a"
+      },
+      "include/nvsdk_ngx_helpers_d3d.h": {
+        "size": 31976,
+        "blob": "664f99d95d3f8375304dc558ec601a66635ade7b"
+      },
+      "include/nvsdk_ngx_helpers_vk.h": {
+        "size": 19720,
+        "blob": "664ac5302ea62cb57cd03a3779cbe2fc0a418397"
+      },
+      "include/nvsdk_ngx_params.h": {
+        "size": 7744,
+        "blob": "014d9f4adec600ea3677947b7f98258da9f9c7fc"
+      },
+      "include/nvsdk_ngx_vk.h": {
+        "size": 38382,
+        "blob": "70d895409132b68eff0d6027fb1ea2552d8c749b"
+      },
+      "lib/Windows_x86_64/rel/nvngx_dlss.dll": {
+        "size": 58956912,
+        "blob": "23c4672e4a31ef303e8f98ff4f0d146bd1718ccf"
+      },
+      "lib/Windows_x86_64/x64/nvsdk_ngx_s.lib": {
+        "size": 3782490,
+        "blob": "dc416cf7c8c863dd2b3f0edc5f701fcd85c3f4f9"
+      }
+    }
+  },
+  "amd": {
+    "repository": "GPUOpen-LibrariesAndSDKs/FidelityFX-SDK",
+    "tag": "v2.4.0",
+    "commit": "7539ae8b6568ad29ed78a753404351daf3b5cca7",
+    "files": {
+      "Kits/FidelityFX/api/include/dx12/ffx_api_dx12.h": {
+        "size": 11323,
+        "blob": "1b711807c597630f4a8d2dfa2572a845c069829a"
+      },
+      "Kits/FidelityFX/api/include/ffx_api.h": {
+        "size": 10848,
+        "blob": "d351c168edad86d0f7851bfd8ff5eb77be3667f0"
+      },
+      "Kits/FidelityFX/api/include/ffx_api_loader.h": {
+        "size": 2977,
+        "blob": "ac05ec4bbd5d338643825d81c0ffccd5fbbd1c3e"
+      },
+      "Kits/FidelityFX/api/include/ffx_api_types.h": {
+        "size": 13637,
+        "blob": "380c4c0a1bcc7eb9bb4097f1046de886f9f4c587"
+      },
+      "Kits/FidelityFX/api/include/vk/ffx_api_vk.h": {
+        "size": 12253,
+        "blob": "1bbe1d9e4c6ce1d5253399ced757a9104ea4ac9b"
+      },
+      "Kits/FidelityFX/docs/license.md": {
+        "size": 65770,
+        "blob": "aef7adddbcf121c1f7f1248fe97de0f7f7a3d719"
+      },
+      "Kits/FidelityFX/signedbin/amd_fidelityfx_loader_dx12.dll": {
+        "size": 39184,
+        "blob": "f1afee09dd3bcded005c722b1e94befb3ee3f9e6"
+      },
+      "Kits/FidelityFX/signedbin/amd_fidelityfx_loader_vk.dll": {
+        "size": 39184,
+        "blob": "fb9877780927cd41ee0a25d5cd9314da118ddd27"
+      },
+      "Kits/FidelityFX/signedbin/amd_fidelityfx_upscaler_dx12.dll": {
+        "size": 57664272,
+        "blob": "6d01d9f52c412fc336350f04e948eb1bee196a38"
+      },
+      "Kits/FidelityFX/signedbin/amd_fidelityfx_upscaler_vk.dll": {
+        "size": 36135696,
+        "blob": "9e2fade37c51fc2fd6323218bf3d736969e9dd2a"
+      },
+      "Kits/FidelityFX/upscalers/include/ffx_upscale.h": {
+        "size": 19576,
+        "blob": "9d4a3e5f6c60cf601c42bfb9953c6e1a1a481891"
+      }
+    }
+  }
+}

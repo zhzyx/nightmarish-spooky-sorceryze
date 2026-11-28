@@ -72,7 +72,23 @@ env.servers_sources += thirdparty_obj
 
 module_obj = []
 
-env_effects.add_source_files(module_obj, "*.cpp")
+import os
+
+env_native = env_effects.Clone()
+sdk = Dir("#.cache/temporal-sdk").abspath
+ngx_lib = os.path.join(sdk, "nvidia/lib/Windows_x86_64/x64/nvsdk_ngx_s.lib")
+if env["platform"] == "windows" and env["arch"] == "x86_64" and env["vulkan"] and not env["use_mingw"]:
+    if os.path.isfile(ngx_lib) and os.path.isfile(os.path.join(sdk, "amd/Kits/FidelityFX/upscalers/include/ffx_upscale.h")):
+        env_native.Append(CPPDEFINES=["TEMPORAL_SDK_VULKAN", "_WINDOWS", "VK_USE_PLATFORM_WIN32_KHR"])
+        env_native.Prepend(CPPPATH=["#thirdparty/vulkan", "#thirdparty/vulkan/include"])
+        if env["use_volk"]:
+            env_native.Append(CPPDEFINES=["USE_VOLK"])
+            env_native.Prepend(CPPPATH=["#thirdparty/volk"])
+        env_native.Prepend(CPPPATH=[os.path.join(sdk, path) for path in (
+            "nvidia/include", "amd/Kits/FidelityFX/api/include", "amd/Kits/FidelityFX/upscalers/include")])
+        env.Append(LIBS=[File(ngx_lib)])
+env_native.add_source_files(module_obj, "TemporalUpscaler.cpp")
+env_effects.add_source_files(module_obj, [f for f in Glob("*.cpp") if f.name != "TemporalUpscaler.cpp"])
 env.servers_sources += module_obj
 
 # Needed to force rebuilding the module files when the thirdparty library is updated.

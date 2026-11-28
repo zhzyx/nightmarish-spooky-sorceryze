@@ -8147,7 +8147,23 @@ void RenderingDevice::sync() {
 	local_device_processing = false;
 }
 
+RDD::TextureID RenderingDevice::GetCallbackTexture(RID ridTexture)
+{
+	ERR_RENDER_THREAD_GUARD_V(RDD::TextureID());
+	const Texture *pTexture = texture_owner.get_or_null(ridTexture);
+	ERR_FAIL_NULL_V(pTexture, RDD::TextureID());
+	return pTexture->driver_id;
+}
+
+void RenderingDevice::RetainForGpuFrame(const Ref<RefCounted> &refObject)
+{
+	ERR_RENDER_THREAD_GUARD();
+	frames[frame].retained_gpu_objects.push_back(refObject);
+	frames_pending_resources_for_processing = uint32_t(frames.size());
+}
+
 void RenderingDevice::_free_pending_resources(int p_frame) {
+	frames[p_frame].retained_gpu_objects.clear();
 	// Free in dependency usage order, so nothing weird happens.
 	// Pipelines.
 	while (frames[p_frame].render_pipelines_to_dispose_of.front()) {
