@@ -259,6 +259,34 @@ void RenderingServerDefault::_init() {
 	sr->set_scene_render(RSG::rasterizer->get_scene());
 }
 
+RID RenderingServerDefault::RuntimeVirtualTextureCreate()
+{
+	RID ridTexture = RSG::scene->RuntimeVirtualTextureAllocate();
+	if (Thread::get_caller_id() != server_thread)
+	{
+		command_queue.push(RSG::scene, &RenderingMethod::RuntimeVirtualTextureInitialize, ridTexture);
+	}
+	else
+	{
+		RSG::scene->RuntimeVirtualTextureInitialize(ridTexture);
+	}
+	return ridTexture;
+}
+
+RID RenderingServerDefault::GpuDrivenTerrainCreate()
+{
+	RID ridTerrain = RSG::scene->GpuDrivenTerrainAllocate();
+	if (Thread::get_caller_id() != server_thread)
+	{
+		command_queue.push(RSG::scene, &RenderingMethod::GpuDrivenTerrainInitialize, ridTerrain);
+	}
+	else
+	{
+		RSG::scene->GpuDrivenTerrainInitialize(ridTerrain);
+	}
+	return ridTerrain;
+}
+
 void RenderingServerDefault::_finish() {
 	if (test_cube.is_valid()) {
 		free_rid(test_cube);
@@ -270,6 +298,8 @@ void RenderingServerDefault::_finish() {
 	memdelete(RSG::viewport);
 	memdelete(RSG::rasterizer);
 	memdelete(RSG::scene);
+	// RD can drain outstanding asynchronous downloads after the scene renderer is gone.
+	RSG::scene = nullptr;
 	memdelete(RSG::camera_attributes);
 }
 

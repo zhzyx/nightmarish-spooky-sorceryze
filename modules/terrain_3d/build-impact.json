@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "Terrain3D registers native Godot classes and shares the height, region, collision and render resource paths with both the editor and the export templates.",
+  "host_contract": "The terrain_3d SCons module registers the native types, packages the editor integration only for tools builds, and exposes the Terrain3D resource classes used by saved scenes and streamed regions.",
+  "rollback": "Revert the native module and related registration changes and rebuild the editor plus the matching export templates. Open migrated projects with the saved source project and matching editor version.",
+  "evidence": "data-collection/terrain3d-native-vt-20261127-build-impact.json"
+}

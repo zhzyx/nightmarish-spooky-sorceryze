@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/hash_map.h"
 #include "core/variant/typed_array.h"
 #include "core/variant/variant.h"
 #include "servers/rendering/rendering_server_enums.h"
@@ -69,6 +70,92 @@ public:
 	virtual RID occluder_allocate() = 0;
 	virtual void occluder_initialize(RID p_occluder) = 0;
 	virtual void occluder_set_mesh(RID p_occluder, const PackedVector3Array &p_vertices, const PackedInt32Array &p_indices) = 0;
+
+#pragma region Engine ZXB
+	virtual RID RuntimeVirtualTextureAllocate() = 0;
+	virtual void RuntimeVirtualTextureInitialize(RID ridRvt) = 0;
+	virtual void RuntimeVirtualTextureConfigure(RID ridRvt, RSE::RuntimeVirtualTextureMaterialType stType, int nLog2TileCount, int nTileSize, int nTileBorder, int nPoolTiles) = 0;
+	virtual void RuntimeVirtualTextureSetScenario(RID ridRvt, RID ridScenario) = 0;
+	virtual void RuntimeVirtualTextureSetTransform(RID ridRvt, const Transform3D &xformTransform) = 0;
+	virtual void RuntimeVirtualTextureSetCullMask(RID ridRvt, uint32_t nMask) = 0;
+	virtual void RuntimeVirtualTextureSetHeightSource(RID ridRvt, RID ridHeightArray, const PackedInt32Array &arrRegionMap, int nRegionSize, const Vector2i &vOrigin, int nExtent) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialHeightSource(RID ridRvt, RID ridHeight) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialStream(RID ridRvt, const String &strPath, int64_t nSignature) = 0;
+	virtual Error RuntimeVirtualTextureBakeMaterialStream(RID ridRvt, const String &strPath, int nCoarseLevels, int64_t nSignature) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialFeedbackLimits(RID ridRvt, const Vector4 &vLimits) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialWriter(RID ridRvt, RID ridInstance, int nMaxAnisotropy) = 0;
+	virtual void RuntimeVirtualTextureSubmitGpuFeedback(RID ridRvt, RID ridView, const Vector<uint32_t> &arrIds, uint64_t nRevision = 0) = 0;
+	virtual void RuntimeVirtualTextureSetHeightStream(RID ridRvt, const String &strPath, int nLevels) = 0;
+	virtual void RuntimeVirtualTextureSetHeightRegion(RID ridRvt, const Vector2i &vLocation, const Ref<Image> &refHeight) = 0;
+	virtual void RuntimeVirtualTextureSetHeightLod(RID ridRvt, float fLod0Distance, float fVertexSpacing, int nMaxLod, float fMaxDistance) = 0;
+	virtual void RuntimeVirtualTextureSetLodBias(RID ridRvt, float fBias) = 0;
+	virtual void RuntimeVirtualTextureSetMaxPagesPerFrame(RID ridRvt, int nPages) = 0;
+	virtual void RuntimeVirtualTextureSetEnabled(RID ridRvt, bool in_bEnabled) = 0;
+	virtual void RuntimeVirtualTextureSetSource(RID ridRvt, RSE::RuntimeVirtualTextureSource eSource) = 0;
+
+	virtual void RuntimeVirtualTextureSetPageFile(RID ridRvt, const String &strPath) = 0;
+	virtual void RuntimeVirtualTextureSetDebug(RID ridRvt, RSE::RuntimeVirtualTextureDebugMode eMode, int nForceLod) = 0;
+	virtual Dictionary RuntimeVirtualTextureGetPageInfo(RID ridRvt, int nLevel, int nX, int nY) const = 0;
+	virtual void RuntimeVirtualTextureLockPage(RID ridRvt, int nLevel, int nX, int nY, float fSeconds) = 0;
+	virtual void RuntimeVirtualTextureUnlockPage(RID ridRvt, int nLevel, int nX, int nY) = 0;
+	virtual void RuntimeVirtualTextureUnlockAllPages(RID ridRvt) = 0;
+	virtual void RuntimeVirtualTextureInvalidate(RID ridRvt, const AABB &aabbWorldAabb) = 0;
+	virtual void RuntimeVirtualTextureInvalidateAll(RID ridRvt) = 0;
+	virtual RID RuntimeVirtualTextureGetPageTableTexture(RID ridRvt) const = 0;
+	virtual RID RuntimeVirtualTextureGetPhysicalTexture(RID ridRvt, int nLayer) const = 0;
+	virtual Dictionary RuntimeVirtualTextureGetStats(RID ridRvt) const = 0;
+#pragma endregion
+
+#pragma region Engine ZXB
+	// [ZXB] GPU-driven terrain: quadtree tiles selected by a compute pass, drawn with indirect draws.
+	// The vertex/index arrays, material and indirect buffers are created and filled by the extension
+	// through RenderingServer (gpu_driven_terrain_*). RendererSceneCull owns the entries and the
+	// RD renderer issues draw_list_draw_indirect during the opaque/shadow passes.
+	struct GPUTerrain
+	{
+		bool bEnabled = true;
+		bool bCastShadows = true;
+		uint32_t nRenderLayers = 1;
+		RID ridMaterial;
+		RID ridVertexArray;
+		RID ridIndexArray;
+		uint32_t nIndexCount = 0;
+		int64_t nVertexFormatId = -1;
+		RID ridIndirectColor;
+		uint32_t nIndirectColorOffset = 0;
+		RID ridIndirectShadow;
+		uint32_t nIndirectShadowOffset = 0;
+		// GPU cull pass (terrain_cull.glsl): RD resources arrive as raw ids through the RS call ABI.
+		RID ridHeightVt;
+		RID ridHeightBounds;
+		Rect2 rectHeightDomain;
+		Vector2 vBackgroundHeights;
+		float fHeightMargin = 0.0f;
+		int nHeightLog2Pages = 0;
+		int nHeightTileSize = 0;
+		uint64_t nCullSrcNodesRd = 0;
+		uint64_t nCullCompactNodesRd = 0;
+		uint64_t nCullCounterRd = 0;
+		uint64_t nCullArgsRd = 0;
+		uint64_t nCullShadowArgsRd = 0;
+		uint32_t nCullNodeCount = 0;
+		float fCullSrcTexWidth = 1.0f;
+		float fCullCompactTexWidth = 1.0f;
+		float fCullLod0Dist = 24.0f;
+		float fCullMaxDistance = 6000.0f;
+		float fCullVertexSpacing = 1.0f;
+		int32_t nCullMaxLod = 8;
+	};
+
+	virtual RID GpuDrivenTerrainAllocate() = 0;
+	virtual void GpuDrivenTerrainInitialize(RID ridTerrain) = 0;
+	virtual void GpuDrivenTerrainConfigure(RID ridTerrain, RID in_ridMaterial, RID in_ridVertexArray, RID in_ridIndexArray, uint32_t in_nIndexCount, int64_t in_nVertexFormatId, uint32_t in_nRenderLayers, bool in_bCastShadows) = 0;
+	virtual void GpuDrivenTerrainSetIndirect(RID ridTerrain, RID in_ridIndirectColor, uint32_t nColorOffset, RID in_ridIndirectShadow, uint32_t nShadowOffset) = 0;
+	virtual void GpuDrivenTerrainSetCull(RID ridTerrain, int64_t nSrcNodesRd, int64_t nCompactNodesRd, int64_t nCounterRd, int64_t nArgsRd, int64_t nShadowArgsRd, uint32_t nNodeCount, float fSrcTexWidth, float fCompactTexWidth, float fLod0Dist, int32_t nMaxLod, float fMaxDistance, float fVertexSpacing) = 0;
+	virtual void GpuDrivenTerrainSetHeightfield(RID ridTerrain, RID in_ridHeightVt, RID ridBoundsTexture, const Rect2 &rectDomain, const Vector2 &in_vBackgroundHeights, float in_fHeightMargin, int nLog2Tiles, int nTileSize) = 0;
+	virtual void GpuDrivenTerrainSetEnabled(RID ridTerrain, bool in_bEnabled) = 0;
+	virtual const HashMap<RID, GPUTerrain> *GpuDrivenTerrainGetMap() const = 0;
+#pragma endregion
 
 	virtual RID scenario_allocate() = 0;
 	virtual void scenario_initialize(RID p_rid) = 0;

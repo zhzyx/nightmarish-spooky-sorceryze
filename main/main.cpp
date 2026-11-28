@@ -30,6 +30,7 @@
 
 #include "main.h"
 
+#include "core/config/CVars.h"
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/core_globals.h"
@@ -273,6 +274,7 @@ static bool debug_canvas_item_redraw = false;
 static bool debug_mute_audio = false;
 #endif
 static int max_fps = -1;
+static bool bTimeScaleCmdline = false;
 static int frame_delay = 0;
 static int audio_output_latency = 0;
 static bool disable_render_loop = false;
@@ -623,6 +625,10 @@ void Main::print_help(const char *p_binary) {
 	print_help_option("--debug-canvas-item-redraw", "Display a rectangle each time a canvas item requests a redraw (useful to troubleshoot low processor mode).\n", CLI_OPTION_AVAILABILITY_TEMPLATE_DEBUG);
 
 #endif
+	print_help_title("Console variables");
+	print_help_option("--cvar <name>=<value>", "Set a console variable before startup. Repeatable. The value is kept if the variable is registered later.\n");
+	print_help_option("--cvar-exec <commands>", "Run console commands before startup, separated by ';'. Example: \"t.TimeScale 0.2;t.MaxFPS 30\".\n");
+	print_help_option("--cvar-file <path>", "Load a console-variable file at startup and re-read it while running (con.ConfigPollMs).\n");
 	print_help_option("--max-fps <fps>", "Set a maximum number of frames per second rendered (can be used to limit power usage). A value of 0 results in unlimited framerate.\n");
 	print_help_option("--frame-delay <ms>", "Simulate high CPU load (delay each frame by <ms> milliseconds). Do not use as a FPS limiter; use --max-fps instead.\n");
 	print_help_option("--time-scale <scale>", "Force time scale (higher values are faster, 1.0 is normal speed).\n");
@@ -1820,11 +1826,32 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		} else if (arg == "--time-scale") { // force time scale
 
 			if (N) {
+				bTimeScaleCmdline = true;
 				Engine::get_singleton()->set_time_scale(N->get().to_float());
 				N = N->next();
 			} else {
 				OS::get_singleton()->print("Missing time scale argument, aborting.\n");
 				goto error;
+			}
+		}
+		else if (CVars::RecognizesArg(arg))
+		{
+			if (!CVars::GetSingleton())
+			{
+				OS::get_singleton()->print("Console variables are unavailable, aborting.\n");
+				goto error;
+			}
+			const bool bHasNext = N != nullptr;
+			const String strNext = bHasNext ? N->get() : String();
+			const CVars::ArgResult stParsed = CVars::GetSingleton()->ParseEngineArg(arg, strNext, bHasNext);
+			if (stParsed.bError)
+			{
+				OS::get_singleton()->print("%s\n", stParsed.strMessage.utf8().get_data());
+				goto error;
+			}
+			if (stParsed.bConsumedNext)
+			{
+				N = N->next();
 			}
 		} else if (arg == "--main-pack") {
 // Note: main-pack is always used on web and can't be disabled.
@@ -3962,6 +3989,16 @@ Error Main::setup2(bool p_show_boot_logo) {
 	print_verbose("EDITOR API HASH: " + uitos(ClassDB::get_api_hash(ClassDB::API_EDITOR)));
 	MAIN_PRINT("Main: Done");
 
+	if (CVars::GetSingleton())
+	{
+		CVars::GetSingleton()->SyncEngineBuiltins(bTimeScaleCmdline, max_fps >= 0);
+		const String strCvarOutput = CVars::GetSingleton()->ApplyStartup();
+		if (!strCvarOutput.is_empty())
+		{
+			print_line(strCvarOutput);
+		}
+	}
+
 	OS::get_singleton()->benchmark_end_measure("Startup", "Main::Setup2");
 
 	return OK;
@@ -4974,6 +5011,15 @@ bool Main::iteration() {
 	GodotProfileZone("Main::iteration");
 	GodotProfileZoneGroupedFirst(_profile_zone, "prepare");
 	iterating++;
+
+	if (CVars::GetSingleton())
+	{
+		const String strCvarOutput = CVars::GetSingleton()->PollConfigFile();
+		if (!strCvarOutput.is_empty())
+		{
+			print_line(strCvarOutput);
+		}
+	}
 
 	const uint64_t ticks = OS::get_singleton()->get_ticks_usec();
 	Engine::get_singleton()->_frame_ticks = ticks;

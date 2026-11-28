@@ -45,6 +45,12 @@ Copyright: 2014-present, Godot Engine contributors
  2007-2014, Juan Linietsky, Ariel Manzur
 License: Expat
 
+Files: modules/terrain_3d/*
+Comment: Terrain3D
+ https://github.com/TokisanGames/Terrain3D
+Copyright: 2023-2026, Cory Petkovsek, Roope Palmroos, and Contributors
+License: Expat
+
 Files: tools/ainative/anatomy_base.py
  tools/ainative/anatomy_body.py
  tools/ainative/anatomy_calibration.py

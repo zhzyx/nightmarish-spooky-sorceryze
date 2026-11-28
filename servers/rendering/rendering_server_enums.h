@@ -359,6 +359,38 @@ enum VoxelGIQuality {
 	VOXEL_GI_QUALITY_HIGH,
 };
 
+#pragma region Engine ZXB
+// [ZXB] Runtime Virtual Texture enums.
+// [ZXB] Pages either rendered from the scene or streamed from a baked .svt file.
+// [ZXB] Debug visualizations, mirroring UE's r.VT.RVT.DebugView / MipColors tooling.
+enum RuntimeVirtualTextureDebugMode
+{
+	RVT_DEBUG_OFF,
+	RVT_DEBUG_PAGE_TABLE,	  // Page table entry as a color: page x/y in RG, residency in B, invalid = magenta.
+	RVT_DEBUG_PAGE_TABLE_MIP, // Resident level as a color ramp, invalid = magenta.
+	RVT_DEBUG_PHYSICAL_POOL,  // Pool tile coordinates + the per tile border band.
+	RVT_DEBUG_LOD,			  // Heatmap of the sampled LOD.
+	RVT_DEBUG_BORDERS,		  // Page grid (red) and tile borders (green).
+	RVT_DEBUG_MAX,
+};
+
+enum RuntimeVirtualTextureSource
+{
+	RVT_SOURCE_RENDER,
+	RVT_SOURCE_STREAM,
+	RVT_SOURCE_HEIGHT_GRID, // GPU pages produced from a sparse Terrain3D vertex height grid.
+};
+
+enum RuntimeVirtualTextureMaterialType
+{
+	RVT_MATERIAL_BASE_COLOR,				  // Layer 0: albedo (sRGB) + alpha.
+	RVT_MATERIAL_BASE_COLOR_NORMAL_ROUGHNESS, // Layer 0: albedo + alpha. Layer 1: normal xz, roughness, metallic.
+	RVT_MATERIAL_WORLD_HEIGHT,				  // Layer 0: normalized height (R32F).
+	RVT_MATERIAL_TERRAIN_PBR,
+	RVT_MATERIAL_MAX,
+};
+#pragma endregion
+
 /* LIGHTMAP API */
 
 enum ShadowmaskMode {

@@ -32,7 +32,10 @@
 
 #include "core/math/dynamic_bvh.h"
 #include "core/math/transform_interpolator.h"
+#include "core/os/mutex.h"
 #include "core/templates/bin_sorted_array.h"
+#include "core/templates/hash_map.h"
+#include "core/templates/hash_set.h"
 #include "core/templates/local_vector.h"
 #include "core/templates/paged_allocator.h"
 #include "core/templates/paged_array.h"
@@ -45,6 +48,11 @@
 #include "servers/rendering/rendering_method.h"
 #include "servers/rendering/rendering_server_globals.h"
 #include "servers/rendering/rendering_server_types.h"
+#pragma region Engine ZXB
+#include "servers/rendering/RuntimeVirtualTexturePageManager.h"
+#include "servers/rendering/StreamingVirtualTextureFile.h"
+#include "servers/rendering/StreamingVirtualTextureLoader.h"
+#pragma endregion
 #include "servers/rendering/storage/utilities.h"
 
 class RenderingLightCuller;
@@ -1168,6 +1176,175 @@ public:
 
 	void render_particle_colliders();
 	virtual void render_probes();
+
+#pragma region Engine ZXB
+	/* RUNTIME VIRTUAL TEXTURE */
+
+	struct RuntimeVirtualTextureData
+	{
+		RID ridSelf;
+		RVTPageManager::HeightLOD stHeightLod;
+		RID ridScenario;
+		bool bEnabled = true;
+		bool bConfigDirty = true;
+		RSE::RuntimeVirtualTextureMaterialType eMaterialType = RSE::RVT_MATERIAL_BASE_COLOR;
+		uint32_t nLog2TileCount = 6;
+		uint32_t nTileSize = 128;
+		uint32_t nTileBorder = 4;
+		uint32_t nPoolTiles = 16;
+		uint32_t nCullMask = 0xFFFFFFFF;
+		float fLodBias = 0.0f;
+		int nMaxPagesPerFrame = 4;
+		Transform3D xformWorld; // Maps a unit cube centered at the origin to world space.
+
+		RVTPageManager stPages;
+		RID ridGpu;
+		RID ridPageTableTexture;
+		RID arrPhysicalTexture[2];
+
+		LocalVector<AABB> arrPendingInvalidations; // World space.
+		bool bInvalidateAll = false;
+		// Streaming source. Pages are read from a baked .svt file instead of rendered.
+		RSE::RuntimeVirtualTextureSource eSource = RSE::RVT_SOURCE_RENDER;
+		String strPageFile;
+		uint32_t nStreamFormat = 0;
+		bool bStreamSrgb = true;
+		int nStreamLevels = 0;
+		HashSet<uint32_t> setModifiedStreamPages;
+		uint64_t nDiskPages = 0;
+		uint64_t nProducedPages = 0;
+		TerrainHeightPageSource stSparseGrid;
+		HashSet<uint32_t> setObsoleteWork;
+		RendererSceneRender::HeightGrid stHeightGrid;
+		int nMaterialAnisotropy = 1;
+		Vector4 vMaterialFeedbackLimits;
+		RID ridMaterialHeightSource;
+		uint64_t nMaterialSignature = 0;
+		bool bMaterialStreamStale = false;
+		HashSet<uint32_t> setDiskResidents;
+		uint64_t nHeightDependencyInvalidations = 0;
+		uint64_t nMaterialRenderedPages = 0;
+		RID ridMaterialWriter;
+		bool IsMovingMaterialDetail() const
+		{
+			return eMaterialType == RSE::RVT_MATERIAL_TERRAIN_PBR && eSource == RSE::RVT_SOURCE_RENDER && strPageFile.is_empty() && vMaterialFeedbackLimits.z > 0;
+		}
+		struct FeedbackCapture
+		{
+			uint64_t nTicket = 0;
+			uint64_t nRevision = 0;
+			Vector3 vEye;
+			Vector3 vOrigin;
+		};
+		struct MotionView
+		{
+			Vector3 vEye;
+			Vector3 vVelocity;
+			uint64_t nFrame = UINT64_MAX;
+			uint32_t nNextCapture = 0;
+			FeedbackCapture arrCaptures[8]; // At four frames per capture, covers the readback lifetime.
+		};
+		static constexpr uint64_t CAPTURE_FLAG = uint64_t(1) << 63;
+		uint64_t nNextCaptureTicket = CAPTURE_FLAG;
+		HashMap<RID, MotionView> mapMotionViews;
+		struct Feedback
+		{
+			FeedbackCapture stCapture;
+			HashMap<uint32_t, uint32_t> mapSamples;
+			uint64_t nStamp = 0;
+		};
+		HashMap<RID, Feedback> mapFeedbackViews;
+		uint64_t nUpdateFrame = 0;
+		uint64_t nFeedbackBatches = 0;
+		uint64_t nStaleFeedbackBatches = 0;
+		uint32_t nFeedbackPages = 0;
+		StreamingVirtualTextureFile stStreamFile;
+		StreamingVirtualTextureLoader stStreamLoader;
+		HashSet<uint32_t> setStreamInFlight;
+		HashMap<uint32_t, uint8_t> mapStreamFailures; // id -> failed read count; blocked in the page manager afterwards.
+
+		// Debug tooling (mirrors UE r.VT.RVT.DebugView / pick debug).
+		RSE::RuntimeVirtualTextureDebugMode eDebugMode = RSE::RVT_DEBUG_OFF;
+		int nDebugForceLod = -1;
+		HashMap<uint32_t, uint64_t> mapLockedPages; // id -> expiry in msec.
+	};
+
+	struct RuntimeVirtualTextureViewer
+	{
+		RID ridScenario;
+		Transform3D xformWorld;
+		Vector<Plane> arrFrustum; // World space, outward facing.
+		float fPixelPerDistance = 0.0f;
+		float fPixelOrtho = 0.0f;
+	};
+
+	mutable RID_Owner<RuntimeVirtualTextureData, true> stRuntimeVirtualTextureOwner;
+	LocalVector<RID> arrRuntimeVirtualTextures;
+	LocalVector<RuntimeVirtualTextureViewer> arrRuntimeVirtualTextureViewers; // Collected while rendering, consumed next update.
+
+	void RuntimeVirtualTextureRefreshHeightDependents(RuntimeVirtualTextureData *pHeight);
+	void RuntimeVirtualTextureCollectMaterialFeedback(RID ridScenario, RID ridViewport, const Ref<RenderSceneBuffers> &refBuffers, const RendererSceneRender::CameraData &stCamera);
+	void RuntimeVirtualTextureRegisterViewer(const RendererSceneRender::CameraData *pCameraData, RID ridViewport, RID ridScenario);
+	// p_layers: layers deciding which RVTs are affected, 0 = the instance layers.
+	void RuntimeVirtualTextureInvalidateInstance(const Instance *pInstance, uint32_t nLayers = 0) const;
+	void RuntimeVirtualTextureRebuildGpu(RuntimeVirtualTextureData *in_pRvt);
+	void RuntimeVirtualTextureRenderPage(RuntimeVirtualTextureData *in_pRvt, const RVTPageManager::PageRender &stPage, RID ridBakeTarget = RID());
+	void UpdateRuntimeVirtualTextureObjects();
+	void RenderRuntimeVirtualTextures();
+
+	virtual RID RuntimeVirtualTextureAllocate() override;
+	virtual void RuntimeVirtualTextureInitialize(RID ridRvt) override;
+	virtual void RuntimeVirtualTextureConfigure(RID ridRvt, RSE::RuntimeVirtualTextureMaterialType stType, int in_nLog2TileCount, int in_nTileSize, int in_nTileBorder, int in_nPoolTiles) override;
+	virtual void RuntimeVirtualTextureSetScenario(RID ridRvt, RID ridScenario) override;
+	virtual void RuntimeVirtualTextureSetTransform(RID ridRvt, const Transform3D &xformTransform) override;
+	virtual void RuntimeVirtualTextureSetCullMask(RID ridRvt, uint32_t nMask) override;
+	virtual void RuntimeVirtualTextureSetHeightSource(RID ridRvt, RID ridHeightArray, const PackedInt32Array &arrRegionMap, int nRegionSize, const Vector2i &vOrigin, int nExtent) override;
+	virtual void RuntimeVirtualTextureSetMaterialHeightSource(RID ridRvt, RID ridHeight) override;
+	virtual void RuntimeVirtualTextureSetMaterialStream(RID ridRvt, const String &strPath, int64_t nSignature) override;
+	virtual Error RuntimeVirtualTextureBakeMaterialStream(RID ridRvt, const String &strPath, int nCoarseLevels, int64_t nSignature) override;
+	virtual void RuntimeVirtualTextureSetMaterialFeedbackLimits(RID ridRvt, const Vector4 &vLimits) override;
+	virtual void RuntimeVirtualTextureSetMaterialWriter(RID ridRvt, RID ridInstance, int nMaxAnisotropy) override;
+	virtual void GpuDrivenTerrainSetHeightfield(RID ridTerrain, RID ridHeightVt, RID ridBoundsTexture, const Rect2 &rectDomain, const Vector2 &vBackgroundHeightRange, float fHeightMargin, int nTileLog2, int in_nTileSize) override;
+	virtual void RuntimeVirtualTextureSubmitGpuFeedback(RID ridRvt, RID ridView, const Vector<uint32_t> &arrIds, uint64_t nRevision = 0) override;
+	virtual void RuntimeVirtualTextureSetHeightStream(RID ridRvt, const String &strPath, int nLevels) override;
+	virtual void RuntimeVirtualTextureSetHeightRegion(RID ridRvt, const Vector2i &vLocation, const Ref<Image> &refHeight) override;
+	virtual void RuntimeVirtualTextureSetHeightLod(RID ridRvt, float fLod0Distance, float fVertexSpacing, int nMaxLod, float fMaxDistance) override;
+	virtual void RuntimeVirtualTextureSetLodBias(RID ridRvt, float fBias) override;
+	virtual void RuntimeVirtualTextureSetMaxPagesPerFrame(RID ridRvt, int nPages) override;
+	virtual void RuntimeVirtualTextureSetEnabled(RID ridRvt, bool in_bEnabled) override;
+	virtual void RuntimeVirtualTextureSetSource(RID ridRvt, RSE::RuntimeVirtualTextureSource in_eSource) override;
+
+	virtual void RuntimeVirtualTextureSetPageFile(RID ridRvt, const String &strPath) override;
+	virtual void RuntimeVirtualTextureSetDebug(RID ridRvt, RSE::RuntimeVirtualTextureDebugMode eMode, int nForceLod) override;
+	virtual Dictionary RuntimeVirtualTextureGetPageInfo(RID ridRvt, int nLevel, int nX, int nY) const override;
+	virtual void RuntimeVirtualTextureLockPage(RID ridRvt, int nLevel, int nX, int nY, float fSeconds) override;
+	virtual void RuntimeVirtualTextureUnlockPage(RID ridRvt, int nLevel, int nX, int nY) override;
+	virtual void RuntimeVirtualTextureUnlockAllPages(RID ridRvt) override;
+	virtual void RuntimeVirtualTextureInvalidate(RID ridRvt, const AABB &aabbWorldAabb) override;
+	virtual void RuntimeVirtualTextureInvalidateAll(RID ridRvt) override;
+	virtual RID RuntimeVirtualTextureGetPageTableTexture(RID ridRvt) const override;
+	virtual RID RuntimeVirtualTextureGetPhysicalTexture(RID ridRvt, int nLayer) const override;
+	virtual Dictionary RuntimeVirtualTextureGetStats(RID ridRvt) const override;
+#pragma endregion
+
+#pragma region Engine ZXB
+	/* GPU DRIVEN TERRAIN (quadtree tiles + indirect draws) */
+
+	mutable Mutex mtxGpuDrivenTerrainMutex;
+	HashMap<RID, GPUTerrain> mapGpuDrivenTerrains;
+	RID_Owner<GPUTerrain, true> stGpuDrivenTerrainOwner;
+
+	virtual RID GpuDrivenTerrainAllocate() override;
+	virtual void GpuDrivenTerrainInitialize(RID ridTerrain) override;
+	virtual void GpuDrivenTerrainConfigure(RID ridTerrain, RID ridMaterial, RID ridVertexArray, RID ridIndexArray, uint32_t nIndexCount, int64_t nVertexFormatId, uint32_t nRenderLayers, bool bCastShadows) override;
+	virtual void GpuDrivenTerrainSetIndirect(RID ridTerrain, RID ridIndirectColor, uint32_t nColorOffset, RID ridIndirectShadow, uint32_t nShadowOffset) override;
+	virtual void GpuDrivenTerrainSetCull(RID ridTerrain, int64_t nSrcNodesRd, int64_t nCompactNodesRd, int64_t nCounterRd, int64_t nArgsRd, int64_t nShadowArgsRd, uint32_t nNodeCount, float fSrcTexWidth, float fCompactTexWidth, float fLod0Dist, int32_t nMaxLod, float fMaxDistance, float fVertexSpacing) override;
+	virtual void GpuDrivenTerrainSetEnabled(RID ridTerrain, bool in_bEnabled) override;
+	virtual const HashMap<RID, GPUTerrain> *GpuDrivenTerrainGetMap() const override
+	{
+		return &mapGpuDrivenTerrains;
+	}
+#pragma endregion
 
 	TypedArray<Image> bake_render_uv2(RID p_base, const TypedArray<RID> &p_material_overrides, const Size2i &p_image_size);
 	PackedByteArray bake_render_area_light_atlas(const TypedArray<RID> &p_area_light_textures, const TypedArray<Rect2> &p_area_light_atlas_texture_rects, const Size2i &p_size, int p_mipmaps);

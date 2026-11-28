@@ -3296,6 +3296,65 @@ void RenderingServer::_bind_methods() {
 
 	/* Bake 3D Object */
 
+#pragma region Engine ZXB
+	/* RUNTIME VIRTUAL TEXTURE */
+
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_create"), &RenderingServer::RuntimeVirtualTextureCreate);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_configure", "rvt", "type", "log2_tile_count", "tile_size", "tile_border", "pool_tiles"), &RenderingServer::RuntimeVirtualTextureConfigure);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_scenario", "rvt", "scenario"), &RenderingServer::RuntimeVirtualTextureSetScenario);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_transform", "rvt", "transform"), &RenderingServer::RuntimeVirtualTextureSetTransform);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_cull_mask", "rvt", "mask"), &RenderingServer::RuntimeVirtualTextureSetCullMask);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_height_source", "rvt", "height_array", "region_map", "region_size", "origin", "extent"), &RenderingServer::RuntimeVirtualTextureSetHeightSource);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_material_height_source", "rvt", "height"), &RenderingServer::RuntimeVirtualTextureSetMaterialHeightSource);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_material_stream", "rvt", "path", "signature"), &RenderingServer::RuntimeVirtualTextureSetMaterialStream);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_bake_material_stream", "rvt", "path", "coarse_levels", "signature"), &RenderingServer::RuntimeVirtualTextureBakeMaterialStream);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_material_feedback_limits", "rvt", "limits"), &RenderingServer::RuntimeVirtualTextureSetMaterialFeedbackLimits);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_material_writer", "rvt", "instance", "max_anisotropy"), &RenderingServer::RuntimeVirtualTextureSetMaterialWriter, DEFVAL(1));
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_set_heightfield", "terrain", "height_vt", "bounds_texture", "domain", "background_height_range", "height_margin", "tile_log2", "tile_size"), &RenderingServer::GpuDrivenTerrainSetHeightfield);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_height_stream", "rvt", "path", "levels"), &RenderingServer::RuntimeVirtualTextureSetHeightStream);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_height_region", "rvt", "location", "height"), &RenderingServer::RuntimeVirtualTextureSetHeightRegion);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_height_lod", "rvt", "lod0_distance", "vertex_spacing", "max_lod", "max_distance"), &RenderingServer::RuntimeVirtualTextureSetHeightLod);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_lod_bias", "rvt", "bias"), &RenderingServer::RuntimeVirtualTextureSetLodBias);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_max_pages_per_frame", "rvt", "pages"), &RenderingServer::RuntimeVirtualTextureSetMaxPagesPerFrame);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_enabled", "rvt", "enabled"), &RenderingServer::RuntimeVirtualTextureSetEnabled);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_source", "rvt", "source"), &RenderingServer::RuntimeVirtualTextureSetSource);
+
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_page_file", "rvt", "path"), &RenderingServer::RuntimeVirtualTextureSetPageFile);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_set_debug", "rvt", "mode", "force_lod"), &RenderingServer::RuntimeVirtualTextureSetDebug);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_get_page_info", "rvt", "level", "x", "y"), &RenderingServer::RuntimeVirtualTextureGetPageInfo);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_lock_page", "rvt", "level", "x", "y", "seconds"), &RenderingServer::RuntimeVirtualTextureLockPage);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_unlock_page", "rvt", "level", "x", "y"), &RenderingServer::RuntimeVirtualTextureUnlockPage);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_unlock_all_pages", "rvt"), &RenderingServer::RuntimeVirtualTextureUnlockAllPages);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_invalidate", "rvt", "world_aabb"), &RenderingServer::RuntimeVirtualTextureInvalidate);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_invalidate_all", "rvt"), &RenderingServer::RuntimeVirtualTextureInvalidateAll);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_get_page_table_texture", "rvt"), &RenderingServer::RuntimeVirtualTextureGetPageTableTexture);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_get_physical_texture", "rvt", "layer"), &RenderingServer::RuntimeVirtualTextureGetPhysicalTexture);
+	ClassDB::bind_method(D_METHOD("runtime_virtual_texture_get_stats", "rvt"), &RenderingServer::RuntimeVirtualTextureGetStats);
+
+#pragma region Engine ZXB
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_create"), &RenderingServer::GpuDrivenTerrainCreate);
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_configure", "terrain", "material", "vertex_array", "index_array", "index_count", "vertex_format_id", "render_layers", "cast_shadows"), &RenderingServer::GpuDrivenTerrainConfigure);
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_set_indirect", "terrain", "indirect_color", "color_offset", "indirect_shadow", "shadow_offset"), &RenderingServer::GpuDrivenTerrainSetIndirect);
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_set_cull", "terrain", "src_nodes_rd", "compact_nodes_rd", "counter_rd", "args_rd", "shadow_args_rd", "node_count", "src_tex_width", "compact_tex_width", "lod0_dist", "max_lod", "max_distance", "vertex_spacing"), &RenderingServer::GpuDrivenTerrainSetCull);
+	ClassDB::bind_method(D_METHOD("gpu_driven_terrain_set_enabled", "terrain", "enabled"), &RenderingServer::GpuDrivenTerrainSetEnabled);
+#pragma endregion
+
+	BIND_ENUM_CONSTANT(RSE::RVT_MATERIAL_BASE_COLOR);
+	BIND_ENUM_CONSTANT(RSE::RVT_MATERIAL_BASE_COLOR_NORMAL_ROUGHNESS);
+	BIND_ENUM_CONSTANT(RSE::RVT_MATERIAL_TERRAIN_PBR);
+	BIND_ENUM_CONSTANT(RSE::RVT_MATERIAL_WORLD_HEIGHT);
+	BIND_ENUM_CONSTANT(RSE::RVT_SOURCE_RENDER);
+	BIND_ENUM_CONSTANT(RSE::RVT_SOURCE_HEIGHT_GRID);
+	BIND_ENUM_CONSTANT(RSE::RVT_SOURCE_STREAM);
+
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_OFF);
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_PAGE_TABLE);
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_PAGE_TABLE_MIP);
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_PHYSICAL_POOL);
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_LOD);
+	BIND_ENUM_CONSTANT(RSE::RVT_DEBUG_BORDERS);
+#pragma endregion
+
 	ClassDB::bind_method(D_METHOD("bake_render_uv2", "base", "material_overrides", "image_size"), &RenderingServer::bake_render_uv2);
 
 	BIND_ENUM_CONSTANT(RSE::BAKE_CHANNEL_ALBEDO_ALPHA);

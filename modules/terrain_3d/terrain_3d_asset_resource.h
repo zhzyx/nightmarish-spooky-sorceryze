@@ -1,0 +1,42 @@
+// Copyright © 2023-2026 Cory Petkovsek, Roope Palmroos, and Contributors.
+
+#ifndef TERRAIN3D_ASSET_RESOURCE_CLASS_H
+#define TERRAIN3D_ASSET_RESOURCE_CLASS_H
+
+#include "core/io/resource.h"
+#include "scene/resources/texture.h"
+
+#include "constants.h"
+
+class Terrain3DAssets;
+
+// Parent class of Terrain3DMeshAsset and Terrain3DTextureAsset
+class Terrain3DAssetResource : public Resource {
+	GDCLASS(Terrain3DAssetResource, Resource);
+	friend class Terrain3DAssets;
+
+public:
+	Terrain3DAssetResource() {}
+	~Terrain3DAssetResource() {}
+
+	virtual void initialize() = 0;
+	virtual void clear() = 0;
+	virtual void set_asset_name(const String &p_name) = 0;
+	virtual String get_asset_name() const = 0;
+	virtual void set_id(const int p_id) = 0;
+	virtual int get_id() const = 0;
+
+	virtual void set_highlighted(const bool p_highlighted) = 0;
+	virtual bool is_highlighted() const = 0;
+	virtual Color get_highlight_color() const = 0;
+	virtual Ref<Texture2D> get_thumbnail() const = 0;
+
+protected:
+	String _name;
+	int _id = 0;
+	bool _highlighted = false;
+	Ref<Texture2D> _thumbnail;
+	static void _bind_methods() {}
+};
+
+#endif // TERRAIN3D_ASSET_RESOURCE_CLASS_H

@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/math/projection.h"
+#include "core/templates/local_vector.h"
 #include "core/templates/paged_array.h"
 #include "servers/rendering/renderer_geometry_instance.h"
 #include "servers/rendering/rendering_server_types.h"
@@ -326,6 +327,66 @@ public:
 
 	virtual void render_material(const Transform3D &p_cam_transform, const Projection &p_cam_projection, bool p_cam_orthogonal, const PagedArray<RenderGeometryInstance *> &p_instances, RID p_framebuffer, const Rect2i &p_region) = 0;
 	virtual void render_particle_collider_heightfield(RID p_collider, const Transform3D &p_transform, const PagedArray<RenderGeometryInstance *> &p_instances) = 0;
+
+#pragma region Engine ZXB
+	// [ZXB] GPU backend of Runtime Virtual Texture. Backends without support keep the defaults.
+	struct HeightGrid
+	{
+		RID ridHeightArray;
+		Vector<int32_t> arrRegionMap;
+		int nMapWidth = 0;
+		int nRegionSize = 0;
+		Vector2i vOrigin;
+		int nExtent = 0;
+		uint64_t nRevision = 0;
+	};
+	struct RuntimeVirtualTextureGPUConfig
+	{
+		RSE::RuntimeVirtualTextureMaterialType stType = RSE::RVT_MATERIAL_BASE_COLOR;
+		uint32_t nLog2TileCount = 6;
+		uint32_t nTileSize = 128;
+		uint32_t nTileBorder = 4;
+		uint32_t nPoolTilesX = 16;
+		uint32_t nPoolTilesY = 16;
+		// Streaming source: pages are uploaded from a baked file instead of rendered.
+		bool bHeightGrid = false;
+		bool bStreaming = false;
+		uint32_t nFormat = 0; // StreamingVirtualTextureFile::Format.
+		bool bSrgb = true;
+	};
+
+	virtual bool RuntimeVirtualTextureGpuIsSupported() const
+	{
+		return false;
+	}
+	virtual RID RuntimeVirtualTextureGpuCreate(const RuntimeVirtualTextureGPUConfig &stConfig, RID ridPageTableTexture, RID ridPhysicalTexture0, RID ridPhysicalTexture1)
+	{
+		return RID();
+	}
+	virtual void RuntimeVirtualTextureGpuFree(RID ridGpu)
+	{
+	}
+	virtual void RuntimeVirtualTextureGpuUpdatePageTable(RID ridGpu, const LocalVector<Vector<uint8_t>> &arrLevels)
+	{
+	}
+	virtual void RuntimeVirtualTextureGpuRenderPage(RID ridGpu, const Transform3D &xformCamera, const Projection &projProjection, const PagedArray<RenderGeometryInstance *> &arrInstances, uint32_t nPoolX, uint32_t nPoolY, float fVolumeHeight)
+	{
+	}
+	virtual void RuntimeVirtualTextureGpuFeedback(RID ridSurface, RID ridViewport, const Transform3D &xformVolume, uint32_t nLog2Tiles, uint32_t in_nTileSize, int nMaxAnisotropy, float fLodBias, const Vector4 &vLimits, uint64_t in_nRevision, RID ridGpu, const Ref<RenderSceneBuffers> &refBuffers, const CameraData &stCamera)
+	{
+	}
+	virtual Vector<uint8_t> RuntimeVirtualTextureGpuReadMaterialTile(RID ridGpu)
+	{
+		return {};
+	}
+	virtual bool RuntimeVirtualTextureGpuDrawHeight(RID ridGpu, const HeightGrid &stSource, const Vector2i &vPage, uint32_t nLevel, const Vector2i &vSlot)
+	{
+		return false;
+	}
+	virtual void RuntimeVirtualTextureGpuUploadPage(RID ridGpu, uint32_t nPoolX, uint32_t nPoolY, const Vector<uint8_t> &arrData)
+	{
+	}
+#pragma endregion
 
 	virtual void set_scene_pass(uint64_t p_pass) = 0;
 	virtual void set_time(double p_time, double p_step) = 0;

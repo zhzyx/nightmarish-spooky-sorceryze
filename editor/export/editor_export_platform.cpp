@@ -1366,6 +1366,54 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 		}
 	};
 
+	// Run computed dependencies through the same export pipeline as serialized references.
+	HashSet<String> setExtraDependencies;
+	for (const Ref<EditorExportPlugin> &refPlugin : export_plugins)
+	{
+		refPlugin->CollectExportDependencies(paths, setExtraDependencies);
+	}
+	if (!setExtraDependencies.is_empty())
+	{
+		HashSet<String> setExtraPaths;
+		for (const String &strDependency : setExtraDependencies)
+		{
+			if (!paths.has(strDependency))
+			{
+				_export_find_dependencies(strDependency, setExtraPaths);
+			}
+		}
+		if (p_preset->get_export_filter() == EditorExportPreset::EXCLUDE_SELECTED_RESOURCES)
+		{
+			for (const String &strExcluded : p_preset->get_files_to_export())
+			{
+				setExtraPaths.erase(strExcluded);
+			}
+		}
+		_edit_filter_list(setExtraPaths, p_preset->get_exclude_filter(), true);
+		for (const String &strPath : setExtraPaths)
+		{
+			if (p_preset->get_export_filter() == EditorExportPreset::EXPORT_CUSTOMIZED)
+			{
+				String strCurrent = strPath;
+				EditorExportPreset::FileExportMode eMode = p_preset->get_file_export_mode(strCurrent);
+				while (eMode == EditorExportPreset::MODE_FILE_NOT_CUSTOMIZED && strCurrent != "res://")
+				{
+					strCurrent = strCurrent.trim_suffix("/").get_base_dir();
+					if (!strCurrent.ends_with("/"))
+					{
+						strCurrent += "/";
+					}
+					eMode = p_preset->get_file_export_mode(strCurrent);
+				}
+				if (eMode == EditorExportPreset::MODE_FILE_REMOVE)
+				{
+					continue;
+				}
+			}
+			paths.insert(strPath);
+		}
+	}
+
 	auto add_shared_objects_and_extra_files_from_export_plugins = [&]() {
 		for (int i = 0; i < export_plugins.size(); i++) {
 			if (p_so_func) {

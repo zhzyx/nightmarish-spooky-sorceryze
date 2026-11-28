@@ -1553,6 +1553,9 @@
 		<member name="AudioServer" type="AudioServer" setter="" getter="">
 			The [AudioServer] singleton.
 		</member>
+		<member name="CVars" type="CVars" setter="" getter="">
+			The [CVars] singleton.
+		</member>
 		<member name="CameraServer" type="CameraServer" setter="" getter="">
 			The [CameraServer] singleton.
 		</member>

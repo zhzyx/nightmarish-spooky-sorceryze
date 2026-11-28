@@ -881,9 +881,10 @@ void ResourceLoaderBinary::get_classes_used(Ref<FileAccess> p_file, HashSet<Stri
 	}
 
 	for (const IntResource &res : internal_resources) {
-		p_file->seek(res.offset);
+		// Internal offsets refer to the uncompressed stream selected by open().
+		f->seek(res.offset);
 		String t = get_unicode_string();
-		if (!p_file->get_error() && t != String() && ClassDB::class_exists(t)) {
+		if (!f->get_error() && t != String() && ClassDB::class_exists(t)) {
 			p_classes->insert(t);
 		}
 	}

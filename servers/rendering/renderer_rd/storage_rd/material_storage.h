@@ -495,6 +495,11 @@ public:
 	virtual void material_set_shader(RID p_material, RID p_shader) override;
 	ShaderData *material_get_shader_data(RID p_material);
 
+#pragma region Engine ZXB
+	// [ZXB] Uniform set of a material, for the GPU-driven terrain indirect draws.
+	RID MaterialGetUniformSet(RID ridMaterial);
+#pragma endregion
+
 	virtual void material_set_param(RID p_material, const StringName &p_param, const Variant &p_value) override;
 	virtual Variant material_get_param(RID p_material, const StringName &p_param) const override;
 

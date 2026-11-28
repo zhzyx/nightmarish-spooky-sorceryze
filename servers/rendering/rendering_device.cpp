@@ -10136,6 +10136,14 @@ RenderingDevice::~RenderingDevice() {
 RenderingDevice::RenderingDevice() {
 	if (singleton == nullptr) {
 		singleton = this;
+#pragma region Engine ZXB
+		// [ZXB] Expose the renderer's device to GDExtensions (godot-cpp bindings may predate
+		// the RenderingDevice singleton; the GPU-driven terrain uses it through this name).
+		if (Engine::get_singleton())
+		{
+			Engine::get_singleton()->add_singleton(Engine::Singleton("RenderingDevice", this));
+		}
+#pragma endregion
 	}
 
 	render_thread_id = Thread::get_caller_id();

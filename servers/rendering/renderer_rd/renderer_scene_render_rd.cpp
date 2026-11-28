@@ -1562,6 +1562,57 @@ void RendererSceneRenderRD::set_debug_draw_mode(RSE::ViewportDebugDraw p_debug_d
 	debug_draw = p_debug_draw;
 }
 
+#pragma region Engine ZXB
+RID RendererSceneRenderRD::RuntimeVirtualTextureGpuCreate(const RuntimeVirtualTextureGPUConfig &stConfig, RID ridPageTableTexture, RID ridPhysicalTexture0, RID ridPhysicalTexture1)
+{
+	ERR_FAIL_NULL_V(pRuntimeVirtualTextureRd, RID());
+	return pRuntimeVirtualTextureRd->Create(stConfig, ridPageTableTexture, ridPhysicalTexture0, ridPhysicalTexture1);
+}
+
+void RendererSceneRenderRD::RuntimeVirtualTextureGpuFree(RID ridGpu)
+{
+	ERR_FAIL_NULL(pRuntimeVirtualTextureRd);
+	pRuntimeVirtualTextureRd->Free(ridGpu);
+}
+
+void RendererSceneRenderRD::RuntimeVirtualTextureGpuUpdatePageTable(RID ridGpu, const LocalVector<Vector<uint8_t>> &arrLevels)
+{
+	ERR_FAIL_NULL(pRuntimeVirtualTextureRd);
+	pRuntimeVirtualTextureRd->UpdatePageTable(ridGpu, arrLevels);
+}
+
+void RendererSceneRenderRD::RuntimeVirtualTextureGpuRenderPage(RID ridGpu, const Transform3D &xformCamera, const Projection &projProjection, const PagedArray<RenderGeometryInstance *> &arrInstances, uint32_t nPoolX, uint32_t nPoolY, float fVolumeHeight)
+{
+	ERR_FAIL_NULL(pRuntimeVirtualTextureRd);
+	pRuntimeVirtualTextureRd->RenderPage(ridGpu, xformCamera, projProjection, arrInstances, nPoolX, nPoolY, fVolumeHeight);
+}
+
+void RendererSceneRenderRD::RuntimeVirtualTextureGpuFeedback(RID ridSurface, RID ridViewport, const Transform3D &xformVolume, uint32_t nLog2Tiles, uint32_t nTileSize, int nMaxAnisotropy, float fLodBias, const Vector4 &vLimits, uint64_t nRevision, RID ridGpu, const Ref<RenderSceneBuffers> &refBuffers, const CameraData &stCamera)
+{
+	if (pRuntimeVirtualTextureRd)
+	{
+		pRuntimeVirtualTextureRd->CollectFeedback(ridSurface, ridViewport, xformVolume, nLog2Tiles, nTileSize, nMaxAnisotropy, fLodBias, vLimits, nRevision, ridGpu, refBuffers, stCamera);
+	}
+}
+
+Vector<uint8_t> RendererSceneRenderRD::RuntimeVirtualTextureGpuReadMaterialTile(RID ridGpu)
+{
+	ERR_FAIL_NULL_V(pRuntimeVirtualTextureRd, Vector<uint8_t>());
+	return pRuntimeVirtualTextureRd->ReadMaterialTile(ridGpu);
+}
+
+bool RendererSceneRenderRD::RuntimeVirtualTextureGpuDrawHeight(RID ridGpu, const HeightGrid &stSource, const Vector2i &vPage, uint32_t nLevel, const Vector2i &vSlot)
+{
+	return pRuntimeVirtualTextureRd && pRuntimeVirtualTextureRd->DrawHeight(ridGpu, stSource, vPage, nLevel, vSlot);
+}
+
+void RendererSceneRenderRD::RuntimeVirtualTextureGpuUploadPage(RID ridGpu, uint32_t nPoolX, uint32_t nPoolY, const Vector<uint8_t> &arrData)
+{
+	ERR_FAIL_NULL(pRuntimeVirtualTextureRd);
+	pRuntimeVirtualTextureRd->UploadPage(ridGpu, nPoolX, nPoolY, arrData);
+}
+#pragma endregion
+
 void RendererSceneRenderRD::update() {
 	sky.update_dirty_skys();
 }
@@ -1806,6 +1857,9 @@ void RendererSceneRenderRD::init() {
 		ShaderIncludeDB::register_built_in_include_file("godot/scene_data_inc.glsl", scene_data_inc_shader_glsl);
 	}
 
+#pragma region Engine ZXB
+	pRuntimeVirtualTextureRd = memnew(RendererRD::RuntimeVirtualTextureRD(this));
+#pragma endregion
 	/* SKY SHADER */
 
 	sky.init();
@@ -1893,6 +1947,12 @@ void RendererSceneRenderRD::init() {
 }
 
 RendererSceneRenderRD::~RendererSceneRenderRD() {
+#pragma region Engine ZXB
+	if (pRuntimeVirtualTextureRd)
+	{
+		memdelete(pRuntimeVirtualTextureRd);
+	}
+#pragma endregion
 	memdelete(forward_id_storage);
 
 	memdelete(bokeh_dof);

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RuntimeVirtualTextureProxy" inherits="Texture2D" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		Texture that forwards a texture owned by a [RuntimeVirtualTexture].
+	</brief_description>
+	<description>
+		Returned by [method RuntimeVirtualTexture.get_page_table_texture] and [method RuntimeVirtualTexture.get_physical_texture]. It cannot be created directly.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

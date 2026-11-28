@@ -32,6 +32,7 @@
 
 TEST_FORCE_LINK(test_resource)
 
+#include "core/io/image.h"
 #include "core/io/resource.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
@@ -42,6 +43,19 @@ TEST_FORCE_LINK(test_resource)
 #include <functional>
 
 namespace TestResource {
+
+TEST_CASE("[Resource] Discover internal classes in compressed binary resources")
+{
+	Ref<Resource> refBundle;
+	refBundle.instantiate();
+	refBundle->set_meta("image", Image::create_empty(8, 8, false, Image::FORMAT_RGBA8));
+	const String strPath = TestUtils::get_temp_path("compressed_classes.res");
+	REQUIRE(ResourceSaver::save(refBundle, strPath, ResourceSaver::FLAG_COMPRESS) == OK);
+	HashSet<StringName> setClasses;
+	ResourceLoader::get_classes_used(strPath, &setClasses);
+	CHECK(setClasses.has("Resource"));
+	CHECK(setClasses.has("Image"));
+}
 
 enum TestDuplicateMode {
 	TEST_MODE_RESOURCE_DUPLICATE_SHALLOW,

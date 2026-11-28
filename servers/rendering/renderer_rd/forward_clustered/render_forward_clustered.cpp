@@ -37,9 +37,11 @@
 #include "servers/rendering/renderer_rd/storage_rd/mesh_storage.h"
 #include "servers/rendering/renderer_rd/storage_rd/particles_storage.h"
 #include "servers/rendering/renderer_rd/storage_rd/texture_storage.h"
+#include "servers/rendering/renderer_scene_cull.h"
 #include "servers/rendering/renderer_rd/uniform_set_cache_rd.h"
 #include "servers/rendering/rendering_device.h"
 #include "servers/rendering/rendering_server_default.h"
+#include "servers/rendering/rendering_server_globals.h"
 #include "servers/rendering/storage/ltc_lut.gen.h"
 
 #include "modules/modules_enabled.gen.h"
@@ -633,6 +635,143 @@ void RenderForwardClustered::_render_list_template(RenderingDevice::DrawListID p
 	}
 }
 
+#pragma region Engine ZXB
+// [ZXB] GPU-driven terrain: quadtree tiles selected by a compute pass, drawn with indirect draws.
+// Mirrors the instance draw bindings: vertex/index arrays, the material uniform set, the per-draw
+// pipeline for this pass mode and the 16 byte (non ubershader) push constant block.
+void RenderForwardClustered::RenderGpuDrivenTerrains(RenderingDevice::DrawListID nDrawList, RenderingDevice::FramebufferFormatID nFramebufferFormat, RenderListParameters *pParams)
+{
+	const HashMap<RID, RenderingMethod::GPUTerrain> *pMap = RSG::scene->GpuDrivenTerrainGetMap();
+	if (!pMap || pMap->is_empty())
+	{
+		return;
+	}
+	RenderingDevice *pRd = RenderingDevice::get_singleton();
+	RendererRD::MaterialStorage *pMaterialStorage = RendererRD::MaterialStorage::get_singleton();
+
+	SceneShaderForwardClustered::ShaderData::PipelineKey stPipelineKey;
+	stPipelineKey.framebuffer_format_id = nFramebufferFormat;
+	stPipelineKey.wireframe = pParams->force_wireframe;
+	stPipelineKey.ubershader = 0;
+	stPipelineKey.primitive_type = RSE::PRIMITIVE_TRIANGLES;
+
+	switch (pParams->pass_mode)
+	{
+	case PASS_MODE_COLOR: {
+		stPipelineKey.version = SceneShaderForwardClustered::PIPELINE_VERSION_COLOR_PASS;
+	}
+	break;
+	case PASS_MODE_SHADOW_DP: {
+		stPipelineKey.version = SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_DP;
+	}
+	break;
+	case PASS_MODE_SHADOW:
+	case PASS_MODE_DEPTH: {
+		stPipelineKey.version = pParams->view_count > 1 ? SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_MULTIVIEW : SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS;
+	}
+	break;
+	case PASS_MODE_DEPTH_NORMAL_ROUGHNESS: {
+		stPipelineKey.version = pParams->view_count > 1 ? SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS_MULTIVIEW : SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS;
+	}
+	break;
+	case PASS_MODE_DEPTH_NORMAL_ROUGHNESS_VOXEL_GI: {
+		stPipelineKey.version = pParams->view_count > 1 ? SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS_AND_VOXEL_GI_MULTIVIEW : SceneShaderForwardClustered::PIPELINE_VERSION_DEPTH_PASS_WITH_NORMAL_AND_ROUGHNESS_AND_VOXEL_GI;
+	}
+	break;
+	default: {
+		return; // Not drawn in this pass mode.
+	}
+	}
+
+	stPipelineKey.color_pass_flags = pParams->pass_mode == PASS_MODE_COLOR ? pParams->color_pass_flags : 0;
+	// The terrain is opaque: skip transparent, specular-split and motion vector variants, which are
+	// separate sub-passes over the same framebuffer.
+	if (pParams->pass_mode == PASS_MODE_COLOR && (pParams->color_pass_flags & (COLOR_PASS_FLAG_TRANSPARENT | COLOR_PASS_FLAG_SEPARATE_SPECULAR | COLOR_PASS_FLAG_MOTION_VECTORS)))
+	{
+		return;
+	}
+
+	bool bIsShadow = pParams->pass_mode == PASS_MODE_SHADOW || pParams->pass_mode == PASS_MODE_SHADOW_DP;
+
+	for (const KeyValue<RID, RenderingMethod::GPUTerrain> &stKv : *pMap)
+	{
+		const RenderingMethod::GPUTerrain &stT = stKv.value;
+		if (!stT.bEnabled || !stT.ridMaterial.is_valid() || !stT.ridVertexArray.is_valid())
+		{
+			continue;
+		}
+		if ((stT.nRenderLayers & nTerrainCullCameraLayers) == 0)
+		{
+			continue; // Not visible to this camera (e.g. the mouse picking viewport on layer 32).
+		}
+		RID ridIndirect;
+		uint32_t nOffset = 0;
+		if (bIsShadow)
+		{
+			if (!stT.bCastShadows)
+			{
+				continue;
+			}
+			ridIndirect = stT.ridIndirectShadow;
+			nOffset = stT.nIndirectShadowOffset;
+		}
+		else
+		{
+			ridIndirect = stT.ridIndirectColor;
+			nOffset = stT.nIndirectColorOffset;
+		}
+		if (!ridIndirect.is_valid())
+		{
+			continue;
+		}
+
+		SceneShaderForwardClustered::ShaderData *pShader = static_cast<SceneShaderForwardClustered::ShaderData *>(pMaterialStorage->material_get_shader_data(stT.ridMaterial));
+		if (!pShader)
+		{
+			continue;
+		}
+
+		// Skirt walls fill LOD gaps; the shader only enables them on edges whose neighbor is closer
+		// (finer), so coincident walls are avoided. Double sided keeps the gap sealed from any angle.
+		SceneShaderForwardClustered::ShaderData::CullVariant stCullVariant = SceneShaderForwardClustered::ShaderData::CULL_VARIANT_DOUBLE_SIDED;
+		stPipelineKey.cull_mode = pShader->get_cull_mode_from_cull_variant(stCullVariant);
+		stPipelineKey.vertex_format_id = stT.nVertexFormatId;
+
+		SceneShaderForwardClustered::ShaderSpecialization stSpecialization = pParams->base_specialization;
+		stSpecialization.use_forward_gi = false;
+		stSpecialization.use_light_projector = false;
+		stSpecialization.use_light_soft_shadows = false;
+		stSpecialization.use_lightmap_specular = false;
+		stSpecialization.material_feedback = false;
+		if (pParams->pass_mode == PASS_MODE_COLOR)
+		{
+			stSpecialization.use_directional_soft_shadows = pParams->use_directional_soft_shadow;
+		}
+		stPipelineKey.shader_specialization = stSpecialization;
+
+		uint64_t nPipelineHash = stPipelineKey.hash();
+		RID ridPipelineRd = pShader->pipeline_hash_map.get_pipeline(stPipelineKey, nPipelineHash, false, RSE::PIPELINE_SOURCE_SPECIALIZATION);
+		if (!ridPipelineRd.is_valid())
+		{
+			continue;
+		}
+
+		pRd->draw_list_bind_vertex_array(nDrawList, stT.ridVertexArray);
+		pRd->draw_list_bind_index_array(nDrawList, stT.ridIndexArray);
+		pRd->draw_list_bind_render_pipeline(nDrawList, ridPipelineRd);
+		RID ridMaterialUniformSet = pMaterialStorage->MaterialGetUniformSet(stT.ridMaterial);
+		if (ridMaterialUniformSet.is_valid() && pRd->uniform_set_is_valid(ridMaterialUniformSet))
+		{
+			pRd->draw_list_bind_uniform_set(nDrawList, ridMaterialUniformSet, MATERIAL_UNIFORM_SET);
+		}
+		SceneState::PushConstant stPushConstant = {};
+		size_t nPushConstantSize = sizeof(SceneState::PushConstant) - sizeof(SceneState::PushConstantUbershader);
+		pRd->draw_list_set_push_constant(nDrawList, &stPushConstant, nPushConstantSize);
+		pRd->draw_list_draw_indirect(nDrawList, true, ridIndirect, nOffset, 1, 0);
+	}
+}
+#pragma endregion
+
 void RenderForwardClustered::_render_list(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element) {
 	//use template for faster performance (pass mode comparisons are inlined)
 
@@ -695,6 +834,9 @@ void RenderForwardClustered::_render_list_with_draw_list(RenderListParameters *p
 
 	RD::DrawListID draw_list = RD::get_singleton()->draw_list_begin(p_framebuffer, p_draw_flags, p_clear_color_values, p_clear_depth_value, p_clear_stencil_value, p_region);
 	_render_list(draw_list, fb_format, p_params, 0, p_params->element_count);
+#pragma region Engine ZXB
+	RenderGpuDrivenTerrains(draw_list, fb_format, p_params);
+#pragma endregion
 	RD::get_singleton()->draw_list_end();
 }
 
@@ -1794,6 +1936,15 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 		// This will not be available when rendering reflection probes.
 		rb_data = rb->get_custom_data(RB_SCOPE_FORWARD_CLUSTERED);
 	}
+	// Keep the main-camera LOD for every pass, including off-screen shadow casters.
+	if (pTerrainGpuDriven)
+	{
+		nTerrainCullCameraLayers = p_render_data->scene_data->camera_visible_layers;
+		pTerrainGpuDriven->BeginView(rb->get_render_target(), nTerrainCullCameraLayers,
+									 p_render_data->scene_data->cam_projection, p_render_data->scene_data->cam_transform,
+									 p_render_data->instances);
+	}
+
 	bool is_reflection_probe = p_render_data->reflection_probe.is_valid();
 	bool is_multiview = rb->get_view_count() > 1;
 
@@ -2264,6 +2415,10 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 		}
 	}
 	_pre_opaque_render(p_render_data, using_ssao, using_ssil, using_ssr, using_sscs, using_sdfgi || using_voxelgi, normal_roughness_views, rb_data.is_valid() && rb_data->has_voxelgi() ? rb_data->get_voxelgi() : RID());
+	if (pTerrainGpuDriven)
+	{
+		pTerrainGpuDriven->EndShadows();
+	}
 
 	if (current_cluster_builder) {
 		base_specialization.cluster_has_area_light = current_cluster_builder->get_cluster_count_by_type(ClusterBuilderRD::ELEMENT_TYPE_AREA_LIGHT) != 0;
@@ -2959,6 +3114,12 @@ void RenderForwardClustered::_render_shadow_append(RID p_framebuffer, const Page
 		shadow_pass.element_count = render_list_size;
 		shadow_pass.flip_cull = flip_cull;
 		shadow_pass.pass_mode = pass_mode;
+		if (pTerrainGpuDriven)
+		{
+			pTerrainGpuDriven->GatherBuffers(p_instances, shadow_pass.arrTerrainBuffers);
+			shadow_pass.projTerrainVp = p_projection * Projection(p_transform.affine_inverse());
+			shadow_pass.bTerrainPancake = p_use_pancake;
+		}
 
 		shadow_pass.rp_uniform_set = RID(); //will be filled later when instance buffer is complete
 		shadow_pass.screen_mesh_lod_threshold = scene_data.screen_mesh_lod_threshold;
@@ -2994,6 +3155,11 @@ void RenderForwardClustered::_render_shadow_end() {
 	RD::get_singleton()->draw_command_begin_label("Shadow Render");
 
 	for (SceneState::ShadowPass &shadow_pass : scene_state.shadow_passes) {
+		if (pTerrainGpuDriven)
+		{
+			pTerrainGpuDriven->SelectShadow(shadow_pass.projTerrainVp, shadow_pass.bTerrainPancake,
+											shadow_pass.pass_mode == PASS_MODE_SHADOW_DP, shadow_pass.arrTerrainBuffers);
+		}
 		RenderListParameters render_list_parameters(render_list[RENDER_LIST_SECONDARY].elements.ptr() + shadow_pass.element_from, render_list[RENDER_LIST_SECONDARY].element_info.ptr() + shadow_pass.element_from, shadow_pass.element_count, shadow_pass.flip_cull, shadow_pass.pass_mode, 0, true, false, shadow_pass.rp_uniform_set, false, Vector2(), shadow_pass.lod_distance_multiplier, shadow_pass.screen_mesh_lod_threshold, 1, shadow_pass.element_from);
 		_render_list_with_draw_list(&render_list_parameters, shadow_pass.framebuffer, shadow_pass.clear_depth ? RD::DRAW_CLEAR_DEPTH : RD::DRAW_DEFAULT_ALL, Vector<Color>(), 0.0f, 0, shadow_pass.rect);
 	}
@@ -5229,6 +5395,8 @@ void RenderForwardClustered::_update_shader_quality_settings() {
 RenderForwardClustered::RenderForwardClustered() {
 	singleton = this;
 
+	pTerrainGpuDriven = memnew(RendererRD::TerrainGPUDrivenRD);
+
 	/* SCENE SHADER */
 
 	{
@@ -5389,6 +5557,12 @@ RenderForwardClustered::RenderForwardClustered() {
 }
 
 RenderForwardClustered::~RenderForwardClustered() {
+	if (pTerrainGpuDriven != nullptr)
+	{
+		memdelete(pTerrainGpuDriven);
+		pTerrainGpuDriven = nullptr;
+	}
+
 	if (ss_effects != nullptr) {
 		memdelete(ss_effects);
 		ss_effects = nullptr;

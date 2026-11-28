@@ -583,7 +583,11 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 				names.erase("AINativeMainScreen");
 				names.insert(names.find("AIChatMainScreen") + 1, "AINativeMainScreen");
 			}
-			restore_full_workbench = selected_name == "AIChatMainScreen" || selected_name == "DaqianMainScreen";
+			if (dock_map.has("YugongMainScreen") && names.has("AINativeMainScreen") && !names.has("YugongMainScreen"))
+			{
+				names.insert(names.find("AINativeMainScreen") + 1, "YugongMainScreen");
+			}
+			restore_full_workbench = selected_name == "AIChatMainScreen" || selected_name == "DaqianMainScreen" || selected_name == "YugongMainScreen";
 			main_screen_selected_tab_idx = names.find(selected_name);
 		}
 		for (int j = names.size() - 1; j >= 0; j--) {

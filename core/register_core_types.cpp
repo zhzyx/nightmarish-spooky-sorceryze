@@ -30,6 +30,7 @@
 
 #include "register_core_types.h"
 
+#include "core/config/CVars.h"
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/core_bind.h"
@@ -115,6 +116,7 @@ static CoreBind::EngineDebugger *_engine_debugger = nullptr;
 
 static IP *ip = nullptr;
 static Time *_time = nullptr;
+static CVars *pCvars = nullptr;
 
 static CoreBind::Geometry2D *_geometry_2d = nullptr;
 static CoreBind::Geometry3D *_geometry_3d = nullptr;
@@ -335,6 +337,8 @@ void register_core_types() {
 	GDREGISTER_CLASS(InputMap);
 	GDREGISTER_CLASS(Expression);
 	GDREGISTER_CLASS(ProjectSettings);
+	GDREGISTER_CLASS(CVars);
+	pCvars = memnew(CVars);
 
 	ip = IP::create();
 
@@ -369,6 +373,7 @@ void register_core_settings() {
 }
 
 void register_early_core_singletons() {
+	Engine::get_singleton()->add_singleton(Engine::Singleton("CVars", CVars::GetSingleton(), "CVars"));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Engine", CoreBind::Engine::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("ProjectSettings", ProjectSettings::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("OS", CoreBind::OS::get_singleton()));
@@ -421,6 +426,12 @@ void unregister_core_extensions() {
 
 void unregister_core_types() {
 	OS::get_singleton()->benchmark_begin_measure("Core", "Unregister Types");
+
+	if (pCvars)
+	{
+		memdelete(pCvars);
+		pCvars = nullptr;
+	}
 
 	// Destroy singletons in reverse order to ensure dependencies are not broken.
 

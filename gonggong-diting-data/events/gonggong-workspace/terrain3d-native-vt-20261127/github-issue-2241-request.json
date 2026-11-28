@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "github-issue-2241-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "terrain3d-native-vt-20261127",
+  "kind": "request",
+  "occurred_at": "2026-11-28T13:42:38Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2241",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-reported-by-host",
+    "definition_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+    "origin": "yanshi-drafted-github-issue-readback"
+  },
+  "payload": {
+    "issue_number": 2241,
+    "title": "集成原生 Terrain3D、愚公工作流与地形虚拟纹理",
+    "updated_at": "2026-11-28T13:42:38Z",
+    "issue_body_sha256": "3cefc3c346f335d7841934d9b107326be7fbaaf6fb7ceed6ab85c9a99370313b",
+    "issue_author": "1401213887",
+    "scope": "User-authorized delivery from Codex, with work order drafted by Yanshi"
+  },
+  "evidence_refs": [],
+  "sha256": "e6afc5c1e4f0db4c41f1d601c2e236b0b82b61e9fb37f8d620cc55463ac5d3fe"
+}

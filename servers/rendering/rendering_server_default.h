@@ -938,6 +938,48 @@ public:
 
 	FUNCRIDSPLIT(scenario)
 
+#pragma region Engine ZXB
+	RID RuntimeVirtualTextureCreate() override;
+	FUNC6(RuntimeVirtualTextureConfigure, RID, RSE::RuntimeVirtualTextureMaterialType, int, int, int, int)
+	FUNC2(RuntimeVirtualTextureSetScenario, RID, RID)
+	FUNC2(RuntimeVirtualTextureSetTransform, RID, const Transform3D &)
+	FUNC2(RuntimeVirtualTextureSetCullMask, RID, uint32_t)
+	FUNC6(RuntimeVirtualTextureSetHeightSource, RID, RID, const PackedInt32Array &, int, const Vector2i &, int)
+	FUNC2(RuntimeVirtualTextureSetMaterialHeightSource, RID, RID)
+	FUNC3(RuntimeVirtualTextureSetMaterialStream, RID, const String &, int64_t)
+	FUNC4R(Error, RuntimeVirtualTextureBakeMaterialStream, RID, const String &, int, int64_t)
+	FUNC2(RuntimeVirtualTextureSetMaterialFeedbackLimits, RID, const Vector4 &)
+	FUNC3(RuntimeVirtualTextureSetMaterialWriter, RID, RID, int)
+	FUNC8(GpuDrivenTerrainSetHeightfield, RID, RID, RID, const Rect2 &, const Vector2 &, float, int, int)
+	FUNC3(RuntimeVirtualTextureSetHeightStream, RID, const String &, int)
+	FUNC3(RuntimeVirtualTextureSetHeightRegion, RID, const Vector2i &, const Ref<Image> &)
+	FUNC5(RuntimeVirtualTextureSetHeightLod, RID, float, float, int, float)
+	FUNC2(RuntimeVirtualTextureSetLodBias, RID, float)
+	FUNC2(RuntimeVirtualTextureSetMaxPagesPerFrame, RID, int)
+	FUNC2(RuntimeVirtualTextureSetEnabled, RID, bool)
+	FUNC2(RuntimeVirtualTextureSetSource, RID, RSE::RuntimeVirtualTextureSource)
+
+	FUNC2(RuntimeVirtualTextureSetPageFile, RID, const String &)
+	FUNC3(RuntimeVirtualTextureSetDebug, RID, RSE::RuntimeVirtualTextureDebugMode, int)
+	FUNC4RC(Dictionary, RuntimeVirtualTextureGetPageInfo, RID, int, int, int)
+	FUNC5(RuntimeVirtualTextureLockPage, RID, int, int, int, float)
+	FUNC4(RuntimeVirtualTextureUnlockPage, RID, int, int, int)
+	FUNC1(RuntimeVirtualTextureUnlockAllPages, RID)
+	FUNC2(RuntimeVirtualTextureInvalidate, RID, const AABB &)
+	FUNC1(RuntimeVirtualTextureInvalidateAll, RID)
+	FUNC1RC(RID, RuntimeVirtualTextureGetPageTableTexture, RID)
+	FUNC2RC(RID, RuntimeVirtualTextureGetPhysicalTexture, RID, int)
+	FUNC1RC(Dictionary, RuntimeVirtualTextureGetStats, RID)
+#pragma endregion
+
+#pragma region Engine ZXB
+	RID GpuDrivenTerrainCreate() override;
+	FUNC8(GpuDrivenTerrainConfigure, RID, RID, RID, RID, uint32_t, int64_t, uint32_t, bool)
+	FUNC5(GpuDrivenTerrainSetIndirect, RID, RID, uint32_t, RID, uint32_t)
+	FUNC13(GpuDrivenTerrainSetCull, RID, int64_t, int64_t, int64_t, int64_t, int64_t, uint32_t, float, float, float, int32_t, float, float)
+	FUNC2(GpuDrivenTerrainSetEnabled, RID, bool)
+#pragma endregion
+
 	FUNC2(scenario_set_environment, RID, RID)
 	FUNC2(scenario_set_camera_attributes, RID, RID)
 	FUNC2(scenario_set_fallback_environment, RID, RID)
