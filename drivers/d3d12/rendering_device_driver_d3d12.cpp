@@ -2629,10 +2629,13 @@ Error RenderingDeviceDriverD3D12::command_queue_execute_and_present(CommandQueue
 
 	if (p_cmd_buffers.size() > 0) {
 		thread_local LocalVector<ID3D12CommandList *> command_lists;
-		command_lists.resize(p_cmd_buffers.size());
+		command_lists.clear();
 		for (uint32_t i = 0; i < p_cmd_buffers.size(); i++) {
 			const CommandBufferInfo *cmd_buf_info = (const CommandBufferInfo *)(p_cmd_buffers[i].id);
-			command_lists[i] = cmd_buf_info->cmd_list.Get();
+			for (const CommandBufferInfo::SubmittedList &stList : cmd_buf_info->precedingLists) {
+				command_lists.push_back(stList.pList.Get());
+			}
+			command_lists.push_back(cmd_buf_info->cmd_list.Get());
 		}
 
 		command_queue->d3d_queue->ExecuteCommandLists(command_lists.size(), command_lists.ptr());
@@ -2777,7 +2780,11 @@ RDD::CommandBufferID RenderingDeviceDriverD3D12::command_buffer_create(CommandPo
 }
 
 bool RenderingDeviceDriverD3D12::command_buffer_begin(CommandBufferID p_cmd_buffer) {
-	const CommandBufferInfo *cmd_buf_info = (const CommandBufferInfo *)p_cmd_buffer.id;
+	CommandBufferInfo *cmd_buf_info = (CommandBufferInfo *)p_cmd_buffer.id;
+	cmd_buf_info->precedingLists.clear();
+#ifdef PIX_ENABLED
+	cmd_buf_info->arrPixLabels.clear();
+#endif
 	HRESULT res = cmd_buf_info->cmd_allocator->Reset();
 	ERR_FAIL_COND_V_MSG(!SUCCEEDED(res), false, "Reset failed with error " + vformat("0x%08ux", (uint64_t)res) + ".");
 	res = cmd_buf_info->cmd_list->Reset(cmd_buf_info->cmd_allocator.Get(), nullptr);
@@ -2786,7 +2793,10 @@ bool RenderingDeviceDriverD3D12::command_buffer_begin(CommandBufferID p_cmd_buff
 }
 
 bool RenderingDeviceDriverD3D12::command_buffer_begin_secondary(CommandBufferID p_cmd_buffer, RenderPassID p_render_pass, uint32_t p_subpass, FramebufferID p_framebuffer) {
-	const CommandBufferInfo *cmd_buf_info = (const CommandBufferInfo *)p_cmd_buffer.id;
+	CommandBufferInfo *cmd_buf_info = (CommandBufferInfo *)p_cmd_buffer.id;
+#ifdef PIX_ENABLED
+	cmd_buf_info->arrPixLabels.clear();
+#endif
 	HRESULT res = cmd_buf_info->cmd_allocator->Reset();
 	ERR_FAIL_COND_V_MSG(!SUCCEEDED(res), false, "Reset failed with error " + vformat("0x%08ux", (uint64_t)res) + ".");
 	res = cmd_buf_info->cmd_list->Reset(cmd_buf_info->cmd_allocator.Get(), nullptr);
@@ -2805,6 +2815,44 @@ void RenderingDeviceDriverD3D12::command_buffer_end(CommandBufferID p_cmd_buffer
 	cmd_buf_info->compute_root_signature_crc = 0;
 	cmd_buf_info->pending_dyn_params = true;
 	cmd_buf_info->descriptor_heaps_set = false;
+}
+
+// D3D12 bundles cannot record compute dispatches. Submit a pre-recorded DIRECT
+// list between two parts of the original list, in the same ExecuteCommandLists call.
+void RenderingDeviceDriverD3D12::AppendUpscalingCommands(CommandBufferID stBuffer, ID3D12GraphicsCommandList *pExternal,
+		ID3D12GraphicsCommandList *pContinuation, VectorView<TextureID> arrTextures)
+{
+	CommandBufferInfo *pBuffer = reinterpret_cast<CommandBufferInfo *>(stBuffer.id);
+	if (!barrier_capabilities.enhanced_barriers_supported)
+	{
+		for (uint32_t nIndex = 0; nIndex < arrTextures.size(); ++nIndex)
+		{
+			TextureInfo *pTexture = reinterpret_cast<TextureInfo *>(arrTextures[nIndex].id);
+			const D3D12_RESOURCE_STATES eState = nIndex + 1 == arrTextures.size() ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS : D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+			_resource_transition_batch(pBuffer, pTexture, 0, 1, eState);
+		}
+		_resource_transitions_flush(pBuffer);
+	}
+#ifdef PIX_ENABLED
+	// PIX scopes belong to a single command list. Preserve open scopes across the split.
+	for (uint32_t nLabel = pBuffer->arrPixLabels.size(); nLabel > 0; --nLabel)
+	{
+		PIXEndEvent(pBuffer->cmd_list.Get());
+	}
+#endif
+	command_buffer_end(stBuffer);
+	pBuffer->precedingLists.push_back({ pBuffer->cmd_list });
+	pBuffer->precedingLists.push_back({ ComPtr<ID3D12GraphicsCommandList>(pExternal) });
+	pBuffer->cmd_list = pContinuation;
+	pContinuation->QueryInterface(pBuffer->cmd_list_1.ReleaseAndGetAddressOf());
+	pContinuation->QueryInterface(pBuffer->cmd_list_5.ReleaseAndGetAddressOf());
+	pContinuation->QueryInterface(pBuffer->cmd_list_7.ReleaseAndGetAddressOf());
+#ifdef PIX_ENABLED
+	for (const CommandBufferInfo::PixLabel &stLabel : pBuffer->arrPixLabels)
+	{
+		PIXBeginEvent(pContinuation, stLabel.nColor, "%s", stLabel.strName.get_data());
+	}
+#endif
 }
 
 void RenderingDeviceDriverD3D12::command_buffer_execute_secondary(CommandBufferID p_cmd_buffer, VectorView<CommandBufferID> p_secondary_cmd_buffers) {
@@ -5867,15 +5915,20 @@ void RenderingDeviceDriverD3D12::command_timestamp_write(CommandBufferID p_cmd_b
 
 void RenderingDeviceDriverD3D12::command_begin_label(CommandBufferID p_cmd_buffer, const char *p_label_name, const Color &p_color) {
 #ifdef PIX_ENABLED
-	const CommandBufferInfo *cmd_buf_info = (const CommandBufferInfo *)p_cmd_buffer.id;
-	PIXBeginEvent(cmd_buf_info->cmd_list.Get(), p_color.to_argb32(), p_label_name);
+	CommandBufferInfo *cmd_buf_info = (CommandBufferInfo *)p_cmd_buffer.id;
+	const uint32_t nColor = p_color.to_argb32();
+	PIXBeginEvent(cmd_buf_info->cmd_list.Get(), nColor, "%s", p_label_name);
+	cmd_buf_info->arrPixLabels.push_back({ CharString(p_label_name), nColor });
 #endif
 }
 
 void RenderingDeviceDriverD3D12::command_end_label(CommandBufferID p_cmd_buffer) {
 #ifdef PIX_ENABLED
-	const CommandBufferInfo *cmd_buf_info = (const CommandBufferInfo *)p_cmd_buffer.id;
-	PIXEndEvent(cmd_buf_info->cmd_list.Get());
+	CommandBufferInfo *cmd_buf_info = (CommandBufferInfo *)p_cmd_buffer.id;
+	if (!cmd_buf_info->arrPixLabels.is_empty()) {
+		PIXEndEvent(cmd_buf_info->cmd_list.Get());
+		cmd_buf_info->arrPixLabels.resize(cmd_buf_info->arrPixLabels.size() - 1);
+	}
 #endif
 }
 

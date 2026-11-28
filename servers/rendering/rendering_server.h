@@ -573,6 +573,8 @@ public:
 
 	virtual void viewport_set_clear_mode(RID p_viewport, RSE::ViewportClearMode p_clear_mode) = 0;
 
+	virtual Dictionary GetUpscalingInfo(RID ridViewport) const = 0;
+	virtual void ResetUpscalingHistory(RID ridViewport) = 0;
 	virtual RID viewport_get_render_target(RID p_viewport) const = 0;
 	virtual RID viewport_get_texture(RID p_viewport) const = 0;
 

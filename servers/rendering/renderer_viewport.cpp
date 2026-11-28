@@ -153,6 +153,12 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 				scaling_3d_mode = RSE::VIEWPORT_SCALING_3D_MODE_OFF;
 			}
 
+			if (scaling_3d_mode >= RSE::VIEWPORT_SCALING_3D_MODE_DLSS_SR && scaling_3d_mode <= RSE::VIEWPORT_SCALING_3D_MODE_AUTO && OS::get_singleton()->get_current_rendering_method() != "forward_plus") {
+				scaling_3d_mode = RSE::VIEWPORT_SCALING_3D_MODE_BILINEAR;
+				scaling_type = RSE::scaling_3d_mode_type(scaling_3d_mode);
+				WARN_PRINT_ONCE("Temporal upscaling requires Forward+. Using bilinear scaling.");
+			}
+
 			if (scaling_3d_mode != RSE::VIEWPORT_SCALING_3D_MODE_OFF && scaling_3d_mode != RSE::VIEWPORT_SCALING_3D_MODE_BILINEAR && scaling_3d_mode != RSE::VIEWPORT_SCALING_3D_MODE_NEAREST && OS::get_singleton()->get_current_rendering_method() == "gl_compatibility") {
 				scaling_3d_mode = RSE::VIEWPORT_SCALING_3D_MODE_BILINEAR;
 				scaling_type = RSE::scaling_3d_mode_type(scaling_3d_mode);
@@ -168,6 +174,9 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 			RenderingServerEnums::ViewportMSAA msaa_3d = p_viewport->msaa_3d;
 
 #ifdef RD_ENABLED
+			if (scaling_3d_mode == RSE::VIEWPORT_SCALING_3D_MODE_AUTO && RD::get_singleton() && RD::get_singleton()->has_feature(RD::SUPPORTS_METALFX_TEMPORAL)) {
+				scaling_3d_mode = RSE::VIEWPORT_SCALING_3D_MODE_METALFX_TEMPORAL;
+			}
 			if (scaling_3d_mode == RSE::VIEWPORT_SCALING_3D_MODE_METALFX_TEMPORAL && !RD::get_singleton()->has_feature(RD::SUPPORTS_METALFX_TEMPORAL)) {
 				if (RD::get_singleton()->has_feature(RD::SUPPORTS_METALFX_SPATIAL)) {
 					// Prefer MetalFX spatial if it is supported, which will be much more efficient than FSR2,
@@ -230,7 +239,7 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 			if (use_taa && scaling_type == RSE::VIEWPORT_SCALING_3D_TYPE_TEMPORAL) {
 				// Temporal upscalers can't be used with TAA.
 				// Turn it off and prefer using the temporal upscaler.
-				WARN_PRINT_ONCE("FSR 2 or MetalFX Temporal is not compatible with TAA. Disabling TAA internally.");
+				WARN_PRINT_ONCE("Temporal upscaling provides anti-aliasing. Disabling TAA internally.");
 				use_taa = false;
 			}
 
@@ -252,6 +261,9 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 				case RSE::VIEWPORT_SCALING_3D_MODE_METALFX_SPATIAL:
 				case RSE::VIEWPORT_SCALING_3D_MODE_METALFX_TEMPORAL:
 				case RSE::VIEWPORT_SCALING_3D_MODE_FSR:
+				case RSE::VIEWPORT_SCALING_3D_MODE_DLSS_SR:
+				case RSE::VIEWPORT_SCALING_3D_MODE_AMD_FSR:
+				case RSE::VIEWPORT_SCALING_3D_MODE_AUTO:
 				case RSE::VIEWPORT_SCALING_3D_MODE_FSR2:
 					target_width = p_viewport->size.width;
 					target_height = p_viewport->size.height;
@@ -307,7 +319,18 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 			rb_config.set_use_taa(use_taa);
 			rb_config.set_use_debanding(p_viewport->use_debanding);
 
+			p_viewport->render_buffers->strUpscalerImplementation = String();
+			p_viewport->render_buffers->strUpscalerFallback = String();
 			p_viewport->render_buffers->configure(&rb_config);
+			static const char *const MODE_NAMES[] = { "Bilinear", "FSR 1.0", "FSR 2.2", "MetalFX Spatial", "MetalFX Temporal", "Nearest" };
+			if (scaling_3d_mode == RSE::VIEWPORT_SCALING_3D_MODE_OFF) {
+				p_viewport->render_buffers->strUpscalerImplementation = "Native";
+			} else if (scaling_3d_mode < RSE::VIEWPORT_SCALING_3D_MODE_DLSS_SR) {
+				p_viewport->render_buffers->strUpscalerImplementation = MODE_NAMES[scaling_3d_mode];
+			}
+			if (scaling_3d_mode != p_viewport->scaling_3d_mode && scaling_3d_mode != RSE::VIEWPORT_SCALING_3D_MODE_OFF && !(p_viewport->scaling_3d_mode == RSE::VIEWPORT_SCALING_3D_MODE_AUTO && scaling_3d_mode == RSE::VIEWPORT_SCALING_3D_MODE_METALFX_TEMPORAL)) {
+				p_viewport->render_buffers->strUpscalerFallback = "Requested mode unavailable for this renderer, device or render scale.";
+			}
 		}
 	}
 }
@@ -1230,6 +1253,32 @@ RSE::ViewportUpdateMode RendererViewport::viewport_get_update_mode(RID p_viewpor
 	return viewport->update_mode;
 }
 
+Dictionary RendererViewport::GetUpscalingInfo(RID ridViewport) const
+{
+	const Viewport *pViewport = viewport_owner.get_or_null(ridViewport);
+	ERR_FAIL_NULL_V(pViewport, Dictionary());
+	Dictionary stInfo;
+	stInfo["requested_mode"] = (int)pViewport->scaling_3d_mode;
+	stInfo["input_size"] = pViewport->internal_size;
+	stInfo["output_size"] = pViewport->size;
+	if (pViewport->render_buffers.is_valid())
+	{
+		stInfo["implementation"] = pViewport->render_buffers->strUpscalerImplementation;
+		stInfo["fallback_reason"] = pViewport->render_buffers->strUpscalerFallback;
+	}
+	return stInfo;
+}
+
+void RendererViewport::ResetUpscalingHistory(RID ridViewport)
+{
+	Viewport *pViewport = viewport_owner.get_or_null(ridViewport);
+	ERR_FAIL_NULL(pViewport);
+	if (pViewport->render_buffers.is_valid())
+	{
+		++pViewport->render_buffers->nHistoryGeneration;
+	}
+}
+
 RID RendererViewport::viewport_get_render_target(RID p_viewport) const {
 	const Viewport *viewport = viewport_owner.get_or_null(p_viewport);
 	ERR_FAIL_NULL_V(viewport, RID());
@@ -1305,6 +1354,9 @@ void RendererViewport::viewport_attach_camera(RID p_viewport, RID p_camera) {
 	Viewport *viewport = viewport_owner.get_or_null(p_viewport);
 	ERR_FAIL_NULL(viewport);
 
+	if (viewport->camera != p_camera && viewport->render_buffers.is_valid()) {
+		++viewport->render_buffers->nHistoryGeneration;
+	}
 	viewport->camera = p_camera;
 }
 

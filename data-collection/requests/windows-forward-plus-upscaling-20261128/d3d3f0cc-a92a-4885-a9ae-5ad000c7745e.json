@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "windows-forward-plus-upscaling-20261128",
+  "collected_at": "2026-11-28T13:46:51.115633+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/windows-forward-plus-upscaling-20261128/github-4c53bcb9378fdcbac4f52ccedcacfb86676e5ade9d593ae92fdd69e598d5a800.json",
+      "sha256": "0909acdb439c168ce0e89a4f39d068a46e64f6b7340de64470bc9eb74b9ec3e0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-4c53bcb9378fdcbac4f52ccedcacfb86676e5ade9d593ae92fdd69e598d5a800",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/windows-forward-plus-upscaling-20261128/github-issue-2242-request.json",
+      "sha256": "3718b6759c19fbae6a1e12de13b2884be9dd5a6adc3c7394aeba05b55bf3f391",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-issue-2242-request",
+      "origin": "yanshi-drafted-github-issue-readback"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2242,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2242"
+}

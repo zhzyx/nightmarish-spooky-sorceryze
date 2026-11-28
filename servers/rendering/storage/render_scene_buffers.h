@@ -104,6 +104,10 @@ protected:
 	static void _bind_methods();
 
 public:
+	String strUpscalerImplementation;
+	String strUpscalerFallback;
+	uint64_t nHistoryGeneration = 0;
+
 	RenderSceneBuffers() {}
 	virtual ~RenderSceneBuffers() {}
 

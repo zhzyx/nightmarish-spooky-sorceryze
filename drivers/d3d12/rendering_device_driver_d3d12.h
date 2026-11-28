@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/string/ustring.h"
 #include "core/templates/a_hash_map.h"
 #include "core/templates/hash_map.h"
 #include "core/templates/paged_allocator.h"
@@ -502,6 +503,17 @@ private:
 		// Store a self list reference to be used by the command pool.
 		SelfList<CommandBufferInfo> command_buffer_info_elem{ this };
 
+		struct SubmittedList
+		{
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> pList;
+		};
+		LocalVector<SubmittedList> precedingLists;
+		struct PixLabel
+		{
+			CharString strName;
+			uint32_t nColor;
+		};
+		LocalVector<PixLabel> arrPixLabels;
 		D3D12_COMMAND_LIST_TYPE list_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> cmd_allocator;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmd_list;
@@ -535,6 +547,9 @@ private:
 	};
 
 public:
+	void AppendUpscalingCommands(CommandBufferID stBuffer, ID3D12GraphicsCommandList *pExternal,
+			ID3D12GraphicsCommandList *pContinuation, VectorView<TextureID> arrTextures);
+
 	virtual CommandBufferID command_buffer_create(CommandPoolID p_cmd_pool) override final;
 	virtual bool command_buffer_begin(CommandBufferID p_cmd_buffer) override final;
 	virtual bool command_buffer_begin_secondary(CommandBufferID p_cmd_buffer, RenderPassID p_render_pass, uint32_t p_subpass, FramebufferID p_framebuffer) override final;

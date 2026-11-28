@@ -1969,6 +1969,8 @@ void RenderingDeviceGraph::add_driver_callback(RDD::DriverCallback p_callback, v
 	int32_t command_index;
 	RecordedDriverCallbackCommand *command = static_cast<RecordedDriverCallbackCommand *>(_allocate_command(sizeof(RecordedDriverCallbackCommand), command_index));
 	command->type = RecordedCommand::TYPE_DRIVER_CALLBACK;
+	// External SDKs may record both compute and transfer commands.
+	command->self_stages = RDD::PIPELINE_STAGE_ALL_COMMANDS_BIT;
 	command->callback = p_callback;
 	command->userdata = p_userdata;
 	_add_command_to_graph((ResourceTracker **)p_trackers.ptr(), (ResourceUsage *)p_usages.ptr(), p_trackers.size(), command_index, command);

@@ -311,6 +311,18 @@
 				[b]Note:[/b] [method warp_mouse] is only supported on Windows, macOS and Linux. It has no effect on Android, iOS and Web.
 			</description>
 		</method>
+		<method name="get_upscaling_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Reports the requested mode, actual 3D input and output sizes, and, once configured, the active implementation and fallback reason. Query after a rendered frame.
+			</description>
+		</method>
+		<method name="reset_upscaling_history">
+			<return type="void" />
+			<description>
+				Invalidates temporal history for FSR 2 and the desktop temporal upscalers. Call after teleporting the active camera. Switching cameras invalidates this history automatically.
+			</description>
+		</method>
 	</methods>
 	<members>
 		<member name="anisotropic_filtering_level" type="int" setter="set_anisotropic_filtering_level" getter="get_anisotropic_filtering_level" enum="Viewport.AnisotropicFiltering" default="2">
@@ -579,7 +591,16 @@
 			Use nearest-neighbor filtering for the viewport's 3D buffer. This looks crisper than [constant SCALING_3D_MODE_BILINEAR] and has no additional rendering cost. The amount of scaling can be set using [member scaling_3d_scale]. Values greater than [code]1.0[/code] are not supported and bilinear downsampling will be used instead. A value of [code]1.0[/code] disables scaling.
 			[b]Note:[/b] When using the [b]Nearest[/b] scaling mode, to avoid uneven pixel scaling, it's highly recommended to use a value equal to an integer divisor with a dividend of [code]1[/code]. For example, it's best to use a scale of [code]0.5[/code] (1/2), [code]0.3333[/code] (1/3), [code]0.25[/code] (1/4), [code]0.2[/code] (1/5), and so on.
 		</constant>
-		<constant name="SCALING_3D_MODE_MAX" value="6" enum="Scaling3DMode">
+		<constant name="SCALING_3D_MODE_DLSS_SR" value="6" enum="Scaling3DMode">
+			Request NVIDIA DLSS Super Resolution in Forward+. Falls back to built-in FSR 2 when unavailable.
+		</constant>
+		<constant name="SCALING_3D_MODE_AMD_FSR" value="7" enum="Scaling3DMode">
+			Request AMD FSR Upscaling in Forward+. The runtime selects the supported implementation. Falls back to built-in FSR 2 when unavailable.
+		</constant>
+		<constant name="SCALING_3D_MODE_AUTO" value="8" enum="Scaling3DMode">
+			Choose a supported temporal upscaler for this viewport in Forward+.
+		</constant>
+		<constant name="SCALING_3D_MODE_MAX" value="9" enum="Scaling3DMode">
 			Represents the size of the [enum Scaling3DMode] enum.
 		</constant>
 		<constant name="MSAA_DISABLED" value="0" enum="MSAA">

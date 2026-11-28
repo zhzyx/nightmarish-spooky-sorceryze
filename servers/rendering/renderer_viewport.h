@@ -244,6 +244,8 @@ public:
 
 	void viewport_set_clear_mode(RID p_viewport, RSE::ViewportClearMode p_clear_mode);
 
+	Dictionary GetUpscalingInfo(RID ridViewport) const;
+	void ResetUpscalingHistory(RID ridViewport);
 	RID viewport_get_render_target(RID p_viewport) const;
 	RID viewport_get_texture(RID p_viewport) const;
 	RID viewport_get_occluder_debug_texture(RID p_viewport) const;

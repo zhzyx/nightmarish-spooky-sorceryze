@@ -8,12 +8,18 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout(set = 0, binding = 0) uniform sampler2D depth_buffer;
+#ifdef VENDOR_INPUTS
+layout(rg16f, set = 0, binding = 1) uniform restrict image2D velocity_buffer;
+layout(set = 0, binding = 2) uniform sampler2D color_buffer;
+layout(r8, set = 0, binding = 3) uniform restrict writeonly image2D reactive_mask;
+#else
 layout(rg16f, set = 0, binding = 1) uniform restrict writeonly image2D velocity_buffer;
+#endif
 
 layout(push_constant, std430) uniform Params {
 	highp mat4 reprojection_matrix;
 	vec2 resolution;
-	uint pad[2];
+	uvec2 pad;
 }
 params;
 
@@ -25,6 +31,13 @@ void main() {
 
 	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
 
+#ifdef VENDOR_INPUTS
+	// Native SDKs need a standalone resource; the renderer stores reactivity in HDR color alpha.
+	imageStore(reactive_mask, pos, vec4(min(texelFetch(color_buffer, pos, 0).a, 0.9f)));
+	if (any(notEqual(imageLoad(velocity_buffer, pos).xy, vec2(-1.0)))) {
+		return;
+	}
+#endif
 	float depth = texelFetch(depth_buffer, pos, 0).x;
 	vec2 uv = (vec2(pos) + 0.5f) / params.resolution;
 	vec2 velocity = derive_motion_vector(uv, depth, params.reprojection_matrix);

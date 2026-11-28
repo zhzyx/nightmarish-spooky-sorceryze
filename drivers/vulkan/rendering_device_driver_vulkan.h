@@ -413,6 +413,12 @@ private:
 	};
 
 public:
+	void ExecuteSecondary(CommandBufferID stPrimary, VkCommandBuffer stSecondary)
+	{
+		CommandBufferInfo *pPrimary = reinterpret_cast<CommandBufferInfo *>(stPrimary.id);
+		vkCmdExecuteCommands(pPrimary->vk_command_buffer, 1, &stSecondary);
+	}
+
 	virtual CommandBufferID command_buffer_create(CommandPoolID p_cmd_pool) override final;
 	virtual bool command_buffer_begin(CommandBufferID p_cmd_buffer) override final;
 	virtual bool command_buffer_begin_secondary(CommandBufferID p_cmd_buffer, RenderPassID p_render_pass, uint32_t p_subpass, FramebufferID p_framebuffer) override final;

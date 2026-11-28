@@ -106,6 +106,9 @@ public:
 		SCALING_3D_MODE_METALFX_SPATIAL,
 		SCALING_3D_MODE_METALFX_TEMPORAL,
 		SCALING_3D_MODE_NEAREST,
+		SCALING_3D_MODE_DLSS_SR,
+		SCALING_3D_MODE_AMD_FSR,
+		SCALING_3D_MODE_AUTO,
 		SCALING_3D_MODE_MAX
 	};
 
@@ -604,6 +607,8 @@ public:
 	float get_oversampling() const { return font_oversampling; }
 
 	void set_scaling_3d_mode(Scaling3DMode p_scaling_3d_mode);
+	Dictionary GetUpscalingInfo() const;
+	void ResetUpscalingHistory();
 	Scaling3DMode get_scaling_3d_mode() const;
 
 	void set_scaling_3d_scale(float p_scaling_3d_scale);

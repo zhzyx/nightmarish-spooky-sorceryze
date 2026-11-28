@@ -34,6 +34,7 @@
 #include "servers/rendering/multi_uma_buffer.h"
 #include "servers/rendering/renderer_rd/cluster_builder_rd.h"
 #include "servers/rendering/renderer_rd/effects/fsr2.h"
+#include "servers/rendering/renderer_rd/effects/TemporalUpscaler.h"
 #include "servers/rendering/renderer_rd/effects/motion_vectors_store.h"
 #include "servers/rendering/renderer_rd/effects/ss_effects.h"
 #include "servers/rendering/renderer_rd/effects/taa.h"
@@ -95,12 +96,14 @@ public:
 
 	private:
 		RenderSceneBuffersRD *render_buffers = nullptr;
-		RendererRD::FSR2Context *fsr2_context = nullptr;
+		RendererRD::FSR2Context *fsr2Contexts[RendererSceneRender::MAX_RENDER_VIEWS] = {};
 #ifdef METAL_MFXTEMPORAL_ENABLED
 		RendererRD::MFXTemporalContext *mfx_temporal_context = nullptr;
 #endif
 
 	public:
+		uint64_t nHistoryGeneration = UINT64_MAX;
+		RendererRD::TemporalUpscaler stTemporalUpscaler;
 		ClusterBuilderRD *cluster_builder = nullptr;
 
 		struct SSEffectsData {
@@ -143,8 +146,7 @@ public:
 		RID get_voxelgi(uint32_t p_layer) { return render_buffers->get_texture_slice(RB_SCOPE_FORWARD_CLUSTERED, RB_TEX_VOXEL_GI, p_layer, 0); }
 		RID get_voxelgi_msaa(uint32_t p_layer) { return render_buffers->get_texture_slice(RB_SCOPE_FORWARD_CLUSTERED, RB_TEX_VOXEL_GI_MSAA, p_layer, 0); }
 
-		void ensure_fsr2(RendererRD::FSR2Effect *p_effect);
-		RendererRD::FSR2Context *get_fsr2_context() const { return fsr2_context; }
+		RendererRD::FSR2Context *GetFsr2Context(RendererRD::FSR2Effect *pEffect, uint32_t nView);
 
 #ifdef METAL_MFXTEMPORAL_ENABLED
 		bool ensure_mfx_temporal(RendererRD::MFXTemporalEffect *p_effect);
