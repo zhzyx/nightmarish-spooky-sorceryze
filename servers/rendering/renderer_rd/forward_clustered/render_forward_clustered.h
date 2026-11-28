@@ -39,6 +39,7 @@
 #include "servers/rendering/renderer_rd/effects/taa.h"
 #include "servers/rendering/renderer_rd/forward_clustered/scene_shader_forward_clustered.h"
 #include "servers/rendering/renderer_rd/renderer_scene_render_rd.h"
+#include "servers/rendering/renderer_rd/TerrainGPUDrivenRD.h"
 #include "servers/rendering/renderer_rd/shaders/forward_clustered/best_fit_normal.glsl.gen.h"
 #include "servers/rendering/renderer_rd/shaders/forward_clustered/integrate_dfg.glsl.gen.h"
 
@@ -86,6 +87,8 @@ class RenderForwardClustered : public RendererSceneRenderRD {
 	/* Scene Shader */
 
 	SceneShaderForwardClustered scene_shader;
+	RendererRD::TerrainGPUDrivenRD *pTerrainGpuDriven = nullptr;
+	uint32_t nTerrainCullCameraLayers = 0xFFFFFFFF; // Main camera visible layers (set per frame in _pre_opaque_render).
 
 public:
 	/* Framebuffer */
@@ -438,6 +441,9 @@ private:
 		bool used_opaque_stencil = false;
 
 		struct ShadowPass {
+			Projection projTerrainVp;
+			LocalVector<uint64_t> arrTerrainBuffers;
+			bool bTerrainPancake = false;
 			uint32_t element_from;
 			uint32_t element_count;
 			PassMode pass_mode;
@@ -490,6 +496,12 @@ private:
 	_FORCE_INLINE_ void _render_list_template(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element);
 	void _render_list(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element);
 	void _render_list_with_draw_list(RenderListParameters *p_params, RID p_framebuffer, BitField<RD::DrawFlags> p_draw_flags = RD::DRAW_DEFAULT_ALL, const Vector<Color> &p_clear_color_values = Vector<Color>(), float p_clear_depth_value = 0.0, uint32_t p_clear_stencil_value = 0, const Rect2 &p_region = Rect2());
+
+#pragma region Engine ZXB
+	// [ZXB] GPU-driven terrain: issues draw_list_draw_indirect for every registered terrain entry
+	// whose pass mode matches (color, depth variants, shadow). Reads RSG::scene (RendererSceneCull).
+	void RenderGpuDrivenTerrains(RenderingDevice::DrawListID nDrawList, RenderingDevice::FramebufferFormatID nFramebufferFormat, RenderListParameters *pParams);
+#pragma endregion
 
 	void _fill_instance_data(RenderListType p_render_list, int *p_render_info = nullptr, uint32_t p_offset = 0, int32_t p_max_elements = -1, bool p_update_buffer = true);
 	void _fill_render_list(RenderListType p_render_list, const RenderDataRD *p_render_data, PassMode p_pass_mode, bool p_using_sdfgi = false, bool p_using_opaque_gi = false, bool p_using_motion_pass = false, bool p_append = false);

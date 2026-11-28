@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CVars" inherits="Object" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		Runtime console variables for debugging.
+	</brief_description>
+	<description>
+		Singleton that stores named int, float, bool, and [String] values which can be changed while the project is running.
+		Writes carry a priority. A lower priority source cannot replace a higher one. From lowest to highest: constructor, project setting, config file, command line, code, then the console. Setting the same value again still raises the priority.
+		[code]FLAG_READ_ONLY[/code] and [code]FLAG_CHEAT[/code] reject config files, the command line, and the console. [method set_value] still works. Cheat variables accept those sources only in debug builds.
+		Command text understands [code]name[/code], [code]name value[/code], [code]name=value[/code], [code]help [filter][/code], [code]dump [filter][/code], and [code]reset name[/code]. Separate several commands with [code];[/code]. A semicolon inside quotes stays part of the value. Names are case-insensitive.
+		Startup arguments, parsed before user arguments:
+		[codeblock]
+		godot --cvar t.TimeScale=0.2 --cvar-exec "t.MaxFPS 30" --cvar-file user://cvars.cfg
+		[/codeblock]
+		[code]--cvar-file[/code] is read again while the game runs. [code]con.ConfigPollMs[/code] is the interval in milliseconds.
+		On a windowed, non-editor run, [code]con.AutoConsole[/code] adds an in-game console toggled with [kbd]F1[/kbd] or the [kbd]`[/kbd] / [kbd]~[/kbd] key (the key to the left of 1). The default is on in debug builds and off in release builds.
+		In the editor, [kbd]F1[/kbd] stays Search Help. Press that same [kbd]`[/kbd] / [kbd]~[/kbd] key when a text field is not focused, or use Editor > Toggle CVar Console. If a game is running and the debugger is connected, the same command is sent to that game.
+		Built-in variables [code]t.TimeScale[/code] and [code]t.MaxFPS[/code] write through to [Engine] immediately.
+		A remote debugger can run a command by sending a [code]cvar[/code] capture message [code]exec[/code] with the command string as its first argument.
+		Variables named before they are registered (from the command line or a config file) are applied when [method register_variable] runs.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="execute">
+			<return type="String" />
+			<param index="0" name="command" type="String" />
+			<description>
+				Runs [param command] at console priority and returns the output text. Unknown names are an error. Use this from the in-game console and from scripts.
+			</description>
+		</method>
+		<method name="get_config_file" qualifiers="const">
+			<return type="String" />
+			<description>
+				Returns the config file path set with [method set_config_file] or [code]--cvar-file[/code].
+			</description>
+		</method>
+		<method name="get_set_by" qualifiers="const">
+			<return type="int" enum="CVars.SetBy" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Returns the priority of the last accepted write to [param name]. Missing names return [constant SET_BY_CONSTRUCTOR].
+			</description>
+		</method>
+		<method name="get_value" qualifiers="const">
+			<return type="Variant" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Returns the current value of [param name], or [code]null[/code] if it is not registered.
+			</description>
+		</method>
+		<method name="has_command" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Returns [code]true[/code] if [param name] is a registered command.
+			</description>
+		</method>
+		<method name="has_variable" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Returns [code]true[/code] if [param name] is a registered variable.
+			</description>
+		</method>
+		<method name="help" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="filter" type="String" default="&quot;&quot;" />
+			<description>
+				Returns every variable and command whose name contains [param filter], plus a one-line syntax reminder. The match is case-insensitive. An empty filter lists everything.
+			</description>
+		</method>
+		<method name="register_command">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="callback" type="Callable" />
+			<param index="2" name="help" type="String" default="&quot;&quot;" />
+			<description>
+				Registers a command. [param callback] receives one [PackedStringArray] of arguments and may return a [String] to print. Returns [code]false[/code] if the name is invalid, empty, or already used.
+			</description>
+		</method>
+		<method name="register_variable">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="default_value" type="Variant" />
+			<param index="2" name="help" type="String" default="&quot;&quot;" />
+			<param index="3" name="flags" type="int" enum="CVars.Flag" is_bitfield="true" default="0" />
+			<description>
+				Registers a variable. [param default_value] must be an int, float, bool, or [String]; that type is fixed for later writes. A value previously supplied on the command line or in a config file is applied immediately. Returns [code]false[/code] if the name is invalid or already used.
+			</description>
+		</method>
+		<method name="reload_config_file">
+			<return type="String" />
+			<description>
+				Reads the config file now and applies changed lines at config-file priority. Returns the output text, or an empty string if the file is missing or unchanged.
+			</description>
+		</method>
+		<method name="reset">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Restores [param name] to its default and drops its priority back to constructor, so config files and the command line can write it again. Fails for unknown names, and for read-only or cheat variables when the console is not allowed to write them.
+			</description>
+		</method>
+		<method name="set_changed_callback">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="callback" type="Callable" />
+			<description>
+				Calls [param callback] with [code](name, value)[/code] after a write changes the stored value. Returns [code]false[/code] if [param name] is not a variable.
+			</description>
+		</method>
+		<method name="set_config_file">
+			<return type="void" />
+			<param index="0" name="path" type="String" />
+			<description>
+				Sets the file used by [method reload_config_file] and by the runtime poll. Changing the path forces the next read to apply the file again.
+			</description>
+		</method>
+		<method name="set_value">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Writes [param value] at code priority. This can replace a command-line value and other values with the same or lower priority. Returns [code]false[/code] if the name is missing, the value cannot be converted, or a higher priority has already written the value.
+			</description>
+		</method>
+		<method name="set_value_with_priority">
+			<return type="bool" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="value" type="Variant" />
+			<param index="2" name="set_by" type="int" enum="CVars.SetBy" />
+			<description>
+				Writes [param value] at an explicit priority. Returns [code]false[/code] if a higher priority value is already stored, the variable is missing, or the source is blocked by [code]FLAG_READ_ONLY[/code] or [code]FLAG_CHEAT[/code].
+			</description>
+		</method>
+		<method name="unregister">
+			<return type="void" />
+			<param index="0" name="name" type="String" />
+			<description>
+				Removes a variable or command. Pending startup values for that name are dropped too.
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="FLAG_NONE" value="0" enum="Flag" is_bitfield="true">
+			No extra restrictions.
+		</constant>
+		<constant name="FLAG_CHEAT" value="1" enum="Flag" is_bitfield="true">
+			Config files, the command line, and the console cannot change this variable unless the build allows cheat commands. Debug builds allow them. Release builds do not. [method set_value] still can.
+		</constant>
+		<constant name="FLAG_READ_ONLY" value="2" enum="Flag" is_bitfield="true">
+			Config files, the command line, and the console cannot change this variable. [method set_value] still can.
+		</constant>
+		<constant name="FLAG_RENDER_THREAD_SAFE" value="4" enum="Flag" is_bitfield="true">
+			The value can be read from the render thread. Integer variables with this flag must fit in a signed 32-bit integer. C++ code that needs a lock-free load should register an atomic reference instead of polling the singleton.
+		</constant>
+		<constant name="SET_BY_CONSTRUCTOR" value="0" enum="SetBy">
+			Default stored at registration. Lowest priority.
+		</constant>
+		<constant name="SET_BY_PROJECT_SETTING" value="1" enum="SetBy">
+			Value taken from project configuration, such as the project's max FPS.
+		</constant>
+		<constant name="SET_BY_CONFIG_FILE" value="2" enum="SetBy">
+			Value read from [code]--cvar-file[/code] or [method reload_config_file].
+		</constant>
+		<constant name="SET_BY_COMMAND_LINE" value="3" enum="SetBy">
+			Value supplied with [code]--cvar[/code] or [code]--cvar-exec[/code].
+		</constant>
+		<constant name="SET_BY_CODE" value="4" enum="SetBy">
+			Value written by [method set_value].
+		</constant>
+		<constant name="SET_BY_CONSOLE" value="5" enum="SetBy">
+			Value written by [method execute] or the in-game console. Highest priority.
+		</constant>
+	</constants>
+</class>

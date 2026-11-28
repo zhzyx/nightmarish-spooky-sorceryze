@@ -162,6 +162,7 @@
 #include "scene/2d/node_2d.h"
 #include "scene/3d/bone_attachment_3d.h"
 #include "scene/animation/animation_tree.h"
+#include "scene/debugger/CVarConsole.h"
 #include "scene/gui/button.h"
 #include "scene/gui/color_picker.h"
 #include "scene/gui/control.h"
@@ -419,6 +420,38 @@ void EditorNode::_update_unsaved_cache() {
 	}
 }
 
+static String EditorCvarSubmitted(const String &strLine, const String &strLocalResult, void *pUserdata)
+{
+	(void)pUserdata;
+	EditorDebuggerNode *pDebugger = EditorDebuggerNode::get_singleton();
+	if (!pDebugger)
+	{
+		return String();
+	}
+	ScriptEditorDebugger *pSession = pDebugger->get_current_debugger();
+	if (!pSession || !pSession->is_session_active())
+	{
+		return String();
+	}
+	Array arrArgs;
+	arrArgs.push_back(strLine);
+	pSession->send_message("cvar:exec", arrArgs);
+	if (strLocalResult.begins_with("error: unknown"))
+	{
+		return "sent to running game";
+	}
+	return "also sent to running game";
+}
+
+void EditorNode::ToggleCvarConsole()
+{
+	if (!pCvarConsole)
+	{
+		return;
+	}
+	pCvarConsole->Toggle();
+}
+
 void EditorNode::input(const Ref<InputEvent> &p_event) {
 	// EditorNode::get_singleton()->set_process_input is set to true in ProgressDialog
 	// only when the progress dialog is visible.
@@ -442,6 +475,10 @@ void EditorNode::shortcut_input(const Ref<InputEvent> &p_event) {
 			FileSystemDock::get_singleton()->focus_on_filter();
 		} else if (ED_IS_SHORTCUT("editor/editor_help", p_event)) {
 			emit_signal(SNAME("request_help_search"), "");
+		}
+		else if (ED_IS_SHORTCUT("editor/toggle_cvar_console", p_event) || CVarConsole::IsTildeToggle(k))
+		{
+			ToggleCvarConsole();
 		} else if (ED_IS_SHORTCUT("editor/editor_next", p_event)) {
 			editor_main_screen->select_next();
 		} else if (ED_IS_SHORTCUT("editor/editor_prev", p_event)) {
@@ -3990,6 +4027,10 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		} break;
 		case EDITOR_MANAGE_FEATURE_PROFILES: {
 			feature_profile_manager->popup_centered_clamped(Size2(900, 800) * EDSCALE, 0.8);
+		}
+		break;
+		case EDITOR_TOGGLE_CVAR_CONSOLE: {
+			ToggleCvarConsole();
 		} break;
 		case EDITOR_TOGGLE_FULLSCREEN: {
 			DisplayServerEnums::WindowMode mode = DisplayServer::get_singleton()->window_get_mode();
@@ -8297,6 +8338,7 @@ void EditorNode::_build_settings_menu(bool p_dark_mode) {
 	settings_menu->add_icon_shortcut(get_editor_theme_native_menu_icon(SNAME("Tools"), menu_type == MENU_TYPE_GLOBAL, p_dark_mode), ED_GET_SHORTCUT("editor/editor_settings"), EDITOR_OPEN_SETTINGS);
 #endif
 	settings_menu->add_shortcut(ED_GET_SHORTCUT("editor/command_palette"), EDITOR_COMMAND_PALETTE);
+	settings_menu->add_shortcut(ED_GET_SHORTCUT("editor/toggle_cvar_console"), EDITOR_TOGGLE_CVAR_CONSOLE);
 	settings_menu->add_separator();
 
 	settings_menu->add_submenu_node_item(TTRC("Editor Docks"), editor_dock_manager->get_docks_menu());
@@ -9260,6 +9302,7 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT_AND_COMMAND("editor/fullscreen_mode", TTRC("Toggle Fullscreen"), KeyModifierMask::SHIFT | Key::F11);
 	ED_SHORTCUT_OVERRIDE("editor/fullscreen_mode", "macos", KeyModifierMask::META | KeyModifierMask::CTRL | Key::F);
 
+	ED_SHORTCUT_AND_COMMAND("editor/toggle_cvar_console", TTRC("Toggle CVar Console"), Key::QUOTELEFT);
 	ED_SHORTCUT_AND_COMMAND("editor/editor_help", TTRC("Search Help..."), Key::F1);
 	ED_SHORTCUT_OVERRIDE("editor/editor_help", "macos", KeyModifierMask::ALT | Key::SPACE);
 	ED_SHORTCUT_AND_COMMAND("editor/online_docs", TTRC("Online Documentation"));
@@ -9799,6 +9842,11 @@ EditorNode::EditorNode() {
 	_update_recent_scenes();
 
 	set_process_shortcut_input(true);
+
+	pCvarConsole = memnew(CVarConsole);
+	pCvarConsole->SetEditorMode(true);
+	pCvarConsole->SetSubmittedHook(EditorCvarSubmitted, nullptr);
+	add_child(pCvarConsole);
 
 	load_errors = memnew(RichTextLabel);
 	load_error_dialog = memnew(AcceptDialog);

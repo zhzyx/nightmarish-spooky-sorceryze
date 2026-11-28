@@ -46,6 +46,7 @@
 #include "scene/animation/animation_tree.h"
 #include "scene/animation/tween.h"
 #include "scene/audio/audio_stream_player.h"
+#include "scene/debugger/CVarConsole.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/gui/aspect_ratio_container.h"
 #include "scene/gui/box_container.h"
@@ -242,6 +243,10 @@
 #include "scene/3d/decal.h"
 #include "scene/3d/fabr_ik_3d.h"
 #include "scene/3d/fog_volume.h"
+#pragma region Engine ZXB
+#include "scene/3d/RuntimeVirtualTextureVolume.h"
+#include "scene/resources/RuntimeVirtualTexture.h"
+#pragma endregion
 #include "scene/3d/gpu_particles_3d.h"
 #include "scene/3d/gpu_particles_collision_3d.h"
 #include "scene/3d/ik_modifier_3d.h"
@@ -772,6 +777,9 @@ void register_scene_types() {
 	GDREGISTER_CLASS(VisibleOnScreenEnabler3D);
 	GDREGISTER_CLASS(WorldEnvironment);
 	GDREGISTER_CLASS(FogVolume);
+#pragma region Engine ZXB
+	GDREGISTER_CLASS(RuntimeVirtualTextureVolume);
+#pragma endregion
 	GDREGISTER_CLASS(FogMaterial);
 	GDREGISTER_CLASS(RemoteTransform3D);
 
@@ -985,6 +993,10 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CompressedCubemapArray);
 	GDREGISTER_CLASS(CompressedTexture2DArray);
 	GDREGISTER_CLASS(PlaceholderTexture2D);
+#pragma region Engine ZXB
+	GDREGISTER_CLASS(RuntimeVirtualTexture);
+	GDREGISTER_ABSTRACT_CLASS(RuntimeVirtualTextureProxy);
+#pragma endregion
 	GDREGISTER_CLASS(PlaceholderTexture3D);
 	GDREGISTER_ABSTRACT_CLASS(PlaceholderTextureLayered);
 	GDREGISTER_CLASS(PlaceholderTexture2DArray);
@@ -1112,6 +1124,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(PackedScene);
 
 	GDREGISTER_CLASS(SceneTree);
+	GDREGISTER_INTERNAL_CLASS(CVarConsole);
 	GDREGISTER_ABSTRACT_CLASS(SceneTreeTimer); // sorry, you can't create it
 
 #ifndef DISABLE_DEPRECATED

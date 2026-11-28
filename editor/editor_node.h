@@ -49,6 +49,7 @@ class AcceptDialog;
 class BoxContainer;
 class ColorPicker;
 class ConfirmationDialog;
+class CVarConsole;
 class Control;
 class FileDialog;
 class HBoxContainer;
@@ -194,6 +195,7 @@ public:
 		// Editor menu.
 		EDITOR_OPEN_SETTINGS,
 		EDITOR_COMMAND_PALETTE,
+		EDITOR_TOGGLE_CVAR_CONSOLE,
 		EDITOR_TAKE_SCREENSHOT,
 		EDITOR_TOGGLE_FULLSCREEN,
 		EDITOR_OPEN_DATA_FOLDER,
@@ -427,6 +429,7 @@ private:
 
 	AudioStreamPreviewGenerator *audio_preview_gen = nullptr;
 	ProgressDialog *progress_dialog = nullptr;
+	CVarConsole *pCvarConsole = nullptr;
 	BackgroundProgress *progress_hb = nullptr;
 
 	DependencyErrorDialog *dependency_error = nullptr;
@@ -660,6 +663,7 @@ private:
 
 	virtual void input(const Ref<InputEvent> &p_event) override;
 	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void ToggleCvarConsole();
 
 	void _remove_edited_scene(bool p_change_tab = true);
 	void _remove_scene(int p_idx, bool p_change_tab = true);

@@ -42,6 +42,9 @@
 #include "servers/rendering/renderer_rd/effects/vrs.h"
 #include "servers/rendering/renderer_rd/environment/gi.h"
 #include "servers/rendering/renderer_rd/environment/sky.h"
+#pragma region Engine ZXB
+#include "servers/rendering/renderer_rd/RuntimeVirtualTextureRD.h"
+#pragma endregion
 #include "servers/rendering/renderer_rd/storage_rd/light_storage.h"
 #include "servers/rendering/renderer_rd/storage_rd/render_data_rd.h"
 #include "servers/rendering/renderer_rd/storage_rd/render_scene_buffers_rd.h"
@@ -254,6 +257,24 @@ public:
 	virtual void render_material(const Transform3D &p_cam_transform, const Projection &p_cam_projection, bool p_cam_orthogonal, const PagedArray<RenderGeometryInstance *> &p_instances, RID p_framebuffer, const Rect2i &p_region) override;
 
 	virtual void render_particle_collider_heightfield(RID p_collider, const Transform3D &p_transform, const PagedArray<RenderGeometryInstance *> &p_instances) override;
+
+#pragma region Engine ZXB
+	// [ZXB] Runtime Virtual Texture GPU backend.
+	RendererRD::RuntimeVirtualTextureRD *pRuntimeVirtualTextureRd = nullptr;
+
+	virtual bool RuntimeVirtualTextureGpuIsSupported() const override
+	{
+		return pRuntimeVirtualTextureRd != nullptr;
+	}
+	virtual RID RuntimeVirtualTextureGpuCreate(const RuntimeVirtualTextureGPUConfig &stConfig, RID ridPageTableTexture, RID ridPhysicalTexture0, RID ridPhysicalTexture1) override;
+	virtual void RuntimeVirtualTextureGpuFree(RID ridGpu) override;
+	virtual void RuntimeVirtualTextureGpuUpdatePageTable(RID ridGpu, const LocalVector<Vector<uint8_t>> &arrLevels) override;
+	virtual void RuntimeVirtualTextureGpuRenderPage(RID ridGpu, const Transform3D &xformCamera, const Projection &projProjection, const PagedArray<RenderGeometryInstance *> &arrInstances, uint32_t nPoolX, uint32_t nPoolY, float fVolumeHeight) override;
+	virtual void RuntimeVirtualTextureGpuFeedback(RID ridSurface, RID ridViewport, const Transform3D &xformVolume, uint32_t nLog2Tiles, uint32_t nTileSize, int nMaxAnisotropy, float fLodBias, const Vector4 &vLimits, uint64_t nRevision, RID ridGpu, const Ref<RenderSceneBuffers> &refBuffers, const CameraData &stCamera) override;
+	virtual Vector<uint8_t> RuntimeVirtualTextureGpuReadMaterialTile(RID ridGpu) override;
+	virtual bool RuntimeVirtualTextureGpuDrawHeight(RID ridGpu, const HeightGrid &stSource, const Vector2i &vPage, uint32_t nLevel, const Vector2i &vSlot) override;
+	virtual void RuntimeVirtualTextureGpuUploadPage(RID ridGpu, uint32_t nPoolX, uint32_t nPoolY, const Vector<uint8_t> &arrData) override;
+#pragma endregion
 
 	virtual void set_scene_pass(uint64_t p_pass) override {
 		scene_pass = p_pass;

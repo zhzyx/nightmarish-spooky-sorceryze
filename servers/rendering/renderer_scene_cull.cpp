@@ -858,6 +858,13 @@ void RendererSceneCull::instance_set_scenario(RID p_instance, RID p_scenario) {
 	Instance *instance = instance_owner.get_or_null(p_instance);
 	ERR_FAIL_NULL(instance);
 
+#pragma region Engine ZXB
+	if (instance->scenario)
+	{
+		RuntimeVirtualTextureInvalidateInstance(instance);
+	}
+#pragma endregion
+
 	if (instance->scenario) {
 		instance->scenario->instances.remove(&instance->scenario_item);
 
@@ -968,10 +975,15 @@ void RendererSceneCull::instance_set_layer_mask(RID p_instance, uint32_t p_mask)
 		singleton->_instance_queue_update(instance, false, false);
 	}
 
+	const uint32_t nOldLayerMask = instance->layer_mask;
 	instance->layer_mask = p_mask;
 	if (instance->scenario && instance->array_index >= 0) {
 		instance->scenario->instance_data[instance->array_index].layer_mask = p_mask;
 	}
+
+#pragma region Engine ZXB
+	RuntimeVirtualTextureInvalidateInstance(instance, nOldLayerMask ^ p_mask); // Only RVTs whose layers changed.
+#pragma endregion
 
 	if ((1 << instance->base_type) & RSE::INSTANCE_GEOMETRY_MASK && instance->base_data) {
 		InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(instance->base_data);
@@ -1083,6 +1095,9 @@ void RendererSceneCull::instance_set_visible(RID p_instance, bool p_visible) {
 		return;
 	}
 
+#pragma region Engine ZXB
+	RuntimeVirtualTextureInvalidateInstance(instance);
+#pragma endregion
 	instance->visible = p_visible;
 
 	if (p_visible) {
@@ -1735,6 +1750,10 @@ void RendererSceneCull::_update_instance(Instance *p_instance) const {
 	AABB new_aabb;
 	new_aabb = instance_xform->xform(p_instance->aabb);
 	p_instance->transformed_aabb = new_aabb;
+
+#pragma region Engine ZXB
+	RuntimeVirtualTextureInvalidateInstance(p_instance);
+#pragma endregion
 
 	if ((1 << p_instance->base_type) & RSE::INSTANCE_GEOMETRY_MASK) {
 		InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(p_instance->base_data);
@@ -3331,6 +3350,12 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 	Scenario *scenario = scenario_owner.get_or_null(p_scenario);
 	Vector3 camera_position = p_camera_data->main_transform.origin;
 
+#pragma region Engine ZXB
+	if (p_reflection_probe.is_null() && !arrRuntimeVirtualTextures.is_empty())
+	{
+		RuntimeVirtualTextureRegisterViewer(p_camera_data, p_viewport, p_scenario);
+	}
+#pragma endregion
 	ERR_FAIL_COND(p_render_buffers.is_null());
 
 	render_pass++;
@@ -3733,6 +3758,11 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 	RENDER_TIMESTAMP("Render 3D Scene");
 	scene_render->render_scene(p_render_buffers, p_camera_data, prev_camera_data, scene_cull_result.geometry_instances, scene_cull_result.light_instances, scene_cull_result.reflections, scene_cull_result.voxel_gi_instances, scene_cull_result.decals, scene_cull_result.lightmaps, scene_cull_result.fog_volumes, p_environment, camera_attributes, p_compositor, p_shadow_atlas, occluders_tex, p_reflection_probe.is_valid() ? RID() : scenario->reflection_atlas, p_reflection_probe, p_reflection_probe_pass, p_screen_mesh_lod_threshold, render_shadow_data, max_shadows_used, render_sdfgi_data, cull.sdfgi.region_count, p_window_output_max_value, &sdfgi_update_data, r_render_info);
 
+	if (p_reflection_probe.is_null() && p_viewport.is_valid() && !arrRuntimeVirtualTextures.is_empty())
+	{
+		RuntimeVirtualTextureCollectMaterialFeedback(p_scenario, p_viewport, p_render_buffers, *p_camera_data);
+	}
+
 	if (p_viewport.is_valid()) {
 		RSG::viewport->viewport_set_prev_camera_data(p_viewport, p_camera_data);
 	}
@@ -3879,6 +3909,10 @@ bool RendererSceneCull::_render_reflection_probe_step(Instance *p_instance, int 
 }
 
 void RendererSceneCull::render_probes() {
+#pragma region Engine ZXB
+	RenderRuntimeVirtualTextures();
+#pragma endregion
+
 	/* REFLECTION PROBES */
 
 	SelfList<InstanceReflectionProbeData> *ref_probe = reflection_probe_render_list.first();
@@ -4402,6 +4436,11 @@ void RendererSceneCull::update() {
 		s->indexers[Scenario::INDEXER_GEOMETRY].optimize_incremental(indexer_update_iterations);
 		s->indexers[Scenario::INDEXER_VOLUMES].optimize_incremental(indexer_update_iterations);
 	}
+
+#pragma region Engine ZXB
+	UpdateRuntimeVirtualTextureObjects();
+#pragma endregion
+
 	scene_render->update();
 	update_dirty_instances();
 	render_particle_colliders();
@@ -4436,6 +4475,30 @@ bool RendererSceneCull::free(RID p_rid) {
 
 	} else if (RendererSceneOcclusionCull::get_singleton() && RendererSceneOcclusionCull::get_singleton()->is_occluder(p_rid)) {
 		RendererSceneOcclusionCull::get_singleton()->free_occluder(p_rid);
+#pragma region Engine ZXB
+	}
+	else if (stRuntimeVirtualTextureOwner.owns(p_rid))
+	{
+		RuntimeVirtualTextureData *pRvt = stRuntimeVirtualTextureOwner.get_or_null(p_rid);
+		pRvt->stStreamLoader.Flush();
+		RSG::texture_storage->texture_free(pRvt->ridPageTableTexture);
+		RSG::texture_storage->texture_free(pRvt->arrPhysicalTexture[0]);
+		RSG::texture_storage->texture_free(pRvt->arrPhysicalTexture[1]);
+		if (pRvt->ridGpu.is_valid())
+		{
+			scene_render->RuntimeVirtualTextureGpuFree(pRvt->ridGpu);
+		}
+		arrRuntimeVirtualTextures.erase(p_rid);
+		stRuntimeVirtualTextureOwner.free(p_rid);
+#pragma endregion
+#pragma region Engine ZXB
+	}
+	else if (stGpuDrivenTerrainOwner.owns(p_rid))
+	{
+		MutexLock lockLock(mtxGpuDrivenTerrainMutex);
+		stGpuDrivenTerrainOwner.free(p_rid);
+		mapGpuDrivenTerrains.erase(p_rid);
+#pragma endregion
 	} else if (instance_owner.owns(p_rid)) {
 		// delete the instance
 

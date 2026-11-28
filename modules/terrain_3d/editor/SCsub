@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+from misc.utility.scons_hints import *
+
+Import("env")
+Import("env_modules")
+
+import terrain_3d_editor_builders
+
+editor_env = env_modules.Clone()
+assets = []
+for folder in ["brushes", "icons", "menu", "src", "landscape"]:
+    assets.extend(Glob("resources/" + folder + "/*"))
+header = editor_env.CommandNoCache(
+    "terrain_3d_editor_resources.gen.h",
+    sorted(assets, key=str),
+    editor_env.Run(terrain_3d_editor_builders.make_editor_bundle),
+)
+editor_env.Depends(header, "terrain_3d_editor_builders.py")
+editor_env.add_source_files(env.modules_sources, "*.cpp")

@@ -100,6 +100,11 @@ private:
 	String _has_valid_export_configuration(const Ref<EditorExportPlatform> &p_export_platform, const Ref<EditorExportPreset> &p_preset);
 
 protected:
+	// Additional resource or raw file dependencies discovered from the filtered export set.
+	virtual void CollectExportDependencies(const HashSet<String> &setPaths, HashSet<String> &out_setDependencies) const
+	{
+	}
+
 	void set_export_base_path(const String &p_export_base_path);
 	const String &get_export_base_path() const;
 	void set_export_preset(const Ref<EditorExportPreset> &p_preset);

@@ -1111,6 +1111,15 @@ Files extracted from upstream source:
 - `LICENSE`
 
 
+## terrain3d
+
+- Upstream: https://github.com/TokisanGames/Terrain3D
+- Version: v1.1.0-stable
+- License: MIT (see `modules/terrain_3d/LICENSE.txt`)
+
+The native port lives in `modules/terrain_3d/`. Local changes integrate its classes and editor with Godot, and add the GPU quadtree, virtual height pages and material RVT/SVT rendering paths.
+
+
 ## thorvg
 
 - Upstream: https://github.com/thorvg/thorvg

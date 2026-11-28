@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RuntimeVirtualTexture" inherits="Resource" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		A sparse, streamed texture that caches a top-down render of the scene.
+	</brief_description>
+	<description>
+		A runtime virtual texture (RVT) renders the geometry inside a [RuntimeVirtualTextureVolume] from above into a pool of fixed size pages, and only keeps the pages that cameras currently need. Materials can then sample the result with [method apply_to_material] and a world position, which is useful for terrain blending, road and decal layers, or any effect that needs a cheap top-down snapshot of the scene.
+		Meshes contribute to the texture when their [member VisualInstance3D.layers] intersect [member cull_mask]. The contribution is the albedo (and, depending on [member material_type], normal, roughness, metallic or height) the mesh material outputs. Moving, showing, hiding or changing the layers of a mesh refreshes the affected pages automatically. Changes to material parameters are not tracked, call [method invalidate] after changing them.
+		Pages are requested from the cameras that rendered the scene during the previous frame and at most [member max_pages_per_frame] pages are rendered per frame. Pages that are not resident yet fall back to the closest lower resolution page that is.
+		[b]Note:[/b] Only the Forward+ and Mobile renderers support runtime virtual textures.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="apply_to_material">
+			<return type="void" />
+			<param index="0" name="material" type="ShaderMaterial" />
+			<param index="1" name="prefix" type="String" default="&quot;rvt&quot;" />
+			<description>
+			Writes the uniforms that the RVT shader include expects into [param material]: [code]{prefix}_page_table[/code], [code]{prefix}_physical0[/code], [code]{prefix}_physical1[/code], [code]{prefix}_params0[/code], [code]{prefix}_params1[/code], [code]{prefix}_world_to_uv[/code], [code]{prefix}_normal_basis[/code], [code]{prefix}_debug_mode[/code] and [code]{prefix}_debug_force_lod[/code]. The material keeps being updated when the volume moves or the debug settings change.
+		</description>
+		</method>
+		<method name="bake_height_grid_file" qualifiers="static">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="image" type="Image" />
+			<param index="2" name="log2_tile_count" type="int" />
+			<param index="3" name="tile_size" type="int" />
+			<param index="4" name="tile_border" type="int" />
+			<description>
+				Bakes signed single-channel floating-point heights on a vertex grid. Texel zero coincides with vertex zero at every mip. Each page includes its neighbors in the border for interpolation across page boundaries.
+			</description>
+		</method>
+		<method name="bake_page_file" qualifiers="static">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="image" type="Image" />
+			<param index="2" name="log2_tile_count" type="int" />
+			<param index="3" name="tile_size" type="int" />
+			<param index="4" name="tile_border" type="int" />
+			<param index="5" name="format" type="int" enum="RuntimeVirtualTexture.FileFormat" />
+			<param index="6" name="srgb" type="bool" />
+			<description>
+			Bakes [param image] into a page file that [member source] = [constant SOURCE_STREAM] can stream. The virtual texture is [code]2 ^ log2_tile_count * tile_size[/code] texels wide; every page carries [param tile_border] texels of edge clamped neighbours so bilinear filtering works across page edges. [constant FORMAT_BC1] and [constant FORMAT_BC7] require the tile size and border to be multiples of 4. Returns [constant OK] on success.
+		</description>
+		</method>
+		<method name="get_layer_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			Returns the number of physical texture layers used by the current [member material_type] and [member source].
+		</description>
+		</method>
+		<method name="get_page_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="level" type="int" />
+			<param index="1" name="x" type="int" />
+			<param index="2" name="y" type="int" />
+			<description>
+			Returns the state of one page: [code]exists[/code], [code]resident[/code], [code]dirty[/code], [code]blocked[/code], [code]pool_x[/code], [code]pool_y[/code], [code]in_flight[/code], [code]locked[/code] and [code]lock_seconds_left[/code].
+		</description>
+		</method>
+		<method name="get_page_table_texture" qualifiers="const">
+			<return type="Texture2D" />
+			<description>
+			Returns the indirection texture that maps virtual pages to physical pages. It has one mipmap per virtual texture level and must be read with [code]texelFetch[/code].
+		</description>
+		</method>
+		<method name="get_physical_texture" qualifiers="const">
+			<return type="Texture2D" />
+			<param index="0" name="layer" type="int" />
+			<description>
+			Returns the physical page pool texture of the given [param layer].
+		</description>
+		</method>
+		<method name="get_stats" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			Returns debugging statistics: [code]resident_pages[/code], [code]pool_pages[/code], [code]requested_pages[/code], [code]rendered_this_frame[/code], [code]rendered_total[/code], [code]evicted_total[/code], [code]gpu_ready[/code], [code]streaming[/code] and [code]levels[/code] (resident pages per level).
+		</description>
+		</method>
+		<method name="invalidate">
+			<return type="void" />
+			<param index="0" name="world_aabb" type="AABB" />
+			<description>
+			Marks all pages overlapping [param world_aabb] as stale so they are rendered (or re-read) again.
+		</description>
+		</method>
+		<method name="invalidate_all">
+			<return type="void" />
+			<description>
+			Marks all pages as stale so they are rendered (or re-read) again.
+		</description>
+		</method>
+		<method name="lock_page">
+			<return type="void" />
+			<param index="0" name="level" type="int" />
+			<param index="1" name="x" type="int" />
+			<param index="2" name="y" type="int" />
+			<param index="3" name="seconds" type="float" default="5.0" />
+			<description>
+			Keeps the page produced and resident for [param seconds], even when it is off screen, and refreshes it every frame (mirrors UE's pick + refresh debug). At most 6 pages can be locked; locking a seventh releases the one expiring first.
+		</description>
+		</method>
+		<method name="pick_page" qualifiers="const">
+			<return type="Vector3i" />
+			<param index="0" name="world_position" type="Vector3" />
+			<param index="1" name="level" type="int" />
+			<description>
+			Maps a world position to the page covering it at [param level], returned as [code]Vector3i(level, x, y)[/code]. Pair with [method get_page_info] and [method lock_page].
+		</description>
+		</method>
+		<method name="unlock_all_pages">
+			<return type="void" />
+			<description>
+			Releases all locked pages.
+		</description>
+		</method>
+		<method name="unlock_page">
+			<return type="void" />
+			<param index="0" name="level" type="int" />
+			<param index="1" name="x" type="int" />
+			<param index="2" name="y" type="int" />
+			<description>
+			Releases a page locked with [method lock_page].
+		</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cull_mask" type="int" setter="set_cull_mask" getter="get_cull_mask" default="1048575">
+			Only [VisualInstance3D]s whose layers intersect this mask are rendered into the texture.
+		</member>
+		<member name="debug_force_lod" type="int" setter="set_debug_force_lod" getter="get_debug_force_lod" default="-1">
+			Pins the sampled mip level to this value. [code]-1[/code] uses the level computed from the camera distance.
+		</member>
+		<member name="debug_mode" type="int" setter="set_debug_mode" getter="get_debug_mode" enum="RuntimeVirtualTexture.DebugMode" default="0">
+			Replaces the sampled color with a debug visualization: page table, residency per level, physical pool tiles, LOD heat map or page borders. Requires the receiver material to call the RVT shader include.
+		</member>
+		<member name="enabled" type="bool" setter="set_enabled" getter="is_enabled" default="true">
+			If [code]false[/code], no new pages are produced. Pages that are already resident keep being sampled.
+		</member>
+		<member name="lod_bias" type="float" setter="set_lod_bias" getter="get_lod_bias" default="0.0">
+			Bias added to the mip level selected from the camera distance. Positive values use lower resolution pages.
+		</member>
+		<member name="log2_tile_count" type="int" setter="set_log2_tile_count" getter="get_log2_tile_count" default="6">
+			Base 2 logarithm of the number of pages along one side of the virtual texture. The virtual texture is [code]2 ^ log2_tile_count * tile_size[/code] texels wide. A page file overrides this value.
+		</member>
+		<member name="material_type" type="int" setter="set_material_type" getter="get_material_type" enum="RuntimeVirtualTexture.MaterialType" default="1">
+			What is stored in the texture when [member source] is [constant SOURCE_RENDER].
+		</member>
+		<member name="max_pages_per_frame" type="int" setter="set_max_pages_per_frame" getter="get_max_pages_per_frame" default="4">
+			Maximum number of pages rendered (or loaded) per frame.
+		</member>
+		<member name="page_file" type="String" setter="set_page_file" getter="get_page_file" default="&quot;&quot;">
+			Page file to stream when [member source] is [constant SOURCE_STREAM]. Setting it switches [member source] to [constant SOURCE_STREAM] and adopts the layout stored in the file.
+		</member>
+		<member name="pool_size" type="int" setter="set_pool_size" getter="get_pool_size" default="16">
+			Number of physical pages along one side of the page pool. The pool holds [code]pool_size * pool_size[/code] pages. When it is too small, the finest pages are dropped first.
+		</member>
+		<member name="source" type="int" setter="set_source" getter="get_source" enum="RuntimeVirtualTexture.Source" default="0">
+			Where page contents come from: rendered from the scene every frame, or streamed from [member page_file].
+		</member>
+		<member name="tile_border" type="int" setter="set_tile_border" getter="get_tile_border" default="4">
+			Border in texels added around each page so bilinear filtering works across page edges. A page file overrides this value.
+		</member>
+		<member name="tile_size" type="int" setter="set_tile_size" getter="get_tile_size" default="128">
+			Size of one page in texels, without border. A page file overrides this value.
+		</member>
+	</members>
+	<constants>
+		<constant name="MATERIAL_BASE_COLOR" value="0" enum="MaterialType">
+			Stores albedo in the first layer (sRGB encoded, alpha holds coverage).
+		</constant>
+		<constant name="MATERIAL_BASE_COLOR_NORMAL_ROUGHNESS" value="1" enum="MaterialType">
+			Stores albedo in the first layer and normal (x and z of the volume local normal), roughness and metallic in the second layer.
+		</constant>
+		<constant name="MATERIAL_WORLD_HEIGHT" value="2" enum="MaterialType">
+			Stores the height inside the volume, normalized to [code]0..1[/code], in a single float layer.
+		</constant>
+		<constant name="SOURCE_RENDER" value="0" enum="Source">
+			Pages are rendered from the scene every frame (runtime virtual texture).
+		</constant>
+		<constant name="SOURCE_STREAM" value="1" enum="Source">
+			Pages are streamed from a baked page file (streaming virtual texture).
+		</constant>
+		<constant name="FORMAT_RGBA8" value="0" enum="FileFormat">
+			Uncompressed 8 bit per channel tiles.
+		</constant>
+		<constant name="FORMAT_BC1" value="1" enum="FileFormat">
+			BC1 compressed tiles, 8 bytes per 4x4 block. No alpha.
+		</constant>
+		<constant name="FORMAT_BC7" value="2" enum="FileFormat">
+			BC7 compressed tiles, 16 bytes per 4x4 block.
+		</constant>
+		<constant name="FORMAT_R32F" value="3" enum="FileFormat">
+			Single precision float tiles, used by [constant MATERIAL_WORLD_HEIGHT].
+		</constant>
+		<constant name="DEBUG_OFF" value="0" enum="DebugMode">
+			No debug visualization.
+		</constant>
+		<constant name="DEBUG_PAGE_TABLE" value="1" enum="DebugMode">
+			Colors every page by the physical pool tile it resolves to; coarser fallbacks are darker, invalid pages are magenta, page edges are white.
+		</constant>
+		<constant name="DEBUG_PAGE_TABLE_MIP" value="2" enum="DebugMode">
+			Colors every page by the level it actually resolves to (one color per level), which shows fallbacks directly.
+		</constant>
+		<constant name="DEBUG_PHYSICAL_POOL" value="3" enum="DebugMode">
+			Colors pages by their pool tile and draws the per tile border band in green.
+		</constant>
+		<constant name="DEBUG_LOD" value="4" enum="DebugMode">
+			Heat map of the LOD used for sampling: blue is level 0, red is the coarsest level.
+		</constant>
+		<constant name="DEBUG_BORDERS" value="5" enum="DebugMode">
+			Draws the page grid in red and the tile border ring in green over a dark background.
+		</constant>
+	</constants>
+</class>

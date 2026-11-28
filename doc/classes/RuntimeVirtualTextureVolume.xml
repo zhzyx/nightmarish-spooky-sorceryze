@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RuntimeVirtualTextureVolume" inherits="Node3D" api_type="core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+		Places a [RuntimeVirtualTexture] in the world.
+	</brief_description>
+	<description>
+		Defines the box covered by a [RuntimeVirtualTexture]. The node position and rotation together with [member size] define the covered box: the X and Z axes span the texture, the Y axis is the rendered height range, and the texture is rendered looking down the node's negative Y axis. The node scale is ignored.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="size" type="Vector3" setter="set_size" getter="get_size" default="Vector3(64, 16, 64)">
+			Size of the covered box in meters. The node scale is ignored.
+		</member>
+		<member name="virtual_texture" type="RuntimeVirtualTexture" setter="set_virtual_texture" getter="get_virtual_texture">
+			The texture rendered inside this volume.
+		</member>
+	</members>
+</class>

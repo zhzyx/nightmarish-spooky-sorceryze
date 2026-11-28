@@ -2571,6 +2571,18 @@ MaterialStorage::ShaderData *MaterialStorage::material_get_shader_data(RID p_mat
 	return nullptr;
 }
 
+#pragma region Engine ZXB
+RID MaterialStorage::MaterialGetUniformSet(RID ridMaterial)
+{
+	const MaterialStorage::Material *pMaterial = MaterialStorage::get_singleton()->get_material(ridMaterial);
+	if (pMaterial && pMaterial->data)
+	{
+		return static_cast<RendererSceneRenderImplementation::SceneShaderForwardClustered::MaterialData *>(pMaterial->data)->uniform_set;
+	}
+	return RID();
+}
+#pragma endregion
+
 void MaterialStorage::material_set_param(RID p_material, const StringName &p_param, const Variant &p_value) {
 	Material *material = material_owner.get_or_null(p_material);
 	ERR_FAIL_NULL(material);

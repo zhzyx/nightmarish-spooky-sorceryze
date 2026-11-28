@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "terrain3d-native-vt-20261127",
+  "collected_at": "2026-11-28T13:46:49.699009+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/terrain3d-native-vt-20261127/github-8aa553d9f96ca4155aec80e504d5f48cf76cdb081496c368199995dfafaf6fe3.json",
+      "sha256": "5f1f57041ca88d0747cff8a32bd442fba9f789e9e98fecd3727213d32c07761f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-8aa553d9f96ca4155aec80e504d5f48cf76cdb081496c368199995dfafaf6fe3",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/terrain3d-native-vt-20261127/github-issue-2241-request.json",
+      "sha256": "dcbe2905116ff60416c151830c9eabcd11ead40262ee5dcfefbb107bd759cfb9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-issue-2241-request",
+      "origin": "yanshi-drafted-github-issue-readback"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2241,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2241"
+}

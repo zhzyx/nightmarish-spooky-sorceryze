@@ -32,6 +32,7 @@
 
 STATIC_ASSERT_INCOMPLETE_TYPE(class, RenderingServer);
 
+#include "core/config/CVars.h"
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
@@ -44,6 +45,7 @@ STATIC_ASSERT_INCOMPLETE_TYPE(class, RenderingServer);
 #include "core/profiling/profiling.h"
 #include "scene/animation/tween.h"
 #include "scene/audio/audio_stream_player.h"
+#include "scene/debugger/CVarConsole.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/gui/control.h"
 #include "scene/main/multiplayer_api.h"
@@ -589,6 +591,23 @@ void SceneTree::initialize() {
 	ERR_FAIL_NULL(root);
 	MainLoop::initialize();
 	root->_set_tree(this);
+
+	// Only the real game main loop gets the console. Tests construct a SceneTree
+	// without installing it as the OS main loop, and the editor sets editor_hint.
+	if (Engine::get_singleton()->is_editor_hint() || OS::get_singleton()->get_main_loop() != this)
+	{
+		return;
+	}
+	if (!DisplayServer::get_singleton() || DisplayServer::get_singleton()->get_name() == "headless")
+	{
+		return;
+	}
+	CVars *pCvars = CVars::GetSingleton();
+	if (!pCvars || !bool(pCvars->GetValue("con.AutoConsole")))
+	{
+		return;
+	}
+	root->add_child(memnew(CVarConsole));
 }
 
 void SceneTree::set_physics_interpolation_enabled(bool p_enabled) {

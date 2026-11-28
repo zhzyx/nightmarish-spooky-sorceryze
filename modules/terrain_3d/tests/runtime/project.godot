@@ -1,0 +1,10 @@
+; Run from the engine repository root using the editor binary.
+; godot --headless --fixed-fps 60 --path modules/terrain_3d/tests/runtime
+config_version=5
+
+[application]
+config/name="Terrain3D Native Runtime Test"
+run/main_scene="res://main.tscn"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

@@ -1827,6 +1827,20 @@
 				Returns [code]true[/code] if changes have been made to the RenderingServer's data. [method force_draw] is usually called if this happens.
 			</description>
 		</method>
+		<method name="gpu_driven_terrain_set_heightfield">
+			<return type="void" />
+			<param index="0" name="terrain" type="RID" />
+			<param index="1" name="height_vt" type="RID" />
+			<param index="2" name="bounds_texture" type="RID" />
+			<param index="3" name="domain" type="Rect2" />
+			<param index="4" name="background_height_range" type="Vector2" />
+			<param index="5" name="height_margin" type="float" />
+			<param index="6" name="tile_log2" type="int" />
+			<param index="7" name="tile_size" type="int" />
+			<description>
+				Registers the terrain height virtual texture and world bounds hierarchy for culling and feedback.
+			</description>
+		</method>
 		<method name="has_feature" qualifiers="const" deprecated="This method has not been used since Godot 3.0.">
 			<return type="bool" />
 			<param index="0" name="feature" type="int" enum="RenderingServer.Features" />
@@ -3584,6 +3598,257 @@
 			<description>
 				Schedules a callback to the given callable after a frame has been drawn.
 			</description>
+		</method>
+		<method name="runtime_virtual_texture_configure">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="type" type="int" enum="RenderingServer.RuntimeVirtualTextureMaterialType" />
+			<param index="2" name="log2_tile_count" type="int" />
+			<param index="3" name="tile_size" type="int" />
+			<param index="4" name="tile_border" type="int" />
+			<param index="5" name="pool_tiles" type="int" />
+			<description>
+			Configures a runtime virtual texture. See [RuntimeVirtualTexture] for the meaning of the parameters.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_create">
+			<return type="RID" />
+			<description>
+			Creates a runtime virtual texture. Use [method free_rid] to free it.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_get_page_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="level" type="int" />
+			<param index="2" name="x" type="int" />
+			<param index="3" name="y" type="int" />
+			<description>
+			Returns the state of one page (resident, dirty, pool tile, locked).
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_get_page_table_texture" qualifiers="const">
+			<return type="RID" />
+			<param index="0" name="rvt" type="RID" />
+			<description>
+			Returns the page table texture of the runtime virtual texture.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_get_physical_texture" qualifiers="const">
+			<return type="RID" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="layer" type="int" />
+			<description>
+			Returns the physical page pool texture of the given layer.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_get_stats" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="rvt" type="RID" />
+			<description>
+			Returns paging statistics of the runtime virtual texture.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_invalidate">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="world_aabb" type="AABB" />
+			<description>
+			Marks the pages overlapping [param world_aabb] as stale.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_invalidate_all">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<description>
+			Marks all pages as stale.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_lock_page">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="level" type="int" />
+			<param index="2" name="x" type="int" />
+			<param index="3" name="y" type="int" />
+			<param index="4" name="seconds" type="float" />
+			<description>
+			Keeps a page produced and resident for [param seconds] and refreshes it every frame.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_cull_mask">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="mask" type="int" />
+			<description>
+			Sets the instance layers rendered into the runtime virtual texture.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_debug">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="mode" type="int" enum="RenderingServer.RuntimeVirtualTextureDebugMode" />
+			<param index="2" name="force_lod" type="int" />
+			<description>
+			Selects the debug visualization and pins the sampled LOD ([code]-1[/code] keeps the computed one).
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_enabled">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="enabled" type="bool" />
+			<description>
+			If [code]false[/code], no new pages are produced.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_height_lod">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="lod0_distance" type="float" />
+			<param index="2" name="vertex_spacing" type="float" />
+			<param index="3" name="max_lod" type="int" />
+			<param index="4" name="max_distance" type="float" />
+			<description>
+				Requests height pages for a distance-based quadtree, including terrain that can cast a shadow into the view. Distances and vertex spacing are in world units. Set [param lod0_distance] to zero to restore screen-space requests.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_height_region">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="location" type="Vector2i" />
+			<param index="2" name="height" type="Image" />
+			<description>
+				Publishes a sparse CPU region for worker-generated height pages. The region must be an RF image matching the vertex grid's region size. Pass a null image to remove a region. This source supports a null GPU height array.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_height_source">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="height_array" type="RID" />
+			<param index="2" name="region_map" type="PackedInt32Array" />
+			<param index="3" name="region_size" type="int" />
+			<param index="4" name="origin" type="Vector2i" />
+			<param index="5" name="extent" type="int" />
+			<description>
+				Produces signed world heights from a layered vertex grid. The map stores layer indices plus one (zero means empty). After editing source pixels, invalidate the affected world bounds.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_height_stream">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="path" type="String" />
+			<param index="2" name="levels" type="int" />
+			<description>
+				Streams the coarsest mips from a matching signed R32F vertex-grid file. Finer mips and edited tiles use the live grid. Set zero levels to generate all mips.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_material_height_source">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="height" type="RID" />
+			<description>
+				Binds a height source for material page rendering. Changes in its resident height detail refresh the affected material pages.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_material_stream">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="path" type="String" />
+			<param index="2" name="signature" type="int" />
+			<description>
+				Loads baked terrain material mips for this writer. The layout, world bounds and source signature must match. Empty paths select fully runtime production.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_bake_material_stream">
+			<return type="int" enum="Error" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="path" type="String" />
+			<param index="2" name="coarse_levels" type="int" />
+			<param index="3" name="signature" type="int" />
+			<description>
+				Renders the requested coarse material mips into an independent tile target and saves both PBR layers. This synchronous operation is intended for offline baking.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_material_feedback_limits">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="limits" type="Vector4" />
+			<description>
+				Restricts depth-based page requests for this material writer. All components are in world meters. X and Y are the minimum and maximum 3D camera distance. Z limits the larger of the absolute world X and Z distances to the camera. W limits the effective pixel footprint on the material plane after accounting for anisotropic sampling and before applying the mip bias. Zero disables the corresponding limit. Limits are disabled by default.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_material_writer">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="instance" type="RID" />
+			<param index="2" name="max_anisotropy" type="int" default="1" />
+			<description>
+				Renders material pages from this dedicated geometry instance in the same scenario, independently of its visibility layers.
+			</description>
+		</method>
+		<method name="runtime_virtual_texture_set_lod_bias">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="bias" type="float" />
+			<description>
+			Sets the bias applied to the mip level selected for a viewer.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_max_pages_per_frame">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="pages" type="int" />
+			<description>
+			Sets the maximum number of pages rendered or loaded per frame.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_page_file">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="path" type="String" />
+			<description>
+			Sets the page file streamed when the source is [constant RVT_SOURCE_STREAM]. The file layout overrides the configured page size.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_scenario">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="scenario" type="RID" />
+			<description>
+			Sets the scenario whose instances are rendered into the runtime virtual texture.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_source">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="source" type="int" enum="RenderingServer.RuntimeVirtualTextureSource" />
+			<description>
+			Selects whether pages are rendered from the scene ([constant RVT_SOURCE_RENDER]) or streamed from a page file ([constant RVT_SOURCE_STREAM]).
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_set_transform">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="transform" type="Transform3D" />
+			<description>
+			Sets the transform that maps the centered unit cube to the world area covered by the runtime virtual texture.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_unlock_all_pages">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<description>
+			Releases every locked page.
+		</description>
+		</method>
+		<method name="runtime_virtual_texture_unlock_page">
+			<return type="void" />
+			<param index="0" name="rvt" type="RID" />
+			<param index="1" name="level" type="int" />
+			<param index="2" name="x" type="int" />
+			<param index="3" name="y" type="int" />
+			<description>
+			Releases one locked page.
+		</description>
 		</method>
 		<method name="scenario_create">
 			<return type="RID" />
@@ -6065,6 +6330,45 @@
 		</constant>
 		<constant name="VISIBILITY_RANGE_FADE_DEPENDENCIES" value="2" enum="VisibilityRangeFadeMode" keywords="LOD_FADE_DEPENDENCIES">
 			Fade-in the given instance's dependencies when reaching its visibility range limits.
+		</constant>
+		<constant name="RVT_MATERIAL_BASE_COLOR" value="0" enum="RuntimeVirtualTextureMaterialType">
+			Stores albedo.
+		</constant>
+		<constant name="RVT_MATERIAL_BASE_COLOR_NORMAL_ROUGHNESS" value="1" enum="RuntimeVirtualTextureMaterialType">
+			Stores albedo, normal, roughness and metallic.
+		</constant>
+		<constant name="RVT_MATERIAL_WORLD_HEIGHT" value="2" enum="RuntimeVirtualTextureMaterialType">
+			Stores the normalized height inside the volume.
+		</constant>
+		<constant name="RVT_MATERIAL_TERRAIN_PBR" value="3" enum="RuntimeVirtualTextureMaterialType">
+			Terrain base color, world normal, roughness, specular and ambient occlusion.
+		</constant>
+		<constant name="RVT_SOURCE_HEIGHT_GRID" value="2" enum="RuntimeVirtualTextureSource">
+			Sparse signed height grid with runtime-generated pages.
+		</constant>
+		<constant name="RVT_SOURCE_RENDER" value="0" enum="RuntimeVirtualTextureSource">
+			Pages are rendered from the scene every frame.
+		</constant>
+		<constant name="RVT_SOURCE_STREAM" value="1" enum="RuntimeVirtualTextureSource">
+			Pages are streamed from a baked page file.
+		</constant>
+		<constant name="RVT_DEBUG_OFF" value="0" enum="RuntimeVirtualTextureDebugMode">
+			No debug visualization.
+		</constant>
+		<constant name="RVT_DEBUG_PAGE_TABLE" value="1" enum="RuntimeVirtualTextureDebugMode">
+			Page table visualization.
+		</constant>
+		<constant name="RVT_DEBUG_PAGE_TABLE_MIP" value="2" enum="RuntimeVirtualTextureDebugMode">
+			Residency per level visualization.
+		</constant>
+		<constant name="RVT_DEBUG_PHYSICAL_POOL" value="3" enum="RuntimeVirtualTextureDebugMode">
+			Physical pool tile visualization.
+		</constant>
+		<constant name="RVT_DEBUG_LOD" value="4" enum="RuntimeVirtualTextureDebugMode">
+			LOD heat map.
+		</constant>
+		<constant name="RVT_DEBUG_BORDERS" value="5" enum="RuntimeVirtualTextureDebugMode">
+			Page grid and tile border visualization.
 		</constant>
 		<constant name="BAKE_CHANNEL_ALBEDO_ALPHA" value="0" enum="BakeChannels">
 			Index of [Image] in array of [Image]s returned by [method bake_render_uv2]. Image uses [constant Image.FORMAT_RGBA8] and contains albedo color in the [code].rgb[/code] channels and alpha in the [code].a[/code] channel.

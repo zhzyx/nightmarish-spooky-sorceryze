@@ -787,6 +787,50 @@ public:
 	/* BAKE API */
 
 	virtual TypedArray<Image> bake_render_uv2(RID p_base, const TypedArray<RID> &p_material_overrides, const Size2i &p_image_size) = 0;
+
+#pragma region Engine ZXB
+	// [ZXB] Runtime Virtual Texture API.
+	virtual RID RuntimeVirtualTextureCreate() = 0;
+	virtual void RuntimeVirtualTextureConfigure(RID ridRvt, RSE::RuntimeVirtualTextureMaterialType stType, int nLog2TileCount, int nTileSize, int nTileBorder, int nPoolTiles) = 0;
+	virtual void RuntimeVirtualTextureSetScenario(RID ridRvt, RID ridScenario) = 0;
+	virtual void RuntimeVirtualTextureSetTransform(RID ridRvt, const Transform3D &xformTransform) = 0;
+	virtual void RuntimeVirtualTextureSetCullMask(RID ridRvt, uint32_t nMask) = 0;
+	virtual void RuntimeVirtualTextureSetHeightSource(RID ridRvt, RID ridHeightArray, const PackedInt32Array &arrRegionMap, int nRegionSize, const Vector2i &vOrigin, int nExtent) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialHeightSource(RID ridRvt, RID ridHeight) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialStream(RID ridRvt, const String &strPath, int64_t nSignature) = 0;
+	virtual Error RuntimeVirtualTextureBakeMaterialStream(RID ridRvt, const String &strPath, int nCoarseLevels, int64_t nSignature) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialFeedbackLimits(RID ridRvt, const Vector4 &vLimits) = 0;
+	virtual void RuntimeVirtualTextureSetMaterialWriter(RID ridRvt, RID ridInstance, int nMaxAnisotropy = 1) = 0;
+	virtual void GpuDrivenTerrainSetHeightfield(RID ridTerrain, RID ridHeightVt, RID ridBoundsTexture, const Rect2 &rectDomain, const Vector2 &vBackgroundHeightRange, float fHeightMargin, int nTileLog2, int nTileSize) = 0;
+	virtual void RuntimeVirtualTextureSetHeightStream(RID ridRvt, const String &strPath, int nLevels) = 0;
+	virtual void RuntimeVirtualTextureSetHeightRegion(RID ridRvt, const Vector2i &vLocation, const Ref<Image> &refHeight) = 0;
+	virtual void RuntimeVirtualTextureSetHeightLod(RID ridRvt, float fLod0Distance, float fVertexSpacing, int nMaxLod, float fMaxDistance) = 0;
+	virtual void RuntimeVirtualTextureSetLodBias(RID ridRvt, float fBias) = 0;
+	virtual void RuntimeVirtualTextureSetMaxPagesPerFrame(RID ridRvt, int nPages) = 0;
+	virtual void RuntimeVirtualTextureSetEnabled(RID ridRvt, bool bEnabled) = 0;
+	virtual void RuntimeVirtualTextureSetSource(RID ridRvt, RSE::RuntimeVirtualTextureSource eSource) = 0;
+
+	virtual void RuntimeVirtualTextureSetPageFile(RID ridRvt, const String &strPath) = 0;
+	virtual void RuntimeVirtualTextureSetDebug(RID ridRvt, RSE::RuntimeVirtualTextureDebugMode eMode, int nForceLod) = 0;
+	virtual Dictionary RuntimeVirtualTextureGetPageInfo(RID ridRvt, int nLevel, int nX, int nY) const = 0;
+	virtual void RuntimeVirtualTextureLockPage(RID ridRvt, int nLevel, int nX, int nY, float fSeconds) = 0;
+	virtual void RuntimeVirtualTextureUnlockPage(RID ridRvt, int nLevel, int nX, int nY) = 0;
+	virtual void RuntimeVirtualTextureUnlockAllPages(RID ridRvt) = 0;
+	virtual void RuntimeVirtualTextureInvalidate(RID ridRvt, const AABB &aabbWorldAabb) = 0;
+	virtual void RuntimeVirtualTextureInvalidateAll(RID ridRvt) = 0;
+	virtual RID RuntimeVirtualTextureGetPageTableTexture(RID ridRvt) const = 0;
+	virtual RID RuntimeVirtualTextureGetPhysicalTexture(RID ridRvt, int nLayer) const = 0;
+	virtual Dictionary RuntimeVirtualTextureGetStats(RID ridRvt) const = 0;
+#pragma endregion
+
+#pragma region Engine ZXB
+	// [ZXB] GPU-driven terrain (quadtree tiles drawn with indirect draws).
+	virtual RID GpuDrivenTerrainCreate() = 0;
+	virtual void GpuDrivenTerrainConfigure(RID ridTerrain, RID ridMaterial, RID ridVertexArray, RID ridIndexArray, uint32_t nIndexCount, int64_t nVertexFormatId, uint32_t nRenderLayers, bool bCastShadows) = 0;
+	virtual void GpuDrivenTerrainSetIndirect(RID ridTerrain, RID ridIndirectColor, uint32_t nColorOffset, RID ridIndirectShadow, uint32_t nShadowOffset) = 0;
+	virtual void GpuDrivenTerrainSetCull(RID ridTerrain, int64_t nSrcNodesRd, int64_t nCompactNodesRd, int64_t nCounterRd, int64_t nArgsRd, int64_t nShadowArgsRd, uint32_t nNodeCount, float fSrcTexWidth, float fCompactTexWidth, float fLod0Dist, int32_t nMaxLod, float fMaxDistance, float fVertexSpacing) = 0;
+	virtual void GpuDrivenTerrainSetEnabled(RID ridTerrain, bool bEnabled) = 0;
+#pragma endregion
 	virtual PackedByteArray bake_render_area_light_atlas(const TypedArray<RID> &p_area_light_textures, const TypedArray<Rect2> &p_area_light_atlas_texture_rects, const Size2i &p_size, int p_mipmaps) = 0;
 
 	/* CANVAS API (2D) */
@@ -1122,6 +1166,11 @@ VARIANT_ENUM_CAST_EXT(RSE::LightProjectorFilter, RenderingServer::LightProjector
 VARIANT_ENUM_CAST_EXT(RSE::ReflectionProbeUpdateMode, RenderingServer::ReflectionProbeUpdateMode);
 VARIANT_ENUM_CAST_EXT(RSE::ReflectionProbeAmbientMode, RenderingServer::ReflectionProbeAmbientMode);
 VARIANT_ENUM_CAST_EXT(RSE::VoxelGIQuality, RenderingServer::VoxelGIQuality);
+#pragma region Engine ZXB
+VARIANT_ENUM_CAST_EXT(RSE::RuntimeVirtualTextureMaterialType, RenderingServer::RuntimeVirtualTextureMaterialType);
+VARIANT_ENUM_CAST_EXT(RSE::RuntimeVirtualTextureSource, RenderingServer::RuntimeVirtualTextureSource);
+VARIANT_ENUM_CAST_EXT(RSE::RuntimeVirtualTextureDebugMode, RenderingServer::RuntimeVirtualTextureDebugMode);
+#pragma endregion
 VARIANT_ENUM_CAST_EXT(RSE::DecalTexture, RenderingServer::DecalTexture);
 VARIANT_ENUM_CAST_EXT(RSE::DecalFilter, RenderingServer::DecalFilter);
 VARIANT_ENUM_CAST_EXT(RSE::ParticlesMode, RenderingServer::ParticlesMode);
