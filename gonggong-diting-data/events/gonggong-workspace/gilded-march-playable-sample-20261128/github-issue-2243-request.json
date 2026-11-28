@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "github-issue-2243-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gilded-march-playable-sample-20261128",
+  "kind": "request",
+  "occurred_at": "2026-11-28T13:43:45Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2243",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-reported-by-host",
+    "definition_sha256": "a72164b6097252536bb6b5246d813327f16b3b6c0b1b52c1f0fa963899ca3d66",
+    "origin": "yanshi-drafted-github-issue-readback"
+  },
+  "payload": {
+    "issue_number": 2243,
+    "title": "交付可运行的原创示例《金岬荒境》",
+    "updated_at": "2026-11-28T13:44:23Z",
+    "issue_body_sha256": "1e8e4b076030be41300705c5930ed96bed24621e7cb4779bfb2886c887f60ad8",
+    "issue_author": "1401213887",
+    "scope": "User-authorized delivery from Codex, with work order drafted by Yanshi"
+  },
+  "evidence_refs": [],
+  "sha256": "ce34cd2740ade1252631c542ef2a274915597fe4f967ed9dfa5ad0154dd24869"
+}

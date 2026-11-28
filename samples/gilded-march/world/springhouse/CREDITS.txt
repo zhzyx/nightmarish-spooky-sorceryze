@@ -1,0 +1,10 @@
+The Gilded March — ruined springhouse
+
+Portal geometry and portal textures adapted from Modular Fort 01 by Rico Cilliers, Poly Haven, CC0.
+https://polyhaven.com/a/modular_fort_01
+
+Ashlar textures adapted from Stone Block Wall by Amal Kumar, Poly Haven, CC0.
+https://polyhaven.com/a/stone_block_wall
+
+The portal is the lining of wall_thin_gate_01. Its surrounding masonry, ruined side arcade, basin, paving and fallen stones were built for this scene.
+https://polyhaven.com/license

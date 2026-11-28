@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "gilded-march-playable-sample-20261128",
+  "collected_at": "2026-11-28T13:46:49.788090+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gilded-march-playable-sample-20261128/github-a2eeba5413ee5d51e34054738ab504fd4c45f5c0737a06a91b074169d0c64623.json",
+      "sha256": "7cfdc84176bafaf9931b4ea7e552fd4f6bd202ca85669a3f89754e124747440d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-a2eeba5413ee5d51e34054738ab504fd4c45f5c0737a06a91b074169d0c64623",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gilded-march-playable-sample-20261128/github-issue-2243-request.json",
+      "sha256": "769a09acdf32b22bcdab036f36cb01619e1d6dbda65ea4f80e08c3bb38bb7e58",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-issue-2243-request",
+      "origin": "yanshi-drafted-github-issue-readback"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2243,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2243"
+}

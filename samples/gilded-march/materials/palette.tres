@@ -1,0 +1,42 @@
+[gd_resource type="Terrain3DAssets" format=3]
+
+[ext_resource type="Texture2D" path="res://materials/ground037_alb_ht.png" id="1"]
+[ext_resource type="Texture2D" path="res://materials/rock023_alb_ht.png" id="2"]
+[ext_resource type="Texture2D" path="res://materials/loam.png" id="3"]
+[ext_resource type="Texture2D" path="res://materials/ground037_nrm_rgh.png" id="4"]
+[ext_resource type="Texture2D" path="res://materials/rock023_nrm_rgh.png" id="5"]
+
+[sub_resource type="Terrain3DTextureAsset" id="layer0"]
+name = "风蚀草甸"
+id = 0
+albedo_texture = ExtResource("1")
+normal_texture = ExtResource("4")
+uv_scale = 0.34
+detiling_rotation = 0.43
+detiling_shift = 0.5
+normal_depth = 0.85
+
+
+[sub_resource type="Terrain3DTextureAsset" id="layer1"]
+name = "层状岩壁"
+id = 1
+albedo_texture = ExtResource("2")
+normal_texture = ExtResource("5")
+uv_scale = 0.17
+detiling_rotation = 0.037
+detiling_shift = 0.57
+normal_depth = 0.85
+
+
+[sub_resource type="Terrain3DTextureAsset" id="layer2"]
+name = "朝圣古道"
+id = 2
+albedo_texture = ExtResource("3")
+normal_texture = ExtResource("4")
+uv_scale = 0.34
+detiling_rotation = 0.3
+detiling_shift = 0.57
+normal_depth = 0.85
+
+[resource]
+texture_list = Array[Terrain3DTextureAsset]([SubResource("layer0"), SubResource("layer1"), SubResource("layer2")])
