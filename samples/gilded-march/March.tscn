@@ -1,0 +1,147 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://world/visit.gd" id="1"]
+[ext_resource type="Terrain3DAssets" path="res://materials/palette.tres" id="2"]
+[ext_resource type="PackedScene" path="res://world/Landmarks.glb" id="3"]
+[ext_resource type="Texture2D" path="res://world/clouds.hdr" id="4"]
+
+[ext_resource type="Script" path="res://world/river_material.gd" id="5"]
+
+[ext_resource type="Shader" path="res://world/evening_sky.gdshader" id="6"]
+[ext_resource type="PackedScene" path="res://world/meadow/meadow.scn" id="7"]
+[ext_resource type="PackedScene" path="res://world/springhouse/Springhouse.gltf" id="8"]
+
+[sub_resource type="ShaderMaterial" id="skyMat"]
+shader = ExtResource("6")
+shader_parameter/clouds = ExtResource("4")
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("skyMat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.78, 0.805, 0.78, 1)
+ambient_light_energy = 0.47
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 1.00
+adjustment_enabled = true
+adjustment_contrast = 1.085
+adjustment_saturation = 0.88
+fog_enabled = true
+fog_light_color = Color(0.64, 0.67, 0.66, 1)
+fog_light_energy = 0.7
+fog_density = 0.00026
+fog_aerial_perspective = 0.27
+fog_sky_affect = 0.22
+
+[sub_resource type="FastNoiseLite" id="TerrainVariationNoise"]
+noise_type = 1
+seed = 5147
+frequency = 0.0095
+fractal_octaves = 4
+fractal_gain = 0.47
+domain_warp_enabled = true
+domain_warp_amplitude = 26.0
+domain_warp_frequency = 0.012
+
+[sub_resource type="NoiseTexture2D" id="TerrainVariationMap"]
+width = 384
+height = 384
+seamless = true
+generate_mipmaps = true
+noise = SubResource("TerrainVariationNoise")
+
+[sub_resource type="Terrain3DMaterial" id="ground"]
+world_background = 0
+projection_enabled = true
+macro_variation_enabled = true
+dual_scaling_enabled = true
+_shader_parameters = {
+"blend_sharpness": 0.18,
+"dual_scale_texture": 0,
+"dual_scale_near": 75.0,
+"dual_scale_far": 210.0,
+"dual_scale_reduction": 0.48,
+"macro_variation1": Color(0.85, 0.91, 0.81, 1),
+"macro_variation2": Color(1.15, 1.09, 1.19, 1),
+"macro_variation_slope": 0.13,
+"noise_texture": SubResource("TerrainVariationMap"),
+"noise1_scale": 0.036,
+"noise1_angle": 0.67,
+"noise2_scale": 0.104,
+"noise1_offset": Vector2(0.24, 0.39)
+}
+
+[sub_resource type="StyleBoxFlat" id="hint"]
+bg_color = Color(0.038,0.045,0.043,0.72)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[node name="TheGildedMarch" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Terrain3D" type="Terrain3D" parent="."]
+region_size = 256
+vertex_spacing = 1.5
+data_directory = "res://terrain"
+material = SubResource("ground")
+assets = ExtResource("2")
+
+[node name="SkyAndMist" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="EveningSun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.58,-0.82,0)
+light_color = Color(1.0, 0.86, 0.68, 1)
+light_energy = 1.29
+shadow_enabled = true
+shadow_blur = 1.2
+directional_shadow_split_1 = 0.03
+directional_shadow_split_2 = 0.085
+directional_shadow_blend_splits = true
+directional_shadow_max_distance = 510.0
+directional_shadow_fade_start = 0.75
+
+[node name="Landmarks" parent="." instance=ExtResource("3")]
+script = ExtResource("5")
+
+[node name="荒草与苔坡" parent="Landmarks"]
+visible = false
+
+[node name="废弃泉亭" parent="Landmarks"]
+mesh = null
+
+[node name="Springhouse" parent="Landmarks/废弃泉亭" instance=ExtResource("8")]
+
+[node name="WindMeadow" parent="." instance=ExtResource("7")]
+
+[node name="Traveler" type="Camera3D" parent="."]
+position = Vector3(367,366,579)
+rotation = Vector3(-0.315,0.53,0)
+current = true
+near = 0.24
+far = 5800.0
+
+[node name="Guide" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="PanelContainer" parent="Guide"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = -96.0
+offset_bottom = -22.0
+theme_override_styles/panel = SubResource("hint")
+
+[node name="Margin" type="MarginContainer" parent="Guide/Panel"]
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="Info" type="Label" parent="Guide/Panel/Margin"]
+theme_override_font_sizes/font_size = 16

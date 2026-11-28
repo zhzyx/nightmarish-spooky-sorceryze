@@ -1,0 +1,14 @@
+金岬荒境 ｜ The Gilded March
+
+原创地形习作。南肩的废泉亭是出发点。风冠残堡立在西北台地上，沿西脊的古道有较长的上坡，东线从玉灰河的旧渡下穿过，再折回堡门。东岬金梣和残堡分别标记河谷两侧。
+
+地形范围 1536 × 1536 米。横纵各 1024 个高度采样，顶点间距 1.5 米，Terrain3D 原生区域 4 × 4，每区 256 × 256。高度、控制图和颜色图均已保存，选中 March.tscn 的 Terrain3D 节点即可继续雕刻。远山是可视背景。
+
+布局由显式选择的 gpt-6.2-astra 在 High 推理强度下生成。原始输出见 astra-layout.json，记录八处山脊、两条道路、河线、残堡和出生点。本地按坐标生成高度并整形道路，另行建模古堡、拱桥、泉亭、植被与观景机位。
+
+双击“游览金岬荒境”打开。1 至 4 切换南肩、鸟瞰、旧渡、堡门；Tab 从鸟瞰进入南肩步行，WASD 移动，鼠标转向，Shift 加速，H 隐藏提示，Esc 释放鼠标或退出。步行使用高度采样，桥面单独处理。建筑作为地标展示。
+
+纹理来自工作空间原有的 ambientCG Ground037、Rock023，路面纹理由 Ground037 调色。许可见 materials/CREDITS.txt。
+天空摄影 Kloofendal 48d Partly Cloudy (Pure Sky)，Greg Zaal 和 Jarod Guest，Poly Haven，CC0。
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+https://polyhaven.com/license

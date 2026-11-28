@@ -1,0 +1,18 @@
+config_version=5
+
+[application]
+config/name="金岬荒境 · The Gilded March"
+run/main_scene="res://March.tscn"
+config/features=PackedStringArray("4.8", "Forward Plus")
+
+[display]
+window/size/viewport_width=1440
+window/size/viewport_height=810
+window/stretch/mode="canvas_items"
+
+[rendering]
+anti_aliasing/quality/msaa_3d=0
+scaling_3d/mode=8
+scaling_3d/scale=0.6666667
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=4
